@@ -1,0 +1,25 @@
+namespace ParcelRegistry.Importer
+{
+    using System;
+
+    internal static class ConsoleExtensions
+    {
+        public static void WaitFor(ConsoleKey key)
+        {
+            ConsoleKeyInfo input;
+            do
+            {
+                input = Console.ReadKey();
+            } while (input.Key != key);
+        }
+    }
+
+    public static class MapLogging
+    {
+        static MapLogging()
+        {
+            Log = s => { };
+        }
+        public static Action<string> Log { get; set; }
+    }
+}

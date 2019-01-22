@@ -1,0 +1,31 @@
+type file
+version 1.0.0
+
+id Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy
+title Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy
+
+authors Basisregisters Vlaanderen
+owners agentschap Informatie Vlaanderen <https://vlaanderen.be/informatie-vlaanderen>
+copyright Copyright (c) agentschap Informatie Vlaanderen
+requireLicenseAcceptance false
+projectUrl https://github.com/Informatievlaanderen/parcel-registry
+iconUrl https://raw.githubusercontent.com/Informatievlaanderen/build-pipeline/master/logo.png
+licenseUrl https://opensource.org/licenses/EUPL-1.2
+
+description Parcel Registry.
+
+dependencies
+  framework: netstandard20
+    Be.Vlaanderen.Basisregisters.GrAr.Legacy >= LOCKEDVERSION
+
+files
+  ParcelRegistry.Api.Legacy.dll => lib\netcoreapp2.2
+  ParcelRegistry.Api.Legacy.pdb => lib\netcoreapp2.2
+  ParcelRegistry.Api.Legacy.xml => lib\netcoreapp2.2
+  ParcelRegistry.Api.Legacy.xml => content
+
+  ParcelRegistry.Projections.Legacy.dll => lib\netcoreapp2.2
+  ParcelRegistry.Projections.Legacy.pdb => lib\netcoreapp2.2
+
+  ParcelRegistry.dll => lib\netcoreapp2.2
+  ParcelRegistry.pdb => lib\netcoreapp2.2

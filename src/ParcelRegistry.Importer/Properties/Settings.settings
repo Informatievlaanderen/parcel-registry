@@ -1,0 +1,39 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ParcelRegistry.Importer.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="BatchSize" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="HttpTimeoutInMinutes" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="EndDateRecovery" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="BaseUrl" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://localhost:2089</Value>
+    </Setting>
+    <Setting Name="LogFileSizeLimitBytes" Type="System.Int64" Scope="Application">
+      <Value Profile="(Default)">104857600</Value>
+    </Setting>
+    <Setting Name="ImportEndpoint" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">v1/crabimport</Value>
+    </Setting>
+    <Setting Name="NrOfProducers" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="NrOfConsumers" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="BufferSize" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">5000</Value>
+    </Setting>
+    <Setting Name="TimeMarginBeforeNowInSeconds" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:03:00</Value>
+    </Setting>
+    <Setting Name="LastRunDate" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

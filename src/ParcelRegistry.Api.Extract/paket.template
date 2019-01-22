@@ -1,0 +1,28 @@
+type file
+version 1.0.0
+
+id Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract
+title Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract
+
+authors Basisregisters Vlaanderen
+owners agentschap Informatie Vlaanderen <https://vlaanderen.be/informatie-vlaanderen>
+copyright Copyright (c) agentschap Informatie Vlaanderen
+requireLicenseAcceptance false
+projectUrl https://github.com/Informatievlaanderen/parcel-registry
+iconUrl https://raw.githubusercontent.com/Informatievlaanderen/build-pipeline/master/logo.png
+licenseUrl https://opensource.org/licenses/EUPL-1.2
+
+description Parcel Registry.
+
+dependencies
+  framework: netstandard20
+    Be.Vlaanderen.Basisregisters.Shaperon >= LOCKEDVERSION
+
+files
+  ParcelRegistry.Api.Extract.dll => lib\netcoreapp2.2
+  ParcelRegistry.Api.Extract.pdb => lib\netcoreapp2.2
+  ParcelRegistry.Api.Extract.xml => lib\netcoreapp2.2
+  ParcelRegistry.Api.Extract.xml => content
+
+  ParcelRegistry.Projections.Extract.dll => lib\netcoreapp2.2
+  ParcelRegistry.Projections.Extract.pdb => lib\netcoreapp2.2
