@@ -72,7 +72,6 @@ Target "Publish_Solution" (fun _ ->
     "ParcelRegistry.Projections.Legacy"
     "ParcelRegistry.Projections.Extract"
     "ParcelRegistry.Projections.LastChangedList"
-    "ParcelRegistry.Projections.Syndication"
   ] |> List.iter publish)
 
 Target "Pack_Solution" (fun _ ->
@@ -134,7 +133,7 @@ Target "Push" DoNothing
 "Containerize_ProjectionsLegacy"          ==> "Containerize"
 "Containerize_ProjectionsExtract"         ==> "Containerize"
 "Containerize_ProjectionsRedis"           ==> "Containerize"
-"Containerize_ProjectionsSyndication"     ==> "Containerize"
+// "Containerize_ProjectionsSyndication"     ==> "Containerize"
 // Possibly add more projects to containerize here
 
 "Containerize"                            ==> "Push"
@@ -145,7 +144,7 @@ Target "Push" DoNothing
 "PushContainer_ProjectionsLegacy"         ==> "Push"
 "PushContainer_ProjectionsExtract"        ==> "Push"
 "PushContainer_ProjectionsRedis"          ==> "Push"
-"PushContainer_ProjectionsSyndication"    ==> "Push"
+// "PushContainer_ProjectionsSyndication"    ==> "Push"
 // Possibly add more projects to push here
 
 // By default we build & test
