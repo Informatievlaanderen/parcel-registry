@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.0...v1.0.1) (2019-01-24)
+
+
+### Bug Fixes
+
+* use basic auth for importer ([23fb49d](https://github.com/informatievlaanderen/parcel-registry/commit/23fb49d))
+
 # 1.0.0 (2019-01-22)
 
 
