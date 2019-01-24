@@ -10,6 +10,8 @@ namespace ParcelRegistry.Importer
         public Uri BaseUrl => new Uri(Settings.Default.BaseUrl);
         public string ImportEndpoint => Settings.Default.ImportEndpoint;
         public int HttpTimeoutMinutes => Settings.Default.HttpTimeoutInMinutes;
+        public string AuthUserName => Settings.Default.AuthUserName;
+        public string AuthPassword => Settings.Default.AuthPassword;
         public int NrOfProducers => Settings.Default.NrOfProducers;
         public int BufferSize => Settings.Default.BufferSize;
         public int NrOfConsumers => Settings.Default.NrOfConsumers;
@@ -46,6 +48,6 @@ namespace ParcelRegistry.Importer
                                              $"NrOfProducers: {NrOfProducers}{Environment.NewLine}" +
                                              $"BufferSize: {BufferSize}{Environment.NewLine}" +
                                              $"NrOfConsumers: {NrOfConsumers}{Environment.NewLine}" +
-                                             $"BatchSize: {BatchSize}";//{Environment.NewLine}";
+                                             $"BatchSize: {BatchSize}";
     }
 }

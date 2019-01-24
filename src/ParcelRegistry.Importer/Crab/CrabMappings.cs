@@ -2,7 +2,7 @@ namespace ParcelRegistry.Importer.Crab
 {
     using System;
     using Be.Vlaanderen.Basisregisters.Crab;
-    using Be.Vlaanderen.Basisregisters.CrabModel;
+    using Aiv.Vbr.CrabModel;
 
     public static class CrabMappings
     {

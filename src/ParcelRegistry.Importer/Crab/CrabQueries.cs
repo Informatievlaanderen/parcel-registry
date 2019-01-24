@@ -4,8 +4,8 @@ namespace ParcelRegistry.Importer.Crab
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.CentraalBeheer.Crab.Entity;
-    using Be.Vlaanderen.Basisregisters.CrabModel;
+    using Aiv.Vbr.CentraalBeheer.Crab.Entity;
+    using Aiv.Vbr.CrabModel;
 
     public static class CrabQueries
     {

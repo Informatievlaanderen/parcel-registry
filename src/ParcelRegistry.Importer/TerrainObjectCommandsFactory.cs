@@ -2,7 +2,7 @@ namespace ParcelRegistry.Importer
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Be.Vlaanderen.Basisregisters.CentraalBeheer.Crab.Entity;
+    using Aiv.Vbr.CentraalBeheer.Crab.Entity;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Crab;
     using Parcel.Commands.Crab;

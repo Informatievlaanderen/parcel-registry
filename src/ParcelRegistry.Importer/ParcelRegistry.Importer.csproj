@@ -33,20 +33,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Be.Vlaanderen.Basisregisters.CentraalBeheer.Crab">
-      <HintPath>..\..\assets\crab2vbr\Be.Vlaanderen.Basisregisters.CentraalBeheer.Crab.dll</HintPath>
+    <Reference Include="Aiv.Vbr.CentraalBeheer.Crab">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.CentraalBeheer.Crab.dll</HintPath>
     </Reference>
-    <Reference Include="Be.Vlaanderen.Basisregisters.Common">
-      <HintPath>..\..\assets\crab2vbr\Be.Vlaanderen.Basisregisters.Common.dll</HintPath>
+    <Reference Include="Aiv.Vbr.Common">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Be.Vlaanderen.Basisregisters.CrabModel">
-      <HintPath>..\..\assets\crab2vbr\Be.Vlaanderen.Basisregisters.CrabModel.dll</HintPath>
+    <Reference Include="Aiv.Vbr.CrabModel">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.CrabModel.dll</HintPath>
     </Reference>
-    <Reference Include="Be.Vlaanderen.Basisregisters.Domain.Model">
-      <HintPath>..\..\assets\crab2vbr\Be.Vlaanderen.Basisregisters.Domain.Model.dll</HintPath>
+    <Reference Include="Aiv.Vbr.Domain.Model">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.Domain.Model.dll</HintPath>
     </Reference>
-    <Reference Include="Be.Vlaanderen.Basisregisters.DomainModel.Operations">
-      <HintPath>..\..\assets\crab2vbr\Be.Vlaanderen.Basisregisters.DomainModel.Operations.dll</HintPath>
+    <Reference Include="Aiv.Vbr.DomainModel.Operations">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.DomainModel.Operations.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.Shared">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Gisvl.Framework.Spatial">
       <HintPath>..\..\assets\crab2vbr\Gisvl.Framework.Spatial.dll</HintPath>
