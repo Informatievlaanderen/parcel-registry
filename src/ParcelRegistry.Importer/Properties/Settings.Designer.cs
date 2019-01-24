@@ -130,18 +130,18 @@ namespace ParcelRegistry.Importer.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string AuthUserName {
+        public string ImportAuthUser {
             get {
-                return ((string)(this["AuthUserName"]));
+                return ((string)(this["ImportAuthUser"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string AuthPassword {
+        public string ImportAuthPass {
             get {
-                return ((string)(this["AuthPassword"]));
+                return ((string)(this["ImportAuthPass"]));
             }
         }
     }

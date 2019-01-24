@@ -16,10 +16,8 @@ namespace ParcelRegistry.Importer
 
     public static class MapLogging
     {
-        static MapLogging()
-        {
-            Log = s => { };
-        }
         public static Action<string> Log { get; set; }
+
+        static MapLogging() => Log = s => { };
     }
 }

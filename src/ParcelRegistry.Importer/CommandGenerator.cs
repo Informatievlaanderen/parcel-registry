@@ -15,27 +15,20 @@ namespace ParcelRegistry.Importer
     {
         public string Name => GetType().FullName;
 
-        public IEnumerable<CaPaKey> GetChangedKeys(DateTime @from, DateTime until)
-        {
-            return CrabQueries.GetChangedPerceelIdsBetween(from, until)
+        public IEnumerable<CaPaKey> GetChangedKeys(DateTime from, DateTime until)
+            => CrabQueries.GetChangedPerceelIdsBetween(from, until)
                 .Select(CaPaKey.CreateFrom)
                 .Distinct()
-                //.Where(x => !processedCaPaKeys.Contains(x.VbrCaPaKey.ToString()))
                 .OrderBy(x => x.VbrCaPaKey)
                 .ToList();
-        }
 
-        public IEnumerable<dynamic> GenerateInitCommandsFor(CaPaKey key, DateTime @from, DateTime until)
-        {
-            return CreateCommandsInOrder(key, from, until);
-        }
+        public IEnumerable<dynamic> GenerateInitCommandsFor(CaPaKey key, DateTime from, DateTime until)
+            => CreateCommandsInOrder(key, from, until);
 
-        public IEnumerable<dynamic> GenerateUpdateCommandsFor(CaPaKey key, DateTime @from, DateTime until)
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<dynamic> GenerateUpdateCommandsFor(CaPaKey key, DateTime from, DateTime until)
+            => throw new NotImplementedException();
 
-        private IEnumerable<dynamic> CreateCommandsInOrder(CaPaKey caPaKey, DateTime @from, DateTime until)
+        private static IEnumerable<dynamic> CreateCommandsInOrder(CaPaKey caPaKey, DateTime from, DateTime until)
         {
             var importTerrainObjectCommands = new List<ImportTerrainObjectFromCrab>();
             var importTerrainObjectHouseNumberCommands = new List<ImportTerrainObjectHouseNumberFromCrab>();
@@ -73,7 +66,8 @@ namespace ParcelRegistry.Importer
                 importTerrainObjectHouseNumberCommands.AddRange(TerrainObjectCommandsFactory.CreateFor(terrainObjectHouseNumbersHistList, caPaKey));
 
                 var allHouseNumberIds = importTerrainObjectHouseNumberCommands
-                    .Select(x => (int)x.HouseNumberId).ToList();
+                    .Select(x => (int)x.HouseNumberId)
+                    .ToList();
 
                 var subaddresses = AdresSubadresQueries
                     .GetTblSubAdressenByHuisnummerIds(allHouseNumberIds, crabEntities);
@@ -116,6 +110,7 @@ namespace ParcelRegistry.Importer
             }
 
             var commands = new List<dynamic>();
+
             var groupedTerrainObjectCommands = importTerrainObjectCommands
                 .GroupBy(x => x.CaPaKey)
                 .ToDictionary(x => x.Key, x => x.ToList().OrderBy(y => (Instant)y.Timestamp));
@@ -123,7 +118,8 @@ namespace ParcelRegistry.Importer
             foreach (var groupedTerrainObjectCommand in groupedTerrainObjectCommands)
                 commands.Add(groupedTerrainObjectCommand.Value.First());
 
-            var allCommands = importTerrainObjectCommands.Select(x =>
+            var allCommands = importTerrainObjectCommands
+                .Select(x =>
                     Tuple.Create<dynamic, int, int, string>(x, 0, 0, $"CaPaKey: {x.CaPaKey}"))
                 .Concat(importTerrainObjectHouseNumberCommands.Select(x =>
                     Tuple.Create<dynamic, int, int, string>(x, 1, 0, $"CaPaKey: {x.CaPaKey}")))

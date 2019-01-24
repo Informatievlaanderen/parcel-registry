@@ -10,9 +10,7 @@ namespace ParcelRegistry.Importer
     internal class TerrainObjectCommandsFactory
     {
         public static IEnumerable<ImportSubaddressFromCrab> CreateFor(tblSubAdres_hist subAddressHist, CaPaKey caPaKey)
-        {
-            return CreateFor(new List<tblSubAdres_hist> { subAddressHist }, caPaKey);
-        }
+            => CreateFor(new List<tblSubAdres_hist> { subAddressHist }, caPaKey);
 
         public static IEnumerable<ImportSubaddressFromCrab> CreateFor(IEnumerable<tblSubAdres_hist> subAddressesHist, CaPaKey caPaKey)
         {
@@ -37,9 +35,7 @@ namespace ParcelRegistry.Importer
         }
 
         public static IEnumerable<ImportSubaddressFromCrab> CreateFor(tblSubAdres subAddress, CaPaKey caPaKey)
-        {
-            return CreateFor(new List<tblSubAdres> { subAddress }, caPaKey);
-        }
+            => CreateFor(new List<tblSubAdres> { subAddress }, caPaKey);
 
         public static IEnumerable<ImportSubaddressFromCrab> CreateFor(IEnumerable<tblSubAdres> subAddresses, CaPaKey caPaKey)
         {
