@@ -1,11 +1,10 @@
 namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 {
-    using System.Linq;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using Microsoft.EntityFrameworkCore;
     using NodaTime;
     using Parcel.Events;
+    using System.Linq;
 
     public class ParcelDetailProjections : ConnectedProjection<LegacyContext>
     {
@@ -88,35 +87,33 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
             When<Envelope<ParcelAddressWasAttached>>(async (context, message, ct) =>
             {
-                // TODO: How is this going to behave in catch-up mode?
-                var item = await context.ParcelDetail
-                    .Include(x => x.Addresses)
-                    .FirstOrDefaultAsync(x => x.ParcelId == message.Message.ParcelId);
-
-                // TODO: look up oslo id of address
-                item?.Addresses.Add(new ParcelDetailAddress
-                {
-                    ParcelId = message.Message.ParcelId,
-                    AddressId = message.Message.AddressId,
-                });
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                await context.FindAndUpdateParcelDetail(
+                    message.Message.ParcelId,
+                    entity =>
+                    {
+                        // TODO: look up oslo id of address
+                        entity.Addresses.Add(new ParcelDetailAddress
+                        {
+                            ParcelId = message.Message.ParcelId,
+                            AddressId = message.Message.AddressId,
+                        });
+                        UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
             });
 
             When<Envelope<ParcelAddressWasDetached>>(async (context, message, ct) =>
             {
-                // TODO: How is this going to behave in catch-up mode?
-                var item = await context.ParcelDetail
-                    .Include(x => x.Addresses)
-                    .FirstOrDefaultAsync(x => x.ParcelId == message.Message.ParcelId);
+                await context.FindAndUpdateParcelDetail(
+                    message.Message.ParcelId,
+                    entity =>
+                    {
+                        var address = entity.Addresses.SingleOrDefault(x => x.AddressId == message.Message.AddressId);
+                        entity.Addresses.Remove(address);
 
-                if (item != null)
-                {
-                    var address = item.Addresses.SingleOrDefault(x => x.AddressId == message.Message.AddressId);
-                    item.Addresses.Remove(address);
-                }
-
-                UpdateVersionTimestamp(item, message.Message.Provenance.Timestamp);
+                        UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
             });
         }
 
