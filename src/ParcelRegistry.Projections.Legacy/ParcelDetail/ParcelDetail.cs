@@ -1,8 +1,8 @@
 namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.ComponentModel;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -39,7 +39,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
         public ParcelDetail()
         {
-            Addresses = new BindingList<ParcelDetailAddress>();
+            Addresses = new Collection<ParcelDetailAddress>();
         }
     }
 
