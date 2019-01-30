@@ -91,6 +91,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     message.Message.ParcelId,
                     entity =>
                     {
+                        context.Entry(entity).Collection(x => x.Addresses).Load();
+
                         // TODO: look up oslo id of address
                         entity.Addresses.Add(new ParcelDetailAddress
                         {
@@ -108,6 +110,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     message.Message.ParcelId,
                     entity =>
                     {
+                        context.Entry(entity).Collection(x => x.Addresses).Load();
+
                         var address = entity.Addresses.SingleOrDefault(x => x.AddressId == message.Message.AddressId);
                         entity.Addresses.Remove(address);
 
