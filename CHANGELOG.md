@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.3...v1.0.4) (2019-02-07)
+
+
+### Bug Fixes
+
+* support nullable Rfc3339SerializableDateTimeOffset in converter ([dd3d1c1](https://github.com/informatievlaanderen/parcel-registry/commit/dd3d1c1))
+
 ## [1.0.3](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.2...v1.0.3) (2019-02-06)
 
 
