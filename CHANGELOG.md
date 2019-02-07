@@ -1,3 +1,11 @@
+## [1.0.5](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.4...v1.0.5) (2019-02-07)
+
+
+### Bug Fixes
+
+* load the addresses when required ([795d419](https://github.com/informatievlaanderen/parcel-registry/commit/795d419))
+* null ref when handling address in detail projection ([a4263f6](https://github.com/informatievlaanderen/parcel-registry/commit/a4263f6))
+
 ## [1.0.4](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.3...v1.0.4) (2019-02-07)
 
 
