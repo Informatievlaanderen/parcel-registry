@@ -28,6 +28,8 @@ nuget Microsoft.Extensions.Configuration.FileExtensions 2.2.0
 nuget Microsoft.Extensions.Configuration.EnvironmentVariables 2.2.0
 nuget Microsoft.Extensions.Configuration.Json 2.2.0
 
+nuget Microsoft.Extensions.Http.Polly 2.2.0
+
 nuget Microsoft.SyndicationFeed.ReaderWriter 1.0.2
 
 nuget Autofac 4.8.1
