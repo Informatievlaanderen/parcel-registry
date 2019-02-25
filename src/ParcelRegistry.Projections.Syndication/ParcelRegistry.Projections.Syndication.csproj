@@ -7,9 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
-    <None Remove="appsettings - Copy.json" />
-    <None Remove="appsettings.aocws277.json" />
+    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />    
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     <Content Include="Dockerfile" CopyToOutputDirectory="Always" />
   </ItemGroup>
