@@ -28,7 +28,7 @@ namespace ParcelRegistry.Projections.Syndication
             ct.Register(() => Closing.Set());
             Console.CancelKeyPress += (sender, eventArgs) => CancellationTokenSource.Cancel();
 
-            Console.WriteLine("Starting AddressRegistry.Projections.Syndication");
+            Console.WriteLine("Starting BuildingRegistry.Projections.Syndication");
 
             AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
                 Log.Debug(
