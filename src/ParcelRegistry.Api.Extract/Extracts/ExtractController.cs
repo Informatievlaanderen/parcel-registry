@@ -1,16 +1,12 @@
 namespace ParcelRegistry.Api.Extract.Extracts
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
-    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using ExtractFiles;
+    using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
     using Newtonsoft.Json.Converters;
     using Projections.Extract;
     using Responses;
@@ -36,22 +32,10 @@ namespace ParcelRegistry.Api.Extract.Extracts
         [ProducesResponseType(typeof(BasicApiProblem), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParcelRegistryResponseExample), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
-        public async Task<IActionResult> Get(
+        public IActionResult Get(
             [FromServices] ExtractContext context,
-            CancellationToken cancellationToken = default)
-        {
-            var parcels = await context
-                .ParcelExtract
-                .AsNoTracking()
-                .OrderBy(m => m.CaPaKey)
-                .ToListAsync(cancellationToken);
-
-            var zip = new List<ExtractFile>
-            {
-                ParcelRegistryExtractBuilder.CreateParcelFile(parcels)
-            };
-
-            return zip.CreateResponse($"{ZipName}-{DateTime.Now:yyyy-MM-dd}");
-        }
+            CancellationToken cancellationToken = default) =>
+            new ExtractArchive($"{ZipName}-{DateTime.Now:yyyy-MM-dd}") { ParcelRegistryExtractBuilder.CreateParcelFile(context) }
+                .CreateFileCallbackResult(cancellationToken);
     }
 }
