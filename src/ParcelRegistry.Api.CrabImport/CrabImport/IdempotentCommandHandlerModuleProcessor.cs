@@ -7,25 +7,38 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Api;
-    using Autofac;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Parcel;
     using Parcel.Commands.Crab;
+    using SqlStreamStore;
 
     public class IdempotentCommandHandlerModuleProcessor : IIdempotentCommandHandlerModuleProcessor
     {
         private readonly ConcurrentUnitOfWork _concurrentUnitOfWork;
         private readonly ParcelCommandHandlerModule _parcelCommandHandlerModule;
-        private readonly Func<IHasCrabProvenance, Parcel, Provenance> _provenanceFactory = new ParcelProvenanceFactory().CreateFrom;
+        private readonly Func<IHasCrabProvenance, Parcel, Provenance> _provenanceFactory;
         private readonly Func<IParcels> _getParcels;
 
         public IdempotentCommandHandlerModuleProcessor(
-            IComponentContext container,
-            ConcurrentUnitOfWork concurrentUnitOfWork)
+            Func<IParcels> getParcels,
+            ConcurrentUnitOfWork concurrentUnitOfWork,
+            Func<IStreamStore> getStreamStore,
+            EventMapping eventMapping,
+            EventSerializer eventSerializer,
+            ParcelProvenanceFactory provenanceFactory)
         {
+            _getParcels = getParcels;
             _concurrentUnitOfWork = concurrentUnitOfWork;
-            _getParcels = container.Resolve<Func<IParcels>>();
-            _parcelCommandHandlerModule = new ParcelCommandHandlerModule(_getParcels, () => concurrentUnitOfWork);
+            _provenanceFactory = provenanceFactory.CreateFrom;
+
+            _parcelCommandHandlerModule = new ParcelCommandHandlerModule(
+                getParcels,
+                () => concurrentUnitOfWork,
+                getStreamStore,
+                eventMapping,
+                eventSerializer,
+                provenanceFactory);
         }
 
         public async Task<CommandMessage> Process(
