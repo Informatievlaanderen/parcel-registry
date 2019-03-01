@@ -4,6 +4,7 @@ namespace ParcelRegistry.Projections.Legacy
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Microsoft.Extensions.Logging;
     using ParcelDetail;
+    using ParcelSyndication;
 
     public class ParcelLegacyRunner : Runner<LegacyContext>
     {
@@ -15,6 +16,8 @@ namespace ParcelRegistry.Projections.Legacy
                 Name,
                 envelopeFactory,
                 logger,
-                new ParcelDetailProjections()) { }
+                new ParcelDetailProjections(),
+                new ParcelSyndicationProjections())
+        { }
     }
 }
