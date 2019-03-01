@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.1.1...v1.2.0) (2019-03-01)
+
+
+### Bug Fixes
+
+* add AsNoTracking() to detail parcel ([21c19fa](https://github.com/informatievlaanderen/parcel-registry/commit/21c19fa))
+* remove unneeded param and status code from legacy list ([0de86c3](https://github.com/informatievlaanderen/parcel-registry/commit/0de86c3))
+
+
+### Features
+
+* add address oslo ids to legacy api by syndication ([10c3d64](https://github.com/informatievlaanderen/parcel-registry/commit/10c3d64))
+* add migrations syndication ([6365620](https://github.com/informatievlaanderen/parcel-registry/commit/6365620))
+
 ## [1.1.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.1.0...v1.1.1) (2019-03-01)
 
 # [1.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.8...v1.1.0) (2019-03-01)
