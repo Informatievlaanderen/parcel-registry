@@ -83,6 +83,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
 
             var addressOlsoIdItems = await syndicationContext
                 .AddressOsloIds
+                .AsNoTracking()
                 .Where(x => addressIds.Contains(x.AddressId) && x.IsComplete && !x.IsRemoved)
                 .Select(x => x.OsloId)
                 .ToListAsync(cancellationToken);
