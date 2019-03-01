@@ -45,6 +45,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adr", "adr", "{957DE67B-315
 		docs\adr\0001-record-architecture-decisions.md = docs\adr\0001-record-architecture-decisions.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Projections.Syndication", "src\ParcelRegistry.Projections.Syndication\ParcelRegistry.Projections.Syndication.csproj", "{97608EBD-14AE-48CA-A916-F687E3D0462B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{D6C29B46-5A92-443F-95CC-6061648EBA49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6C29B46-5A92-443F-95CC-6061648EBA49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6C29B46-5A92-443F-95CC-6061648EBA49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97608EBD-14AE-48CA-A916-F687E3D0462B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97608EBD-14AE-48CA-A916-F687E3D0462B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97608EBD-14AE-48CA-A916-F687E3D0462B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97608EBD-14AE-48CA-A916-F687E3D0462B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,6 +107,7 @@ Global
 		{DF3051A8-F894-487E-9D7F-3E99EA604105} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{13C4903D-946E-40AA-B838-7BBD2BC2B0A9} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{D6C29B46-5A92-443F-95CC-6061648EBA49} = {B483712F-241C-411F-8CC7-D46B3530DF65}
+		{97608EBD-14AE-48CA-A916-F687E3D0462B} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF9223F3-B20E-4F63-A894-F1B3F66280AD}

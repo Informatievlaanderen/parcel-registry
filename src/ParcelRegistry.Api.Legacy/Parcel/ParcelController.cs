@@ -5,14 +5,21 @@ namespace ParcelRegistry.Api.Legacy.Parcel
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
+    using Be.Vlaanderen.Basisregisters.Api.Syndication;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Convertors;
     using Infrastructure.Options;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
+    using Microsoft.SyndicationFeed;
+    using Microsoft.SyndicationFeed.Atom;
     using Newtonsoft.Json.Converters;
     using Projections.Legacy;
+    using Projections.Syndication;
     using Query;
     using Responses;
     using Swashbuckle.AspNetCore.Filters;
@@ -24,12 +31,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
-    using Be.Vlaanderen.Basisregisters.Api.Syndication;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Convertors;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.SyndicationFeed;
-    using Microsoft.SyndicationFeed.Atom;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -41,6 +42,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         /// Vraag een perceel op.
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="syndicationContext"></param>
         /// <param name="responseOptions"></param>
         /// <param name="caPaKey">Identificator van het perceel.</param>
         /// <param name="cancellationToken"></param>
@@ -59,6 +61,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public async Task<IActionResult> Get(
             [FromServices] LegacyContext context,
+            [FromServices] SyndicationContext syndicationContext,
             [FromServices] IOptions<ResponseOptions> responseOptions,
             [FromRoute] string caPaKey,
             CancellationToken cancellationToken = default)
@@ -76,13 +79,22 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             if (parcel.Removed)
                 throw new ApiException("Perceel werd verwijderd.", StatusCodes.Status410Gone);
 
+            var addressIds = parcel.Addresses.Select(x => x.AddressId);
+
+            var addressOlsoIdItems = await syndicationContext
+                .AddressOsloIds
+                .AsNoTracking()
+                .Where(x => addressIds.Contains(x.AddressId) && x.IsComplete && !x.IsRemoved)
+                .Select(x => x.OsloId)
+                .ToListAsync(cancellationToken);
+
             return Ok(
                 new ParcelResponse(
                     responseOptions.Value.Naamruimte,
                     parcel.Status.MapToPerceelStatus(),
                     parcel.OsloId,
                     parcel.VersionTimestamp.ToBelgianDateTimeOffset(),
-                    parcel.Addresses.Select(x => x.AddressId.ToString("D")).ToList(), // TODO: create view that joins legacy and syndication tables
+                    addressOlsoIdItems.ToList(),
                     responseOptions.Value.AdresDetailUrl));
         }
 
@@ -90,21 +102,17 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         /// Vraag een lijst met actieve percelen op.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="hostingEnvironment"></param>
         /// <param name="reponseOptions"></param>
         /// <param name="cancellationToken"></param>
         /// <response code="200">Als de opvraging van een lijst met percelen gelukt is.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
         [HttpGet]
         [ProducesResponseType(typeof(ParcelListResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BasicApiProblem), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BasicApiProblem), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParcelListResponseExamples), jsonConverter: typeof(StringEnumConverter))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
         public async Task<IActionResult> List(
             [FromServices] LegacyContext context,
-            [FromServices] IHostingEnvironment hostingEnvironment,
             [FromServices] IOptions<ResponseOptions> reponseOptions,
             CancellationToken cancellationToken = default)
         {
