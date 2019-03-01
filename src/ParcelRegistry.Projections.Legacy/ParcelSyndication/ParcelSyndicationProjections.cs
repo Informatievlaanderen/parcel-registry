@@ -1,6 +1,5 @@
 namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 {
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
@@ -23,140 +22,75 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     IsComplete = true,
                 };
 
-                ApplyProvenance(parcelSyndicationItem, message.Message.Provenance);
+                parcelSyndicationItem.ApplyProvenance(message.Message.Provenance);
 
                 await context
                     .ParcelSyndication
-                    .AddAsync(parcelSyndicationItem);
+                    .AddAsync(parcelSyndicationItem, ct);
             });
 
             When<Envelope<ParcelWasRealized>>(async (context, message, ct) =>
             {
-                var parcelSyndicationItem = await context.LatestPosition(message.Message.ParcelId, ct);
-
-                parcelSyndicationItem = parcelSyndicationItem.CloneAndApplyEventInfo(
-                    message.Position,
-                    message.EventName,
-                    message.Message.Provenance.Timestamp,
-                    x => x.Status = ParcelStatus.Realized);
-
-                ApplyProvenance(parcelSyndicationItem, message.Message.Provenance);
-
-                await context
-                    .ParcelSyndication
-                    .AddAsync(parcelSyndicationItem);
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.Status = ParcelStatus.Realized,
+                    ct);
             });
 
             When<Envelope<ParcelWasCorrectedToRealized>>(async (context, message, ct) =>
             {
-                var parcelSyndicationItem = await context.LatestPosition(message.Message.ParcelId, ct);
-
-                parcelSyndicationItem = parcelSyndicationItem.CloneAndApplyEventInfo(
-                    message.Position,
-                    message.EventName,
-                    message.Message.Provenance.Timestamp,
-                    x => x.Status = ParcelStatus.Realized);
-
-                ApplyProvenance(parcelSyndicationItem, message.Message.Provenance);
-
-                await context
-                    .ParcelSyndication
-                    .AddAsync(parcelSyndicationItem);
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.Status = ParcelStatus.Realized,
+                    ct);
             });
 
             When<Envelope<ParcelWasRetired>>(async (context, message, ct) =>
             {
-                var parcelSyndicationItem = await context.LatestPosition(message.Message.ParcelId, ct);
-
-                parcelSyndicationItem = parcelSyndicationItem.CloneAndApplyEventInfo(
-                    message.Position,
-                    message.EventName,
-                    message.Message.Provenance.Timestamp,
-                    x => x.Status = ParcelStatus.Retired);
-
-                ApplyProvenance(parcelSyndicationItem, message.Message.Provenance);
-
-                await context
-                    .ParcelSyndication
-                    .AddAsync(parcelSyndicationItem);
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.Status = ParcelStatus.Retired,
+                    ct);
             });
 
             When<Envelope<ParcelWasCorrectedToRetired>>(async (context, message, ct) =>
             {
-                var parcelSyndicationItem = await context.LatestPosition(message.Message.ParcelId, ct);
-
-                parcelSyndicationItem = parcelSyndicationItem.CloneAndApplyEventInfo(
-                    message.Position,
-                    message.EventName,
-                    message.Message.Provenance.Timestamp,
-                    x => x.Status = ParcelStatus.Retired);
-
-                ApplyProvenance(parcelSyndicationItem, message.Message.Provenance);
-
-                await context
-                    .ParcelSyndication
-                    .AddAsync(parcelSyndicationItem);
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.Status = ParcelStatus.Retired,
+                    ct);
             });
 
             When<Envelope<ParcelWasRemoved>>(async (context, message, ct) =>
             {
-                var parcelSyndicationItem = await context.LatestPosition(message.Message.ParcelId, ct);
-
-                parcelSyndicationItem = parcelSyndicationItem.CloneAndApplyEventInfo(
-                    message.Position,
-                    message.EventName,
-                    message.Message.Provenance.Timestamp,
-                    x => { });
-
-                ApplyProvenance(parcelSyndicationItem, message.Message.Provenance);
-
-                await context
-                    .ParcelSyndication
-                    .AddAsync(parcelSyndicationItem);
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => { },
+                    ct);
             });
 
             When<Envelope<ParcelAddressWasAttached>>(async (context, message, ct) =>
             {
-                var parcelSyndicationItem = await context.LatestPosition(message.Message.ParcelId, ct);
-
-                parcelSyndicationItem = parcelSyndicationItem.CloneAndApplyEventInfo(
-                    message.Position,
-                    message.EventName,
-                    message.Message.Provenance.Timestamp,
-                    x => x.AddAddressId(message.Message.AddressId));
-
-                ApplyProvenance(parcelSyndicationItem, message.Message.Provenance);
-
-                await context
-                    .ParcelSyndication
-                    .AddAsync(parcelSyndicationItem);
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.AddAddressId(message.Message.AddressId),
+                    ct);
             });
 
             When<Envelope<ParcelAddressWasDetached>>(async (context, message, ct) =>
             {
-                var parcelSyndicationItem = await context.LatestPosition(message.Message.ParcelId, ct);
-
-                parcelSyndicationItem = parcelSyndicationItem.CloneAndApplyEventInfo(
-                    message.Position,
-                    message.EventName,
-                    message.Message.Provenance.Timestamp,
-                    x => x.RemoveAddressId(message.Message.AddressId));
-
-                ApplyProvenance(parcelSyndicationItem, message.Message.Provenance);
-
-                await context
-                    .ParcelSyndication
-                    .AddAsync(parcelSyndicationItem);
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.RemoveAddressId(message.Message.AddressId),
+                    ct);
             });
-        }
-
-        private static void ApplyProvenance(ParcelSyndicationItem item, ProvenanceData provenance)
-        {
-            item.Application = provenance.Application;
-            item.Modification = provenance.Modification;
-            item.Operator = provenance.Operator;
-            item.Organisation = provenance.Organisation;
-            item.Plan = provenance.Plan;
         }
     }
 }

@@ -5,9 +5,39 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
 
     public static class ParcelSyndicationExtensions
     {
+        public static async Task CreateNewParcelSyndicationItem<T>(
+            this LegacyContext context,
+            Guid parcelId,
+            Envelope<T> message,
+            Action<ParcelSyndicationItem> applyEventInfoOn,
+            CancellationToken ct) where T : IHasProvenance
+        {
+            var parcelSyndicationItem = await context.LatestPosition(parcelId, ct);
+
+            if (parcelSyndicationItem == null)
+                throw DatabaseItemNotFound(parcelId);
+
+            var provenance = message.Message.Provenance;
+
+            var newParcelSyndicationItem = parcelSyndicationItem.CloneAndApplyEventInfo(
+                message.Position,
+                message.EventName,
+                provenance.Timestamp,
+                applyEventInfoOn);
+
+            newParcelSyndicationItem.ApplyProvenance(provenance);
+
+            await context
+                .ParcelSyndication
+                .AddAsync(newParcelSyndicationItem, ct);
+        }
+
         public static async Task<ParcelSyndicationItem> LatestPosition(
             this LegacyContext context,
             Guid parcelId,
@@ -23,5 +53,19 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                    .Where(x => x.ParcelId == parcelId)
                    .OrderByDescending(x => x.Position)
                    .FirstOrDefaultAsync(ct);
+
+        public static void ApplyProvenance(
+            this ParcelSyndicationItem item,
+            ProvenanceData provenance)
+        {
+            item.Application = provenance.Application;
+            item.Modification = provenance.Modification;
+            item.Operator = provenance.Operator;
+            item.Organisation = provenance.Organisation;
+            item.Plan = provenance.Plan;
+        }
+
+        private static ProjectionItemNotFoundException<ParcelSyndicationProjections> DatabaseItemNotFound(Guid parcelId)
+            => new ProjectionItemNotFoundException<ParcelSyndicationProjections>(parcelId.ToString("D"));
     }
 }
