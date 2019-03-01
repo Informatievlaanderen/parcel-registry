@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.8...v1.1.0) (2019-03-01)
+
+
+### Features
+
+* add sync ([8fa38a9](https://github.com/informatievlaanderen/parcel-registry/commit/8fa38a9))
+
 ## [1.0.8](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.7...v1.0.8) (2019-02-26)
 
 ## [1.0.7](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.6...v1.0.7) (2019-02-25)
