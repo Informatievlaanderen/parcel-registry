@@ -1,3 +1,14 @@
+## [1.0.8](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.7...v1.0.8) (2019-02-26)
+
+## [1.0.7](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.6...v1.0.7) (2019-02-25)
+
+## [1.0.6](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.5...v1.0.6) (2019-02-25)
+
+
+### Bug Fixes
+
+* use new lastchangedlist migrations runner ([b22d050](https://github.com/informatievlaanderen/parcel-registry/commit/b22d050))
+
 ## [1.0.5](https://github.com/informatievlaanderen/parcel-registry/compare/v1.0.4...v1.0.5) (2019-02-07)
 
 

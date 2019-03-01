@@ -5,23 +5,35 @@ namespace ParcelRegistry.Parcel
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Commands.Crab;
+    using SqlStreamStore;
 
-    public sealed class ParcelCommandHandlerModule : ProvenanceCommandHandlerModule<Parcel>
+    public sealed class ParcelCommandHandlerModule : CommandHandlerModule
     {
         public ParcelCommandHandlerModule(
             Func<IParcels> getParcels,
             Func<ConcurrentUnitOfWork> getUnitOfWork,
-            ReturnHandler<CommandMessage> finalHandler = null) : base(getUnitOfWork, finalHandler, new ParcelProvenanceFactory())
+            Func<IStreamStore> getStreamStore,
+            EventMapping eventMapping,
+            EventSerializer eventSerializer,
+            ParcelProvenanceFactory provenanceFactory)
         {
             For<ImportTerrainObjectFromCrab>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) => { await ImportTerrainObject(getParcels, message, ct); });
 
             For<ImportTerrainObjectHouseNumberFromCrab>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) => { await ImportTerrainObjectHouseNumber(getParcels, message, ct); });
 
             For<ImportSubaddressFromCrab>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) => { await ImportSubaddress(getParcels, message, ct); });
         }
 

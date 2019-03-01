@@ -1,9 +1,7 @@
 namespace ParcelRegistry
 {
-    using System;
-    using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore.Autofac;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Parcel;
 
     public static class CommandHandlerModules
@@ -11,12 +9,13 @@ namespace ParcelRegistry
         public static void Register(ContainerBuilder containerBuilder)
         {
             containerBuilder
-                .RegisterSqlStreamStoreCommandHandler<ParcelCommandHandlerModule>(
-                    c => handler =>
-                        new ParcelCommandHandlerModule(
-                            c.Resolve<Func<IParcels>>(),
-                            c.Resolve<Func<ConcurrentUnitOfWork>>(),
-                            handler));
+                .RegisterType<ParcelProvenanceFactory>()
+                .SingleInstance();
+
+            containerBuilder
+                .RegisterType<ParcelCommandHandlerModule>()
+                .Named<CommandHandlerModule>(typeof(ParcelCommandHandlerModule).FullName)
+                .As<CommandHandlerModule>();
         }
     }
 }
