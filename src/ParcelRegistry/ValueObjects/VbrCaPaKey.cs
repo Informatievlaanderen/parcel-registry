@@ -1,9 +1,10 @@
 namespace ParcelRegistry
 {
-    using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Generators.Guid;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Newtonsoft.Json;
+    using System;
 
     public class VbrCaPaKey : StringValueObject<VbrCaPaKey>
     {

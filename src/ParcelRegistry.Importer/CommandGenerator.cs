@@ -1,3 +1,5 @@
+using Be.Vlaanderen.Basisregisters.GrAr.Common;
+
 namespace ParcelRegistry.Importer
 {
     using System;

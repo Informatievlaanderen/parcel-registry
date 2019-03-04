@@ -1,11 +1,13 @@
+using Be.Vlaanderen.Basisregisters.GrAr.Common;
+
 namespace ParcelRegistry.Importer
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using Aiv.Vbr.CentraalBeheer.Crab.Entity;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Crab;
     using Parcel.Commands.Crab;
+    using System.Collections.Generic;
+    using System.Linq;
 
     internal class TerrainObjectCommandsFactory
     {
@@ -21,7 +23,7 @@ namespace ParcelRegistry.Importer
                         MapLogging.Log(".");
 
                         return new ImportSubaddressFromCrab(
-                            caPaKey.VbrCaPaKey,
+                            new VbrCaPaKey(caPaKey.VbrCaPaKey),
                             new CrabSubaddressId(subaddress.subAdresId.Value),
                             new CrabHouseNumberId(subaddress.huisNummerId.Value),
                             new BoxNumber(subaddress.subAdres),
@@ -46,7 +48,7 @@ namespace ParcelRegistry.Importer
                         MapLogging.Log(".");
 
                         return new ImportSubaddressFromCrab(
-                            caPaKey.VbrCaPaKey,
+                            new VbrCaPaKey(caPaKey.VbrCaPaKey),
                             new CrabSubaddressId(subAddress.subAdresId),
                             new CrabHouseNumberId(subAddress.huisNummerId),
                             new BoxNumber(subAddress.subAdres),
@@ -68,7 +70,7 @@ namespace ParcelRegistry.Importer
                         MapLogging.Log(".");
 
                         return new ImportTerrainObjectHouseNumberFromCrab(
-                            caPaKey.VbrCaPaKey,
+                            new VbrCaPaKey(caPaKey.VbrCaPaKey),
                             new CrabTerrainObjectHouseNumberId(terreinObjectHuisNummer.terreinObject_huisNummer_Id.Value),
                             new CrabTerrainObjectId(terreinObjectHuisNummer.terreinObjectId.Value),
                             new CrabHouseNumberId(terreinObjectHuisNummer.huisNummerId.Value),
@@ -89,7 +91,7 @@ namespace ParcelRegistry.Importer
                         MapLogging.Log(".");
 
                         return new ImportTerrainObjectHouseNumberFromCrab(
-                            caPaKey.VbrCaPaKey,
+                            new VbrCaPaKey(caPaKey.VbrCaPaKey),
                             new CrabTerrainObjectHouseNumberId(terreinObjectHuisNummer.terreinObject_huisNummer_Id),
                             new CrabTerrainObjectId(terreinObjectHuisNummer.terreinObjectId),
                             new CrabHouseNumberId(terreinObjectHuisNummer.huisNummerId),
@@ -110,7 +112,7 @@ namespace ParcelRegistry.Importer
                         MapLogging.Log(".");
 
                         return new ImportTerrainObjectFromCrab(
-                            caPaKey.VbrCaPaKey,
+                            new VbrCaPaKey(caPaKey.VbrCaPaKey),
                             new CrabTerrainObjectId(terreinObject.terreinObjectId.Value),
                             new CrabIdentifierTerrainObject(terreinObject.identificatorTerreinObject),
                             new CrabTerrainObjectNatureCode(terreinObject.aardTerreinObjectCode),
@@ -133,7 +135,7 @@ namespace ParcelRegistry.Importer
                     {
                         MapLogging.Log(".");
                         return new ImportTerrainObjectFromCrab(
-                            caPaKey.VbrCaPaKey,
+                            new VbrCaPaKey(caPaKey.VbrCaPaKey),
                             new CrabTerrainObjectId(terreinObject.terreinObjectId),
                             new CrabIdentifierTerrainObject(terreinObject.identificatorTerreinObject),
                             new CrabTerrainObjectNatureCode(terreinObject.aardTerreinObjectCode),
