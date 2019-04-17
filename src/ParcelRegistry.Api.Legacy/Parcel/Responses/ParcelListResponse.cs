@@ -26,7 +26,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         /// <summary>
         /// De URL voor het ophalen van de volgende verzameling.
         /// </summary>
-        [DataMember(Name = "Volgende", Order = 2)]
+        [DataMember(Name = "Volgende", Order = 2, EmitDefaultValue = false)]
         public Uri Volgende { get; set; }
     }
 
