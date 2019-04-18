@@ -17,7 +17,7 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
     {
         private readonly ConcurrentUnitOfWork _concurrentUnitOfWork;
         private readonly ParcelCommandHandlerModule _parcelCommandHandlerModule;
-        private readonly Func<IHasCrabProvenance, Parcel, Provenance> _provenanceFactory = new ParcelProvenanceFactory().CreateFrom;
+        private readonly Func<IHasCrabProvenance, Parcel, Provenance> _provenanceFactory;
         private readonly Func<IParcels> _getParcels;
 
         public IdempotentCommandHandlerModuleProcessor(
@@ -30,6 +30,7 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
         {
             _getParcels = getParcels;
             _concurrentUnitOfWork = concurrentUnitOfWork;
+            _provenanceFactory = provenanceFactory.CreateFrom;
 
             _parcelCommandHandlerModule = new ParcelCommandHandlerModule(
                 getParcels,
