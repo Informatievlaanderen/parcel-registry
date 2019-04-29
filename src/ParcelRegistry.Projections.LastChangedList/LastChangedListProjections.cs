@@ -4,14 +4,14 @@ namespace ParcelRegistry.Projections.LastChangedList
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Parcel.Events;
 
-    public class Projections : LastChangedListConnectedProjection
+    public class LastChangedListProjections : LastChangedListConnectedProjection
     {
         protected override string CacheKeyFormat => "legacy/parcel:{{0}}.{1}";
         protected override string UriFormat => "/v1/percelen/{{0}}";
 
         private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, AcceptType.JsonLd, AcceptType.Xml };
 
-        public Projections()
+        public LastChangedListProjections()
             : base(SupportedAcceptTypes)
         {
             When<Envelope<ParcelWasRegistered>>(async (context, message, ct) =>
