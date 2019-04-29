@@ -1,0 +1,28 @@
+type file
+version 1.0.0
+
+id Be.Vlaanderen.Basisregisters.ParcelRegistry.Projector
+title Be.Vlaanderen.Basisregisters.ParcelRegistry.Projector
+
+authors Basisregisters Vlaanderen
+owners agentschap Informatie Vlaanderen <https://vlaanderen.be/informatie-vlaanderen>
+copyright Copyright (c) agentschap Informatie Vlaanderen
+requireLicenseAcceptance false
+projectUrl https://github.com/Informatievlaanderen/parcel-registry
+iconUrl https://raw.githubusercontent.com/Informatievlaanderen/build-pipeline/master/logo.png
+licenseUrl https://opensource.org/licenses/EUPL-1.2
+
+description Parcel Registry Projector API.
+
+dependencies
+  framework: netstandard20
+    Be.Vlaanderen.Basisregisters.Api ~> 6.0
+    Be.Vlaanderen.Basisregisters.EventHandling.Autofac ~> 1.0
+    Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac ~> 3.0
+    Be.Vlaanderen.Basisregisters.Projector ~> 2.0
+
+files
+  ParcelRegistry.Projector.dll => lib\netcoreapp2.2
+  ParcelRegistry.Projector.pdb => lib\netcoreapp2.2
+  ParcelRegistry.Projector.xml => lib\netcoreapp2.2
+  ParcelRegistry.Projector.xml => content

@@ -66,20 +66,26 @@ Target "Test_Solution" (fun _ -> test "ParcelRegistry")
 
 Target "Publish_Solution" (fun _ ->
   [
+    "ParcelRegistry.Projector"
     "ParcelRegistry.Api.Legacy"
     "ParcelRegistry.Api.Extract"
     "ParcelRegistry.Api.CrabImport"
     "ParcelRegistry.Projections.Legacy"
     "ParcelRegistry.Projections.Extract"
     "ParcelRegistry.Projections.LastChangedList"
+    "ParcelRegistry.Projections.Syndication"
   ] |> List.iter publish)
 
 Target "Pack_Solution" (fun _ ->
   [
+    "ParcelRegistry.Projector"
     "ParcelRegistry.Api.Legacy"
     "ParcelRegistry.Api.Extract"
     "ParcelRegistry.Api.CrabImport"
   ] |> List.iter pack)
+
+Target "Containerize_Projector" (fun _ -> containerize "ParcelRegistry.Projector" "projections")
+Target "PushContainer_Projector" (fun _ -> push "projections")
 
 Target "Containerize_ApiLegacy" (fun _ -> containerize "ParcelRegistry.Api.Legacy" "api-legacy")
 Target "PushContainer_ApiLegacy" (fun _ -> push "api-legacy")
@@ -89,15 +95,6 @@ Target "PushContainer_ApiExtract" (fun _ -> push "api-extract")
 
 Target "Containerize_ApiCrabImport" (fun _ -> containerize "ParcelRegistry.Api.CrabImport" "api-crab-import")
 Target "PushContainer_ApiCrabImport" (fun _ -> push "api-crab-import")
-
-Target "Containerize_ProjectionsLegacy" (fun _ -> containerize "ParcelRegistry.Projections.Legacy" "projections-legacy")
-Target "PushContainer_ProjectionsLegacy" (fun _ -> push "projections-legacy")
-
-Target "Containerize_ProjectionsExtract" (fun _ -> containerize "ParcelRegistry.Projections.Extract" "projections-extract")
-Target "PushContainer_ProjectionsExtract" (fun _ -> push "projections-extract")
-
-Target "Containerize_ProjectionsRedis" (fun _ -> containerize "ParcelRegistry.Projections.LastChangedList" "projections-redis")
-Target "PushContainer_ProjectionsRedis" (fun _ -> push "projections-redis")
 
 Target "Containerize_ProjectionsSyndication" (fun _ -> containerize "ParcelRegistry.Projections.Syndication" "projections-syndication")
 Target "PushContainer_ProjectionsSyndication" (fun _ -> push "projections-syndication")
@@ -127,23 +124,19 @@ Target "Push" DoNothing
 "Pack_Solution"      ==> "Pack"
 
 "Pack"                                    ==> "Containerize"
+"Containerize_Projector"                  ==> "Containerize"
 "Containerize_ApiLegacy"                  ==> "Containerize"
 "Containerize_ApiExtract"                 ==> "Containerize"
 "Containerize_ApiCrabImport"              ==> "Containerize"
-"Containerize_ProjectionsLegacy"          ==> "Containerize"
-"Containerize_ProjectionsExtract"         ==> "Containerize"
-"Containerize_ProjectionsRedis"           ==> "Containerize"
 // "Containerize_ProjectionsSyndication"     ==> "Containerize"
 // Possibly add more projects to containerize here
 
 "Containerize"                            ==> "Push"
 "DockerLogin"                             ==> "Push"
+"PushContainer_Projector"                 ==> "Push"
 "PushContainer_ApiLegacy"                 ==> "Push"
 "PushContainer_ApiExtract"                ==> "Push"
 "PushContainer_ApiCrabImport"             ==> "Push"
-"PushContainer_ProjectionsLegacy"         ==> "Push"
-"PushContainer_ProjectionsExtract"        ==> "Push"
-"PushContainer_ProjectionsRedis"          ==> "Push"
 // "PushContainer_ProjectionsSyndication"    ==> "Push"
 // Possibly add more projects to push here
 

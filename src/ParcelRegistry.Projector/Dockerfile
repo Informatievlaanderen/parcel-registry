@@ -5,4 +5,7 @@ LABEL maintainer "agentschap Informatie Vlaanderen <informatie.vlaanderen@vlaand
 COPY / /app
 WORKDIR /app
 
-ENTRYPOINT ["./ParcelRegistry.Projections.Legacy"]
+EXPOSE 5000/tcp
+ENV ASPNETCORE_URLS http://*:5000
+
+ENTRYPOINT ["./ParcelRegistry.Projector"]
