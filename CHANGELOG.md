@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.2.2...v1.3.0) (2019-04-30)
+
+
+### Features
+
+* add projector + clean up projection libs ([bef69e2](https://github.com/informatievlaanderen/parcel-registry/commit/bef69e2))
+* upgrade packages ([d93aabb](https://github.com/informatievlaanderen/parcel-registry/commit/d93aabb))
+
 ## [1.2.2](https://github.com/informatievlaanderen/parcel-registry/compare/v1.2.1...v1.2.2) (2019-04-18)
 
 ## [1.2.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.2.0...v1.2.1) (2019-03-04)
