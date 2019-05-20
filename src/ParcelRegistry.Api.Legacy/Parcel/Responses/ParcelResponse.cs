@@ -1,6 +1,5 @@
 namespace ParcelRegistry.Api.Legacy.Parcel.Responses
 {
-    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
     using Infrastructure.Options;
@@ -11,6 +10,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
+    using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [DataContract(Name = "PerceelDetail", Namespace = "")]
     public class ParcelResponse
@@ -59,42 +59,34 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             => _responseOptions = responseOptionsProvider.Value;
 
         public object GetExamples()
-        {
-            return new ParcelResponse(
+            => new ParcelResponse(
                 _responseOptions.Naamruimte,
                 PerceelStatus.Gerealiseerd,
                 "11001B0001-00S000",
                 DateTimeOffset.Now,
                 new List<string> { "200001" },
                 _responseOptions.AdresDetailUrl);
-        }
     }
 
     public class ParcelNotFoundResponseExamples : IExamplesProvider
     {
-        public object GetExamples()
+        public object GetExamples() => new ProblemDetails
         {
-            return new BasicApiProblem
-            {
-                HttpStatus = StatusCodes.Status404NotFound,
-                Title = BasicApiProblem.DefaultTitle,
-                Detail = "Onbestaand perceel.",
-                ProblemInstanceUri = BasicApiProblem.GetProblemNumber()
-            };
-        }
+            HttpStatus = StatusCodes.Status404NotFound,
+            Title = ProblemDetails.DefaultTitle,
+            Detail = "Onbestaand perceel.",
+            ProblemInstanceUri = ProblemDetails.GetProblemNumber()
+        };
     }
 
     public class ParcelGoneResponseExamples : IExamplesProvider
     {
-        public object GetExamples()
+        public object GetExamples() => new ProblemDetails
         {
-            return new BasicApiProblem
-            {
-                HttpStatus = StatusCodes.Status410Gone,
-                Title = BasicApiProblem.DefaultTitle,
-                Detail = "Perceel werd verwijderd.",
-                ProblemInstanceUri = BasicApiProblem.GetProblemNumber()
-            };
-        }
+            HttpStatus = StatusCodes.Status410Gone,
+            Title = ProblemDetails.DefaultTitle,
+            Detail = "Perceel werd verwijderd.",
+            ProblemInstanceUri = ProblemDetails.GetProblemNumber()
+        };
     }
 }

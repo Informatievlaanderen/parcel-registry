@@ -83,6 +83,8 @@ namespace ParcelRegistry.Projections.Syndication
                 configuration.GetValue<string>("SyndicationFeeds:AddressAuthUserName"),
                 configuration.GetValue<string>("SyndicationFeeds:AddressAuthPassword"),
                 configuration.GetValue<int>("SyndicationFeeds:AddressPollingInMilliseconds"),
+                configuration.GetValue<bool>("SyndicationFeeds:AddressEmbedEvent"),
+                configuration.GetValue<bool>("SyndicationFeeds:AddressEmbedObject"),
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new AddressOsloIdProjection());
