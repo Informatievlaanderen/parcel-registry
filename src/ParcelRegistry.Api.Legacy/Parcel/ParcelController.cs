@@ -201,7 +201,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                     syndicationConfiguration.GetSection("Related").GetChildren().Select(c => c.Value).ToArray());
 
                 var nextUri = BuildVolgendeUri(pagedParcels.PaginationInfo, syndicationConfiguration["NextUri"]);
-                await writer.Write(new SyndicationLink(nextUri, "next"));
+                if(nextUri != null)
+                    await writer.Write(new SyndicationLink(nextUri, "next"));
 
                 foreach (var parcel in pagedParcels.Items)
                     await writer.WriteParcel(responseOptions, formatter, syndicationConfiguration["Category"], parcel);
