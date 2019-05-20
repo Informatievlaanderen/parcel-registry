@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.3.0...v1.3.1) (2019-05-20)
+
+
+### Bug Fixes
+
+* stop sync feed last page from crashing ([d450f16](https://github.com/informatievlaanderen/parcel-registry/commit/d450f16))
+
 # [1.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.2.2...v1.3.0) (2019-04-30)
 
 
