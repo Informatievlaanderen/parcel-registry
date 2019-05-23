@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.3.3...v1.4.0) (2019-05-23)
+
+
+### Features
+
+* add event as xml to sync ([b70cfcd](https://github.com/informatievlaanderen/parcel-registry/commit/b70cfcd))
+
 ## [1.3.3](https://github.com/informatievlaanderen/parcel-registry/compare/v1.3.2...v1.3.3) (2019-05-21)
 
 ## [1.3.2](https://github.com/informatievlaanderen/parcel-registry/compare/v1.3.1...v1.3.2) (2019-05-20)
