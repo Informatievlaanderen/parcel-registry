@@ -15,7 +15,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
 
     public class ParcelSyndicationQueryResult
     {
-        public bool ContainsDetails { get; }
+        public bool ContainsEvent { get; }
+        public bool ContainsObject { get; }
 
         public Guid ParcelId { get; }
         public long Position { get; }
@@ -28,6 +29,55 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         public bool IsComplete { get; }
         public Organisation? Organisation { get; }
         public Plan? Plan { get; }
+        public string EventDataAsXml { get; }
+
+        public ParcelSyndicationQueryResult(
+            Guid addressId,
+            long position,
+            string caPaKey,
+            string changeType,
+            Instant recordCreateAt,
+            Instant lastChangedOn,
+            Organisation? organisation,
+            Plan? plan)
+        {
+            ContainsObject = false;
+            ContainsEvent = false;
+
+            ParcelId = addressId;
+            Position = position;
+            CaPaKey = caPaKey;
+            ChangeType = changeType;
+            RecordCreatedAt = recordCreateAt;
+            LastChangedOn = lastChangedOn;
+            Organisation = organisation;
+            Plan = plan;
+        }
+
+        public ParcelSyndicationQueryResult(
+            Guid addressId,
+            long position,
+            string caPaKey,
+            string changeType,
+            Instant recordCreateAt,
+            Instant lastChangedOn,
+            Organisation? organisation,
+            Plan? plan,
+            string eventDataAsXml)
+            : this(
+                addressId,
+                position,
+                caPaKey,
+                changeType,
+                recordCreateAt,
+                lastChangedOn,
+                organisation,
+                plan)
+        {
+            ContainsEvent = true;
+
+            EventDataAsXml = eventDataAsXml;
+        }
 
         public ParcelSyndicationQueryResult(
             Guid addressId,
@@ -41,47 +91,126 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             List<Guid> addressIds,
             Organisation? organisation,
             Plan? plan)
+            : this(
+                addressId,
+                position,
+                caPaKey,
+                changeType,
+                recordCreateAt,
+                lastChangedOn,
+                organisation,
+                plan)
         {
-            ContainsDetails = false;
+            ContainsObject = true;
 
-            ParcelId = addressId;
-            Position = position;
-            CaPaKey = caPaKey;
-            ChangeType = changeType;
-            RecordCreatedAt = recordCreateAt;
-            LastChangedOn = lastChangedOn;
             IsComplete = isComplete;
             Status = status;
             AddressIds = addressIds;
-            Organisation = organisation;
-            Plan = plan;
+        }
+
+        public ParcelSyndicationQueryResult(
+            Guid addressId,
+            long position,
+            string caPaKey,
+            string changeType,
+            Instant recordCreateAt,
+            Instant lastChangedOn,
+            bool isComplete,
+            ParcelStatus? status,
+            List<Guid> addressIds,
+            Organisation? organisation,
+            Plan? plan,
+            string eventDataAsXml)
+            : this(
+                addressId,
+                position,
+                caPaKey,
+                changeType,
+                recordCreateAt,
+                lastChangedOn,
+                isComplete,
+                status,
+                addressIds,
+                organisation,
+                plan)
+        {
+            ContainsEvent = true;
+
+            EventDataAsXml = eventDataAsXml;
         }
     }
 
     public class ParcelSyndicationQuery : Query<ParcelSyndicationItem, ParcelSyndicationFilter, ParcelSyndicationQueryResult>
     {
         private readonly LegacyContext _context;
+        private readonly bool _embedEvent;
+        private readonly bool _embedObject;
 
-        public ParcelSyndicationQuery(LegacyContext context)
+        public ParcelSyndicationQuery(LegacyContext context, bool embedEvent, bool embedObject)
         {
             _context = context;
+            _embedEvent = embedEvent;
+            _embedObject = embedObject;
         }
 
         protected override ISorting Sorting => new ParcelSyndicationSorting();
 
-        protected override Expression<Func<ParcelSyndicationItem, ParcelSyndicationQueryResult>> Transformation =>
-            x => new ParcelSyndicationQueryResult(
-                x.ParcelId.Value,
-                x.Position,
-                x.CaPaKey,
-                x.ChangeType,
-                x.RecordCreatedAt,
-                x.LastChangedOn,
-                x.IsComplete,
-                x.Status,
-                x.AddressIds.ToList(),
-                x.Organisation,
-                x.Plan);
+        protected override Expression<Func<ParcelSyndicationItem, ParcelSyndicationQueryResult>> Transformation
+        {
+            get
+            {
+                if (_embedObject && _embedEvent)
+                    return x => new ParcelSyndicationQueryResult(
+                        x.ParcelId.Value,
+                        x.Position,
+                        x.CaPaKey,
+                        x.ChangeType,
+                        x.RecordCreatedAt,
+                        x.LastChangedOn,
+                        x.IsComplete,
+                        x.Status,
+                        x.AddressIds.ToList(),
+                        x.Organisation,
+                        x.Plan,
+                        x.EventDataAsXml);
+
+                if (_embedEvent)
+                    return x => new ParcelSyndicationQueryResult(
+                        x.ParcelId.Value,
+                        x.Position,
+                        x.CaPaKey,
+                        x.ChangeType,
+                        x.RecordCreatedAt,
+                        x.LastChangedOn,
+                        x.Organisation,
+                        x.Plan,
+                        x.EventDataAsXml);
+
+                if (_embedObject)
+                    return x => new ParcelSyndicationQueryResult(
+                        x.ParcelId.Value,
+                        x.Position,
+                        x.CaPaKey,
+                        x.ChangeType,
+                        x.RecordCreatedAt,
+                        x.LastChangedOn,
+                        x.IsComplete,
+                        x.Status,
+                        x.AddressIds.ToList(),
+                        x.Organisation,
+                        x.Plan);
+
+                return x => new ParcelSyndicationQueryResult(
+                    x.ParcelId.Value,
+                    x.Position,
+                    x.CaPaKey,
+                    x.ChangeType,
+                    x.RecordCreatedAt,
+                    x.LastChangedOn,
+                    x.Organisation,
+                    x.Plan);
+            }
+        }
 
         protected override IQueryable<ParcelSyndicationItem> Filter(FilteringHeader<ParcelSyndicationFilter> filtering)
         {
@@ -112,5 +241,12 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
     public class ParcelSyndicationFilter
     {
         public long? Position { get; set; }
+        public string Embed { get; set; }
+
+        public bool ContainsEvent =>
+            Embed.Contains("event", StringComparison.OrdinalIgnoreCase);
+
+        public bool ContainsObject =>
+            Embed.Contains("object", StringComparison.OrdinalIgnoreCase);
     }
 }

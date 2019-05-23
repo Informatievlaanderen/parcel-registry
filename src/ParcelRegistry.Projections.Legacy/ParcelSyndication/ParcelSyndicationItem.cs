@@ -55,6 +55,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         public string Operator { get; set; }
         public Organisation? Organisation { get; set; }
         public Plan? Plan { get; set; }
+        public string EventDataAsXml { get; set; }
 
         private List<Guid> GetDeserializedOfficialLanguages()
         {
@@ -144,6 +145,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             b.Property(x => x.Operator);
             b.Property(x => x.Organisation);
             b.Property(x => x.Plan);
+            b.Property(x => x.EventDataAsXml);
 
             b.Ignore(x => x.RecordCreatedAt);
             b.Ignore(x => x.LastChangedOn);
