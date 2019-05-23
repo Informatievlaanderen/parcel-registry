@@ -5,7 +5,7 @@ namespace ParcelRegistry.Parcel.Events
     using Newtonsoft.Json;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 
-    [EventName("ParcelAddressWasDettached")]
+    [EventName("ParcelAddressWasDetached")]
     [EventDescription("Aan het perceel werd een adres ontkoppeld.")]
     public class ParcelAddressWasDetached : IHasProvenance, ISetProvenance
     {
