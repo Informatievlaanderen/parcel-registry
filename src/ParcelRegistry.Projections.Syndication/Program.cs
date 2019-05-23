@@ -77,14 +77,14 @@ namespace ParcelRegistry.Projections.Syndication
 
         private static IEnumerable<Task> StartRunners(IConfiguration configuration, IServiceProvider container, CancellationToken ct)
         {
-            var addressRunner = new FeedProjectionRunner<AddressEvent, Address.Address, SyndicationContext>(
+            var addressRunner = new FeedProjectionRunner<AddressEvent, SyndicationContent<Address.Address>, SyndicationContext>(
                 "address",
                 configuration.GetValue<Uri>("SyndicationFeeds:Address"),
                 configuration.GetValue<string>("SyndicationFeeds:AddressAuthUserName"),
                 configuration.GetValue<string>("SyndicationFeeds:AddressAuthPassword"),
                 configuration.GetValue<int>("SyndicationFeeds:AddressPollingInMilliseconds"),
-                configuration.GetValue<bool>("SyndicationFeeds:AddressEmbedEvent"),
-                configuration.GetValue<bool>("SyndicationFeeds:AddressEmbedObject"),
+                false,
+                true,
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new AddressOsloIdProjection());
