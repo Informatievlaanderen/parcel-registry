@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.4.0...v1.4.1) (2019-05-23)
+
+
+### Bug Fixes
+
+* correct event name dettach => detach ([bb3b3b1](https://github.com/informatievlaanderen/parcel-registry/commit/bb3b3b1))
+
 # [1.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.3.3...v1.4.0) (2019-05-23)
 
 
