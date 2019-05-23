@@ -13,10 +13,12 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     using System.Net.Mime;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
+    using System.Xml;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Convertors;
     using Microsoft.SyndicationFeed;
     using Microsoft.SyndicationFeed.Atom;
+    using Projections.Legacy.ParcelSyndication;
     using Query;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Syndication.Provenance;
 
@@ -69,28 +71,50 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
                     "informatie.vlaanderen@vlaanderen.be",
                     AtomContributorTypes.Author));
 
-            await writer.Write(new SyndicationContent(formatter.CreateContent(item)));
+            await writer.Write(item);
         }
 
         private static string BuildDescription(ParcelSyndicationQueryResult parcel, string naamruimte)
         {
-            var content = new ParcelSyndicationContent(
-                parcel.ParcelId,
-                naamruimte,
-                parcel.CaPaKey,
-                parcel.LastChangedOn.ToBelgianDateTimeOffset(),
-                parcel.Status.MapToPerceelStatus(),
-                parcel.AddressIds,
-                parcel.IsComplete,
-                parcel.Organisation,
-                parcel.Plan);
+            if (!parcel.ContainsEvent && !parcel.ContainsObject)
+                return "No data embedded";
+
+            var content = new SyndicationContent();
+            if(parcel.ContainsObject)
+                content.Object = new ParcelSyndicationContent(
+                    parcel.ParcelId,
+                    naamruimte,
+                    parcel.CaPaKey,
+                    parcel.LastChangedOn.ToBelgianDateTimeOffset(),
+                    parcel.Status.MapToPerceelStatus(),
+                    parcel.AddressIds,
+                    parcel.IsComplete,
+                    parcel.Organisation,
+                    parcel.Plan);
+
+            if (parcel.ContainsEvent)
+            {
+                var doc = new XmlDocument();
+                doc.LoadXml(parcel.EventDataAsXml);
+                content.Event = doc.DocumentElement;
+            }
 
             return content.ToXml();
         }
     }
 
+    [DataContract(Name = "Content", Namespace = "")]
+    public class SyndicationContent : SyndicationContentBase
+    {
+        [DataMember(Name = "Event")]
+        public XmlElement Event { get; set; }
+
+        [DataMember(Name = "Object")]
+        public ParcelSyndicationContent Object { get; set; }
+    }
+
     [DataContract(Name = "Perceel", Namespace = "")]
-    public class ParcelSyndicationContent : SyndicationContentBase
+    public class ParcelSyndicationContent
     {
         /// <summary>
         /// De technische id van het perceel.

@@ -5,6 +5,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Xml.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -32,6 +33,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 applyEventInfoOn);
 
             newParcelSyndicationItem.ApplyProvenance(provenance);
+            newParcelSyndicationItem.SetEventData(message.Message);
 
             await context
                 .ParcelSyndication
@@ -64,6 +66,9 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             item.Organisation = provenance.Organisation;
             item.Plan = provenance.Plan;
         }
+
+        public static void SetEventData<T>(this ParcelSyndicationItem syndicationItem, T message)
+            => syndicationItem.EventDataAsXml = message.ToXml(message.GetType().Name).ToString(SaveOptions.DisableFormatting);
 
         private static ProjectionItemNotFoundException<ParcelSyndicationProjections> DatabaseItemNotFound(Guid parcelId)
             => new ProjectionItemNotFoundException<ParcelSyndicationProjections>(parcelId.ToString("D"));

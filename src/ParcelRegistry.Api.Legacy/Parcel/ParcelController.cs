@@ -9,7 +9,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Convertors;
     using Infrastructure.Options;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
@@ -168,7 +167,11 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedAddresses = new ParcelSyndicationQuery(context).Fetch(filtering, sorting, pagination);
+            var pagedAddresses = new ParcelSyndicationQuery(
+                context,
+                filtering.Filter?.ContainsEvent ?? false,
+                filtering.Filter?.ContainsObject ?? false)
+                .Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedAddresses.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
@@ -202,7 +205,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                     syndicationConfiguration.GetSection("Related").GetChildren().Select(c => c.Value).ToArray());
 
                 var nextUri = BuildVolgendeUri(pagedParcels.PaginationInfo, syndicationConfiguration["NextUri"]);
-                if(nextUri != null)
+                if (nextUri != null)
                     await writer.Write(new SyndicationLink(nextUri, "next"));
 
                 foreach (var parcel in pagedParcels.Items)
