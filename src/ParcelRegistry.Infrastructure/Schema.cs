@@ -3,8 +3,8 @@ namespace ParcelRegistry.Infrastructure
     public class Schema
     {
         public const string Default = "ParcelRegistry";
-        public const string Import = "ParcelRegistryImport";
 
+        public const string Import = "ParcelRegistryImport";
         public const string Legacy = "ParcelRegistryLegacy";
         public const string Extract = "ParcelRegistryExtract";
         public const string Syndication = "ParcelRegistrySyndication";
