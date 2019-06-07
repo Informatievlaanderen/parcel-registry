@@ -1,16 +1,14 @@
-using System.Diagnostics;
-using Be.Vlaanderen.Basisregisters.GrAr.Common;
-
 namespace ParcelRegistry.Importer
 {
-    using System;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Commandline;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Serilog;
     using Newtonsoft.Json;
     using Properties;
     using Serilog;
     using Serilog.Events;
+    using System;
+    using System.Diagnostics;
 
     internal class Program
     {
@@ -24,28 +22,15 @@ namespace ParcelRegistry.Importer
 
             try
             {
+                var options = new ImportOptions(
+                    args,
+                    errors => WaitForExit("Could not parse commandline options."));
                 var settings = new SettingsBasedConfig();
-
-                var generator = new CommandGenerator();
 
                 MapLogging.Log = s => _commandCounter++;
 
-                var builder = new CommandProcessorBuilder<CaPaKey>(generator)
-                    .UseCommandLineArgs(
-                        args,
-                        settings.LastRunDate,
-                        settings.EndDateRecovery,
-                        settings.TimeMargin,
-                        CaPaKey.CreateFrom,
-                        errors => WaitForExit("Could not parse commandline options."));
-
-                builder.ConfigureProcessedKeySerialization(key => key.VbrCaPaKey.ToString(), CaPaKey.CreateFrom);
-
-                WaitForStart();
-
-                settings.EndDateRecovery = builder.Options.Until;
-
-                builder
+                var commandProcessor = new CommandProcessorBuilder<CaPaKey>(new CommandGenerator())
+                    .WithCommandLineOptions(options.ImportArguments)
                     .UseSerilog(cfg => cfg
                         .WriteTo.File(
                             "tracing.log",
@@ -58,10 +43,11 @@ namespace ParcelRegistry.Importer
                     .UseHttpApiProxyConfig(settings)
                     .UseCommandProcessorConfig(settings)
                     .UseDefaultSerializerSettingsForCrabImports()
-                    .BuildAndRun();
+                    .Build();
 
-                settings.LastRunDate = settings.EndDateRecovery;
-                settings.EndDateRecovery = null;
+                WaitForStart();
+
+                commandProcessor.Run(options, settings);
 
                 WaitForExit();
             }
