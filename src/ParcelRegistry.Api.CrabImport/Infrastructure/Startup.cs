@@ -19,6 +19,7 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure
     using System;
     using System.Linq;
     using System.Reflection;
+    using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CrabImport;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup
@@ -141,9 +142,9 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure
                     {
                         AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>(),
                     }
-                });
-
-            app.UseIdempotencyDatabaseMigrations();
+                })
+                .UseIdempotencyDatabaseMigrations()
+                .UseCrabImportMigrations();
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

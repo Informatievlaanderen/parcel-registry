@@ -12,7 +12,7 @@ namespace ParcelRegistry.Importer.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.9.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.0.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -38,17 +38,6 @@ namespace ParcelRegistry.Importer.Properties {
         public int HttpTimeoutInMinutes {
             get {
                 return ((int)(this["HttpTimeoutInMinutes"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.DateTime EndDateRecovery {
-            get {
-                return ((global::System.DateTime)(this["EndDateRecovery"]));
-            }
-            set {
-                this["EndDateRecovery"] = value;
             }
         }
         
@@ -90,30 +79,10 @@ namespace ParcelRegistry.Importer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5000")]
-        public int BufferSize {
-            get {
-                return ((int)(this["BufferSize"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("00:03:00")]
         public global::System.TimeSpan TimeMarginBeforeNowInSeconds {
             get {
                 return ((global::System.TimeSpan)(this["TimeMarginBeforeNowInSeconds"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.DateTime LastRunDate {
-            get {
-                return ((global::System.DateTime)(this["LastRunDate"]));
-            }
-            set {
-                this["LastRunDate"] = value;
             }
         }
         
@@ -130,6 +99,24 @@ namespace ParcelRegistry.Importer.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ImportAuthPass {
+            get {
+                return ((string)(this["ImportAuthPass"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
+        public int BufferSize {
+            get {
+                return ((int)(this["BufferSize"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ImportAuthUser {
             get {
                 return ((string)(this["ImportAuthUser"]));
@@ -138,10 +125,10 @@ namespace ParcelRegistry.Importer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ImportAuthPass {
+        [global::System.Configuration.DefaultSettingValueAttribute("v1/crabimport/batch/current")]
+        public string ImportBatchStatusEndpoint {
             get {
-                return ((string)(this["ImportAuthPass"]));
+                return ((string)(this["ImportBatchStatusEndpoint"]));
             }
         }
     }
