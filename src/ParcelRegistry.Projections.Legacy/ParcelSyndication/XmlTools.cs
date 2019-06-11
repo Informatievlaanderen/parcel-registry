@@ -12,10 +12,17 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     public static class XmlTools
     {
         private static readonly Type[] WriteTypes = new[] {
-            typeof(string), typeof(DateTime), typeof(Enum),
-            typeof(decimal), typeof(Guid), typeof(Instant),
-            typeof(LocalDate), typeof(LocalDateTime), typeof(DateTimeOffset),
-            typeof(Plan), typeof(Organisation), typeof(Modification)
+            typeof(string),
+            typeof(DateTime),
+            typeof(Enum),
+            typeof(decimal),
+            typeof(Guid),
+            typeof(Instant),
+            typeof(LocalDate),
+            typeof(LocalDateTime),
+            typeof(DateTimeOffset),
+            typeof(Organisation),
+            typeof(Modification)
         };
 
         /// <summary>
