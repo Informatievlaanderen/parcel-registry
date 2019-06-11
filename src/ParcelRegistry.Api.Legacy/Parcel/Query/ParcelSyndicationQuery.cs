@@ -28,7 +28,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         public List<Guid> AddressIds { get; }
         public bool IsComplete { get; }
         public Organisation? Organisation { get; }
-        public Plan? Plan { get; }
+        public string Reason { get; }
         public string EventDataAsXml { get; }
 
         public ParcelSyndicationQueryResult(
@@ -39,7 +39,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             Instant recordCreateAt,
             Instant lastChangedOn,
             Organisation? organisation,
-            Plan? plan)
+            string reason)
         {
             ContainsObject = false;
             ContainsEvent = false;
@@ -51,7 +51,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             RecordCreatedAt = recordCreateAt;
             LastChangedOn = lastChangedOn;
             Organisation = organisation;
-            Plan = plan;
+            Reason = reason;
         }
 
         public ParcelSyndicationQueryResult(
@@ -62,7 +62,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             Instant recordCreateAt,
             Instant lastChangedOn,
             Organisation? organisation,
-            Plan? plan,
+            string reason,
             string eventDataAsXml)
             : this(
                 addressId,
@@ -72,7 +72,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                 recordCreateAt,
                 lastChangedOn,
                 organisation,
-                plan)
+                reason)
         {
             ContainsEvent = true;
 
@@ -90,7 +90,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             ParcelStatus? status,
             List<Guid> addressIds,
             Organisation? organisation,
-            Plan? plan)
+            string reason)
             : this(
                 addressId,
                 position,
@@ -99,7 +99,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                 recordCreateAt,
                 lastChangedOn,
                 organisation,
-                plan)
+                reason)
         {
             ContainsObject = true;
 
@@ -119,7 +119,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             ParcelStatus? status,
             List<Guid> addressIds,
             Organisation? organisation,
-            Plan? plan,
+            string reason,
             string eventDataAsXml)
             : this(
                 addressId,
@@ -132,7 +132,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                 status,
                 addressIds,
                 organisation,
-                plan)
+                reason)
         {
             ContainsEvent = true;
 
@@ -171,7 +171,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                         x.Status,
                         x.AddressIds.ToList(),
                         x.Organisation,
-                        x.Plan,
+                        x.Reason,
                         x.EventDataAsXml);
 
                 if (_embedEvent)
@@ -183,7 +183,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                         x.RecordCreatedAt,
                         x.LastChangedOn,
                         x.Organisation,
-                        x.Plan,
+                        x.Reason,
                         x.EventDataAsXml);
 
                 if (_embedObject)
@@ -198,7 +198,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                         x.Status,
                         x.AddressIds.ToList(),
                         x.Organisation,
-                        x.Plan);
+                        x.Reason);
 
                 return x => new ParcelSyndicationQueryResult(
                     x.ParcelId.Value,
@@ -208,7 +208,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                     x.RecordCreatedAt,
                     x.LastChangedOn,
                     x.Organisation,
-                    x.Plan);
+                    x.Reason);
             }
         }
 

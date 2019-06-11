@@ -90,7 +90,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
                     parcel.AddressIds,
                     parcel.IsComplete,
                     parcel.Organisation,
-                    parcel.Plan);
+                    parcel.Reason);
 
             if (parcel.ContainsEvent)
             {
@@ -161,7 +161,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             List<Guid> addressIds,
             bool isComplete,
             Organisation? organisation,
-            Plan? plan)
+            string reason)
         {
             ParcelId = parcelId;
             Identificator = new Identificator(naamruimte, string.IsNullOrEmpty(caPaKey) ? string.Empty : caPaKey, version);
@@ -169,7 +169,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             AddressIds = addressIds;
             IsComplete = isComplete;
 
-            Provenance = new Provenance(organisation, plan);
+            Provenance = new Provenance(organisation, new Reason(reason));
         }
     }
 
@@ -184,7 +184,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             new List<Guid> { Guid.NewGuid() },
             true,
             Organisation.Agiv,
-            Plan.Unknown);
+            Reason.CentralManagementCrab);
 
         private readonly ResponseOptions _responseOptions;
 
