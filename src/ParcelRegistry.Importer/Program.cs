@@ -9,6 +9,7 @@ namespace ParcelRegistry.Importer
     using Serilog.Events;
     using System;
     using System.Diagnostics;
+    using System.Reflection;
 
     internal class Program
     {
@@ -43,6 +44,7 @@ namespace ParcelRegistry.Importer
                     .UseHttpApiProxyConfig(settings)
                     .UseCommandProcessorConfig(settings)
                     .UseDefaultSerializerSettingsForCrabImports()
+                    .ConfigureImportFeedFromAssembly(Assembly.GetExecutingAssembly())
                     .Build();
 
                 WaitForStart();
