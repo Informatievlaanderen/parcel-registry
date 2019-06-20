@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.5.0...v1.6.0) (2019-06-20)
+
+
+### Features
+
+* upgrade packages and correct import ([0f938fa](https://github.com/informatievlaanderen/parcel-registry/commit/0f938fa))
+
 # [1.5.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.4.2...v1.5.0) (2019-06-11)
 
 
