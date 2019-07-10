@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.6.0...v1.7.0) (2019-07-10)
+
+
+### Features
+
+* prepare for deploy ([4286827](https://github.com/informatievlaanderen/parcel-registry/commit/4286827))
+
 # [1.6.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.5.0...v1.6.0) (2019-06-20)
 
 
