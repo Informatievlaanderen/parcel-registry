@@ -16,7 +16,7 @@ namespace ParcelRegistry.Projections.Syndication
         // This needs to be here to please EF
         public SyndicationContext() { }
 
-        public DbSet<AddressOlsoIdItem> AddressOsloIds { get; set; }
+        public DbSet<AddressPersistentLocalIdItem> AddressPersistentLocalIds { get; set; }
 
         // This needs to be DbContextOptions<T> for Autofac!
         public SyndicationContext(DbContextOptions<SyndicationContext> options)

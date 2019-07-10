@@ -4,7 +4,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
     {
         AddressWasRegistered,
         AddressWasRemoved,
-        AddressOsloIdWasAssigned,
+        AddressPersistentLocalIdentifierWasAssigned,
 
         AddressBecameIncomplete,
         AddressBecameComplete

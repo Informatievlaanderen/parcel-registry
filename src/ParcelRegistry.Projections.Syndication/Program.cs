@@ -87,7 +87,7 @@ namespace ParcelRegistry.Projections.Syndication
                 true,
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
-                new AddressOsloIdProjection());
+                new AddressPersistentLocalIdProjection());
 
             yield return addressRunner.CatchUpAsync(
                   container.GetService<Func<Owned<SyndicationContext>>>(),

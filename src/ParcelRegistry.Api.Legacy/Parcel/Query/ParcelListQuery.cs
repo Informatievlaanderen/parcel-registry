@@ -34,10 +34,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         {
             public IEnumerable<string> SortableFields { get; } = new[]
             {
-                nameof(ParcelDetail.OsloId),
+                nameof(ParcelDetail.PersistentLocalId),
             };
 
-            public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(ParcelDetail.OsloId), SortOrder.Ascending);
+            public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(ParcelDetail.PersistentLocalId), SortOrder.Ascending);
         }
     }
 

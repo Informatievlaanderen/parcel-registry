@@ -71,7 +71,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                     .ParcelDetail
                     .Include(x => x.Addresses)
                     .AsNoTracking()
-                    .SingleOrDefaultAsync(item => item.OsloId == caPaKey, cancellationToken);
+                    .SingleOrDefaultAsync(item => item.PersistentLocalId == caPaKey, cancellationToken);
 
             if (parcel == null || !parcel.Complete)
                 throw new ApiException("Onbestaand perceel.", StatusCodes.Status404NotFound);
@@ -81,20 +81,20 @@ namespace ParcelRegistry.Api.Legacy.Parcel
 
             var addressIds = parcel.Addresses.Select(x => x.AddressId);
 
-            var addressOlsoIdItems = await syndicationContext
-                .AddressOsloIds
+            var addressPersistentLocalIds = await syndicationContext
+                .AddressPersistentLocalIds
                 .AsNoTracking()
                 .Where(x => addressIds.Contains(x.AddressId) && x.IsComplete && !x.IsRemoved)
-                .Select(x => x.OsloId)
+                .Select(x => x.PersistentLocalId)
                 .ToListAsync(cancellationToken);
 
             return Ok(
                 new ParcelResponse(
                     responseOptions.Value.Naamruimte,
                     parcel.Status.MapToPerceelStatus(),
-                    parcel.OsloId,
+                    parcel.PersistentLocalId,
                     parcel.VersionTimestamp.ToBelgianDateTimeOffset(),
-                    addressOlsoIdItems.ToList(),
+                    addressPersistentLocalIds.ToList(),
                     responseOptions.Value.AdresDetailUrl));
         }
 
@@ -129,7 +129,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             {
                 Percelen = await pagedParcels.Items
                     .Select(m => new ParcelListItemResponse(
-                        m.OsloId,
+                        m.PersistentLocalId,
                         reponseOptions.Value.Naamruimte,
                         reponseOptions.Value.DetailUrl,
                         m.VersionTimestamp.ToBelgianDateTimeOffset()))
