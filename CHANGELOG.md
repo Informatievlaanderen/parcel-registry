@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.7.0...v1.8.0) (2019-07-10)
+
+
+### Features
+
+* rename oslo id to persistent local id ([2a36957](https://github.com/informatievlaanderen/parcel-registry/commit/2a36957))
+
 # [1.7.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.6.0...v1.7.0) (2019-07-10)
 
 
