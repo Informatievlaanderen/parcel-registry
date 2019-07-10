@@ -1,7 +1,6 @@
 namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -14,7 +13,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
         public static string StatusBackingPropertyName = nameof(StatusAsString);
 
         public Guid ParcelId { get; set; }
-        public string OsloId { get; set; }
+        public string PersistentLocalId { get; set; }
 
         public ParcelStatus? Status
         {
@@ -53,7 +52,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                 .HasKey(p => p.ParcelId)
                 .ForSqlServerIsClustered(false);
 
-            builder.Property(p => p.OsloId);
+            builder.Property(p => p.PersistentLocalId);
             builder.Property(ParcelDetail.StatusBackingPropertyName)
                 .HasColumnName("Status");
 
@@ -67,7 +66,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
             builder.HasMany(x => x.Addresses);
 
-            builder.HasIndex(x => x.OsloId).ForSqlServerIsClustered();
+            builder.HasIndex(x => x.PersistentLocalId).ForSqlServerIsClustered();
             builder.HasIndex(x => x.Removed);
             builder.HasIndex(x => x.Complete);
         }

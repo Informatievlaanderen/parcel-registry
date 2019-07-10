@@ -38,13 +38,13 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             PerceelStatus status,
             string caPaKey,
             DateTimeOffset version,
-            List<string> osloIds,
+            List<string> addressPersistentLocalIds,
             string adresDetailUrl)
         {
             Identificator = new Identificator(naamruimte, caPaKey, version);
             PerceelStatus = status;
 
-            Adressen = osloIds
+            Adressen = addressPersistentLocalIds
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(x => PerceelDetailAdres.Create(x, new Uri(string.Format(adresDetailUrl, x))))
                 .ToList();

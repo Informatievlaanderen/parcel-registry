@@ -5,27 +5,27 @@ namespace ParcelRegistry.Projections.Syndication.Address
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using System;
 
-    public class AddressOlsoIdItem
+    public class AddressPersistentLocalIdItem
     {
         public Guid AddressId { get; set; }
-        public string OsloId { get; set; }
+        public string PersistentLocalId { get; set; }
         public DateTimeOffset? Version { get; set; }
         public long Position { get; set; }
         public bool IsComplete { get; set; }
         public bool IsRemoved { get; set; }
     }
 
-    public class AddressOsloIdItemConfiguration : IEntityTypeConfiguration<AddressOlsoIdItem>
+    public class AddressPersistentLocalIdItemConfiguration : IEntityTypeConfiguration<AddressPersistentLocalIdItem>
     {
-        private const string TableName = "AddressOsloIdSyndication";
+        private const string TableName = "AddressPersistentLocalIdSyndication";
 
-        public void Configure(EntityTypeBuilder<AddressOlsoIdItem> builder)
+        public void Configure(EntityTypeBuilder<AddressPersistentLocalIdItem> builder)
         {
             builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => x.AddressId)
                 .ForSqlServerIsClustered(false);
 
-            builder.Property(x => x.OsloId);
+            builder.Property(x => x.PersistentLocalId);
 
             builder.Property(x => x.Version);
             builder.Property(x => x.Position);

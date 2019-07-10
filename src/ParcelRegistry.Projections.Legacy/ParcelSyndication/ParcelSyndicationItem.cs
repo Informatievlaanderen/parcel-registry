@@ -133,7 +133,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 
             b.Ignore(x => x.AddressIds);
             b.Property(x => x.AddressesAsString)
-                .HasColumnName("AddressOsloIds");
+                .HasColumnName("AddressPersistentLocalIds");
 
             b.Property(x => x.IsComplete);
 

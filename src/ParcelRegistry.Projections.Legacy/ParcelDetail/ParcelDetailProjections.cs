@@ -18,7 +18,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                         new ParcelDetail
                         {
                             ParcelId = message.Message.ParcelId,
-                            OsloId = message.Message.VbrCaPaKey,
+                            PersistentLocalId = message.Message.VbrCaPaKey,
                             VersionTimestamp = message.Message.Provenance.Timestamp,
                             Complete = true,
                             Removed = false
@@ -93,7 +93,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     {
                         context.Entry(entity).Collection(x => x.Addresses).Load();
 
-                        // TODO: look up oslo id of address
+                        // TODO: look up persistent local id of address
                         entity.Addresses.Add(new ParcelDetailAddress
                         {
                             ParcelId = message.Message.ParcelId,
