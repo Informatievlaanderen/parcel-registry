@@ -20,7 +20,8 @@
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
     <Content Include="paket.template" CopyToOutputDirectory="Always" />
-  </ItemGroup> 
+    <Content Include="init.sh" CopyToOutputDirectory="Always" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ParcelRegistry.Infrastructure\ParcelRegistry.Infrastructure.csproj" />

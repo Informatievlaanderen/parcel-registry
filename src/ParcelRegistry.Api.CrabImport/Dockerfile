@@ -1,11 +1,15 @@
-FROM microsoft/dotnet:2.2.0-runtime-deps
+FROM mcr.microsoft.com/dotnet/core/runtime-deps:2.2.4
 
 LABEL maintainer "agentschap Informatie Vlaanderen <informatie.vlaanderen@vlaanderen.be>"
 
 COPY / /app
 WORKDIR /app
 
-EXPOSE 5000/tcp
-ENV ASPNETCORE_URLS http://*:5000
+RUN apt-get update && \
+    apt-get install curl jq -y && \
+    chmod +x ./init.sh
 
-ENTRYPOINT ["./ParcelRegistry.Api.CrabImport"]
+EXPOSE 7000/tcp
+ENV ASPNETCORE_URLS http://*:7000
+
+ENTRYPOINT ["./init.sh"]

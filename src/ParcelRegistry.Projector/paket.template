@@ -16,10 +16,10 @@ description Parcel Registry Projector API.
 
 dependencies
   framework: netstandard20
-    Be.Vlaanderen.Basisregisters.Api ~> 6.0
+    Be.Vlaanderen.Basisregisters.Api ~> 7.0
     Be.Vlaanderen.Basisregisters.EventHandling.Autofac ~> 1.0
     Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac ~> 3.0
-    Be.Vlaanderen.Basisregisters.Projector ~> 2.0
+    Be.Vlaanderen.Basisregisters.Projector ~> 3.1
 
 files
   ParcelRegistry.Projector.dll => lib\netcoreapp2.2
