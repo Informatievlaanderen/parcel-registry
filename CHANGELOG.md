@@ -1,3 +1,11 @@
+## [1.9.2](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.1...v1.9.2) (2019-07-17)
+
+
+### Bug Fixes
+
+* do not hardcode logging to console ([7dd2ca7](https://github.com/informatievlaanderen/parcel-registry/commit/7dd2ca7))
+* do not hardcode logging to console ([5dc7705](https://github.com/informatievlaanderen/parcel-registry/commit/5dc7705))
+
 ## [1.9.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.0...v1.9.1) (2019-07-17)
 
 
