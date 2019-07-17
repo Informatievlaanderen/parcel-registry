@@ -128,7 +128,7 @@ Target "Push" DoNothing
 "Containerize_ApiLegacy"                  ==> "Containerize"
 "Containerize_ApiExtract"                 ==> "Containerize"
 "Containerize_ApiCrabImport"              ==> "Containerize"
-// "Containerize_ProjectionsSyndication"     ==> "Containerize"
+"Containerize_ProjectionsSyndication"     ==> "Containerize"
 // Possibly add more projects to containerize here
 
 "Containerize"                            ==> "Push"
@@ -137,7 +137,7 @@ Target "Push" DoNothing
 "PushContainer_ApiLegacy"                 ==> "Push"
 "PushContainer_ApiExtract"                ==> "Push"
 "PushContainer_ApiCrabImport"             ==> "Push"
-// "PushContainer_ProjectionsSyndication"    ==> "Push"
+"PushContainer_ProjectionsSyndication"    ==> "Push"
 // Possibly add more projects to push here
 
 // By default we build & test
