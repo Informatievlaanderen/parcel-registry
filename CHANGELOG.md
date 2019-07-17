@@ -1,3 +1,10 @@
+## [1.9.3](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.2...v1.9.3) (2019-07-17)
+
+
+### Bug Fixes
+
+* use serilog compact log ([ccdacf0](https://github.com/informatievlaanderen/parcel-registry/commit/ccdacf0))
+
 ## [1.9.2](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.1...v1.9.2) (2019-07-17)
 
 
