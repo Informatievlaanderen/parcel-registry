@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.0...v1.9.1) (2019-07-17)
+
+
+### Bug Fixes
+
+* push syndications container ([0c4166b](https://github.com/informatievlaanderen/parcel-registry/commit/0c4166b))
+
 # [1.9.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.8.0...v1.9.0) (2019-07-17)
 
 
