@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.8.0...v1.9.0) (2019-07-17)
+
+
+### Features
+
+* add deploy to production ([3e03a65](https://github.com/informatievlaanderen/parcel-registry/commit/3e03a65))
+
 # [1.8.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.7.0...v1.8.0) (2019-07-10)
 
 
