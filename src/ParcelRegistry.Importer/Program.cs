@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace ParcelRegistry.Importer
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
@@ -44,6 +46,7 @@ namespace ParcelRegistry.Importer
                     .UseHttpApiProxyConfig(settings)
                     .UseCommandProcessorConfig(settings)
                     .UseDefaultSerializerSettingsForCrabImports()
+                    .ConfigureProcessedKeySerialization(a => a.ToString(), CaPaKey.CreateFrom)
                     .ConfigureImportFeedFromAssembly(Assembly.GetExecutingAssembly())
                     .Build();
 
