@@ -1,3 +1,10 @@
+## [1.9.5](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.4...v1.9.5) (2019-08-06)
+
+
+### Bug Fixes
+
+* save processed capakeys in correct format ([4fb67a1](https://github.com/informatievlaanderen/parcel-registry/commit/4fb67a1))
+
 ## [1.9.4](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.3...v1.9.4) (2019-08-05)
 
 
