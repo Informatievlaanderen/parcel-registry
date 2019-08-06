@@ -1,3 +1,10 @@
+## [1.9.4](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.3...v1.9.4) (2019-08-05)
+
+
+### Bug Fixes
+
+* import with processed keys now serialize correctly ([c5319a7](https://github.com/informatievlaanderen/parcel-registry/commit/c5319a7))
+
 ## [1.9.3](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.2...v1.9.3) (2019-07-17)
 
 
