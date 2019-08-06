@@ -46,7 +46,7 @@ namespace ParcelRegistry.Importer
                     .UseHttpApiProxyConfig(settings)
                     .UseCommandProcessorConfig(settings)
                     .UseDefaultSerializerSettingsForCrabImports()
-                    .ConfigureProcessedKeySerialization(a => a.ToString(), CaPaKey.CreateFrom)
+                    .ConfigureProcessedKeySerialization(a => a.VbrCaPaKey, CaPaKey.CreateFrom)
                     .ConfigureImportFeedFromAssembly(Assembly.GetExecutingAssembly())
                     .Build();
 
