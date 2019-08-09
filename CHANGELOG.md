@@ -1,3 +1,10 @@
+## [1.9.6](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.5...v1.9.6) (2019-08-09)
+
+
+### Bug Fixes
+
+* fix container id in logging ([234bc2b](https://github.com/informatievlaanderen/parcel-registry/commit/234bc2b))
+
 ## [1.9.5](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.4...v1.9.5) (2019-08-06)
 
 
