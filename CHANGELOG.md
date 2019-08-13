@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.6...v1.10.0) (2019-08-13)
+
+
+### Features
+
+* add missing event handlers where nothing was expected [#19](https://github.com/informatievlaanderen/parcel-registry/issues/19) ([fa7ec41](https://github.com/informatievlaanderen/parcel-registry/commit/fa7ec41))
+
 ## [1.9.6](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.5...v1.9.6) (2019-08-09)
 
 
