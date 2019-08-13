@@ -7,6 +7,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     using System.Text;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using NodaTime;
+    using Parcel.Events.Crab;
 
     public class ParcelExtractProjections : ConnectedProjection<ExtractContext>
     {
@@ -91,6 +92,12 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                     SetDelete,
                     ct);
             });
+
+            When<Envelope<ParcelAddressWasAttached>>(async (context, message, ct) => DoNothing());
+            When<Envelope<ParcelAddressWasDetached>>(async (context, message, ct) => DoNothing());
+            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
         }
 
         private void SetDelete(ParcelExtractItem parcel)
@@ -111,5 +118,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
 
             parcel.DbaseRecord = record.ToBytes(_encoding);
         }
+
+        private static void DoNothing() { }
     }
 }

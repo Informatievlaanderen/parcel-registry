@@ -3,6 +3,7 @@ namespace ParcelRegistry.Projections.LastChangedList
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Parcel.Events;
+    using Parcel.Events.Crab;
 
     public class LastChangedListProjections : LastChangedListConnectedProjection
     {
@@ -59,6 +60,12 @@ namespace ParcelRegistry.Projections.LastChangedList
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
             });
+
+            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
         }
+
+        private static void DoNothing() { }
     }
 }

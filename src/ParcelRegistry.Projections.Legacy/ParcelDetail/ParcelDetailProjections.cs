@@ -5,6 +5,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
     using NodaTime;
     using Parcel.Events;
     using System.Linq;
+    using Parcel.Events.Crab;
 
     public class ParcelDetailProjections : ConnectedProjection<LegacyContext>
     {
@@ -119,9 +120,15 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     },
                     ct);
             });
+
+            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
         }
 
         private static void UpdateVersionTimestamp(ParcelDetail parcel, Instant versionTimestamp)
             => parcel.VersionTimestamp = versionTimestamp;
+
+        private static void DoNothing() { }
     }
 }
