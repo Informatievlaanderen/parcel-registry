@@ -4,6 +4,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
     using Parcel.Events;
+    using Parcel.Events.Crab;
 
     public class ParcelSyndicationProjections : ConnectedProjection<LegacyContext>
     {
@@ -92,6 +93,12 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     x => x.RemoveAddressId(message.Message.AddressId),
                     ct);
             });
+
+            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
         }
+
+        private static void DoNothing() { }
     }
 }
