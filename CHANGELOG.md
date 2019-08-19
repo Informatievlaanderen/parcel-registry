@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.10.0...v1.11.0) (2019-08-19)
+
+
+### Features
+
+* add wait for input to importer ([7ffe1dd](https://github.com/informatievlaanderen/parcel-registry/commit/7ffe1dd))
+
 # [1.10.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.9.6...v1.10.0) (2019-08-13)
 
 
