@@ -19,6 +19,7 @@ namespace ParcelRegistry.Importer
         public int BufferSize => Settings.Default.BufferSize;
         public int NrOfConsumers => Settings.Default.NrOfConsumers;
         public int BatchSize => Settings.Default.BatchSize;
+        public bool WaitForUserInput => Settings.Default.WaitForUserInput;
         public TimeSpan TimeMargin => Settings.Default.TimeMarginBeforeNowInSeconds;
 
         public override string ToString() => $"{Environment.NewLine}" +
@@ -30,7 +31,8 @@ namespace ParcelRegistry.Importer
                                              $"NrOfProducers: {NrOfProducers}{Environment.NewLine}" +
                                              $"BufferSize: {BufferSize}{Environment.NewLine}" +
                                              $"NrOfConsumers: {NrOfConsumers}{Environment.NewLine}" +
-                                             $"BatchSize: {BatchSize}";
+                                             $"BatchSize: {BatchSize}" +
+                                             $"WaitForUserInput: {WaitForUserInput}";
 
         public CaPaKey Deserialize(string key) => CaPaKey.CreateFrom(key);
     }
