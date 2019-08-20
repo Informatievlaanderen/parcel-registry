@@ -7,6 +7,7 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Projections.Legacy;
+    using Projections.Syndication;
 
     public class ApiModule : Module
     {
@@ -28,6 +29,9 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure.Modules
         {
             containerBuilder
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory));
+
+            containerBuilder
+                .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
 
             containerBuilder
                 .RegisterModule(new DataDogModule(_configuration));
