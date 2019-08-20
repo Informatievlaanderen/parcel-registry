@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.11.0...v1.11.1) (2019-08-20)
+
+
+### Bug Fixes
+
+* detail parcel now works with addresses from syndication ([4a24102](https://github.com/informatievlaanderen/parcel-registry/commit/4a24102))
+
 # [1.11.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.10.0...v1.11.0) (2019-08-19)
 
 
