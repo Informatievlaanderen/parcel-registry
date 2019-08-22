@@ -13,6 +13,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Projections.Extract;
     using ParcelRegistry.Projections.Extract.ParcelExtract;
@@ -77,7 +78,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ParcelExtractProjections, ExtractContext>(
-                    () => new ParcelExtractProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()));
+                    context => new ParcelExtractProjections(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding()));
         }
 
         private void RegisterLastChangedProjections(ContainerBuilder builder)

@@ -6,6 +6,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     using System;
     using System.Text;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Microsoft.Extensions.Options;
     using NodaTime;
     using Parcel.Events.Crab;
 
@@ -13,10 +14,9 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     {
         private const string InUse = "InGebruik";
         private const string Retired = "Gehistoreerd";
-        private const string IdUri = "https://data.vlaanderen.be/id/perceel";
         private readonly Encoding _encoding;
 
-        public ParcelExtractProjections(Encoding encoding)
+        public ParcelExtractProjections(IOptions<ExtractConfig> extractConfig, Encoding encoding)
         {
             _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
@@ -31,7 +31,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                         DbaseRecord = new ParcelDbaseRecord
                         {
                             versie = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().DateTime },
-                            id = { Value = $"{IdUri}/{message.Message.VbrCaPaKey}" },
+                            id = { Value = $"{extractConfig.Value.DataVlaanderenNamespace}/{message.Message.VbrCaPaKey}" },
                             perceelid = { Value = message.Message.VbrCaPaKey }
                         }.ToBytes(_encoding)
                     }, ct);
