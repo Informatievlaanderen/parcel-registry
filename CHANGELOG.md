@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.11.1...v1.12.0) (2019-08-22)
+
+
+### Features
+
+* extract datavlaanderen namespace to settings fixes [#1](https://github.com/informatievlaanderen/parcel-registry/issues/1) ([f335bbb](https://github.com/informatievlaanderen/parcel-registry/commit/f335bbb))
+
 ## [1.11.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.11.0...v1.11.1) (2019-08-20)
 
 
