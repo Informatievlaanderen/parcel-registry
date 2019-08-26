@@ -112,12 +112,24 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure
             StartupHelpers.EnsureSqlStreamStoreSchema<Startup>(streamStore, loggerFactory);
 
             app
-                .UseDatadog<Startup>(
-                    serviceProvider,
-                    loggerFactory,
-                    datadogToggle,
-                    debugDataDogToggle,
-                    _configuration["DataDog:ServiceName"])
+                .UseDataDog<Startup>(new DataDogOptions
+                {
+                    Common =
+                    {
+                        ServiceProvider = serviceProvider,
+                        LoggerFactory = loggerFactory
+                    },
+                    Toggles =
+                    {
+                        Enable = datadogToggle,
+                        Debug = debugDataDogToggle
+                    },
+                    Tracing =
+                    {
+                        ServiceName = _configuration["DataDog:ServiceName"],
+                    }
+                })
+
                 .UseDefaultForApi(new StartupUseOptions
                 {
                     Common =
