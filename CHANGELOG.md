@@ -1,3 +1,10 @@
+## [1.13.2](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.1...v1.13.2) (2019-08-26)
+
+
+### Bug Fixes
+
+* use fixed datadog tracing ([9849f4e](https://github.com/informatievlaanderen/parcel-registry/commit/9849f4e))
+
 ## [1.13.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.0...v1.13.1) (2019-08-26)
 
 
