@@ -27,6 +27,8 @@ nuget Microsoft.Extensions.Http.Polly 2.2.0
 // For more healtchecks, look at https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
 nuget AspNetCore.HealthChecks.SqlServer 2.2.1
 
+nuget NetTopologySuite 1.15.3
+
 nuget AsyncEnumerator 2.2.2
 nuget System.Interactive.Async 3.2.0 // try to remove later: seems some dependency on core app not being picked up
 
