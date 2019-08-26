@@ -143,7 +143,16 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure
                     Api =
                     {
                         VersionProvider = apiVersionProvider,
-                        Info = groupName => $"Basisregisters Vlaanderen - Parcel Registry API {groupName}"
+                        Info = groupName => $"Basisregisters Vlaanderen - Parcel Registry API {groupName}",
+                        CSharpClientOptions =
+                        {
+                            ClassName = "ParcelRegistryCrabImport",
+                            Namespace = "Be.Vlaanderen.Basisregisters"
+                        },
+                        TypeScriptClientOptions =
+                        {
+                            ClassName = "ParcelRegistryCrabImport"
+                        }
                     },
                     Server =
                     {

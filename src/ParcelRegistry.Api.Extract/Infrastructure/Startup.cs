@@ -138,7 +138,16 @@ namespace ParcelRegistry.Api.Extract.Infrastructure
                     Api =
                     {
                         VersionProvider = apiVersionProvider,
-                        Info = groupName => $"Basisregisters Vlaanderen - Parcel Registry API {groupName}"
+                        Info = groupName => $"Basisregisters Vlaanderen - Parcel Registry API {groupName}",
+                        CSharpClientOptions =
+                        {
+                            ClassName = "ParcelRegistryExtract",
+                            Namespace = "Be.Vlaanderen.Basisregisters"
+                        },
+                        TypeScriptClientOptions =
+                        {
+                            ClassName = "ParcelRegistryExtract"
+                        }
                     },
                     Server =
                     {

@@ -142,7 +142,16 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure
                     Api =
                     {
                         VersionProvider = apiVersionProvider,
-                        Info = groupName => $"Basisregisters Vlaanderen - Parcel Registry API {groupName}"
+                        Info = groupName => $"Basisregisters Vlaanderen - Parcel Registry API {groupName}",
+                        CSharpClientOptions =
+                        {
+                            ClassName = "ParcelRegistry",
+                            Namespace = "Be.Vlaanderen.Basisregisters"
+                        },
+                        TypeScriptClientOptions =
+                        {
+                            ClassName = "ParcelRegistry"
+                        }
                     },
                     Server =
                     {
