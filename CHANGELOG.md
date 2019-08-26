@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.12.0...v1.13.0) (2019-08-26)
+
+
+### Features
+
+* bump to .net 2.2.6 ([03382eb](https://github.com/informatievlaanderen/parcel-registry/commit/03382eb))
+
 # [1.12.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.11.1...v1.12.0) (2019-08-22)
 
 
