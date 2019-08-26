@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.0...v1.13.1) (2019-08-26)
+
+
+### Bug Fixes
+
+* fix swagger ([b7160bc](https://github.com/informatievlaanderen/parcel-registry/commit/b7160bc))
+
 # [1.13.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.12.0...v1.13.0) (2019-08-26)
 
 
