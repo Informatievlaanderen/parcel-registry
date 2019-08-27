@@ -1,3 +1,10 @@
+## [1.13.3](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.2...v1.13.3) (2019-08-27)
+
+
+### Bug Fixes
+
+* use new desiredstate columns for projections ([ae334a5](https://github.com/informatievlaanderen/parcel-registry/commit/ae334a5))
+
 ## [1.13.2](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.1...v1.13.2) (2019-08-26)
 
 
