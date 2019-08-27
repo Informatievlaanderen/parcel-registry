@@ -1,3 +1,10 @@
+## [1.13.4](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.3...v1.13.4) (2019-08-27)
+
+
+### Bug Fixes
+
+* make datadog tracing check more for nulls ([4fb5150](https://github.com/informatievlaanderen/parcel-registry/commit/4fb5150))
+
 ## [1.13.3](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.2...v1.13.3) (2019-08-27)
 
 
