@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ParcelRegistry.Projections.Extract;
+using ParcelRegistry.Projections.Syndication;
 
-namespace ParcelRegistry.Projections.Extract.Migrations
+namespace ParcelRegistry.Projections.Syndication.Migrations
 {
-    [DbContext(typeof(ExtractContext))]
-    partial class ExtractContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(SyndicationContext))]
+    [Migration("20190827123335_DesiredState")]
+    partial class DesiredState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,25 +35,30 @@ namespace ParcelRegistry.Projections.Extract.Migrations
                     b.HasKey("Name")
                         .HasAnnotation("SqlServer:Clustered", true);
 
-                    b.ToTable("ProjectionStates","ParcelRegistryExtract");
+                    b.ToTable("ProjectionStates","ParcelRegistrySyndication");
                 });
 
-            modelBuilder.Entity("ParcelRegistry.Projections.Extract.ParcelExtract.ParcelExtractItem", b =>
+            modelBuilder.Entity("ParcelRegistry.Projections.Syndication.Address.AddressPersistentLocalIdItem", b =>
                 {
-                    b.Property<Guid?>("ParcelId")
+                    b.Property<Guid>("AddressId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CaPaKey");
+                    b.Property<bool>("IsComplete");
 
-                    b.Property<byte[]>("DbaseRecord");
+                    b.Property<bool>("IsRemoved");
 
-                    b.HasKey("ParcelId")
+                    b.Property<string>("PersistentLocalId");
+
+                    b.Property<long>("Position");
+
+                    b.Property<DateTimeOffset?>("Version");
+
+                    b.HasKey("AddressId")
                         .HasAnnotation("SqlServer:Clustered", false);
 
-                    b.HasIndex("CaPaKey")
-                        .HasAnnotation("SqlServer:Clustered", true);
+                    b.HasIndex("IsComplete", "IsRemoved");
 
-                    b.ToTable("Parcel","ParcelRegistryExtract");
+                    b.ToTable("AddressPersistentLocalIdSyndication","ParcelRegistrySyndication");
                 });
 #pragma warning restore 612, 618
         }

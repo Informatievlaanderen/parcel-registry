@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParcelRegistry.Projections.Extract;
 
 namespace ParcelRegistry.Projections.Extract.Migrations
 {
     [DbContext(typeof(ExtractContext))]
-    partial class ExtractContextModelSnapshot : ModelSnapshot
+    [Migration("20190827122900_DesiredState")]
+    partial class DesiredState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
