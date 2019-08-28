@@ -1,3 +1,10 @@
+## [1.13.7](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.6...v1.13.7) (2019-08-28)
+
+
+### Bug Fixes
+
+* use longer timeout for migrations ([cce233e](https://github.com/informatievlaanderen/parcel-registry/commit/cce233e))
+
 ## [1.13.6](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.5...v1.13.6) (2019-08-28)
 
 
