@@ -8,7 +8,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using NodaTime;
     using System;
     using System.Collections.Generic;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
 
     public class ParcelSyndicationItem
     {
@@ -122,7 +121,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 .ForSqlServerIsClustered();
 
             b.Property(x => x.Position).ValueGeneratedNever();
-            b.HasIndex(x => x.Position).IsColumnStore($"CI_{TableName}_Position");
 
             b.Property(x => x.ParcelId).IsRequired();
             b.Property(x => x.ChangeType);

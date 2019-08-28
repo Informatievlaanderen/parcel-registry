@@ -120,10 +120,6 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
 
                     b.HasIndex("ParcelId");
 
-                    b.HasIndex("Position")
-                        .HasName("CI_ParcelSyndication_Position")
-                        .HasAnnotation("SqlServer:ColumnStoreIndex", "");
-
                     b.ToTable("ParcelSyndication","ParcelRegistryLegacy");
                 });
 
