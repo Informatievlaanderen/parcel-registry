@@ -1,3 +1,10 @@
+## [1.13.5](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.4...v1.13.5) (2019-08-28)
+
+
+### Bug Fixes
+
+* use columnstore for legacy syndication ([591762c](https://github.com/informatievlaanderen/parcel-registry/commit/591762c))
+
 ## [1.13.4](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.3...v1.13.4) (2019-08-27)
 
 
