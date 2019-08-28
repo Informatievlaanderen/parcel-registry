@@ -8,6 +8,7 @@ namespace ParcelRegistry.Projections.Syndication
     using System;
     using System.IO;
     using Address;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
 
     public class SyndicationContext : RunnerDbContext<SyndicationContext>
     {
@@ -47,7 +48,8 @@ namespace ParcelRegistry.Projections.Syndication
                 {
                     sqlServerOptions.EnableRetryOnFailure();
                     sqlServerOptions.MigrationsHistoryTable(MigrationTables.Syndication, Schema.Syndication);
-                });
+                })
+                .UseExtendedSqlServerMigrations();
 
             return new SyndicationContext(builder.Options);
         }

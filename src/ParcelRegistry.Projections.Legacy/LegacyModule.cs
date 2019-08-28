@@ -9,6 +9,8 @@ namespace ParcelRegistry.Projections.Legacy
     using System;
     using System.Data.SqlClient;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
+    using Microsoft.EntityFrameworkCore.Migrations;
 
     public class LegacyModule : Module
     {
@@ -51,7 +53,8 @@ namespace ParcelRegistry.Projections.Legacy
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Legacy, Schema.Legacy);
-                    }));
+                    })
+                    .UseExtendedSqlServerMigrations());
         }
 
         private static void RunInMemoryDb(

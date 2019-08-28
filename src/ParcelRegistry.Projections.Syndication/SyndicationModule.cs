@@ -13,6 +13,7 @@ namespace ParcelRegistry.Projections.Syndication
     using System;
     using System.Data.SqlClient;
     using System.Net.Http;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
 
     public class SyndicationModule : Module
     {
@@ -49,7 +50,8 @@ namespace ParcelRegistry.Projections.Syndication
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Syndication, Schema.Syndication);
-                    }));
+                    })
+                    .UseExtendedSqlServerMigrations());
         }
 
         private static void RunInMemoryDb(

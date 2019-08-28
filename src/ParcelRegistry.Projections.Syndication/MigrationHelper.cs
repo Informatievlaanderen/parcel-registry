@@ -8,6 +8,7 @@ namespace ParcelRegistry.Projections.Syndication
     using System.Data.SqlClient;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
 
     public class MigrationsLogger { }
 
@@ -48,7 +49,8 @@ namespace ParcelRegistry.Projections.Syndication
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Syndication, Schema.Syndication);
-                    });
+                    })
+                    .UseExtendedSqlServerMigrations();
 
             if (loggerFactory != null)
                 migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);

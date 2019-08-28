@@ -3,9 +3,11 @@ namespace ParcelRegistry.Projections.Legacy
     using System;
     using System.IO;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
+    using Microsoft.EntityFrameworkCore.Migrations;
     using Microsoft.Extensions.Configuration;
     using ParcelDetail;
     using ParcelSyndication;
@@ -48,7 +50,8 @@ namespace ParcelRegistry.Projections.Legacy
                 {
                     sqlServerOptions.EnableRetryOnFailure();
                     sqlServerOptions.MigrationsHistoryTable(MigrationTables.Legacy, Schema.Legacy);
-                });
+                })
+                .UseExtendedSqlServerMigrations();
 
             return new LegacyContext(builder.Options);
         }

@@ -3,6 +3,7 @@ namespace ParcelRegistry.Projections.Extract
     using System;
     using System.IO;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
@@ -45,7 +46,8 @@ namespace ParcelRegistry.Projections.Extract
                 {
                     sqlServerOptions.EnableRetryOnFailure();
                     sqlServerOptions.MigrationsHistoryTable(MigrationTables.Extract, Schema.Extract);
-                });
+                })
+                .UseExtendedSqlServerMigrations();
 
             return new ExtractContext(builder.Options);
         }
