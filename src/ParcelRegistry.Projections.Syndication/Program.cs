@@ -28,8 +28,6 @@ namespace ParcelRegistry.Projections.Syndication
             ct.Register(() => Closing.Set());
             Console.CancelKeyPress += (sender, eventArgs) => CancellationTokenSource.Cancel();
 
-            Console.WriteLine("Starting BuildingRegistry.Projections.Syndication");
-
             AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
                 Log.Debug(
                     eventArgs.Exception,
@@ -49,6 +47,8 @@ namespace ParcelRegistry.Projections.Syndication
 
             var container = ConfigureServices(configuration);
 
+            Log.Information("Starting BuildingRegistry.Projections.Syndication");
+            
             try
             {
                 await MigrationsHelper.RunAsync(
@@ -71,7 +71,7 @@ namespace ParcelRegistry.Projections.Syndication
                 throw;
             }
 
-            Console.WriteLine("Stopping...");
+            Log.Information("Stopping...");
             Closing.Close();
         }
 
