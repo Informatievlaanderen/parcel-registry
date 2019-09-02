@@ -1,3 +1,11 @@
+## [1.13.9](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.8...v1.13.9) (2019-09-02)
+
+
+### Bug Fixes
+
+* do not log to console writeline ([200770c](https://github.com/informatievlaanderen/parcel-registry/commit/200770c))
+* do not log to console writeline ([d2edbad](https://github.com/informatievlaanderen/parcel-registry/commit/d2edbad))
+
 ## [1.13.8](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.7...v1.13.8) (2019-09-02)
 
 
