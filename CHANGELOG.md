@@ -1,3 +1,10 @@
+## [1.13.8](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.7...v1.13.8) (2019-09-02)
+
+
+### Bug Fixes
+
+* properly report errors ([ce3502e](https://github.com/informatievlaanderen/parcel-registry/commit/ce3502e))
+
 ## [1.13.7](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.6...v1.13.7) (2019-08-28)
 
 
