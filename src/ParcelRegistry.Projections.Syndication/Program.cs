@@ -63,7 +63,7 @@ namespace ParcelRegistry.Projections.Syndication
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine(e.ToString());
+                Log.Fatal(e, "Encountered a fatal exception, exiting program.");
                 Log.CloseAndFlush();
 
                 // Allow some time for flushing before shutdown.
