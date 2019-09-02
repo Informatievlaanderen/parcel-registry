@@ -16,12 +16,12 @@ namespace ParcelRegistry.Projections.Syndication
     using System.Threading;
     using System.Threading.Tasks;
 
-    class Program
+    public class Program
     {
         private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
         private static readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
 
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var ct = CancellationTokenSource.Token;
 
@@ -58,7 +58,7 @@ namespace ParcelRegistry.Projections.Syndication
 
                 await Task.WhenAll(StartRunners(configuration, container, ct));
 
-                Console.WriteLine("Running... Press CTRL + C to exit.");
+                Log.Information("Running... Press CTRL + C to exit.");
                 Closing.WaitOne();
             }
             catch (Exception e)
