@@ -1,3 +1,10 @@
+## [1.13.10](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.9...v1.13.10) (2019-09-03)
+
+
+### Bug Fixes
+
+* update problemdetails for xml response GR-829 ([c4fa939](https://github.com/informatievlaanderen/parcel-registry/commit/c4fa939))
+
 ## [1.13.9](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.8...v1.13.9) (2019-09-02)
 
 
