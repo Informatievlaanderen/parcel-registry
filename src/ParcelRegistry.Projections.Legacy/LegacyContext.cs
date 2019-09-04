@@ -7,7 +7,6 @@ namespace ParcelRegistry.Projections.Legacy
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
-    using Microsoft.EntityFrameworkCore.Migrations;
     using Microsoft.Extensions.Configuration;
     using ParcelDetail;
     using ParcelSyndication;

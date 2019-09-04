@@ -44,7 +44,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
     public class ParcelDetailConfiguration : IEntityTypeConfiguration<ParcelDetail>
     {
-        public const string TableName = "ParcelDetails";
+        private const string TableName = "ParcelDetails";
 
         public void Configure(EntityTypeBuilder<ParcelDetail> builder)
         {

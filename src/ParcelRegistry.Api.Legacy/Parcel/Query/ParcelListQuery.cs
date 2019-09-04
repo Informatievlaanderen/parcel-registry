@@ -29,16 +29,16 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
 
             return parcels;
         }
+    }
 
-        internal class ParcelSorting : ISorting
+    public class ParcelSorting : ISorting
+    {
+        public IEnumerable<string> SortableFields { get; } = new[]
         {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(ParcelDetail.PersistentLocalId),
-            };
+            nameof(ParcelDetail.PersistentLocalId),
+        };
 
-            public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(ParcelDetail.PersistentLocalId), SortOrder.Ascending);
-        }
+        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(ParcelDetail.PersistentLocalId), SortOrder.Ascending);
     }
 
     public class ParcelFilter { }

@@ -35,7 +35,7 @@ nuget System.Interactive.Async 3.2.0 // try to remove later: seems some dependen
 nuget Microsoft.EntityFrameworkCore.Design 2.2.6
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.7
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.9
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events ~> 1.1 content: true, copy_content_to_output_dir: always, copy_local: true
 
 nuget Be.Vlaanderen.Basisregisters.AggregateSource ~> 3.2
@@ -45,7 +45,7 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing ~> 3.2
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac ~> 3.2
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit ~> 3.2
 
-nuget Be.Vlaanderen.Basisregisters.Api ~> 7.3
+nuget Be.Vlaanderen.Basisregisters.Api ~> 7.4
 
 nuget Be.Vlaanderen.Basisregisters.CommandHandling ~> 3.2
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency ~> 3.2

@@ -228,7 +228,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         }
     }
 
-    internal class ParcelSyndicationSorting : ISorting
+    public class ParcelSyndicationSorting : ISorting
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {

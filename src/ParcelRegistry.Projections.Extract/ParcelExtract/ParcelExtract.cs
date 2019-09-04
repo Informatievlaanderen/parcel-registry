@@ -14,7 +14,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
 
     public class ParcelExtractItemConfiguration : IEntityTypeConfiguration<ParcelExtractItem>
     {
-        public const string TableName = "Parcel";
+        private const string TableName = "Parcel";
 
         public void Configure(EntityTypeBuilder<ParcelExtractItem> builder)
         {

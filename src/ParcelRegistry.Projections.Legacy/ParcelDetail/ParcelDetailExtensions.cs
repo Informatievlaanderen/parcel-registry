@@ -1,9 +1,7 @@
 namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 {
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
-    using Microsoft.EntityFrameworkCore;
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 

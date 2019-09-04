@@ -13,7 +13,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
     public class ParcelDetailAddressmConfiguration : IEntityTypeConfiguration<ParcelDetailAddress>
     {
-        public const string TableName = "ParcelAddresses";
+        private const string TableName = "ParcelAddresses";
 
         public void Configure(EntityTypeBuilder<ParcelDetailAddress> b)
         {
