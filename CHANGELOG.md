@@ -1,3 +1,10 @@
+## [1.13.11](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.10...v1.13.11) (2019-09-04)
+
+
+### Bug Fixes
+
+* report correct version number ([e1a63f8](https://github.com/informatievlaanderen/parcel-registry/commit/e1a63f8))
+
 ## [1.13.10](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.9...v1.13.10) (2019-09-03)
 
 
