@@ -1,3 +1,10 @@
+## [1.13.12](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.11...v1.13.12) (2019-09-05)
+
+
+### Bug Fixes
+
+* initial jira version ([f1e2d48](https://github.com/informatievlaanderen/parcel-registry/commit/f1e2d48))
+
 ## [1.13.11](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.10...v1.13.11) (2019-09-04)
 
 
