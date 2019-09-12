@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.12...v1.14.0) (2019-09-12)
+
+
+### Features
+
+* keep track of how many times lastchanged has errored ([1318c53](https://github.com/informatievlaanderen/parcel-registry/commit/1318c53))
+
 ## [1.13.12](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.11...v1.13.12) (2019-09-05)
 
 
