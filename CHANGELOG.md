@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.14.0...v1.14.1) (2019-09-13)
+
+
+### Bug Fixes
+
+* update redis lastchangedlist to log time of lasterror ([5b93b2e](https://github.com/informatievlaanderen/parcel-registry/commit/5b93b2e))
+
 # [1.14.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.13.12...v1.14.0) (2019-09-12)
 
 
