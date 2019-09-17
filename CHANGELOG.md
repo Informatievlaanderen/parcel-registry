@@ -1,3 +1,10 @@
+## [1.14.4](https://github.com/informatievlaanderen/parcel-registry/compare/v1.14.3...v1.14.4) (2019-09-17)
+
+
+### Bug Fixes
+
+* upgrade api for error headers ([5d4af0c](https://github.com/informatievlaanderen/parcel-registry/commit/5d4af0c))
+
 ## [1.14.3](https://github.com/informatievlaanderen/parcel-registry/compare/v1.14.2...v1.14.3) (2019-09-17)
 
 
