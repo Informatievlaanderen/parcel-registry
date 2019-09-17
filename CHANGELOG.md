@@ -1,3 +1,10 @@
+## [1.14.2](https://github.com/informatievlaanderen/parcel-registry/compare/v1.14.1...v1.14.2) (2019-09-17)
+
+
+### Bug Fixes
+
+* use generic dbtraceconnection ([4ddae40](https://github.com/informatievlaanderen/parcel-registry/commit/4ddae40))
+
 ## [1.14.1](https://github.com/informatievlaanderen/parcel-registry/compare/v1.14.0...v1.14.1) (2019-09-13)
 
 
