@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.14.5...v2.0.0) (2019-09-18)
+
+
+### Bug Fixes
+
+* correct relations with addresses GR-874 ([dbeb5f7](https://github.com/informatievlaanderen/parcel-registry/commit/dbeb5f7))
+
+
+### BREAKING CHANGES
+
+* New address-relation calculations
+
 ## [1.14.5](https://github.com/informatievlaanderen/parcel-registry/compare/v1.14.4...v1.14.5) (2019-09-18)
 
 
