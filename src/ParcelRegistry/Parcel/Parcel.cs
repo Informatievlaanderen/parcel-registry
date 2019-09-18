@@ -5,6 +5,8 @@ namespace ParcelRegistry.Parcel
     using Events;
     using Events.Crab;
     using System;
+    using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
 
     public partial class Parcel : AggregateRootEntity
     {
@@ -76,26 +78,7 @@ namespace ParcelRegistry.Parcel
             CrabModification? modification,
             CrabOrganisation? organisation)
         {
-            var addressId = AddressId.CreateFor(houseNumberId);
-            if (!_addressCollection.Contains(addressId) &&
-                modification != CrabModification.Delete &&
-                !lifetime.EndDateTime.HasValue)
-            {
-                ApplyChange(new ParcelAddressWasAttached(_parcelId, addressId));
-
-                foreach (var addressIdToAdd in _addressCollection.AddressIdsEligableToAddFor(houseNumberId))
-                    ApplyChange(new ParcelAddressWasAttached(_parcelId, addressIdToAdd));
-            }
-            else if (_addressCollection.Contains(addressId) &&
-                     (modification == CrabModification.Delete || lifetime.EndDateTime.HasValue))
-            {
-                foreach (var addressIdToAdd in _addressCollection.AddressIdsEligableToRemoveFor(houseNumberId))
-                    ApplyChange(new ParcelAddressWasDetached(_parcelId, addressIdToAdd));
-
-                ApplyChange(new ParcelAddressWasDetached(_parcelId, addressId));
-            }
-
-            ApplyChange(new TerrainObjectHouseNumberWasImportedFromCrab(
+            var legacyEvent = new TerrainObjectHouseNumberWasImportedFromCrab(
                 terrainObjectHouseNumberId,
                 terrainObjectId,
                 houseNumberId,
@@ -103,7 +86,50 @@ namespace ParcelRegistry.Parcel
                 timestamp,
                 @operator,
                 modification,
-                organisation));
+                organisation);
+
+            var addressId = AddressId.CreateFor(houseNumberId);
+
+            if (_addressCollection.Contains(addressId) &&
+                (modification == CrabModification.Delete || lifetime.EndDateTime.HasValue))
+            {
+                if (_activeHouseNumberIdsByTerreinObjectHouseNr.Values.Count(x => x == houseNumberId) == 1)
+                {
+                    foreach (var addressIdToRemove in _addressCollection.AddressIdsEligableToRemoveFor(houseNumberId))
+                        ApplyChange(new ParcelAddressWasDetached(_parcelId, addressIdToRemove));
+
+                    ApplyChange(new ParcelAddressWasDetached(_parcelId, addressId));
+                }
+            }
+            else
+            {
+                if (_activeHouseNumberIdsByTerreinObjectHouseNr.ContainsKey(terrainObjectHouseNumberId) &&
+                    _activeHouseNumberIdsByTerreinObjectHouseNr[terrainObjectHouseNumberId] != houseNumberId)
+                {
+                    var currentCrabHouseNumberId = _activeHouseNumberIdsByTerreinObjectHouseNr[terrainObjectHouseNumberId];
+                    if (_activeHouseNumberIdsByTerreinObjectHouseNr.Values.Count(x => x == currentCrabHouseNumberId) == 1)
+                    {
+                        foreach (var addressIdToRemove in _addressCollection.AddressIdsEligableToRemoveFor(
+                            currentCrabHouseNumberId))
+                            ApplyChange(new ParcelAddressWasDetached(_parcelId, addressIdToRemove));
+
+                        ApplyChange(new ParcelAddressWasDetached(_parcelId,
+                            AddressId.CreateFor(currentCrabHouseNumberId)));
+                    }
+                }
+
+                if (!_addressCollection.Contains(addressId) &&
+                    modification != CrabModification.Delete &&
+                    !lifetime.EndDateTime.HasValue)
+                {
+                    ApplyChange(new ParcelAddressWasAttached(_parcelId, addressId));
+
+                    foreach (var addressIdToAdd in _addressCollection.AddressIdsEligableToAddFor(houseNumberId))
+                        ApplyChange(new ParcelAddressWasAttached(_parcelId, addressIdToAdd));
+                }
+            }
+
+            ApplyChange(legacyEvent);
         }
 
         public void ImportSubaddressFromCrab(

@@ -78,6 +78,12 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         {
             var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+                .WithModification(CrabModification.Insert);
+
+            var deleteCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+                .WithTerrainObjectHouseNumberId(command.TerrainObjectHouseNumberId)
+                .WithHouseNumberId(command.HouseNumberId)
                 .WithModification(CrabModification.Delete);
 
             var addressId = AddressId.CreateFor(command.HouseNumberId);
@@ -86,11 +92,12 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
                 .Given(_parcelId,
                     _fixture.Create<ParcelWasRegistered>(),
                     _fixture.Create<ParcelAddressWasAttached>()
-                        .WithAddressId(addressId))
-                .When(command)
+                        .WithAddressId(addressId),
+                    command.ToLegacyEvent())
+                .When(deleteCommand)
                 .Then(_parcelId,
                     new ParcelAddressWasDetached(_parcelId, addressId),
-                    command.ToLegacyEvent()));
+                    deleteCommand.ToLegacyEvent()));
         }
 
         [Fact]
@@ -117,7 +124,8 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
                 .Given(_parcelId,
                     _fixture.Create<ParcelWasRegistered>(),
                     _fixture.Create<ParcelAddressWasAttached>()
-                        .WithAddressId(addressId))
+                        .WithAddressId(addressId),
+                    command.ToLegacyEvent())
                 .When(command)
                 .Then(_parcelId,
                     new ParcelAddressWasDetached(_parcelId, addressId),

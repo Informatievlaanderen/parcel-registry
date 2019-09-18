@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Parcel
 {
+    using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Events;
@@ -17,6 +18,9 @@ namespace ParcelRegistry.Parcel
         private readonly AddressCollection _addressCollection = new AddressCollection();
         public Modification LastModificationBasedOnCrab { get; private set; }
 
+        private readonly Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
+            _activeHouseNumberIdsByTerreinObjectHouseNr = new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>();
+
         private Parcel()
         {
             Register<ParcelWasRegistered>(When);
@@ -31,8 +35,21 @@ namespace ParcelRegistry.Parcel
             Register<ParcelAddressWasDetached>(When);
 
             Register<AddressSubaddressWasImportedFromCrab>(When);
-            Register<TerrainObjectHouseNumberWasImportedFromCrab>(@event => WhenCrabEventApplied());
+            Register<TerrainObjectHouseNumberWasImportedFromCrab>(When);
             Register<TerrainObjectWasImportedFromCrab>(@event => WhenCrabEventApplied(@event.Modification == CrabModification.Delete));
+        }
+
+        private void When(TerrainObjectHouseNumberWasImportedFromCrab @event)
+        {
+            var crabTerrainObjectHouseNumberId = new CrabTerrainObjectHouseNumberId(@event.TerrainObjectHouseNumberId);
+
+            var crabHouseNumberId = new CrabHouseNumberId(@event.HouseNumberId);
+            if (@event.Modification == CrabModification.Delete)
+                _activeHouseNumberIdsByTerreinObjectHouseNr.Remove(crabTerrainObjectHouseNumberId);
+            else
+                _activeHouseNumberIdsByTerreinObjectHouseNr[crabTerrainObjectHouseNumberId] = crabHouseNumberId;
+
+            WhenCrabEventApplied();
         }
 
         private void When(AddressSubaddressWasImportedFromCrab @event)
