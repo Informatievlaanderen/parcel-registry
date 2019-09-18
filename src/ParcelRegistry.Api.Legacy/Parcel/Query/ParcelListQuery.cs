@@ -18,14 +18,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         public ParcelListQuery(LegacyContext context) => _context = context;
 
         protected override IQueryable<ParcelDetail> Filter(FilteringHeader<ParcelFilter> filtering)
-        {
-            var parcels = _context
+            => _context
                 .ParcelDetail
                 .AsNoTracking()
                 .Where(x => x.Complete && !x.Removed);
-
-            return parcels;
-        }
     }
 
     public class ParcelSorting : ISorting
