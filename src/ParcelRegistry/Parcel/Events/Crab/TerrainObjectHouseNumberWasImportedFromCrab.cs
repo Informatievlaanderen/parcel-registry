@@ -6,13 +6,14 @@ namespace ParcelRegistry.Parcel.Events.Crab
     using NodaTime;
 
     [EventName("CRAB-TerrainObjectHouseNumberWasImported")]
-    public class TerrainObjectHouseNumberWasImportedFromCrab
+    public class TerrainObjectHouseNumberWasImportedFromCrab : ICrabEvent, IHasCrabKey<int>
     {
+        public int Key => TerrainObjectHouseNumberId;
         public int TerrainObjectHouseNumberId { get; }
         public int TerrainObjectId { get; }
         public int HouseNumberId { get; }
-        public LocalDateTime? Begin { get; }
-        public LocalDateTime? End { get; }
+        public LocalDateTime? BeginDateTime { get; }
+        public LocalDateTime? EndDateTime { get; }
         public Instant Timestamp { get; }
         public string Operator { get; }
         public CrabModification? Modification { get; }
@@ -31,8 +32,8 @@ namespace ParcelRegistry.Parcel.Events.Crab
             TerrainObjectHouseNumberId = terrainObjectHouseNumberId;
             TerrainObjectId = terrainObjectId;
             HouseNumberId = houseNumberId;
-            Begin = lifetime.BeginDateTime;
-            End = lifetime.EndDateTime;
+            BeginDateTime = lifetime.BeginDateTime;
+            EndDateTime = lifetime.EndDateTime;
             Timestamp = timestamp;
             Operator = @operator;
             Modification = modification;
@@ -44,8 +45,8 @@ namespace ParcelRegistry.Parcel.Events.Crab
             int terrainObjectHouseNumberId,
             int terrainObjectId,
             int houseNumberId,
-            LocalDateTime? begin,
-            LocalDateTime? end,
+            LocalDateTime? beginDateTime,
+            LocalDateTime? endDateTime,
             Instant timestamp,
             string @operator,
             CrabModification? modification,
@@ -54,7 +55,7 @@ namespace ParcelRegistry.Parcel.Events.Crab
                 new CrabTerrainObjectHouseNumberId(terrainObjectHouseNumberId),
                 new CrabTerrainObjectId(terrainObjectId),
                 new CrabHouseNumberId(houseNumberId),
-                new CrabLifetime(begin, end),
+                new CrabLifetime(beginDateTime, endDateTime),
                 new CrabTimestamp(timestamp),
                 new CrabOperator(@operator),
                 modification,
