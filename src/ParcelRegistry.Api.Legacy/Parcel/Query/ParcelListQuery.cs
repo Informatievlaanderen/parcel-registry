@@ -22,10 +22,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             var parcels = _context
                 .ParcelDetail
                 .AsNoTracking()
-                .Where(x => x.Complete);
-
-            if (!filtering.ShouldFilter)
-                return parcels;
+                .Where(x => x.Complete && !x.Removed);
 
             return parcels;
         }
