@@ -1,3 +1,10 @@
+## [1.14.5](https://github.com/informatievlaanderen/parcel-registry/compare/v1.14.4...v1.14.5) (2019-09-18)
+
+
+### Bug Fixes
+
+* removed parcels are no longer shown in list GR-880 ([ba1272b](https://github.com/informatievlaanderen/parcel-registry/commit/ba1272b))
+
 ## [1.14.4](https://github.com/informatievlaanderen/parcel-registry/compare/v1.14.3...v1.14.4) (2019-09-17)
 
 
