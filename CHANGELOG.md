@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v2.0.0...v2.1.0) (2019-09-19)
+
+
+### Features
+
+* upgrade NTS & Shaperon packages ([29907fa](https://github.com/informatievlaanderen/parcel-registry/commit/29907fa))
+
 # [2.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v1.14.5...v2.0.0) (2019-09-18)
 
 
