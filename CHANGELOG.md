@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/informatievlaanderen/parcel-registry/compare/v2.1.0...v2.1.1) (2019-09-19)
+
+
+### Bug Fixes
+
+* upgrade NTS ([269edb8](https://github.com/informatievlaanderen/parcel-registry/commit/269edb8))
+
 # [2.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v2.0.0...v2.1.0) (2019-09-19)
 
 
