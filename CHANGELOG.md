@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.0...v2.2.1) (2019-09-26)
+
+
+### Bug Fixes
+
+* resume projections on startup ([e06412a](https://github.com/informatievlaanderen/parcel-registry/commit/e06412a))
+
 # [2.2.0](https://github.com/informatievlaanderen/parcel-registry/compare/v2.1.1...v2.2.0) (2019-09-25)
 
 
