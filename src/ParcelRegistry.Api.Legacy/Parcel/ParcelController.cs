@@ -73,11 +73,11 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                     .AsNoTracking()
                     .SingleOrDefaultAsync(item => item.PersistentLocalId == caPaKey, cancellationToken);
 
+            if (parcel != null && parcel.Removed)
+                throw new ApiException("Perceel werd verwijderd.", StatusCodes.Status410Gone);
+
             if (parcel == null || !parcel.Complete)
                 throw new ApiException("Onbestaand perceel.", StatusCodes.Status404NotFound);
-
-            if (parcel.Removed)
-                throw new ApiException("Perceel werd verwijderd.", StatusCodes.Status410Gone);
 
             var addressIds = parcel.Addresses.Select(x => x.AddressId);
 
