@@ -1,3 +1,10 @@
+## [2.2.3](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.2...v2.2.3) (2019-09-30)
+
+
+### Bug Fixes
+
+* check removed before completeness GR-900 ([1172158](https://github.com/informatievlaanderen/parcel-registry/commit/1172158))
+
 ## [2.2.2](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.1...v2.2.2) (2019-09-26)
 
 
