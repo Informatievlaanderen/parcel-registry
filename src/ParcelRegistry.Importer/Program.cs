@@ -35,13 +35,6 @@ namespace ParcelRegistry.Importer
                 var commandProcessor = new CommandProcessorBuilder<CaPaKey>(new CommandGenerator())
                     .WithCommandLineOptions(options.ImportArguments)
                     .UseSerilog(cfg => cfg
-                        .WriteTo.File(
-                            "tracing.log",
-                            LogEventLevel.Verbose,
-                            retainedFileCountLimit: 20,
-                            fileSizeLimitBytes: Settings.Default.LogFileSizeLimitBytes,
-                            rollOnFileSizeLimit: true,
-                            rollingInterval: RollingInterval.Day)
                         .WriteTo.Console(LogEventLevel.Information))
                     .UseHttpApiProxyConfig(settings)
                     .UseCommandProcessorConfig(settings)
