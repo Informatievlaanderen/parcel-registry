@@ -126,7 +126,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         /// De identificator van het perceel.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 2)]
-        public Identificator Identificator { get; set; }
+        public PerceelIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De status van het perceel.
@@ -164,7 +164,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             string reason)
         {
             ParcelId = parcelId;
-            Identificator = new Identificator(naamruimte, string.IsNullOrEmpty(caPaKey) ? string.Empty : caPaKey, version);
+            Identificator = new PerceelIdentificator(naamruimte, string.IsNullOrEmpty(caPaKey) ? string.Empty : caPaKey, version);
             Status = status;
             AddressIds = addressIds;
             IsComplete = isComplete;

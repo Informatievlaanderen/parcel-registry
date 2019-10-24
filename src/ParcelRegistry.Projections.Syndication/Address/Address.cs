@@ -18,7 +18,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
         /// De identificator van het adres.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 2)]
-        public Identificator Identificator { get; set; }
+        public AdresIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De id van de straatnaam.

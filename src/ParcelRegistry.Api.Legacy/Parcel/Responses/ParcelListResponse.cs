@@ -37,7 +37,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         /// De identificator van het perceel.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 1)]
-        public Identificator Identificator { get; set; }
+        public PerceelIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De URL die naar de details van de meest recente versie van een enkel perceel leidt.
@@ -47,7 +47,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
 
         public ParcelListItemResponse(string id, string naamruimte, string detail, DateTimeOffset version)
         {
-            Identificator = new Identificator(naamruimte, id, version);
+            Identificator = new PerceelIdentificator(naamruimte, id, version);
             Detail = new Uri(string.Format(detail, id));
         }
     }
