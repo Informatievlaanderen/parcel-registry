@@ -1,3 +1,11 @@
+## [2.2.4](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.3...v2.2.4) (2019-10-24)
+
+
+### Bug Fixes
+
+* push to correct repo ([15a059a](https://github.com/informatievlaanderen/parcel-registry/commit/15a059a))
+* upgrade grar common ([1638edd](https://github.com/informatievlaanderen/parcel-registry/commit/1638edd))
+
 ## [2.2.3](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.2...v2.2.3) (2019-09-30)
 
 
