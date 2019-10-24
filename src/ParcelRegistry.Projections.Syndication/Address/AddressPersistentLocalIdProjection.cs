@@ -59,7 +59,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
                 latestItem = new AddressPersistentLocalIdItem
                 {
                     AddressId = entry.Content.Object.AddressId,
-                    Version = entry.Content.Object.Identificator?.Versie.Value,
+                    Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
                     PersistentLocalId = entry.Content.Object.Identificator?.ObjectId,
                     IsComplete = entry.Content.Object.IsComplete,
@@ -71,7 +71,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
             }
             else
             {
-                latestItem.Version = entry.Content.Object.Identificator?.Versie.Value;
+                latestItem.Version = entry.Content.Object.Identificator?.Versie;
                 latestItem.Position = long.Parse(entry.FeedEntry.Id);
                 latestItem.PersistentLocalId = entry.Content.Object.Identificator?.ObjectId;
                 latestItem.IsComplete = entry.Content.Object.IsComplete;
@@ -85,7 +85,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
                     .AddressPersistentLocalIds
                     .FindAsync(entry.Content.Object.AddressId);
 
-            latestItem.Version = entry.Content.Object.Identificator?.Versie.Value;
+            latestItem.Version = entry.Content.Object.Identificator?.Versie;
             latestItem.Position = long.Parse(entry.FeedEntry.Id);
             latestItem.PersistentLocalId = entry.Content.Object.Identificator?.ObjectId;
             latestItem.IsComplete = entry.Content.Object.IsComplete;

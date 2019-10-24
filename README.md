@@ -15,22 +15,21 @@
 
 ## Development
 
-### Employee
-
-We use a private NuGet proxy which needs authentication. Depending on the fact if you are an employee or not, follow these steps:
-
-* Open `paket.dependencies`
-* Comment the public NuGet feed.
-* Uncomment the private MyGet feed.
-
-To use the private MyGet feed, setup 2 environment variables:
-
-* MYGET_FEED_USER
-* MYGET_FEED_PASS
-
 ### Getting started
 
-TODO: More to come :)
+#### Initialisation
+
+To fill up the database for the first time:
+
+* Run `ParcelRegistry.Api.CrabImport` (`ParcelRegistry.sln`)
+* Run `ParcelRegistry.Importer` (`ParcelRegistryImporter.sln`) with `init -c -l Trace` as flags.
+
+#### Projections
+
+To start the projections for the first time:
+
+* Run `ParcelRegistry.Projector`
+* Send a `POST` to `http://localhost:7006/v1/projections/start/all`
 
 ### Generating documentation
 
