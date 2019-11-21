@@ -1,3 +1,10 @@
+## [2.2.5](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.4...v2.2.5) (2019-11-21)
+
+
+### Bug Fixes
+
+* add a sorting to legacy api detail addresses ([6bf1227](https://github.com/informatievlaanderen/parcel-registry/commit/6bf1227))
+
 ## [2.2.4](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.3...v2.2.4) (2019-10-24)
 
 
