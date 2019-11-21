@@ -86,6 +86,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                 .AsNoTracking()
                 .Where(x => addressIds.Contains(x.AddressId) && x.IsComplete && !x.IsRemoved)
                 .Select(x => x.PersistentLocalId)
+                .OrderBy(x => x) //sorts on string! other order as a number!
                 .ToListAsync(cancellationToken);
 
             return Ok(
