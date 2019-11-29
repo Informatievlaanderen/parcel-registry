@@ -8,21 +8,21 @@ namespace ParcelRegistry.Projections.Extract
 
         public DbaseString id { get; }
         public DbaseString perceelid { get; }
-        public DbaseDateTime versie { get; }
+        public DbaseString versieid { get; }
         public DbaseString status { get; }
 
         public ParcelDbaseRecord()
         {
             id = new DbaseString(Schema.id);
             perceelid = new DbaseString(Schema.perceelid);
-            versie = new DbaseDateTime(Schema.versie);
+            versieid = new DbaseString(Schema.versieid);
             status = new DbaseString(Schema.status);
 
             Values = new DbaseFieldValue[]
             {
                 id,
                 perceelid,
-                versie,
+                versieid,
                 status
             };
         }
