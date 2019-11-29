@@ -6,6 +6,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     using System;
     using System.Text;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Microsoft.Extensions.Options;
     using NodaTime;
     using Parcel.Events.Crab;
@@ -30,7 +31,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                         CaPaKey = message.Message.VbrCaPaKey,
                         DbaseRecord = new ParcelDbaseRecord
                         {
-                            versie = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().DateTime },
+                            versieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() },
                             id = { Value = $"{extractConfig.Value.DataVlaanderenNamespace}/{message.Message.VbrCaPaKey}" },
                             perceelid = { Value = message.Message.VbrCaPaKey }
                         }.ToBytes(_encoding)
@@ -107,7 +108,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
             => UpdateRecord(parcel, record => record.status.Value = status);
 
         private void UpdateVersie(ParcelExtractItem parcel, Instant version)
-            => UpdateRecord(parcel, record => record.versie.Value = version.ToBelgianDateTimeOffset().DateTime);
+            => UpdateRecord(parcel, record => record.versieid.SetValue(version.ToBelgianDateTimeOffset()));
 
         private void UpdateRecord(ParcelExtractItem parcel, Action<ParcelDbaseRecord> updateFunc)
         {
