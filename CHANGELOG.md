@@ -1,3 +1,16 @@
+# [2.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.6...v2.3.0) (2019-12-03)
+
+
+### Bug Fixes
+
+* remove count from sync GR-852 ([679e4e7](https://github.com/informatievlaanderen/parcel-registry/commit/679e4e7))
+* remove events connectionstring from extract ([0467765](https://github.com/informatievlaanderen/parcel-registry/commit/0467765))
+
+
+### Features
+
+* add view to count parcels GR-852 ([9ecc4ae](https://github.com/informatievlaanderen/parcel-registry/commit/9ecc4ae))
+
 ## [2.2.6](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.5...v2.2.6) (2019-11-29)
 
 ## [2.2.5](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.4...v2.2.5) (2019-11-21)
