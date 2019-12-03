@@ -11,7 +11,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
         public Guid AddressId { get; set; }
     }
 
-    public class ParcelDetailAddressmConfiguration : IEntityTypeConfiguration<ParcelDetailAddress>
+    public class ParcelDetailAddressConfiguration : IEntityTypeConfiguration<ParcelDetailAddress>
     {
         private const string TableName = "ParcelAddresses";
 

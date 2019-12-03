@@ -9,16 +9,28 @@ namespace ParcelRegistry.Projections.Legacy
     public class LegacyContext : RunnerDbContext<LegacyContext>
     {
         public override string ProjectionStateSchema => Schema.Legacy;
+        internal const string ParcelDetailListCountName = "vw_ParcelDetailListCount";
 
         public DbSet<ParcelDetail.ParcelDetail> ParcelDetail { get; set; }
         public DbSet<ParcelDetailAddress> ParcelAddresses { get; set; }
         public DbSet<ParcelSyndicationItem> ParcelSyndication { get; set; }
 
+        public DbQuery<ParcelDetailListViewCount> ParcelDetailListViewCount { get; set; }
+        
         // This needs to be here to please EF
         public LegacyContext() { }
 
+
         // This needs to be DbContextOptions<T> for Autofac!
+
         public LegacyContext(DbContextOptions<LegacyContext> options)
             : base(options) { }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Query<ParcelDetailListViewCount>()
+                .ToView(ParcelDetailListCountName, Schema.Legacy);
+        }
     }
 }
