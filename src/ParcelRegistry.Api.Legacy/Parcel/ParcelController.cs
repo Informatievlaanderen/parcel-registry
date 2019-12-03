@@ -31,6 +31,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
     using System.Threading.Tasks;
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.Api.Search;
+    using Projections.Legacy.ParcelDetail;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
@@ -122,10 +123,16 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedParcels = new ParcelListQuery(context).Fetch(filtering, sorting, pagination);
+            long Count(IQueryable<ParcelDetail> items) => context.ParcelDetailListViewCount.Single().Count;
 
-            Response.AddPaginationResponse(pagedParcels.PaginationInfo);
-            Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
+            var pagedParcels = new ParcelListQuery(context)
+                .Fetch(
+                    filtering,
+                    sorting,
+                    pagination,
+                    filtering.ShouldFilter ? null : (Func<IQueryable<ParcelDetail>, long>) Count);
+
+            Response.AddPagedQueryResultHeaders(pagedParcels);
 
             var response = new ParcelListResponse
             {
