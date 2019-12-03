@@ -30,6 +30,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
+    using Be.Vlaanderen.Basisregisters.Api.Search;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
@@ -172,10 +173,9 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                 context,
                 filtering.Filter?.ContainsEvent ?? false,
                 filtering.Filter?.ContainsObject ?? false)
-                .Fetch(filtering, sorting, pagination);
+                .Fetch(filtering, sorting, pagination, items => 0);
 
-            Response.AddPaginationResponse(pagedAddresses.PaginationInfo);
-            Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
+            Response.AddPagedQueryResultHeaders(pagedAddresses);
 
             return new ContentResult
             {
