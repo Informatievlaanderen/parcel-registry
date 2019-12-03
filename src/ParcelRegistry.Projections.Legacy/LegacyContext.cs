@@ -20,9 +20,7 @@ namespace ParcelRegistry.Projections.Legacy
         // This needs to be here to please EF
         public LegacyContext() { }
 
-
         // This needs to be DbContextOptions<T> for Autofac!
-
         public LegacyContext(DbContextOptions<LegacyContext> options)
             : base(options) { }
 
