@@ -12,7 +12,7 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
             AS
             SELECT COUNT_BIG(*) as Count
             FROM [{Infrastructure.Schema.Legacy}].[{ParcelDetail.ParcelDetailConfiguration.TableName}]
-            WHERE [Complete] = 1 AND [Removed] = 0 AND [PersistentLocalId] <> 0");
+            WHERE [Complete] = 1 AND [Removed] = 0");
 
             migrationBuilder.Sql($@"CREATE UNIQUE CLUSTERED INDEX IX_{LegacyContext.ParcelDetailListCountName} ON [{Infrastructure.Schema.Legacy}].[{LegacyContext.ParcelDetailListCountName}] (Count)");
         }
