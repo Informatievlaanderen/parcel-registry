@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/informatievlaanderen/parcel-registry/compare/v2.3.0...v2.3.1) (2019-12-04)
+
+
+### Bug Fixes
+
+* make the where of the view identical to the ParcelListQuery filter ([be8ea31](https://github.com/informatievlaanderen/parcel-registry/commit/be8ea31))
+
 # [2.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v2.2.6...v2.3.0) (2019-12-03)
 
 
