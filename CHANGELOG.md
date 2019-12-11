@@ -1,3 +1,10 @@
+## [2.3.2](https://github.com/informatievlaanderen/parcel-registry/compare/v2.3.1...v2.3.2) (2019-12-11)
+
+
+### Bug Fixes
+
+* correct extract filename ([e74874b](https://github.com/informatievlaanderen/parcel-registry/commit/e74874b))
+
 ## [2.3.1](https://github.com/informatievlaanderen/parcel-registry/compare/v2.3.0...v2.3.1) (2019-12-04)
 
 
