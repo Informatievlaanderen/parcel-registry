@@ -19,7 +19,7 @@ namespace ParcelRegistry.Api.Extract.Extracts
     [ApiExplorerSettings(GroupName = "Extract")]
     public class ExtractController : ApiController
     {
-        public const string ZipName = "percelen";
+        public const string ZipName = "Perceel";
 
         /// <summary>
         /// Vraag een dump van het volledige register op.
