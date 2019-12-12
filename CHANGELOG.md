@@ -1,3 +1,10 @@
+## [2.3.3](https://github.com/informatievlaanderen/parcel-registry/compare/v2.3.2...v2.3.3) (2019-12-12)
+
+
+### Bug Fixes
+
+* correct extract realized status ([fec400b](https://github.com/informatievlaanderen/parcel-registry/commit/fec400b))
+
 ## [2.3.2](https://github.com/informatievlaanderen/parcel-registry/compare/v2.3.1...v2.3.2) (2019-12-11)
 
 
