@@ -13,7 +13,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
 
     public class ParcelExtractProjections : ConnectedProjection<ExtractContext>
     {
-        private const string InUse = "InGebruik";
+        private const string InUse = "Gerealiseerd";
         private const string Retired = "Gehistoreerd";
         private readonly Encoding _encoding;
 
