@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v2.3.3...v3.0.0) (2019-12-25)
+
+
+### Code Refactoring
+
+* upgrade to netcoreapp31 ([b93ce83](https://github.com/informatievlaanderen/parcel-registry/commit/b93ce83))
+
+
+### BREAKING CHANGES
+
+* Upgrade to .NET Core 3.1
+
 ## [2.3.3](https://github.com/informatievlaanderen/parcel-registry/compare/v2.3.2...v2.3.3) (2019-12-12)
 
 
