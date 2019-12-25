@@ -6,17 +6,17 @@ namespace ParcelRegistry.Projections.Extract
     {
         public static readonly ParcelDbaseSchema Schema = new ParcelDbaseSchema();
 
-        public DbaseString id { get; }
-        public DbaseString perceelid { get; }
-        public DbaseString versieid { get; }
-        public DbaseString status { get; }
+        public DbaseCharacter id { get; }
+        public DbaseCharacter perceelid { get; }
+        public DbaseCharacter versieid { get; }
+        public DbaseCharacter status { get; }
 
         public ParcelDbaseRecord()
         {
-            id = new DbaseString(Schema.id);
-            perceelid = new DbaseString(Schema.perceelid);
-            versieid = new DbaseString(Schema.versieid);
-            status = new DbaseString(Schema.status);
+            id = new DbaseCharacter(Schema.id);
+            perceelid = new DbaseCharacter(Schema.perceelid);
+            versieid = new DbaseCharacter(Schema.versieid);
+            status = new DbaseCharacter(Schema.status);
 
             Values = new DbaseFieldValue[]
             {
