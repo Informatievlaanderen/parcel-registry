@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.0.0...v3.1.0) (2020-01-03)
+
+
+### Features
+
+* allow only one projector instance ([6d6de25](https://github.com/informatievlaanderen/parcel-registry/commit/6d6de25))
+
 # [3.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v2.3.3...v3.0.0) (2019-12-25)
 
 
