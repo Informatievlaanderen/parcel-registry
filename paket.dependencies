@@ -38,7 +38,7 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 4.1.0
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 4.1.0
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 4.1.0
 
-nuget Be.Vlaanderen.Basisregisters.Api 9.0.1
+nuget Be.Vlaanderen.Basisregisters.Api 10.0.1
 
 nuget Be.Vlaanderen.Basisregisters.CommandHandling 4.1.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 4.1.0
@@ -62,11 +62,11 @@ nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 4.1.0
 
 nuget Be.Vlaanderen.Basisregisters.Crab 2.0.0
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common 14.0.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import 14.0.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 14.0.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 14.0.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 14.0.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common 14.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import 14.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 14.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 14.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 14.1.0
 
 nuget Be.Vlaanderen.Basisregisters.Shaperon 7.2.0
 
@@ -86,7 +86,7 @@ nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4
 nuget AutoFixture 4.11.0
-nuget FluentAssertions 5.9.0
+nuget FluentAssertions 5.10.0
 
 // BUILD STUFF
 nuget SourceLink.Embed.AllSourceFiles 2.8.3 copy_local: true
