@@ -15,10 +15,10 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         public long Position { get; set; }
 
         public Guid? ParcelId { get; set; }
-        public string CaPaKey { get; set; }
-        public string ChangeType { get; set; }
+        public string? CaPaKey { get; set; }
+        public string? ChangeType { get; set; }
 
-        public string StatusAsString { get; set; }
+        public string? StatusAsString { get; set; }
 
         public ParcelStatus? Status
         {
@@ -28,7 +28,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 
         public bool IsComplete { get; set; }
 
-        public string AddressesAsString { get; set; }
+        public string? AddressesAsString { get; set; }
 
         public IReadOnlyCollection<Guid> AddressIds
         {
@@ -53,10 +53,10 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 
         public Application? Application { get; set; }
         public Modification? Modification { get; set; }
-        public string Operator { get; set; }
+        public string? Operator { get; set; }
         public Organisation? Organisation { get; set; }
-        public string Reason { get; set; }
-        public string EventDataAsXml { get; set; }
+        public string? Reason { get; set; }
+        public string? EventDataAsXml { get; set; }
 
         private List<Guid> GetDeserializedOfficialLanguages()
         {
@@ -119,7 +119,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         {
             b.ToTable(TableName, Schema.Legacy)
                 .HasKey(x => x.Position)
-                .ForSqlServerIsClustered();
+                .IsClustered();
 
             b.Property(x => x.Position).ValueGeneratedNever();
             b.HasIndex(x => x.Position).IsColumnStore($"CI_{TableName}_Position");

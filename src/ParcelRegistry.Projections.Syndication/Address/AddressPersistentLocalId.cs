@@ -8,7 +8,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
     public class AddressPersistentLocalIdItem
     {
         public Guid AddressId { get; set; }
-        public string PersistentLocalId { get; set; }
+        public string? PersistentLocalId { get; set; }
         public DateTimeOffset? Version { get; set; }
         public long Position { get; set; }
         public bool IsComplete { get; set; }
@@ -23,7 +23,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
         {
             builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => x.AddressId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             builder.Property(x => x.PersistentLocalId);
 

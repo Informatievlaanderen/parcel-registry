@@ -147,7 +147,7 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
         }
     }
 
-    public class RegisterCrabImportResponseExamples : IExamplesProvider
+    public class RegisterCrabImportResponseExamples : IExamplesProvider<object>
     {
         public object GetExamples() => new { };
     }

@@ -173,7 +173,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         }
     }
 
-    public class ParcelSyndicationResponseExamples : IExamplesProvider
+    public class ParcelSyndicationResponseExamples : IExamplesProvider<object>
     {
         private ParcelSyndicationContent ContentExample => new ParcelSyndicationContent(
             Guid.NewGuid(),

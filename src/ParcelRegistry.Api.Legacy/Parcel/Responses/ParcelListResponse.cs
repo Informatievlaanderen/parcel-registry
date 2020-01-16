@@ -52,7 +52,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         }
     }
 
-    public class ParcelListResponseExamples : IExamplesProvider
+    public class ParcelListResponseExamples : IExamplesProvider<ParcelListResponse>
     {
         private readonly ResponseOptions _responseOptions;
 
@@ -61,7 +61,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             _responseOptions = responseOptionsProvider.Value;
         }
 
-        public object GetExamples()
+        public ParcelListResponse GetExamples()
         {
             var samples = new List<ParcelListItemResponse>
             {
