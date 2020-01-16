@@ -8,8 +8,8 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     public class ParcelExtractItem
     {
         public Guid? ParcelId { get; set; }
-        public string CaPaKey { get; set; }
-        public byte[] DbaseRecord { get; set; }
+        public string? CaPaKey { get; set; }
+        public byte[]? DbaseRecord { get; set; }
     }
 
     public class ParcelExtractItemConfiguration : IEntityTypeConfiguration<ParcelExtractItem>
@@ -20,12 +20,12 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
         {
             builder.ToTable(TableName, Schema.Extract)
                 .HasKey(p => p.ParcelId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             builder.Property(p => p.CaPaKey);
             builder.Property(p => p.DbaseRecord);
 
-            builder.HasIndex(p => p.CaPaKey).ForSqlServerIsClustered();
+            builder.HasIndex(p => p.CaPaKey).IsClustered();
         }
     }
 }

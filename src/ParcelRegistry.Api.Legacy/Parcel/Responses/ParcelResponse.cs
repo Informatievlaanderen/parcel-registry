@@ -51,14 +51,14 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         }
     }
 
-    public class ParcelResponseExamples : IExamplesProvider
+    public class ParcelResponseExamples : IExamplesProvider<ParcelResponse>
     {
         private readonly ResponseOptions _responseOptions;
 
         public ParcelResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
             => _responseOptions = responseOptionsProvider.Value;
 
-        public object GetExamples()
+        public ParcelResponse GetExamples()
             => new ParcelResponse(
                 _responseOptions.Naamruimte,
                 PerceelStatus.Gerealiseerd,
@@ -68,9 +68,9 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
                 _responseOptions.AdresDetailUrl);
     }
 
-    public class ParcelNotFoundResponseExamples : IExamplesProvider
+    public class ParcelNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
     {
-        public object GetExamples() => new ProblemDetails
+        public ProblemDetails GetExamples() => new ProblemDetails
         {
             HttpStatus = StatusCodes.Status404NotFound,
             Title = ProblemDetails.DefaultTitle,
@@ -79,9 +79,9 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         };
     }
 
-    public class ParcelGoneResponseExamples : IExamplesProvider
+    public class ParcelGoneResponseExamples : IExamplesProvider<ProblemDetails>
     {
-        public object GetExamples() => new ProblemDetails
+        public ProblemDetails GetExamples() => new ProblemDetails
         {
             HttpStatus = StatusCodes.Status410Gone,
             Title = ProblemDetails.DefaultTitle,
