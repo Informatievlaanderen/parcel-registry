@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.1.0...v3.1.1) (2020-01-16)
+
+
+### Bug Fixes
+
+* get api's working again ([7128931](https://github.com/informatievlaanderen/parcel-registry/commit/7128931))
+
 # [3.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.0.0...v3.1.0) (2020-01-03)
 
 
