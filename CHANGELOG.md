@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.1.1...v3.2.0) (2020-01-23)
+
+
+### Features
+
+* use distributed lock for syndication ([6911862](https://github.com/informatievlaanderen/parcel-registry/commit/6911862))
+
 ## [3.1.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.1.0...v3.1.1) (2020-01-16)
 
 
