@@ -1,3 +1,10 @@
+# [3.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.2.0...v3.3.0) (2020-01-23)
+
+
+### Features
+
+* upgrade projectionhandling package ([d428b64](https://github.com/informatievlaanderen/parcel-registry/commit/d428b64))
+
 # [3.2.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.1.1...v3.2.0) (2020-01-23)
 
 
