@@ -1,3 +1,10 @@
+## [3.3.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.3.0...v3.3.1) (2020-01-23)
+
+
+### Bug Fixes
+
+* syndication distributedlock now runs async ([143fe5c](https://github.com/informatievlaanderen/parcel-registry/commit/143fe5c))
+
 # [3.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.2.0...v3.3.0) (2020-01-23)
 
 
