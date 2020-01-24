@@ -1,3 +1,10 @@
+## [3.3.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.3.1...v3.3.2) (2020-01-24)
+
+
+### Bug Fixes
+
+* add syndication to api references ([63867cc](https://github.com/informatievlaanderen/parcel-registry/commit/63867cc))
+
 ## [3.3.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.3.0...v3.3.1) (2020-01-23)
 
 
