@@ -1,3 +1,10 @@
+## [3.3.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.3.2...v3.3.3) (2020-01-28)
+
+
+### Bug Fixes
+
+* ef issues corrected ([0baa9a8](https://github.com/informatievlaanderen/parcel-registry/commit/0baa9a8))
+
 ## [3.3.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.3.1...v3.3.2) (2020-01-24)
 
 
