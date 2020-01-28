@@ -10,18 +10,11 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
     public class ParcelDetail
     {
         public static string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
-        public static string StatusBackingPropertyName = nameof(StatusAsString);
 
         public Guid ParcelId { get; set; }
         public string? PersistentLocalId { get; set; }
 
-        public ParcelStatus? Status
-        {
-            get => ParcelStatus.Parse(StatusAsString);
-            set => StatusAsString = value?.Status;
-        }
-
-        private string? StatusAsString { get; set; }
+        public ParcelStatus? Status { get; set; }
 
         public virtual Collection<ParcelDetailAddress> Addresses { get; set; }
 
@@ -53,7 +46,10 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                 .IsClustered(false);
 
             builder.Property(p => p.PersistentLocalId);
-            builder.Property(ParcelDetail.StatusBackingPropertyName)
+            builder.Property(x => x.Status)
+                .HasConversion<string?>(
+                    value => value == null ? null : value.ToString(),
+                    value => value == null ? (ParcelStatus?)null : ParcelStatus.Parse(value))
                 .HasColumnName("Status");
 
             builder.Property(p => p.Complete);
@@ -61,10 +57,10 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
             builder.Property(ParcelDetail.VersionTimestampBackingPropertyName)
                 .HasColumnName("VersionTimestamp");
 
-            builder.Ignore(x => x.Status);
             builder.Ignore(x => x.VersionTimestamp);
 
-            builder.HasMany(x => x.Addresses);
+            builder.HasMany(x => x.Addresses).WithOne()
+                .HasForeignKey(x => x.ParcelId);
 
             builder.HasIndex(x => x.PersistentLocalId).IsClustered();
             builder.HasIndex(x => x.Removed);

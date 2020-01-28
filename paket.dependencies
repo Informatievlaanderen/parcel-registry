@@ -9,11 +9,11 @@ source https://api.nuget.org/v3/index.json
 // source https://informatievlaanderen.myget.org/F/nuget-mirror/api/v3/index.json username: "%MYGET_FEED_USER%" password: "%MYGET_FEED_PASS%" authtype: "basic"
 
 // PRODUCTION STUFF
-nuget Microsoft.Extensions.Configuration 3.1.0
-nuget Microsoft.Extensions.Configuration.CommandLine 3.1.0
-nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.0
-nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.0
-nuget Microsoft.Extensions.Configuration.Json 3.1.0
+nuget Microsoft.Extensions.Configuration 3.1.1
+nuget Microsoft.Extensions.Configuration.CommandLine 3.1.1
+nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.1
+nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.1
+nuget Microsoft.Extensions.Configuration.Json 3.1.1
 
 nuget Microsoft.Extensions.Http.Polly 3.1.0
 
@@ -25,7 +25,7 @@ nuget NetTopologySuite 2.0.0
 nuget AsyncEnumerator 4.0.2
 nuget System.Interactive.Async 4.0.0 // try to remove later: seems some dependency on core app not being picked up
 
-nuget Microsoft.EntityFrameworkCore.Design 3.1.0
+nuget Microsoft.EntityFrameworkCore.Design 3.1.1
 
 // VBR STUFF
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 3.2.0

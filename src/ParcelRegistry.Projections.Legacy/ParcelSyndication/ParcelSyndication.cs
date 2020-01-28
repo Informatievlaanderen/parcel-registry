@@ -32,7 +32,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 
         public IReadOnlyCollection<Guid> AddressIds
         {
-            get => GetDeserializedOfficialLanguages();
+            get => GetDeserializedAddressIds();
             set => AddressesAsString = JsonConvert.SerializeObject(value);
         }
 
@@ -58,7 +58,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         public string? Reason { get; set; }
         public string? EventDataAsXml { get; set; }
 
-        private List<Guid> GetDeserializedOfficialLanguages()
+        private List<Guid> GetDeserializedAddressIds()
         {
             return string.IsNullOrEmpty(AddressesAsString)
                 ? new List<Guid>()
@@ -67,14 +67,14 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 
         public void AddAddressId(Guid addressId)
         {
-            var addresses = GetDeserializedOfficialLanguages();
+            var addresses = GetDeserializedAddressIds();
             addresses.Add(addressId);
             AddressIds = addresses;
         }
 
         public void RemoveAddressId(Guid addressId)
         {
-            var addresses = GetDeserializedOfficialLanguages();
+            var addresses = GetDeserializedAddressIds();
             addresses.Remove(addressId);
             AddressIds = addresses;
         }

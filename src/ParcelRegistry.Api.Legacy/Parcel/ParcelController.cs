@@ -176,17 +176,17 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedAddresses = new ParcelSyndicationQuery(
+            var pagedParcels = new ParcelSyndicationQuery(
                 context,
                 filtering.Filter?.ContainsEvent ?? false,
                 filtering.Filter?.ContainsObject ?? false)
                 .Fetch(filtering, sorting, pagination, items => 0);
 
-            Response.AddPagedQueryResultHeaders(pagedAddresses);
+            Response.AddPagedQueryResultHeaders(pagedParcels);
 
             return new ContentResult
             {
-                Content = await BuildAtomFeed(pagedAddresses, responseOptions, configuration),
+                Content = await BuildAtomFeed(pagedParcels, responseOptions, configuration),
                 ContentType = MediaTypeNames.Text.Xml,
                 StatusCode = StatusCodes.Status200OK
             };

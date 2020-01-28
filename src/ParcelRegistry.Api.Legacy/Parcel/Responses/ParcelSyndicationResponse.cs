@@ -10,6 +10,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Net.Mime;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
@@ -158,7 +159,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             string caPaKey,
             DateTimeOffset version,
             PerceelStatus? status,
-            List<Guid> addressIds,
+            IEnumerable<Guid> addressIds,
             bool isComplete,
             Organisation? organisation,
             string reason)
@@ -166,7 +167,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             ParcelId = parcelId;
             Identificator = new PerceelIdentificator(naamruimte, string.IsNullOrEmpty(caPaKey) ? string.Empty : caPaKey, version);
             Status = status;
-            AddressIds = addressIds;
+            AddressIds = addressIds.ToList();
             IsComplete = isComplete;
 
             Provenance = new Provenance(organisation, new Reason(reason));

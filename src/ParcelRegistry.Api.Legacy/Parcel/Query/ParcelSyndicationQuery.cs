@@ -25,7 +25,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         public Instant RecordCreatedAt { get; }
         public Instant LastChangedOn { get; }
         public ParcelStatus? Status { get; }
-        public List<Guid> AddressIds { get; }
+        public IEnumerable<Guid> AddressIds { get; } = new List<Guid>();
         public bool IsComplete { get; }
         public Organisation? Organisation { get; }
         public string Reason { get; }
@@ -88,7 +88,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             Instant lastChangedOn,
             bool isComplete,
             ParcelStatus? status,
-            List<Guid> addressIds,
+            IEnumerable<Guid> addressIds,
             Organisation? organisation,
             string reason)
             : this(
@@ -117,7 +117,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             Instant lastChangedOn,
             bool isComplete,
             ParcelStatus? status,
-            List<Guid> addressIds,
+            IEnumerable<Guid> addressIds,
             Organisation? organisation,
             string reason,
             string eventDataAsXml)
@@ -169,7 +169,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                         x.LastChangedOn,
                         x.IsComplete,
                         x.Status,
-                        x.AddressIds.ToList(),
+                        x.AddressIds,
                         x.Organisation,
                         x.Reason,
                         x.EventDataAsXml);
@@ -196,7 +196,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                         x.LastChangedOn,
                         x.IsComplete,
                         x.Status,
-                        x.AddressIds.ToList(),
+                        x.AddressIds,
                         x.Organisation,
                         x.Reason);
 
