@@ -1,3 +1,10 @@
+# [3.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.3.3...v3.4.0) (2020-02-01)
+
+
+### Features
+
+* upgrade netcoreapp31 and dependencies ([04307b1](https://github.com/informatievlaanderen/parcel-registry/commit/04307b1))
+
 ## [3.3.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.3.2...v3.3.3) (2020-01-28)
 
 
