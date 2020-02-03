@@ -1,3 +1,10 @@
+## [3.4.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.0...v3.4.1) (2020-02-03)
+
+
+### Bug Fixes
+
+* specify non nullable responses ([bc4945c](https://github.com/informatievlaanderen/parcel-registry/commit/bc4945c))
+
 # [3.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.3.3...v3.4.0) (2020-02-01)
 
 
