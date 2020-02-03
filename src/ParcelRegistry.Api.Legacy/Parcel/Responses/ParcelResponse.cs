@@ -10,6 +10,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
+    using Newtonsoft.Json;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [DataContract(Name = "PerceelDetail", Namespace = "")]
@@ -19,18 +20,21 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         /// De identificator van het perceel.
         /// </summary>
         [DataMember(Name = "Identificator", Order = 1)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public PerceelIdentificator Identificator { get; set; }
 
         /// <summary>
         /// De status van het perceel
         /// </summary>
         [DataMember(Name = "PerceelStatus", Order = 2)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public PerceelStatus PerceelStatus { get; set; }
 
         /// <summary>
         /// De aan het perceel gelinkte adressen
         /// </summary>
         [DataMember(Name = "Adressen", Order = 3)]
+        [JsonProperty(Required = Required.DisallowNull)]
         public List<PerceelDetailAdres> Adressen { get; set; }
 
         public ParcelResponse(

@@ -1497,6 +1497,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETCoreApp' And $(TargetFrameworkVersion) == 'v3.1'">
       <ItemGroup>
+        <Reference Include="System.Runtime">
+          <HintPath>..\..\packages\System.Runtime\ref\netstandard1.5\System.Runtime.dll</HintPath>
+          <Private>False</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETCoreApp' And $(TargetFrameworkVersion) == 'v3.1'">
+      <ItemGroup>
         <Reference Include="System.Runtime.Caching">
           <HintPath>..\..\packages\System.Runtime.Caching\lib\netstandard2.0\System.Runtime.Caching.dll</HintPath>
           <Private>True</Private>
