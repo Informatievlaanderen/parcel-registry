@@ -13,14 +13,14 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     public class ParcelListResponse
     {
         /// <summary>
-        /// De verzameling van gemeentes.
+        /// De verzameling van percelen.
         /// </summary>
         [DataMember(Name = "Percelen", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
         public List<ParcelListItemResponse> Percelen { get; set; }
 
         /// <summary>
-        /// Het totaal aantal gemeenten die overeenkomen met de vraag.
+        /// Het totaal aantal percelen die overeenkomen met de vraag.
         /// </summary>
         [DataMember(Name = "TotaalAantal", Order = 1)]
         [JsonProperty(Required = Required.DisallowNull)]
