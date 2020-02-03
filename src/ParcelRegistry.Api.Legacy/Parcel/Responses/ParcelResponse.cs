@@ -76,6 +76,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     {
         public ProblemDetails GetExamples() => new ProblemDetails
         {
+            ProblemTypeUri = "urn:be.vlaanderen.basisregisters.api:parcel:not-found",
             HttpStatus = StatusCodes.Status404NotFound,
             Title = ProblemDetails.DefaultTitle,
             Detail = "Onbestaand perceel.",
@@ -87,6 +88,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     {
         public ProblemDetails GetExamples() => new ProblemDetails
         {
+            ProblemTypeUri = "urn:be.vlaanderen.basisregisters.api:parcel:gone",
             HttpStatus = StatusCodes.Status410Gone,
             Title = ProblemDetails.DefaultTitle,
             Detail = "Perceel werd verwijderd.",
