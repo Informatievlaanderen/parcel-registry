@@ -1,3 +1,10 @@
+## [3.4.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.2...v3.4.3) (2020-02-03)
+
+
+### Bug Fixes
+
+* correct gemeenten to percelen ([eede076](https://github.com/informatievlaanderen/parcel-registry/commit/eede076))
+
 ## [3.4.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.1...v3.4.2) (2020-02-03)
 
 
