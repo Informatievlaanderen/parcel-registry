@@ -1,3 +1,10 @@
+## [3.4.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.1...v3.4.2) (2020-02-03)
+
+
+### Bug Fixes
+
+* add type to problemdetails ([748069a](https://github.com/informatievlaanderen/parcel-registry/commit/748069a))
+
 ## [3.4.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.0...v3.4.1) (2020-02-03)
 
 
