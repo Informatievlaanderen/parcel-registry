@@ -1,3 +1,10 @@
+## [3.4.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.3...v3.4.4) (2020-02-04)
+
+
+### Bug Fixes
+
+* instanceuri for error examples now show correctly ([650f487](https://github.com/informatievlaanderen/parcel-registry/commit/650f487))
+
 ## [3.4.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.2...v3.4.3) (2020-02-03)
 
 
