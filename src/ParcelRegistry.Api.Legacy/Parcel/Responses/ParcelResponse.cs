@@ -10,6 +10,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Newtonsoft.Json;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
@@ -80,7 +81,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             HttpStatus = StatusCodes.Status404NotFound,
             Title = ProblemDetails.DefaultTitle,
             Detail = "Onbestaand perceel.",
-            ProblemInstanceUri = ProblemDetails.GetProblemNumber()
+            ProblemInstanceUri = new DefaultHttpContext().GetProblemInstanceUri()
         };
     }
 
@@ -92,7 +93,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             HttpStatus = StatusCodes.Status410Gone,
             Title = ProblemDetails.DefaultTitle,
             Detail = "Perceel werd verwijderd.",
-            ProblemInstanceUri = ProblemDetails.GetProblemNumber()
+            ProblemInstanceUri = new DefaultHttpContext().GetProblemInstanceUri()
         };
     }
 }
