@@ -30,7 +30,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         /// De URL voor het ophalen van de volgende verzameling.
         /// </summary>
         [DataMember(Name = "Volgende", Order = 2, EmitDefaultValue = false)]
-        [JsonProperty(Required = Required.Default)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
         public Uri Volgende { get; set; }
     }
 
