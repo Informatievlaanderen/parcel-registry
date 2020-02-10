@@ -1,3 +1,10 @@
+## [3.4.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.4...v3.4.5) (2020-02-10)
+
+
+### Bug Fixes
+
+* JSON default value for nullable field ([c63f031](https://github.com/informatievlaanderen/parcel-registry/commit/c63f031))
+
 ## [3.4.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.3...v3.4.4) (2020-02-04)
 
 
