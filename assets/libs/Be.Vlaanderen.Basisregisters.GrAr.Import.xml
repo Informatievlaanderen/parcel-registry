@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Be.Vlaanderen.Basisregisters.GrAr.Import</name>
+    </assembly>
+    <members>
+        <member name="P:Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Api.IHttpApiProxyConfig.AuthUserName">
+            <summary>
+            If empty, no basic auth will be used
+            </summary>
+        </member>
+        <member name="P:Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Api.IHttpApiProxyConfig.AuthPassword">
+            <summary>
+            If empty, no basic auth will be used
+            </summary>
+        </member>
+        <member name="M:Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Json.JsonSerializerSettingsExtensions.ConfigureForCrabImports(Newtonsoft.Json.JsonSerializerSettings)">
+            <summary>
+                Sets up and adds additional converters for Importers to the JsonSerializerSettings
+            </summary>
+            <param name="source"></param>
+            <returns>the updated JsonSerializerSettings</returns>
+        </member>
+    </members>
+</doc>
