@@ -8,6 +8,7 @@ namespace ParcelRegistry.Importer
     using Aiv.Vbr.CentraalBeheer.Crab.CrabHist;
     using Aiv.Vbr.CentraalBeheer.Crab.Entity;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Generate;
     using Crab;
     using NodaTime;
@@ -25,12 +26,12 @@ namespace ParcelRegistry.Importer
                 .ToList();
 
         public IEnumerable<dynamic> GenerateInitCommandsFor(CaPaKey key, DateTime from, DateTime until)
-            => CreateCommandsInOrder(key, from, until);
+            => CreateCommandsInOrder(ImportMode.Init, key, from, until);
 
         public IEnumerable<dynamic> GenerateUpdateCommandsFor(CaPaKey key, DateTime from, DateTime until)
-            => throw new NotImplementedException();
+            => CreateCommandsInOrder(ImportMode.Update, key, from, until);
 
-        private static IEnumerable<dynamic> CreateCommandsInOrder(CaPaKey caPaKey, DateTime from, DateTime until)
+        private static IEnumerable<dynamic> CreateCommandsInOrder(ImportMode importMode, CaPaKey caPaKey, DateTime from, DateTime until)
         {
             var importTerrainObjectCommands = new List<ImportTerrainObjectFromCrab>();
             var importTerrainObjectHouseNumberCommands = new List<ImportTerrainObjectHouseNumberFromCrab>();
@@ -120,15 +121,50 @@ namespace ParcelRegistry.Importer
             foreach (var groupedTerrainObjectCommand in groupedTerrainObjectCommands)
                 commands.Add(groupedTerrainObjectCommand.Value.First());
 
-            var allCommands = importTerrainObjectCommands
+            var allParcelCommands = importTerrainObjectCommands
                 .Select(x =>
                     Tuple.Create<dynamic, int, int, string>(x, 0, 0, $"CaPaKey: {x.CaPaKey}"))
                 .Concat(importTerrainObjectHouseNumberCommands.Select(x =>
                     Tuple.Create<dynamic, int, int, string>(x, 1, 0, $"CaPaKey: {x.CaPaKey}")))
                 .Concat(importSubaddressCommands.Select(x =>
                     Tuple.Create<dynamic, int, int, string>(x, -1, 0, $"CaPaKey: {x.CaPaKey}")))
+                .ToList();
+
+            var allCommands = allParcelCommands
                 .Where(x => x.Item1.Timestamp <= until.ToCrabInstant() && x.Item1.Timestamp > from.ToCrabInstant())
-                .OrderBy(x => (Instant)x.Item1.Timestamp)
+                .ToList();
+
+            if (importMode == ImportMode.Update) //if an update couples the terrainobjecthousenumber, with subaddress already created before the terrainobjecthousenumber => import the subaddress
+            {
+                var houseNumberForUpdates = importTerrainObjectHouseNumberCommands
+                    .Where(x => x.Timestamp > from.ToCrabInstant() && x.Timestamp <= until.ToCrabInstant())
+                    .Select(x => x.HouseNumberId).ToList();
+
+                if (houseNumberForUpdates.Any())
+                {
+                    var houseNumbersBeforeUpdate = importTerrainObjectHouseNumberCommands
+                        .Where(x => x.Timestamp <= from.ToCrabInstant())
+                        .Select(x => x.HouseNumberId).ToList();
+
+                    var newHouseNumbers = houseNumberForUpdates.Except(houseNumbersBeforeUpdate);
+
+                    foreach (var newHouseNumber in newHouseNumbers)
+                    {
+                        var allNewSubaddressIds = importSubaddressCommands.Where(subaddressFromCrab => subaddressFromCrab.HouseNumberId == newHouseNumber).Select(x => x.SubaddressId);
+                        foreach (var newSubaddressId in allNewSubaddressIds)
+                        {
+                            allCommands = allCommands.Concat(allParcelCommands
+                                    .Except(allCommands)
+                                    .Where(x => x.Item1 is ImportSubaddressFromCrab importSubaddressFromCrab && importSubaddressFromCrab.SubaddressId == newSubaddressId)
+                                )
+                                .ToList();
+                        }
+                    }
+                }
+            }
+
+            allCommands = allCommands
+                .OrderBy(x => x.Item1.Timestamp)
                 .ThenBy(x => x.Item2)
                 .ThenBy(x => x.Item3)
                 .ToList();

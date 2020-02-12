@@ -1,12 +1,12 @@
 Newtonsoft.Json
-NodaTime.Serialization.JsonNet
+//NodaTime.Serialization.JsonNet
 
 EntityFramework
-CommandLineParser
+//CommandLineParser
 
-Serilog
-Serilog.Sinks.Console
-Serilog.Sinks.File
+//Serilog
+//Serilog.Sinks.Console
+//Serilog.Sinks.File
 
 Microsoft.Extensions.Logging
 
