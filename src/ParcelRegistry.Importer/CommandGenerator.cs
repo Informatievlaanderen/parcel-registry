@@ -138,25 +138,30 @@ namespace ParcelRegistry.Importer
             {
                 var houseNumberForUpdates = importTerrainObjectHouseNumberCommands
                     .Where(x => x.Timestamp > from.ToCrabInstant() && x.Timestamp <= until.ToCrabInstant())
-                    .Select(x => x.HouseNumberId).ToList();
+                    .Select(x => x.HouseNumberId)
+                    .ToList();
 
                 if (houseNumberForUpdates.Any())
                 {
                     var houseNumbersBeforeUpdate = importTerrainObjectHouseNumberCommands
                         .Where(x => x.Timestamp <= from.ToCrabInstant())
-                        .Select(x => x.HouseNumberId).ToList();
+                        .Select(x => x.HouseNumberId)
+                        .ToList();
 
                     var newHouseNumbers = houseNumberForUpdates.Except(houseNumbersBeforeUpdate);
 
                     foreach (var newHouseNumber in newHouseNumbers)
                     {
-                        var allNewSubaddressIds = importSubaddressCommands.Where(subaddressFromCrab => subaddressFromCrab.HouseNumberId == newHouseNumber).Select(x => x.SubaddressId);
+                        var allNewSubaddressIds = importSubaddressCommands
+                            .Where(subaddressFromCrab => subaddressFromCrab.HouseNumberId == newHouseNumber)
+                            .Select(x => x.SubaddressId);
+                                
                         foreach (var newSubaddressId in allNewSubaddressIds)
                         {
-                            allCommands = allCommands.Concat(allParcelCommands
+                            allCommands = allCommands
+                                .Concat(allParcelCommands
                                     .Except(allCommands)
-                                    .Where(x => x.Item1 is ImportSubaddressFromCrab importSubaddressFromCrab && importSubaddressFromCrab.SubaddressId == newSubaddressId)
-                                )
+                                    .Where(x => x.Item1 is ImportSubaddressFromCrab importSubaddressFromCrab && importSubaddressFromCrab.SubaddressId == newSubaddressId))
                                 .ToList();
                         }
                     }
