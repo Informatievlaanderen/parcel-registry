@@ -1,3 +1,15 @@
+# [3.5.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.5...v3.5.0) (2020-02-12)
+
+
+### Bug Fixes
+
+* add libs to be able to build Importer ([42f64c0](https://github.com/informatievlaanderen/parcel-registry/commit/42f64c0))
+
+
+### Features
+
+* add update to importer ([aa62790](https://github.com/informatievlaanderen/parcel-registry/commit/aa62790))
+
 ## [3.4.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.4...v3.4.5) (2020-02-10)
 
 
