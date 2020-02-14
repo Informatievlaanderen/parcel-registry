@@ -1,3 +1,10 @@
+## [3.5.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.0...v3.5.1) (2020-02-14)
+
+
+### Bug Fixes
+
+* add index to list ([8f13206](https://github.com/informatievlaanderen/parcel-registry/commit/8f13206))
+
 # [3.5.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.4.5...v3.5.0) (2020-02-12)
 
 
