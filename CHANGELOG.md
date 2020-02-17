@@ -1,3 +1,10 @@
+## [3.5.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.1...v3.5.2) (2020-02-17)
+
+
+### Bug Fixes
+
+* upgrade packages to fix json order ([307101a](https://github.com/informatievlaanderen/parcel-registry/commit/307101a))
+
 ## [3.5.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.0...v3.5.1) (2020-02-14)
 
 
