@@ -1,3 +1,10 @@
+## [3.5.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.2...v3.5.3) (2020-02-19)
+
+
+### Bug Fixes
+
+* set order in api's + add clustered index address sync ([03e2009](https://github.com/informatievlaanderen/parcel-registry/commit/03e2009))
+
 ## [3.5.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.1...v3.5.2) (2020-02-17)
 
 
