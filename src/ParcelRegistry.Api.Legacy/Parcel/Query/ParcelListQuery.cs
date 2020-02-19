@@ -21,6 +21,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             => _context
                 .ParcelDetail
                 .AsNoTracking()
+                .OrderBy(x => x.PersistentLocalId)
                 .Where(x => x.Complete && !x.Removed);
     }
 
