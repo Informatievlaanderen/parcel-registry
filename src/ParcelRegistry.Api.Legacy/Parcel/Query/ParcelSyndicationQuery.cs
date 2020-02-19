@@ -216,6 +216,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         {
             var parcels = _context
                 .ParcelSyndication
+                .OrderBy(x => x.Position)
                 .AsNoTracking();
 
             if (!filtering.ShouldFilter)

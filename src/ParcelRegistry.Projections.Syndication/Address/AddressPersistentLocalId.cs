@@ -23,7 +23,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
         {
             builder.ToTable(TableName, Schema.Syndication)
                 .HasKey(x => x.AddressId)
-                .IsClustered(false);
+                .IsClustered();
 
             builder.Property(x => x.PersistentLocalId);
 

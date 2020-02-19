@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParcelRegistry.Projections.Syndication;
 
 namespace ParcelRegistry.Projections.Syndication.Migrations
 {
     [DbContext(typeof(SyndicationContext))]
-    partial class SyndicationContextModelSnapshot : ModelSnapshot
+    [Migration("20200219093202_AddClusteredIndex")]
+    partial class AddClusteredIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
