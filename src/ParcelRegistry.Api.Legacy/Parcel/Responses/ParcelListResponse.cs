@@ -22,9 +22,9 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         /// <summary>
         /// Het totaal aantal percelen die overeenkomen met de vraag.
         /// </summary>
-        [DataMember(Name = "TotaalAantal", Order = 1)]
-        [JsonProperty(Required = Required.DisallowNull)]
-        public long TotaalAantal { get; set; }
+        //[DataMember(Name = "TotaalAantal", Order = 1)]
+        //[JsonProperty(Required = Required.DisallowNull)]
+        //public long TotaalAantal { get; set; }
 
         /// <summary>
         /// De URL voor het ophalen van de volgende verzameling.
@@ -78,7 +78,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             return new ParcelListResponse
             {
                 Percelen = samples,
-                TotaalAantal = 6842,
                 Volgende = new Uri(string.Format(_responseOptions.VolgendeUrl, 2, 10))
             };
         }

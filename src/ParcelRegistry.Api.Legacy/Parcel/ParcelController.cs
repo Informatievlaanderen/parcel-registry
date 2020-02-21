@@ -123,14 +123,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            long Count(IQueryable<ParcelDetail> items) => context.ParcelDetailListViewCount.Single().Count;
-
             var pagedParcels = new ParcelListQuery(context)
-                .Fetch(
-                    filtering,
-                    sorting,
-                    pagination,
-                    filtering.ShouldFilter ? null : (Func<IQueryable<ParcelDetail>, long>) Count);
+                .Fetch(filtering, sorting, pagination);
 
             Response.AddPagedQueryResultHeaders(pagedParcels);
 
@@ -143,7 +137,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                         reponseOptions.Value.DetailUrl,
                         m.VersionTimestamp.ToBelgianDateTimeOffset()))
                     .ToListAsync(cancellationToken),
-                TotaalAantal = pagedParcels.PaginationInfo.TotalItems,
                 Volgende = BuildVolgendeUri(pagedParcels.PaginationInfo, reponseOptions.Value.VolgendeUrl)
             };
 
@@ -180,7 +173,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                 context,
                 filtering.Filter?.ContainsEvent ?? false,
                 filtering.Filter?.ContainsObject ?? false)
-                .Fetch(filtering, sorting, pagination, items => 0);
+                .Fetch(filtering, sorting, pagination);
 
             Response.AddPagedQueryResultHeaders(pagedParcels);
 
@@ -230,7 +223,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             var offset = paginationInfo.Offset;
             var limit = paginationInfo.Limit;
 
-            return offset + limit < paginationInfo.TotalItems
+            return paginationInfo.HasNextPage
                 ? new Uri(string.Format(volgendeUrlBase, offset + limit, limit))
                 : null;
         }
