@@ -1,3 +1,10 @@
+## [3.5.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.4...v3.5.5) (2020-02-21)
+
+
+### Performance Improvements
+
+* increase performance by removing count from list ([3280182](https://github.com/informatievlaanderen/parcel-registry/commit/3280182))
+
 ## [3.5.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.3...v3.5.4) (2020-02-20)
 
 
