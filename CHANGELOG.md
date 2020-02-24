@@ -1,3 +1,10 @@
+## [3.5.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.5...v3.5.6) (2020-02-24)
+
+
+### Bug Fixes
+
+* update projection handling & sync migrator ([24c7e55](https://github.com/informatievlaanderen/parcel-registry/commit/24c7e55))
+
 ## [3.5.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.4...v3.5.5) (2020-02-21)
 
 
