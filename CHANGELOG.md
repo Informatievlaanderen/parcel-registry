@@ -1,3 +1,10 @@
+## [3.5.7](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.6...v3.5.7) (2020-02-27)
+
+
+### Bug Fixes
+
+* update json serialization dependencies ([d321eb1](https://github.com/informatievlaanderen/parcel-registry/commit/d321eb1))
+
 ## [3.5.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.5...v3.5.6) (2020-02-24)
 
 
