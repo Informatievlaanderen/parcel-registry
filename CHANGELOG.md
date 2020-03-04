@@ -1,3 +1,10 @@
+## [3.5.9](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.8...v3.5.9) (2020-03-04)
+
+
+### Bug Fixes
+
+* bump netcore dockerfiles ([5158149](https://github.com/informatievlaanderen/parcel-registry/commit/5158149))
+
 ## [3.5.8](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.7...v3.5.8) (2020-03-03)
 
 
