@@ -1,3 +1,10 @@
+## [3.5.10](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.9...v3.5.10) (2020-03-05)
+
+
+### Bug Fixes
+
+* update grar common to fix provenance ([25bf9ea](https://github.com/informatievlaanderen/parcel-registry/commit/25bf9ea))
+
 ## [3.5.9](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.8...v3.5.9) (2020-03-04)
 
 
