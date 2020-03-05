@@ -17,8 +17,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     Position = message.Position,
                     ParcelId = message.Message.ParcelId,
                     CaPaKey = message.Message.VbrCaPaKey,
-                    RecordCreatedAt = Instant.FromDateTimeUtc(message.CreatedUtc.ToUniversalTime()),
-                    LastChangedOn = Instant.FromDateTimeUtc(message.CreatedUtc.ToUniversalTime()),
+                    RecordCreatedAt = message.Message.Provenance.Timestamp,
+                    LastChangedOn = message.Message.Provenance.Timestamp,
                     ChangeType = message.EventName,
                     IsComplete = true,
                 };
