@@ -1,3 +1,10 @@
+## [3.5.11](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.10...v3.5.11) (2020-03-05)
+
+
+### Bug Fixes
+
+* set correct timestamp for sync projection ([bdb180b](https://github.com/informatievlaanderen/parcel-registry/commit/bdb180b))
+
 ## [3.5.10](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.9...v3.5.10) (2020-03-05)
 
 
