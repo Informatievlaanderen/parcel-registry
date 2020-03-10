@@ -10,7 +10,7 @@ namespace ParcelRegistry.Projections.LastChangedList
         protected override string CacheKeyFormat => "legacy/parcel:{{0}}.{1}";
         protected override string UriFormat => "/v1/percelen/{{0}}";
 
-        private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, AcceptType.JsonLd, AcceptType.Xml };
+        private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, /*AcceptType.JsonLd,*/ AcceptType.Xml };
 
         public LastChangedListProjections()
             : base(SupportedAcceptTypes)
