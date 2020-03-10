@@ -1,3 +1,10 @@
+## [3.6.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.6.0...v3.6.1) (2020-03-10)
+
+
+### Bug Fixes
+
+* remove json ld from populator ([40f54d9](https://github.com/informatievlaanderen/parcel-registry/commit/40f54d9))
+
 # [3.6.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.11...v3.6.0) (2020-03-10)
 
 
