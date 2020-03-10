@@ -31,7 +31,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
     using System.Threading.Tasks;
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.Api.Search;
-    using Projections.Legacy.ParcelDetail;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
@@ -141,6 +141,42 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             };
 
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Vraag het totaal aantal actieve percelen op.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="syndicationContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <response code="200">Als de opvraging van het totaal aantal gelukt is.</response>
+        /// <response code="500">Als er een interne fout is opgetreden.</response>
+        [HttpGet("totaal-aantal")]
+        [ProducesResponseType(typeof(TotaalAantalResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(TotalCountResponseExample), jsonConverter: typeof(StringEnumConverter))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples), jsonConverter: typeof(StringEnumConverter))]
+        public async Task<IActionResult> Count(
+            [FromServices] LegacyContext context,
+            CancellationToken cancellationToken = default)
+        {
+            var filtering = Request.ExtractFilteringRequest<ParcelFilter>();
+            var sorting = Request.ExtractSortingRequest();
+            var pagination = Request.ExtractPaginationRequest();
+
+            return Ok(
+                new TotaalAantalResponse
+                {
+                    Aantal = filtering.ShouldFilter
+                        ? await new ParcelListQuery(context)
+                            .Fetch(filtering, sorting, pagination)
+                            .Items
+                            .CountAsync(cancellationToken)
+                        : Convert.ToInt32(context
+                            .ParcelDetailListViewCount
+                            .First()
+                            .Count)
+                });
         }
 
         /// <summary>
