@@ -1,3 +1,10 @@
+# [3.6.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.11...v3.6.0) (2020-03-10)
+
+
+### Features
+
+* add totaal aantal endpoint ([235fd3e](https://github.com/informatievlaanderen/parcel-registry/commit/235fd3e))
+
 ## [3.5.11](https://github.com/informatievlaanderen/parcel-registry/compare/v3.5.10...v3.5.11) (2020-03-05)
 
 
