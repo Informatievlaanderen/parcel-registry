@@ -1,3 +1,10 @@
+## [3.6.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.6.1...v3.6.2) (2020-03-11)
+
+
+### Bug Fixes
+
+* count parcels now count correctly ([48d92d2](https://github.com/informatievlaanderen/parcel-registry/commit/48d92d2))
+
 ## [3.6.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.6.0...v3.6.1) (2020-03-10)
 
 
