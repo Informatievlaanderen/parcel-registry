@@ -162,7 +162,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         {
             var filtering = Request.ExtractFilteringRequest<ParcelFilter>();
             var sorting = Request.ExtractSortingRequest();
-            var pagination = Request.ExtractPaginationRequest();
+            var pagination = new NoPaginationRequest();
 
             return Ok(
                 new TotaalAantalResponse
