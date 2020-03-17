@@ -1,9 +1,8 @@
-using Be.Vlaanderen.Basisregisters.GrAr.Common;
-
-namespace ParcelRegistry.Importer
+namespace ParcelRegistry.Importer.Console
 {
     using Aiv.Vbr.CentraalBeheer.Crab.Entity;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Crab;
     using Parcel.Commands.Crab;
     using System.Collections.Generic;

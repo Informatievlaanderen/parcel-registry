@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Importer.Crab
+namespace ParcelRegistry.Importer.Console.Crab
 {
     using System;
     using System.Collections.Generic;
@@ -12,13 +12,12 @@ namespace ParcelRegistry.Importer.Crab
         private const string AardPerceel = "1";
         private static readonly string DeletedBewerking = CrabBewerking.Verwijdering.Code;
 
-        public static List<string> GetChangedPerceelIdsBetween(DateTime since, DateTime until)
+        public static List<string> GetChangedPerceelIdsBetween(DateTime since, DateTime until, Func<CRABEntities> crabEntitiesFactory)
         {
             if (since == DateTime.MinValue)
             {
-                using (var crabEntities = new CRABEntities())
+                using (var crabEntities = crabEntitiesFactory())
                 {
-                    crabEntities.Database.CommandTimeout = 10 * 60;
                     var odb = crabEntities.tblTerreinObject.Where(to => to.aardTerreinObjectCode == AardPerceel);
                     var cdb = crabEntities.tblTerreinObject_hist.Where(to => to.aardTerreinObjectCode == AardPerceel);
 
@@ -38,16 +37,16 @@ namespace ParcelRegistry.Importer.Crab
 
             var tasks = new[]
             {
-                Task.Run(() => GetUpdatedIdsFromTblTerreinObject(since, until)),
-                Task.Run(() => GetUpdatedIdsFromTblTerreinObject_huisnummer(since, until)),
-                Task.Run(() => GetUpdatedIdsFromAddresses(since, until))
+                Task.Run(() => GetUpdatedIdsFromTblTerreinObject(since, until, crabEntitiesFactory)),
+                Task.Run(() => GetUpdatedIdsFromTblTerreinObject_huisnummer(since, until, crabEntitiesFactory)),
+                Task.Run(() => GetUpdatedIdsFromAddresses(since, until, crabEntitiesFactory))
             };
 
             Task.WaitAll(tasks);
 
             var allTerrainObjectIds = tasks.SelectMany(x => x.Result).ToList();
             var perceelIds = new List<string>();
-            using (var crabEntities = new CRABEntities())
+            using (var crabEntities = crabEntitiesFactory())
             {
                 const int sqlContainsSize = 1000;
                 for (var i = 0; i < Math.Ceiling(allTerrainObjectIds.Count / (double)sqlContainsSize); i++)
@@ -64,11 +63,11 @@ namespace ParcelRegistry.Importer.Crab
             }
         }
 
-        private static List<int> GetUpdatedIdsFromTblTerreinObject(DateTime since, DateTime until)
+        private static List<int> GetUpdatedIdsFromTblTerreinObject(DateTime since, DateTime until, Func<CRABEntities> crabEntitiesFactory)
         {
             var terrainObjectIds = new List<int>();
 
-            using (var crabEntities = new CRABEntities())
+            using (var crabEntities = crabEntitiesFactory())
             {
                 terrainObjectIds.AddRange(crabEntities
                     .tblTerreinObject
@@ -95,11 +94,11 @@ namespace ParcelRegistry.Importer.Crab
             return terrainObjectIds;
         }
 
-        private static List<int> GetUpdatedIdsFromTblTerreinObject_huisnummer(DateTime since, DateTime until)
+        private static List<int> GetUpdatedIdsFromTblTerreinObject_huisnummer(DateTime since, DateTime until, Func<CRABEntities> crabEntitiesFactory)
         {
             var terrainObjectIds = new List<int>();
 
-            using (var crabEntities = new CRABEntities())
+            using (var crabEntities = crabEntitiesFactory())
             {
                 terrainObjectIds.AddRange(crabEntities
                     .tblTerreinObject_huisNummer
@@ -123,11 +122,11 @@ namespace ParcelRegistry.Importer.Crab
             return terrainObjectIds;
         }
 
-        private static List<int> GetUpdatedIdsFromAddresses(DateTime since, DateTime until)
+        private static List<int> GetUpdatedIdsFromAddresses(DateTime since, DateTime until, Func<CRABEntities> crabEntitiesFactory)
         {
             var terrainObjectIds = new List<int>();
 
-            using (var crabEntities = new CRABEntities())
+            using (var crabEntities = crabEntitiesFactory())
             {
                 var huisNummerIdsSubadres = crabEntities
                     .tblSubAdres

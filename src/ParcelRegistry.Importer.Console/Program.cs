@@ -1,17 +1,17 @@
-using System.IO;
-
-namespace ParcelRegistry.Importer
+namespace ParcelRegistry.Importer.Console
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Serilog;
     using Newtonsoft.Json;
-    using Properties;
     using Serilog;
     using Serilog.Events;
     using System;
     using System.Diagnostics;
+    using System.IO;
     using System.Reflection;
+    using Aiv.Vbr.CentraalBeheer.Crab.Entity;
+    using Microsoft.Extensions.Configuration;
 
     internal class Program
     {
@@ -22,7 +22,23 @@ namespace ParcelRegistry.Importer
         {
             var configureForBuildingRegistry = JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForPerceelregister();
             JsonConvert.DefaultSettings = () => configureForBuildingRegistry;
-            var settings = new SettingsBasedConfig();
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables()
+                .AddCommandLine(args ?? new string[0])
+                .Build();
+
+            var crabConnectionString = configuration.GetConnectionString("CRABEntities");
+            Func<CRABEntities> crabEntitiesFactory = () =>
+            {
+                var factory = new CRABEntities(crabConnectionString);
+                factory.Database.CommandTimeout = 60 * 60;
+                return factory;
+            };
+
+            var settings = new SettingsBasedConfig(configuration.GetSection("ApplicationSettings"));
 
             try
             {
@@ -32,7 +48,7 @@ namespace ParcelRegistry.Importer
 
                 MapLogging.Log = s => _commandCounter++;
 
-                var commandProcessor = new CommandProcessorBuilder<CaPaKey>(new CommandGenerator())
+                var commandProcessor = new CommandProcessorBuilder<CaPaKey>(new CommandGenerator(crabEntitiesFactory))
                     .WithCommandLineOptions(options.ImportArguments)
                     .UseSerilog(cfg => cfg
                         .WriteTo.Console(LogEventLevel.Information))

@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Importer
+namespace ParcelRegistry.Importer.Console
 {
     using System;
 

@@ -1,6 +1,4 @@
-using Be.Vlaanderen.Basisregisters.GrAr.Common;
-
-namespace ParcelRegistry.Importer
+namespace ParcelRegistry.Importer.Console
 {
     using System;
     using System.Collections.Generic;
@@ -8,6 +6,7 @@ namespace ParcelRegistry.Importer
     using Aiv.Vbr.CentraalBeheer.Crab.CrabHist;
     using Aiv.Vbr.CentraalBeheer.Crab.Entity;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Generate;
     using Crab;
@@ -16,10 +15,16 @@ namespace ParcelRegistry.Importer
 
     public class CommandGenerator : ICommandGenerator<CaPaKey>
     {
+        private readonly Func<CRABEntities> _crabEntitiesFactory;
         public string Name => GetType().FullName;
 
+        public CommandGenerator(Func<CRABEntities> crabEntitiesFactory)
+        {
+            _crabEntitiesFactory = crabEntitiesFactory;
+        }
+
         public IEnumerable<CaPaKey> GetChangedKeys(DateTime from, DateTime until)
-            => CrabQueries.GetChangedPerceelIdsBetween(from, until)
+            => CrabQueries.GetChangedPerceelIdsBetween(from, until, _crabEntitiesFactory)
                 .Select(CaPaKey.CreateFrom)
                 .Distinct()
                 .OrderBy(x => x.VbrCaPaKey)
@@ -31,13 +36,13 @@ namespace ParcelRegistry.Importer
         public IEnumerable<dynamic> GenerateUpdateCommandsFor(CaPaKey key, DateTime from, DateTime until)
             => CreateCommandsInOrder(ImportMode.Update, key, from, until);
 
-        private static IEnumerable<dynamic> CreateCommandsInOrder(ImportMode importMode, CaPaKey caPaKey, DateTime from, DateTime until)
+        private IEnumerable<dynamic> CreateCommandsInOrder(ImportMode importMode, CaPaKey caPaKey, DateTime from, DateTime until)
         {
             var importTerrainObjectCommands = new List<ImportTerrainObjectFromCrab>();
             var importTerrainObjectHouseNumberCommands = new List<ImportTerrainObjectHouseNumberFromCrab>();
             var importSubaddressCommands = new List<ImportSubaddressFromCrab>();
 
-            using (var crabEntities = new CRABEntities())
+            using (var crabEntities = _crabEntitiesFactory())
             {
                 var terrainObjectIds = PerceelQueries
                     .GetTblTerreinObjectIdsByCapaKeys(
@@ -155,7 +160,7 @@ namespace ParcelRegistry.Importer
                         var allNewSubaddressIds = importSubaddressCommands
                             .Where(subaddressFromCrab => subaddressFromCrab.HouseNumberId == newHouseNumber)
                             .Select(x => x.SubaddressId);
-                                
+
                         foreach (var newSubaddressId in allNewSubaddressIds)
                         {
                             allCommands = allCommands
