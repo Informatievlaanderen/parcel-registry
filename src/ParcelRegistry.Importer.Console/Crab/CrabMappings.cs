@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Importer.Crab
+namespace ParcelRegistry.Importer.Console.Crab
 {
     using System;
     using Be.Vlaanderen.Basisregisters.Crab;

@@ -109,7 +109,6 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure
             ApiDebugDataDogToggle debugDataDogToggle,
             HealthCheckService healthCheckService)
         {
-            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag).GetAwaiter().GetResult();
             StartupHelpers.EnsureSqlStreamStoreSchema<Startup>(streamStore, loggerFactory);
 
             app
@@ -167,6 +166,8 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure
                 })
                 .UseIdempotencyDatabaseMigrations()
                 .UseCrabImportMigrations();
+
+            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag).GetAwaiter().GetResult();
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

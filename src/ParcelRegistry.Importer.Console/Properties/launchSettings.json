@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ParcelRegistry.Importer.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "init -c"
+    }
+  }
+}
