@@ -1,3 +1,17 @@
+## [3.7.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.7.1...v3.7.2) (2020-03-18)
+
+
+### Bug Fixes
+
+* change build to new user ([d0b79c5](https://github.com/informatievlaanderen/parcel-registry/commit/d0b79c5))
+
+## [3.7.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.7.0...v3.7.1) (2020-03-18)
+
+
+### Bug Fixes
+
+* parcel detail projection uses correct conversion for status ([be5d523](https://github.com/informatievlaanderen/parcel-registry/commit/be5d523))
+
 # [3.7.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.6.2...v3.7.0) (2020-03-18)
 
 
