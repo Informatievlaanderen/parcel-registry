@@ -47,8 +47,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
             builder.Property(p => p.PersistentLocalId);
             builder.Property(x => x.Status)
-                .HasConversion<string?>(
-                    value => value == null ? null : value.ToString(),
+                .HasConversion(
+                    value => value == null ? null : value.Value.ToString(),
                     value => value == null ? (ParcelStatus?)null : ParcelStatus.Parse(value))
                 .HasColumnName("Status");
 
