@@ -1,3 +1,10 @@
+## [3.7.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.7.2...v3.7.3) (2020-03-18)
+
+
+### Bug Fixes
+
+* make status mapping more obvious ([94a278c](https://github.com/informatievlaanderen/parcel-registry/commit/94a278c))
+
 ## [3.7.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.7.1...v3.7.2) (2020-03-18)
 
 
