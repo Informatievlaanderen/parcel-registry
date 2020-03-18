@@ -1,3 +1,10 @@
+# [3.7.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.6.2...v3.7.0) (2020-03-18)
+
+
+### Features
+
+* upgrade importer to netcore3 ([f8f2cf8](https://github.com/informatievlaanderen/parcel-registry/commit/f8f2cf8))
+
 ## [3.6.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.6.1...v3.6.2) (2020-03-11)
 
 
