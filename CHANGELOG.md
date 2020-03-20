@@ -1,3 +1,10 @@
+# [3.8.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.7.3...v3.8.0) (2020-03-20)
+
+
+### Features
+
+* send mail when importer crashes ([bd93584](https://github.com/informatievlaanderen/parcel-registry/commit/bd93584))
+
 ## [3.7.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.7.2...v3.7.3) (2020-03-18)
 
 
