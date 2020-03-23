@@ -1,3 +1,11 @@
+## [3.8.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.8.0...v3.8.1) (2020-03-23)
+
+
+### Bug Fixes
+
+* correct versie id type to string fix ([8e42918](https://github.com/informatievlaanderen/parcel-registry/commit/8e42918))
+* update grar common to fix versie id type ([cbf04f6](https://github.com/informatievlaanderen/parcel-registry/commit/cbf04f6))
+
 # [3.8.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.7.3...v3.8.0) (2020-03-20)
 
 
