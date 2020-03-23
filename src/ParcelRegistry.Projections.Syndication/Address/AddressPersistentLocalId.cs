@@ -9,7 +9,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
     {
         public Guid AddressId { get; set; }
         public string? PersistentLocalId { get; set; }
-        public DateTimeOffset? Version { get; set; }
+        public string? Version { get; set; }
         public long Position { get; set; }
         public bool IsComplete { get; set; }
         public bool IsRemoved { get; set; }
