@@ -11,5 +11,10 @@ namespace ParcelRegistry.Api.Legacy.Convertors
             => parcelStatus == ParcelStatus.Retired
                 ? PerceelStatus.Gehistoreerd
                 : PerceelStatus.Gerealiseerd;
+
+        public static ParcelStatus MapToParcelStatus(this PerceelStatus perceelStatus)
+            => perceelStatus == PerceelStatus.Gehistoreerd
+                ? ParcelStatus.Retired
+                : ParcelStatus.Realized;
     }
 }

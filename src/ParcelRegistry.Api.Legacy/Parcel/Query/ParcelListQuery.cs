@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Api.Legacy.Parcel.Query
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
@@ -8,6 +9,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
     using Projections.Legacy.ParcelDetail;
     using System.Collections.Generic;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
+    using Convertors;
 
     public class ParcelListQuery : Query<ParcelDetail, ParcelFilter>
     {
@@ -18,11 +21,31 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         public ParcelListQuery(LegacyContext context) => _context = context;
 
         protected override IQueryable<ParcelDetail> Filter(FilteringHeader<ParcelFilter> filtering)
-            => _context
+        {
+            var parcels = _context
                 .ParcelDetail
                 .AsNoTracking()
                 .OrderBy(x => x.PersistentLocalId)
                 .Where(x => x.Complete && !x.Removed);
+
+            if (!filtering.ShouldFilter)
+                return parcels;
+
+            if (!string.IsNullOrEmpty(filtering.Filter.Status))
+            {
+                if (Enum.TryParse(typeof(PerceelStatus), filtering.Filter.Status, true, out var status))
+                {
+                    var parcelStatus = ((PerceelStatus)status).MapToParcelStatus();
+                    parcels = parcels.Where(m => m.Status.HasValue && m.Status.Value == parcelStatus.Status);
+                }
+                else
+                    //have to filter on EF cannot return new List<>().AsQueryable() cause non-EF provider does not support .CountAsync()
+                    parcels = parcels.Where(m => m.Status == "-1");
+
+            }
+
+            return parcels;
+        }
     }
 
     public class ParcelSorting : ISorting
@@ -35,5 +58,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(ParcelDetail.PersistentLocalId), SortOrder.Ascending);
     }
 
-    public class ParcelFilter { }
+    public class ParcelFilter
+    {
+        public string Status { get; set; }
+    }
 }
