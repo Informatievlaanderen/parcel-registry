@@ -1,3 +1,10 @@
+# [3.9.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.8.1...v3.9.0) (2020-03-26)
+
+
+### Features
+
+* add status filter on list ([8e648d2](https://github.com/informatievlaanderen/parcel-registry/commit/8e648d2))
+
 ## [3.8.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.8.0...v3.8.1) (2020-03-23)
 
 
