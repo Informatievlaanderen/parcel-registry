@@ -66,6 +66,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
             builder.HasIndex(x => x.Removed);
             builder.HasIndex(x => x.Complete);
             builder.HasIndex(x => new { x.Complete, x.Removed });
+            builder.HasIndex(x => x.Status);
         }
     }
 }
