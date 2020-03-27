@@ -1,3 +1,10 @@
+## [3.9.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.9.0...v3.9.1) (2020-03-27)
+
+
+### Bug Fixes
+
+* set sync dates to belgian timezone ([6f16422](https://github.com/informatievlaanderen/parcel-registry/commit/6f16422))
+
 # [3.9.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.8.1...v3.9.0) (2020-03-26)
 
 
