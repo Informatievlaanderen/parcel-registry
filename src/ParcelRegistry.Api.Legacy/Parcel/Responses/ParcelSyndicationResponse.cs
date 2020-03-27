@@ -36,8 +36,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             {
                 Id = parcel.Position.ToString(CultureInfo.InvariantCulture),
                 Title = $"{parcel.ChangeType}-{parcel.Position}",
-                Published = parcel.RecordCreatedAt.ToDateTimeOffset(),
-                LastUpdated = parcel.LastChangedOn.ToDateTimeOffset(),
+                Published = parcel.RecordCreatedAt.ToBelgianDateTimeOffset(),
+                LastUpdated = parcel.LastChangedOn.ToBelgianDateTimeOffset(),
                 Description = BuildDescription(parcel, responseOptions.Value.Naamruimte)
             };
 
