@@ -1,3 +1,10 @@
+# [3.10.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.9.1...v3.10.0) (2020-04-03)
+
+
+### Features
+
+* upgrade projection handling to include errmessage lastchangedlist ([38df13b](https://github.com/informatievlaanderen/parcel-registry/commit/38df13b))
+
 ## [3.9.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.9.0...v3.9.1) (2020-03-27)
 
 
