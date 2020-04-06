@@ -1,3 +1,10 @@
+## [3.10.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.0...v3.10.1) (2020-04-06)
+
+
+### Bug Fixes
+
+* set name for importer feedname ([b999b04](https://github.com/informatievlaanderen/parcel-registry/commit/b999b04))
+
 # [3.10.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.9.1...v3.10.0) (2020-04-03)
 
 
