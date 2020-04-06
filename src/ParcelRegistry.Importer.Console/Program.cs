@@ -70,7 +70,7 @@ namespace ParcelRegistry.Importer.Console
                     .UseCommandProcessorConfig(settings)
                     .UseDefaultSerializerSettingsForCrabImports()
                     .ConfigureProcessedKeySerialization(a => a.VbrCaPaKey, CaPaKey.CreateFrom)
-                    .ConfigureImportFeedFromAssembly(Assembly.GetExecutingAssembly())
+                    .UseImportFeed(new ImportFeed { Name = settings.FeedName })
                     .Build();
 
                 WaitForStart(settings.WaitForUserInput);
