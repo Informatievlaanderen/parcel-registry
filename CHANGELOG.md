@@ -1,3 +1,10 @@
+## [3.10.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.2...v3.10.3) (2020-04-10)
+
+
+### Bug Fixes
+
+* update grar common packages ([342d402](https://github.com/informatievlaanderen/parcel-registry/commit/342d402))
+
 ## [3.10.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.1...v3.10.2) (2020-04-10)
 
 
