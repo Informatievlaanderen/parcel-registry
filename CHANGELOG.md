@@ -1,3 +1,10 @@
+## [3.10.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.1...v3.10.2) (2020-04-10)
+
+
+### Bug Fixes
+
+* update packages for import batch timestamps ([9af810a](https://github.com/informatievlaanderen/parcel-registry/commit/9af810a))
+
 ## [3.10.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.0...v3.10.1) (2020-04-06)
 
 
