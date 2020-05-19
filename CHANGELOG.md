@@ -1,3 +1,10 @@
+## [3.10.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.5...v3.10.6) (2020-05-19)
+
+
+### Bug Fixes
+
+* move to 3.1.4 and gh actions ([6428c6a](https://github.com/informatievlaanderen/parcel-registry/commit/6428c6a2d44dac2161a806cb4c84e76508221aa8))
+
 ## [3.10.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.4...v3.10.5) (2020-04-28)
 
 
