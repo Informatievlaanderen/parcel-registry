@@ -11,10 +11,10 @@ namespace ParcelRegistry.Projections.Extract
 
         public ParcelDbaseSchema() => Fields = new[]
         {
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(id)), new DbaseFieldLength(254)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(perceelid)), new DbaseFieldLength(30)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(versieid)), new DbaseFieldLength(25)),
-            DbaseField.CreateStringField(new DbaseFieldName(nameof(status)), new DbaseFieldLength(50))
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(id)), new DbaseFieldLength(254)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(perceelid)), new DbaseFieldLength(30)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(versieid)), new DbaseFieldLength(25)),
+            DbaseField.CreateCharacterField(new DbaseFieldName(nameof(status)), new DbaseFieldLength(50))
         };
     }
 }

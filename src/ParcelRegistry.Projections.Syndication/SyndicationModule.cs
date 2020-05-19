@@ -11,7 +11,7 @@ namespace ParcelRegistry.Projections.Syndication
     using Microsoft.Extensions.Logging;
     using Polly;
     using System;
-    using System.Data.SqlClient;
+    using Microsoft.Data.SqlClient;
     using System.Net.Http;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
 
