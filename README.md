@@ -1,4 +1,4 @@
-# Parcel Registry
+# Parcel Registry [![Build Status](https://github.com/Informatievlaanderen/parcel-registry/workflows/CI/badge.svg)](https://github.com/Informatievlaanderen/parcel-registry/actions)
 
 ## Goal
 
