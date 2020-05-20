@@ -1,3 +1,10 @@
+## [3.10.8](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.7...v3.10.8) (2020-05-20)
+
+
+### Bug Fixes
+
+* force build ([7518f2b](https://github.com/informatievlaanderen/parcel-registry/commit/7518f2b5f1b6bafde5b110e978c340794de100e9))
+
 ## [3.10.7](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.6...v3.10.7) (2020-05-20)
 
 
