@@ -1,3 +1,10 @@
+## [3.10.7](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.6...v3.10.7) (2020-05-20)
+
+
+### Bug Fixes
+
+* add build badge ([97c630a](https://github.com/informatievlaanderen/parcel-registry/commit/97c630afab76b6db73bd4ac1940be83a81d87997))
+
 ## [3.10.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.5...v3.10.6) (2020-05-19)
 
 
