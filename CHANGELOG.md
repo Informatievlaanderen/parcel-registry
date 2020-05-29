@@ -1,3 +1,10 @@
+## [3.10.9](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.8...v3.10.9) (2020-05-29)
+
+
+### Bug Fixes
+
+* update dependencies GRAR-752 ([7ef70da](https://github.com/informatievlaanderen/parcel-registry/commit/7ef70daf67166126000b4fdb9172e05650d7f5b3))
+
 ## [3.10.8](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.7...v3.10.8) (2020-05-20)
 
 
