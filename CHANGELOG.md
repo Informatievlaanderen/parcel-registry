@@ -1,3 +1,10 @@
+## [3.10.10](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.9...v3.10.10) (2020-06-08)
+
+
+### Bug Fixes
+
+* build msil version for public api ([9adb8be](https://github.com/informatievlaanderen/parcel-registry/commit/9adb8be9451e6d541c589595091f1896a159b458))
+
 ## [3.10.9](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.8...v3.10.9) (2020-05-29)
 
 
