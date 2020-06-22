@@ -75,25 +75,35 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
 
     public class ParcelNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ParcelNotFoundResponseExamples(IHttpContextAccessor httpContextAccessor)
+            => _httpContextAccessor = httpContextAccessor;
+
         public ProblemDetails GetExamples() => new ProblemDetails
         {
             ProblemTypeUri = "urn:be.vlaanderen.basisregisters.api:parcel:not-found",
             HttpStatus = StatusCodes.Status404NotFound,
             Title = ProblemDetails.DefaultTitle,
             Detail = "Onbestaand perceel.",
-            ProblemInstanceUri = new DefaultHttpContext().GetProblemInstanceUri()
+            ProblemInstanceUri = _httpContextAccessor.HttpContext.GetProblemInstanceUri()
         };
     }
 
     public class ParcelGoneResponseExamples : IExamplesProvider<ProblemDetails>
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ParcelGoneResponseExamples(IHttpContextAccessor httpContextAccessor)
+            => _httpContextAccessor = httpContextAccessor;
+
         public ProblemDetails GetExamples() => new ProblemDetails
         {
             ProblemTypeUri = "urn:be.vlaanderen.basisregisters.api:parcel:gone",
             HttpStatus = StatusCodes.Status410Gone,
             Title = ProblemDetails.DefaultTitle,
             Detail = "Perceel werd verwijderd.",
-            ProblemInstanceUri = new DefaultHttpContext().GetProblemInstanceUri()
+            ProblemInstanceUri = _httpContextAccessor.HttpContext.GetProblemInstanceUri()
         };
     }
 }
