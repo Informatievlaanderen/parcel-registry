@@ -1,3 +1,10 @@
+## [3.10.12](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.11...v3.10.12) (2020-06-22)
+
+
+### Bug Fixes
+
+* configure baseurls for all problemdetails GRAR-1358 GRAR-1357 ([1d14640](https://github.com/informatievlaanderen/parcel-registry/commit/1d14640feb0a52cd6178efc76262959a2765ad58))
+
 ## [3.10.11](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.10...v3.10.11) (2020-06-19)
 
 
