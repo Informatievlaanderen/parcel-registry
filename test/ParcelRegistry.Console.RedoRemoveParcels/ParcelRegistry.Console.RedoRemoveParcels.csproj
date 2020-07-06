@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
+
+  <PropertyGroup>
+    <ApplicationIcon />
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
+    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ParcelRegistry.Api.CrabImport\ParcelRegistry.Api.CrabImport.csproj" />
+    <ProjectReference Include="..\..\src\ParcelRegistry\ParcelRegistry.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Aiv.Vbr.CentraalBeheer.Crab">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.CentraalBeheer.Crab.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.Common">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.CrabModel">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.CrabModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.Domain.Model">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.Domain.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.DomainModel.Operations">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.DomainModel.Operations.dll</HintPath>
+    </Reference>
+    <Reference Include="Aiv.Vbr.Shared">
+      <HintPath>..\..\assets\crab2vbr\Aiv.Vbr.Shared.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="FilesToProcess\*.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

@@ -30,6 +30,8 @@ namespace ParcelRegistry.Parcel
 
         public bool Contains(AddressId addressId) => _addressIds.Contains(addressId);
 
+        public IEnumerable<AddressId> AllAddressIds() => _addressIds;
+
         public IEnumerable<AddressId> AddressIdsEligableToAddFor(CrabHouseNumberId houseNumberId)
         {
             if (LastSubaddressRecordsByHouseNumberId.ContainsKey(houseNumberId))

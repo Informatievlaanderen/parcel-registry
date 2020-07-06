@@ -9,6 +9,7 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Commands.Crab;
+    using Commands.Fixes;
     using SqlStreamStore;
 
     public sealed class ParcelCommandHandlerModule : CommandHandlerModule
@@ -19,7 +20,8 @@ namespace ParcelRegistry.Parcel
             Func<IStreamStore> getStreamStore,
             EventMapping eventMapping,
             EventSerializer eventSerializer,
-            ParcelProvenanceFactory provenanceFactory)
+            ParcelProvenanceFactory provenanceFactory,
+            FixGrar1475ProvenanceFactory fixGrar1475ProvenanceFactory)
         {
             For<ImportTerrainObjectFromCrab>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
@@ -35,6 +37,11 @@ namespace ParcelRegistry.Parcel
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) => { await ImportSubaddress(getParcels, message, ct); });
+
+            For<FixGrar1475>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddProvenance(getUnitOfWork, fixGrar1475ProvenanceFactory)
+                .Handle(async (message, ct) => { await FixGrar1475(getParcels, message, ct); });
         }
 
         public async Task ImportSubaddress(
@@ -108,6 +115,19 @@ namespace ParcelRegistry.Parcel
                 message.Command.Operator,
                 message.Command.Modification,
                 message.Command.Organisation);
+        }
+
+        public async Task FixGrar1475(
+            Func<IParcels> getParcels,
+            CommandMessage<FixGrar1475> message,
+            CancellationToken ct)
+        {
+            var parcels = getParcels();
+            var parcelId = message.Command.ParcelId;
+
+            var parcel = await parcels.GetOptionalAsync(parcelId, ct);
+
+            parcel.Value.FixGrar1475();
         }
     }
 }

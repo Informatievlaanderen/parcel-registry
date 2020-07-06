@@ -176,6 +176,21 @@ namespace ParcelRegistry.Parcel
                 organisation));
         }
 
+        /// <summary>
+        /// Fixes issue where address attachments happened after the parcel was removed.
+        /// Detaches all parcel addresses and re-applies removed event.
+        /// </summary>
+        public void FixGrar1475()
+        {
+            if (!IsRemoved)
+                return;
+
+            foreach (var addressId in _addressCollection.AllAddressIds())
+                ApplyChange(new ParcelAddressWasDetached(_parcelId, addressId));
+
+            ApplyChange(new ParcelWasRemoved(_parcelId));
+        }
+
         private void GuardRemoved(CrabModification? modification)
         {
             if (IsRemoved && modification != CrabModification.Delete)
