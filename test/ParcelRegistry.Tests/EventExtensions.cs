@@ -11,5 +11,12 @@ namespace ParcelRegistry.Tests
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
             return newEvent;
         }
+
+        public static ParcelAddressWasDetached WithAddressId(this ParcelAddressWasDetached @event, AddressId addressId)
+        {
+            var newEvent = new ParcelAddressWasDetached(new ParcelId(@event.ParcelId), addressId);
+            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
+            return newEvent;
+        }
     }
 }
