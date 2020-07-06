@@ -6,7 +6,6 @@ namespace ParcelRegistry.Parcel
     using Events.Crab;
     using System;
     using System.Linq;
-    using System.Security.Cryptography.X509Certificates;
 
     public partial class Parcel : AggregateRootEntity
     {
@@ -32,6 +31,9 @@ namespace ParcelRegistry.Parcel
             CrabModification? modification,
             CrabOrganisation? organisation)
         {
+            if (IsRemoved)
+                throw new ParcelRemovedException($"Cannot change removed parcel for parcel id {_parcelId}");
+
             if (modification == CrabModification.Delete)
             {
                 ApplyChange(new ParcelWasRemoved(_parcelId));
@@ -78,6 +80,8 @@ namespace ParcelRegistry.Parcel
             CrabModification? modification,
             CrabOrganisation? organisation)
         {
+            GuardRemoved(modification);
+
             var legacyEvent = new TerrainObjectHouseNumberWasImportedFromCrab(
                 terrainObjectHouseNumberId,
                 terrainObjectId,
@@ -143,6 +147,8 @@ namespace ParcelRegistry.Parcel
             CrabModification? modification,
             CrabOrganisation? organisation)
         {
+            GuardRemoved(modification);
+
             var addressId = AddressId.CreateFor(subaddressId);
 
             if (_addressCollection.Contains(AddressId.CreateFor(houseNumberId)) &&
@@ -168,6 +174,12 @@ namespace ParcelRegistry.Parcel
                 @operator,
                 modification,
                 organisation));
+        }
+
+        private void GuardRemoved(CrabModification? modification)
+        {
+            if (IsRemoved && modification != CrabModification.Delete)
+                throw new ParcelRemovedException($"Cannot change removed parcel for parcel id {_parcelId}");
         }
     }
 }
