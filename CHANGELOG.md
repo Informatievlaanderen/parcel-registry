@@ -1,3 +1,10 @@
+## [3.10.14](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.13...v3.10.14) (2020-07-06)
+
+
+### Bug Fixes
+
+* after removed / retired the correct events can be applied ([e4c2a5b](https://github.com/informatievlaanderen/parcel-registry/commit/e4c2a5b6303f81922e942636ccfa761d02e32ed6))
+
 ## [3.10.13](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.12...v3.10.13) (2020-06-23)
 
 
