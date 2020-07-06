@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "ParcelRegistry.Importer.Console": {
+      "commandName": "Project"
+    }
+  }
+}

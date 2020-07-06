@@ -2,6 +2,8 @@ namespace ParcelRegistry.Parcel
 {
     using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Commands.Fixes;
+    using NodaTime;
 
     public class ParcelProvenanceFactory : CrabProvenanceFactory, IProvenanceFactory<Parcel>
     {
@@ -18,6 +20,19 @@ namespace ParcelRegistry.Parcel
                 crabProvenance.Modification,
                 crabProvenance.Operator,
                 crabProvenance.Organisation);
+        }
+    }
+
+    public class FixGrar1475ProvenanceFactory : CrabProvenanceFactory, IProvenanceFactory<Parcel>
+    {
+        public bool CanCreateFrom<TCommand>() => typeof(FixGrar1475).IsAssignableFrom(typeof(TCommand));
+
+        public Provenance CreateFrom(object provenanceHolder, Parcel aggregate)
+        {
+            if (!(provenanceHolder is FixGrar1475))
+                throw new ApplicationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+
+            return new Provenance(Instant.FromDateTimeUtc(DateTime.UtcNow), Application.Unknown, new Reason("Rechtzetting adressen verwijderde percelen"), new Operator("crabadmin"), Modification.Delete, Organisation.Aiv);
         }
     }
 }
