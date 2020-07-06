@@ -10,6 +10,7 @@ namespace ParcelRegistry.Tests
     using Infrastructure.Modules;
     using KellermanSoftware.CompareNetObjects;
     using Microsoft.Extensions.Configuration;
+    using Parcel;
     using Xunit.Abstractions;
 
     public abstract class ParcelRegistryTest : AutofacBasedTest
@@ -23,6 +24,7 @@ namespace ParcelRegistry.Tests
                 .Build();
 
             builder.RegisterModule(new CommandHandlingModule(configuration));
+            builder.RegisterType<FixGrar1475ProvenanceFactory>().AsSelf();
         }
 
         protected override void ConfigureEventHandling(ContainerBuilder builder)
