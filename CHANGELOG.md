@@ -1,3 +1,10 @@
+## [3.10.16](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.15...v3.10.16) (2020-07-07)
+
+
+### Bug Fixes
+
+* add processed file + domain fixes ([d4f4067](https://github.com/informatievlaanderen/parcel-registry/commit/d4f4067c224362da174b83d7ee21bc3a286747f9))
+
 ## [3.10.15](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.14...v3.10.15) (2020-07-07)
 
 
