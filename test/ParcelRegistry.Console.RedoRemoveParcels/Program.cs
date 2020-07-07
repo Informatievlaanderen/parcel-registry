@@ -43,18 +43,12 @@ namespace ParcelRegistry.Console.RedoRemoveParcels
 
             var parcelIds = GetParcelIds(eventsConnectionString);
 
-            do
+            Console.WriteLine($"{parcelIds.Count}");
+
+            Parallel.ForEach(parcelIds, parcelId =>
             {
-                Console.WriteLine($"{parcelIds.Count}");
-
-                Parallel.ForEach(parcelIds, parcelId =>
-                {
-                    CreateCommand(new ParcelId(Guid.Parse(parcelId)), commandsJsonSerializerSettings);
-                });
-
-                parcelIds = GetParcelIds(eventsConnectionString).ToList();
-
-            } while (parcelIds.Any());
+                CreateCommand(new ParcelId(Guid.Parse(parcelId)), commandsJsonSerializerSettings);
+            });
 
             ReadFilesAndSendCommands(commandsJsonSerializerSettings, appSettings);
         }
@@ -123,12 +117,11 @@ namespace ParcelRegistry.Console.RedoRemoveParcels
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return sqlConnection.Query<string>(@"SELECT s.Id as ParcelId FROM [parcel-registry-events].[ParcelRegistry].[Streams] s
+                return sqlConnection.Query<string>(@"SELECT s.Id FROM [parcel-registry-events].[ParcelRegistry].[Streams] s
                     INNER JOIN [parcel-registry-events].[ParcelRegistry].[Messages] m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'ParcelWasRemoved'
                     INNER JOIN [parcel-registry-events].[ParcelRegistry].[Messages] ma on s.IdInternal = ma.StreamIdInternal and ma.[Type] = 'ParcelAddressWasAttached'
-                    GROUP BY IdInternal
-                    HAVING max(ma.position) > max(m.position)
-                    ORDER BY IdInternal", commandTimeout: 3600).ToList(); //not many parcels are removed, can take a while before finding
+                    GROUP BY s.Id
+                    HAVING max(ma.position) > max(m.position)", commandTimeout: 3600).ToList(); //not many parcels are removed, can take a while before finding
             }
         }
 
