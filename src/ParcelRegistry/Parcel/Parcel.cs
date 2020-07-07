@@ -185,7 +185,7 @@ namespace ParcelRegistry.Parcel
             if (!IsRemoved)
                 return;
 
-            foreach (var addressId in _addressCollection.AllAddressIds())
+            foreach (var addressId in _addressCollection.AllAddressIds().ToList())
                 ApplyChange(new ParcelAddressWasDetached(_parcelId, addressId));
 
             ApplyChange(new ParcelWasRemoved(_parcelId));
