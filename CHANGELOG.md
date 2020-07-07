@@ -1,3 +1,11 @@
+## [3.10.15](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.14...v3.10.15) (2020-07-07)
+
+
+### Bug Fixes
+
+* add command to fix GRAR-1475 and add test project to find affected ([2a11821](https://github.com/informatievlaanderen/parcel-registry/commit/2a11821f7b57c6559163d57a1e1d0414855a6700))
+* add command to fix GRAR-1475 and add test project to find affected ([b1264a7](https://github.com/informatievlaanderen/parcel-registry/commit/b1264a7b7ffc7976cc94fe021ef1427449a643cd))
+
 ## [3.10.14](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.13...v3.10.14) (2020-07-06)
 
 
