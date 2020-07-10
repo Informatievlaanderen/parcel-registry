@@ -1,3 +1,10 @@
+## [3.10.18](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.17...v3.10.18) (2020-07-10)
+
+
+### Bug Fixes
+
+* correct author, entry links atom feed + example GRAR-1443 GRAR-1447 ([d65fbcc](https://github.com/informatievlaanderen/parcel-registry/commit/d65fbcc27d085cc4a278390abdc9975165581596))
+
 ## [3.10.17](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.16...v3.10.17) (2020-07-10)
 
 
