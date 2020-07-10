@@ -1,3 +1,10 @@
+## [3.10.17](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.16...v3.10.17) (2020-07-10)
+
+
+### Bug Fixes
+
+* enums were not correctly serialized in syndication event GRAR-1490 ([5fbdd91](https://github.com/informatievlaanderen/parcel-registry/commit/5fbdd919ec52ed0b2fe50b9bd9f7c030f20d01f5))
+
 ## [3.10.16](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.15...v3.10.16) (2020-07-07)
 
 
