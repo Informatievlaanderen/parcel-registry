@@ -207,8 +207,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
 
             var pagedParcels = new ParcelSyndicationQuery(
                 context,
-                filtering.Filter?.ContainsEvent ?? false,
-                filtering.Filter?.ContainsObject ?? false)
+                filtering.Filter?.Embed)
                 .Fetch(filtering, sorting, pagination);
 
             Response.AddPagedQueryResultHeaders(pagedParcels);
