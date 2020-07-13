@@ -1,3 +1,11 @@
+## [3.10.19](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.18...v3.10.19) (2020-07-13)
+
+
+### Bug Fixes
+
+* update dependencies ([8fa1053](https://github.com/informatievlaanderen/parcel-registry/commit/8fa1053b8c51fb57793f612d08d87c506596bc4c))
+* use typed embed value GRAR-1465 ([b3d164a](https://github.com/informatievlaanderen/parcel-registry/commit/b3d164a1cb4d448db419849a8aff3e92079ecd63))
+
 ## [3.10.18](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.17...v3.10.18) (2020-07-10)
 
 
