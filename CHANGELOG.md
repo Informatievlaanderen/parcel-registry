@@ -1,3 +1,10 @@
+# [3.11.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.19...v3.11.0) (2020-07-14)
+
+
+### Features
+
+* add timestamp to sync provenance GRAR-1451 ([f79c6be](https://github.com/informatievlaanderen/parcel-registry/commit/f79c6bebb5bbde3f1a475eb374622738459013fd))
+
 ## [3.10.19](https://github.com/informatievlaanderen/parcel-registry/compare/v3.10.18...v3.10.19) (2020-07-13)
 
 
