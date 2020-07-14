@@ -169,7 +169,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             AddressIds = addressIds.ToList();
             IsComplete = isComplete;
 
-            Provenance = new Provenance(organisation, new Reason(reason));
+            Provenance = new Provenance(version, organisation, new Reason(reason));
         }
     }
 
