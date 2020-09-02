@@ -1,3 +1,10 @@
+## [3.11.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.1...v3.11.2) (2020-09-02)
+
+
+### Bug Fixes
+
+* upgrade common to fix sync author ([9ba749c](https://github.com/informatievlaanderen/parcel-registry/commit/9ba749c0e34ccac7a881404e9cad5756a9df75dd))
+
 ## [3.11.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.0...v3.11.1) (2020-07-19)
 
 
