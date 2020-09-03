@@ -67,7 +67,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
 
             item.AddContributor(
                 new SyndicationPerson(
-                    parcel.Organisation?.ToName(),
+                    parcel.Organisation == null ? Organisation.Unknown.ToName() : parcel.Organisation.Value.ToName(),
                     string.Empty,
                     AtomContributorTypes.Author));
 
