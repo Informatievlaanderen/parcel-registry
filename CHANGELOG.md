@@ -1,3 +1,10 @@
+## [3.11.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.2...v3.11.3) (2020-09-03)
+
+
+### Bug Fixes
+
+* null organisation defaults to unknown ([53d6d8b](https://github.com/informatievlaanderen/parcel-registry/commit/53d6d8bb8096f00aef17363b9f540037323c7ede))
+
 ## [3.11.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.1...v3.11.2) (2020-09-02)
 
 
