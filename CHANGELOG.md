@@ -1,3 +1,10 @@
+## [3.11.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.3...v3.11.4) (2020-09-10)
+
+
+### Bug Fixes
+
+* add sync with correct timestamp configuration GRAR-1483 ([4d641c6](https://github.com/informatievlaanderen/parcel-registry/commit/4d641c672116a7c8903d0bc81a335bbb7ba0fc36))
+
 ## [3.11.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.2...v3.11.3) (2020-09-03)
 
 
