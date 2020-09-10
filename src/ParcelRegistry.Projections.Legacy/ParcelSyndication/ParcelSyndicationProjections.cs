@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
@@ -21,6 +22,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     LastChangedOn = message.Message.Provenance.Timestamp,
                     ChangeType = message.EventName,
                     IsComplete = true,
+                    SyndicationItemCreatedAt = DateTimeOffset.Now,
                 };
 
                 parcelSyndicationItem.ApplyProvenance(message.Message.Provenance);

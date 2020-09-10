@@ -57,6 +57,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         public Organisation? Organisation { get; set; }
         public string? Reason { get; set; }
         public string? EventDataAsXml { get; set; }
+        public DateTimeOffset SyndicationItemCreatedAt { get; set; }
 
         private List<Guid> GetDeserializedAddressIds()
         {
@@ -102,7 +103,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 Modification = Modification,
                 Operator = Operator,
                 Organisation = Organisation,
-                Reason = Reason
+                Reason = Reason,
+                SyndicationItemCreatedAt = DateTimeOffset.Now,
             };
 
             editFunc(newItem);
@@ -148,6 +150,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             b.Property(x => x.Organisation);
             b.Property(x => x.Reason);
             b.Property(x => x.EventDataAsXml);
+            b.Property(x => x.SyndicationItemCreatedAt).IsRequired();
 
             b.Ignore(x => x.RecordCreatedAt);
             b.Ignore(x => x.LastChangedOn);

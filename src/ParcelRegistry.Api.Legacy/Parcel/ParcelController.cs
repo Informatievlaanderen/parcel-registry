@@ -205,6 +205,16 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
+            var lastFeedUpdate = await context
+                .ParcelSyndication
+                .AsNoTracking()
+                .OrderByDescending(item => item.Position)
+                .Select(item => item.SyndicationItemCreatedAt)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (lastFeedUpdate == default)
+                lastFeedUpdate = new DateTimeOffset(2020, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
             var pagedParcels = new ParcelSyndicationQuery(
                 context,
                 filtering.Filter?.Embed)
@@ -214,13 +224,14 @@ namespace ParcelRegistry.Api.Legacy.Parcel
 
             return new ContentResult
             {
-                Content = await BuildAtomFeed(pagedParcels, responseOptions, configuration),
+                Content = await BuildAtomFeed(lastFeedUpdate, pagedParcels, responseOptions, configuration),
                 ContentType = MediaTypeNames.Text.Xml,
                 StatusCode = StatusCodes.Status200OK
             };
         }
 
         private static async Task<string> BuildAtomFeed(
+            DateTimeOffset lastUpdate,
             PagedQueryable<ParcelSyndicationQueryResult> pagedParcels,
             IOptions<ResponseOptions> responseOptions,
             IConfiguration configuration)
@@ -232,13 +243,9 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                 var formatter = new AtomFormatter(null, xmlWriter.Settings) { UseCDATA = true };
                 var writer = new AtomFeedWriter(xmlWriter, null, formatter);
                 var syndicationConfiguration = configuration.GetSection("Syndication");
+                var atomConfiguration = AtomFeedConfigurationBuilder.CreateFrom(syndicationConfiguration, lastUpdate);
 
-                await writer.WriteDefaultMetadata(
-                    syndicationConfiguration["Id"],
-                    syndicationConfiguration["Title"],
-                    Assembly.GetEntryAssembly().GetName().Version.ToString(),
-                    new Uri(syndicationConfiguration["Self"]),
-                    syndicationConfiguration.GetSection("Related").GetChildren().Select(c => c.Value).ToArray());
+                await writer.WriteDefaultMetadata(atomConfiguration);
 
                 var nextUri = BuildVolgendeUri(pagedParcels.PaginationInfo, syndicationConfiguration["NextUri"]);
                 if (nextUri != null)
