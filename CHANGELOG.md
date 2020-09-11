@@ -1,3 +1,10 @@
+## [3.11.7](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.6...v3.11.7) (2020-09-11)
+
+
+### Bug Fixes
+
+* remove Modification from xml GRAR-1529 ([50949f9](https://github.com/informatievlaanderen/parcel-registry/commit/50949f9ecd34703184bb102bf74ce2fd08fee149))
+
 ## [3.11.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.5...v3.11.6) (2020-09-11)
 
 
