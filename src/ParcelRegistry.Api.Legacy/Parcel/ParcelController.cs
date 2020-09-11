@@ -220,8 +220,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                 filtering.Filter?.Embed)
                 .Fetch(filtering, sorting, pagination);
 
-            Response.AddPagedQueryResultHeaders(pagedParcels);
-
             return new ContentResult
             {
                 Content = await BuildAtomFeed(lastFeedUpdate, pagedParcels, responseOptions, configuration),
