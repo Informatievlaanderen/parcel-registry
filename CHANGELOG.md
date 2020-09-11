@@ -1,3 +1,10 @@
+## [3.11.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.5...v3.11.6) (2020-09-11)
+
+
+### Bug Fixes
+
+* update packages to fix null operator/reason GRAR-1535 ([aadc093](https://github.com/informatievlaanderen/parcel-registry/commit/aadc093fdf8a11fdb1a5e0be6356a8a76c898528))
+
 ## [3.11.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.4...v3.11.5) (2020-09-11)
 
 
