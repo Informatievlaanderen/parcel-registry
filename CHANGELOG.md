@@ -1,3 +1,10 @@
+## [3.11.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.4...v3.11.5) (2020-09-11)
+
+
+### Bug Fixes
+
+* remove paging response header in sync ([9fdc6fa](https://github.com/informatievlaanderen/parcel-registry/commit/9fdc6fa0153654d4b4f2e428473a7a27eea121cb))
+
 ## [3.11.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.3...v3.11.4) (2020-09-10)
 
 
