@@ -1,3 +1,10 @@
+# [3.12.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.8...v3.12.0) (2020-09-22)
+
+
+### Features
+
+* add import status endpoint GRAR-1400 ([e9d71ab](https://github.com/informatievlaanderen/parcel-registry/commit/e9d71ab9dc6486f3337f67adf619ce50da63e345))
+
 ## [3.11.8](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.7...v3.11.8) (2020-09-22)
 
 
