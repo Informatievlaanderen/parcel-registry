@@ -62,10 +62,10 @@ namespace ParcelRegistry.Projections.Syndication
                                 container.GetService<ILoggerFactory>(),
                                 ct);
 
-                            await Task.WhenAll(StartRunners(configuration, container, ct));
-
-                            Log.Information("Running... Press CTRL + C to exit.");
-                            Closing.WaitOne();
+                            await container
+                                .GetService<FeedProjector<SyndicationContext>>()
+                                .Register(BuildProjectionRunner(configuration, container))
+                                .Start(ct);
                         }
                         catch (Exception e)
                         {
@@ -90,9 +90,9 @@ namespace ParcelRegistry.Projections.Syndication
             Closing.Close();
         }
 
-        private static IEnumerable<Task> StartRunners(IConfiguration configuration, IServiceProvider container, CancellationToken ct)
+        private static IFeedProjectionRunner<SyndicationContext> BuildProjectionRunner(IConfiguration configuration, IServiceProvider container)
         {
-            var addressRunner = new FeedProjectionRunner<AddressEvent, SyndicationContent<Address.Address>, SyndicationContext>(
+            return new FeedProjectionRunner<AddressEvent, SyndicationContent<Address.Address>, SyndicationContext>(
                 "address",
                 configuration.GetValue<Uri>("SyndicationFeeds:Address"),
                 configuration.GetValue<string>("SyndicationFeeds:AddressAuthUserName"),
@@ -103,10 +103,6 @@ namespace ParcelRegistry.Projections.Syndication
                 container.GetService<ILogger<Program>>(),
                 container.GetService<IRegistryAtomFeedReader>(),
                 new AddressPersistentLocalIdProjection());
-
-            yield return addressRunner.CatchUpAsync(
-                  container.GetService<Func<Owned<SyndicationContext>>>(),
-                  ct);
         }
 
         private static IServiceProvider ConfigureServices(IConfiguration configuration)
