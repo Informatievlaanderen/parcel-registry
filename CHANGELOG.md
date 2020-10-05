@@ -1,3 +1,10 @@
+## [3.12.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.12.0...v3.12.1) (2020-10-05)
+
+
+### Bug Fixes
+
+* run projection using the feedprojector GRAR-1562 ([3eedd79](https://github.com/informatievlaanderen/parcel-registry/commit/3eedd79bbd175a206c4589d35db7739a8feeb5a7))
+
 # [3.12.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.11.8...v3.12.0) (2020-09-22)
 
 
