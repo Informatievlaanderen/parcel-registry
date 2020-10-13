@@ -32,6 +32,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Infrastructure;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
@@ -137,7 +138,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                         reponseOptions.Value.DetailUrl,
                         m.VersionTimestamp.ToBelgianDateTimeOffset()))
                     .ToListAsync(cancellationToken),
-                Volgende = BuildVolgendeUri(pagedParcels.PaginationInfo, reponseOptions.Value.VolgendeUrl)
+                Volgende = pagedParcels.PaginationInfo.BuildVolgendeUri(reponseOptions.Value.VolgendeUrl)
             };
 
             return Ok(response);
@@ -245,7 +246,13 @@ namespace ParcelRegistry.Api.Legacy.Parcel
 
                 await writer.WriteDefaultMetadata(atomConfiguration);
 
-                var nextUri = BuildVolgendeUri(pagedParcels.PaginationInfo, syndicationConfiguration["NextUri"]);
+                var parcels = pagedParcels.Items.ToList();
+
+                var nextFrom = parcels.Any()
+                    ? parcels.Max(x => x.Position) + 1
+                    : (long?)null;
+
+                var nextUri = BuildNextSyncUri(pagedParcels.PaginationInfo.Limit, nextFrom, syndicationConfiguration["NextUri"]);
                 if (nextUri != null)
                     await writer.Write(new SyndicationLink(nextUri, "next"));
 
@@ -258,13 +265,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             return sw.ToString();
         }
 
-        private static Uri BuildVolgendeUri(PaginationInfo paginationInfo, string volgendeUrlBase)
+        private static Uri BuildNextSyncUri(int limit, long? from, string nextUrlBase)
         {
-            var offset = paginationInfo.Offset;
-            var limit = paginationInfo.Limit;
-
-            return paginationInfo.HasNextPage
-                ? new Uri(string.Format(volgendeUrlBase, offset + limit, limit))
+            return from.HasValue
+                ? new Uri(string.Format(nextUrlBase, from, limit))
                 : null;
         }
     }
