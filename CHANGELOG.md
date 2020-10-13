@@ -1,3 +1,12 @@
+## [3.12.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.12.1...v3.12.2) (2020-10-13)
+
+
+### Bug Fixes
+
+* correct category GRAR-1450 ([96822ff](https://github.com/informatievlaanderen/parcel-registry/commit/96822ffe8e470ee0625643f24ac50ec99e1706ba))
+* correct metadata GRAR-1446 GRAR-1450 GRAR-1444 GRAR-1422 ([24aed69](https://github.com/informatievlaanderen/parcel-registry/commit/24aed697f8715b99e23cfddb8cee0bd58cddb84c))
+* correct next link sync feed GRAR-1422 ([bff9fc5](https://github.com/informatievlaanderen/parcel-registry/commit/bff9fc588864032c0c8726c32f6908dab862b179))
+
 ## [3.12.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.12.0...v3.12.1) (2020-10-05)
 
 
