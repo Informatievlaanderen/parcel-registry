@@ -1,3 +1,10 @@
+# [3.13.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.12.2...v3.13.0) (2020-10-14)
+
+
+### Features
+
+* add status to api legacy list ([4aa53f3](https://github.com/informatievlaanderen/parcel-registry/commit/4aa53f3bd946455141f58af15bd4c218968dc5d8))
+
 ## [3.12.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.12.1...v3.12.2) (2020-10-13)
 
 
