@@ -4,6 +4,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
     using Infrastructure.Options;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
@@ -51,10 +52,23 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         [JsonProperty(Required = Required.DisallowNull)]
         public Uri Detail { get; set; }
 
-        public ParcelListItemResponse(string id, string naamruimte, string detail, DateTimeOffset version)
+        /// <summary>
+        /// De status van het perceel
+        /// </summary>
+        [DataMember(Name = "PerceelStatus", Order = 3)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public PerceelStatus PerceelStatus { get; set; }
+
+        public ParcelListItemResponse(
+            string id,
+            string naamruimte,
+            string detail,
+            PerceelStatus status,
+            DateTimeOffset version)
         {
             Identificator = new PerceelIdentificator(naamruimte, id, version);
             Detail = new Uri(string.Format(detail, id));
+            PerceelStatus = status;
         }
     }
 
@@ -71,8 +85,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         {
             var samples = new List<ParcelListItemResponse>
             {
-                new ParcelListItemResponse("11001B0001-00S000", _responseOptions.Naamruimte, _responseOptions.DetailUrl, DateTimeOffset.Now),
-                new ParcelListItemResponse("11001B0009-00G004", _responseOptions.Naamruimte, _responseOptions.DetailUrl, DateTimeOffset.Now.AddHours(-40))
+                new ParcelListItemResponse("11001B0001-00S000", _responseOptions.Naamruimte, _responseOptions.DetailUrl, PerceelStatus.Gerealiseerd, DateTimeOffset.Now),
+                new ParcelListItemResponse("11001B0009-00G004", _responseOptions.Naamruimte, _responseOptions.DetailUrl, PerceelStatus.Gerealiseerd, DateTimeOffset.Now.AddHours(-40))
             };
 
             return new ParcelListResponse
