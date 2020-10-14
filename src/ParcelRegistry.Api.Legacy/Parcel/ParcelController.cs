@@ -136,6 +136,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                         m.PersistentLocalId,
                         reponseOptions.Value.Naamruimte,
                         reponseOptions.Value.DetailUrl,
+                        m.Status.MapToPerceelStatus(),
                         m.VersionTimestamp.ToBelgianDateTimeOffset()))
                     .ToListAsync(cancellationToken),
                 Volgende = pagedParcels.PaginationInfo.BuildVolgendeUri(reponseOptions.Value.VolgendeUrl)
