@@ -1,3 +1,10 @@
+# [3.14.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.13.0...v3.14.0) (2020-10-15)
+
+
+### Features
+
+* add cache status to projector api ([5862db1](https://github.com/informatievlaanderen/parcel-registry/commit/5862db1a227cc599646d6d12e1f6956e5cd35b4f))
+
 # [3.13.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.12.2...v3.13.0) (2020-10-14)
 
 
