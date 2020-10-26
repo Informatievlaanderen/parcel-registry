@@ -59,7 +59,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
 
             builder.RegisterEventstreamModule(_configuration);
 
-            builder.RegisterModule<ProjectorModule>();
+            builder.RegisterModule(new ProjectorModule(_configuration));
             RegisterExtractProjections(builder);
             RegisterLastChangedProjections(builder);
             RegisterLegacyProjections(builder);
