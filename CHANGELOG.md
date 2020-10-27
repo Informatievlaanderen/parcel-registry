@@ -1,3 +1,10 @@
+# [3.16.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.15.0...v3.16.0) (2020-10-27)
+
+
+### Features
+
+* add error message for syndication projections ([819feea](https://github.com/informatievlaanderen/parcel-registry/commit/819feea7e02362466ed210f66f107a69a8d57d59))
+
 # [3.15.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.14.0...v3.15.0) (2020-10-27)
 
 
