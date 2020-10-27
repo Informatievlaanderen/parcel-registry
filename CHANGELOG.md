@@ -1,3 +1,10 @@
+# [3.15.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.14.0...v3.15.0) (2020-10-27)
+
+
+### Features
+
+* update projector with gap detection and extended status api ([06d6d60](https://github.com/informatievlaanderen/parcel-registry/commit/06d6d60aea232baa595ad47110b0b27c114f6c09))
+
 # [3.14.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.13.0...v3.14.0) (2020-10-15)
 
 
