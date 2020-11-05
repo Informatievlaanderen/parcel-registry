@@ -73,14 +73,12 @@ namespace ParcelRegistry.Importer.Console.Crab
                     .tblTerreinObject
                     .Where(to => to.aardTerreinObjectCode == AardPerceel)
                     .Where(to => to.beginTijd > since && to.beginTijd <= until)
-                    .Take(5)
                     .Select(to => to.terreinObjectId));
 
                 terrainObjectIds.AddRange(crabEntities
                     .tblTerreinObject_hist
                     .Where(to => to.aardTerreinObjectCode == AardPerceel)
                     .Where(to => to.beginTijd > since && to.beginTijd <= until)
-                    .Take(5)
                     .Select(to => to.terreinObjectId.Value));
 
                 terrainObjectIds.AddRange(crabEntities
