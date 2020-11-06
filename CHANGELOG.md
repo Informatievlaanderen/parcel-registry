@@ -1,3 +1,15 @@
+## [3.16.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.16.0...v3.16.1) (2020-11-06)
+
+
+### Bug Fixes
+
+* logging ([d5bb514](https://github.com/informatievlaanderen/parcel-registry/commit/d5bb5144a9ef8dc72c48f0da6a7cd379827143e6))
+* logging ([e45ed9d](https://github.com/informatievlaanderen/parcel-registry/commit/e45ed9d12cf76a538fb280d8cb8fba712fb7d723))
+* logging ([26eb879](https://github.com/informatievlaanderen/parcel-registry/commit/26eb87977d7d9c2518335baf4e759bdbbf5fb02b))
+* logging ([8519364](https://github.com/informatievlaanderen/parcel-registry/commit/85193647520c63909d5425536590b16546727664))
+* logging ([efac05d](https://github.com/informatievlaanderen/parcel-registry/commit/efac05d32bf7e5e63a54af4bf4132770e3119864))
+* logging ([a83b0d3](https://github.com/informatievlaanderen/parcel-registry/commit/a83b0d3e546b3df84c983323f09a4757541c0176))
+
 # [3.16.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.15.0...v3.16.0) (2020-10-27)
 
 
