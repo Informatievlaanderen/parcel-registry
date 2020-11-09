@@ -22,7 +22,7 @@ namespace ParcelRegistry.Importer.Console
     {
         //29/03/2020 1:20:03 - 24/04/2020 22:05:48
         private static DateTime FromInit = new DateTime(2020, 03, 29, 01, 20, 03);
-        private static DateTime UntilInit = new DateTime(2020, 11, 03, 10, 15, 03);
+        private static DateTime UntilInit = new DateTime(2020, 09, 03, 10, 15, 03);
         private static readonly string ImportFolder = $"{FromInit:yyyy-MM-dd}-{UntilInit:yyyy-MM-dd}";
         private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings().ConfigureForCrabImports();
         private static readonly JsonSerializer Serializer = JsonSerializer.CreateDefault(SerializerSettings);
