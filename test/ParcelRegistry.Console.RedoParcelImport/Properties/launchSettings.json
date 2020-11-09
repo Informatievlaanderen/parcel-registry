@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "ParcelRegistry.Console.RedoParcelImport": {
+      "commandName": "Project"
+    }
+  }
+}
