@@ -1,3 +1,10 @@
+## [3.16.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.16.1...v3.16.2) (2020-11-09)
+
+
+### Bug Fixes
+
+* remove Take(5) from crab queries ([f51facb](https://github.com/informatievlaanderen/parcel-registry/commit/f51facb1ebe6d1489f9af1a0aae92b1aed339643))
+
 ## [3.16.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.16.0...v3.16.1) (2020-11-06)
 
 
