@@ -33,7 +33,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 applyEventInfoOn);
 
             newParcelSyndicationItem.ApplyProvenance(provenance);
-            newParcelSyndicationItem.SetEventData(message.Message);
+            newParcelSyndicationItem.SetEventData(message.Message, message.EventName);
 
             await context
                 .ParcelSyndication
@@ -67,8 +67,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             item.Reason = provenance.Reason;
         }
 
-        public static void SetEventData<T>(this ParcelSyndicationItem syndicationItem, T message)
-            => syndicationItem.EventDataAsXml = message.ToXml(message.GetType().Name).ToString(SaveOptions.DisableFormatting);
+        public static void SetEventData<T>(this ParcelSyndicationItem syndicationItem, T message, string eventName)
+            => syndicationItem.EventDataAsXml = message.ToXml(eventName).ToString(SaveOptions.DisableFormatting);
 
         private static ProjectionItemNotFoundException<ParcelSyndicationProjections> DatabaseItemNotFound(Guid parcelId)
             => new ProjectionItemNotFoundException<ParcelSyndicationProjections>(parcelId.ToString("D"));
