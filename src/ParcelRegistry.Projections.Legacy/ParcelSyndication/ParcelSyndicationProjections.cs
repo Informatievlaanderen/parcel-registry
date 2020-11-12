@@ -26,7 +26,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 };
 
                 parcelSyndicationItem.ApplyProvenance(message.Message.Provenance);
-                parcelSyndicationItem.SetEventData(message.Message);
+                parcelSyndicationItem.SetEventData(message.Message, message.EventName);
 
                 await context
                     .ParcelSyndication
