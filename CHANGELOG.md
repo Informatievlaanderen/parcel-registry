@@ -1,3 +1,10 @@
+## [3.16.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.16.2...v3.16.3) (2020-11-12)
+
+
+### Bug Fixes
+
+* use event name instead of type for sync xml serialization ([5cbcfa5](https://github.com/informatievlaanderen/parcel-registry/commit/5cbcfa562360eecaf2b055c06f3972cc13905908))
+
 ## [3.16.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.16.1...v3.16.2) (2020-11-09)
 
 
