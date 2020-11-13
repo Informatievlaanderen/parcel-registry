@@ -173,56 +173,66 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         }
     }
 
-    public class ParcelSyndicationResponseExamples : IExamplesProvider<object>
+    public class ParcelSyndicationResponseExamples : IExamplesProvider<XmlElement>
     {
-        private ParcelSyndicationContent ContentExample => new ParcelSyndicationContent(
-            Guid.NewGuid(),
-            _responseOptions.Naamruimte,
-            "13023-1510",
-            DateTimeOffset.Now,
-            PerceelStatus.Gerealiseerd,
-            new List<Guid> { Guid.NewGuid() },
-            true,
-            Organisation.Agiv,
-            Reason.CentralManagementCrab);
-
-        private readonly ResponseOptions _responseOptions;
-
-        public ParcelSyndicationResponseExamples(IOptions<ResponseOptions> responseOptionsProvider)
-            => _responseOptions = responseOptionsProvider.Value;
-
-        public object GetExamples()
-        {
-            return $@"<?xml version=""1.0"" encoding=""utf-8""?>
+        private const string RawXml = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <feed xmlns=""http://www.w3.org/2005/Atom"">
-  <id>https://api.basisregisters.vlaanderen.be/v1/feeds/percelen.atom</id>
-  <title>Basisregisters Vlaanderen - feed 'percelen'</title>
-  <subtitle>Deze Atom feed geeft leestoegang tot events op de resource 'percelen'.</subtitle>
-  <generator>Basisregisters Vlaanderen</generator>
-  <rights>Gratis hergebruik volgens https://overheid.vlaanderen.be/sites/default/files/documenten/ict-egov/licenties/hergebruik/modellicentie_gratis_hergebruik_v1_0.html</rights>
-  <updated>2018-10-05T14:06:53Z</updated>
-  <author>
-    <name>agentschap Informatie Vlaanderen</name>
-    <email>informatie.vlaanderen@vlaanderen.be</email>
-  </author>
-  <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/percelen"" rel=""self""/>
-  <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/percelen.atom"" rel=""alternate"" type=""application/atom+xml""/>
-  <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/percelen.xml"" rel=""alternate"" type=""application/xml""/>
-  <link href=""https://docs.basisregisters.vlaanderen.be/"" rel=""related""/>
-  <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/percelen?from=100&limit=100"" rel=""next""/>
-  <entry>
-    <id>4</id>
-    <title>ParcelWasRegistered-4</title>
-    <updated>2018-10-04T13:12:17Z</updated>
-    <published>2018-10-04T13:12:17Z</published>
-    <link href=""{_responseOptions.Naamruimte}/13023-1510"" rel=""related"" />
+    <id>https://api.basisregisters.dev-vlaanderen.be/v1/feeds/percelen.atom</id>
+    <title>Basisregisters Vlaanderen - feed 'percelen'</title>
+    <subtitle>Deze Atom feed geeft leestoegang tot events op de resource 'percelen'.</subtitle>
+    <generator uri=""https://basisregisters.dev-vlaanderen.be"" version=""2.3.16.3"">Basisregisters Vlaanderen</generator>
+    <rights>Gratis hergebruik volgens https://overheid.vlaanderen.be/sites/default/files/documenten/ict-egov/licenties/hergebruik/modellicentie_gratis_hergebruik_v1_0.html</rights>
+    <updated>2020-11-06T19:36:06Z</updated>
     <author>
-      <name>agentschap Informatie Vlaanderen</name>
+        <name>agentschap Informatie Vlaanderen</name>
+        <email>informatie.vlaanderen@vlaanderen.be</email>
+    </author>
+    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/percelen"" rel=""self"" />
+    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/percelen.atom"" rel=""alternate"" type=""application/atom+xml"" />
+    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/percelen.xml"" rel=""alternate"" type=""application/xml"" />
+    <link href=""https://docs.basisregisters.dev-vlaanderen.be/"" rel=""related"" />
+    <link href=""https://api.basisregisters.dev-vlaanderen.be/v1/feeds/percelen?from=2&amp;limit=100&amp;embed=event,object"" rel=""next"" />
+    <entry>
+        <id>0</id>
+        <title>ParcelWasRegistered-0</title>
+        <updated>2012-09-23T23:13:50+02:00</updated>
+        <published>2012-09-23T23:13:50+02:00</published>
+        <link href=""https://data.vlaanderen.be/id/perceel/0"" rel=""related"" />
+        <author>
+            <name>Gemeente</name>
+        </author>
+        <category term=""percelen"" />
+        <content>
+            <![CDATA[<Content xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><Event><ParcelWasRegistered><ParcelId>10ad670a-ab6e-5fda-9a8a-733e11f59902</ParcelId><VbrCaPaKey>0</VbrCaPaKey><Provenance><Timestamp>2012-09-23T21:13:50Z</Timestamp><Organisation>Municipality</Organisation><Reason>Decentrale bijhouding CRAB</Reason></Provenance>
+    </ParcelWasRegistered>
+  </Event><Object><Id>10ad670a-ab6e-5fda-9a8a-733e11f59902</Id><Identificator><Id>https://data.vlaanderen.be/id/perceel/0</Id><Naamruimte>https://data.vlaanderen.be/id/perceel</Naamruimte><ObjectId>0</ObjectId><VersieId>2012-09-23T23:13:50+02:00</VersieId></Identificator><PerceelStatus>Gerealiseerd</PerceelStatus><AdressenIds xmlns:d3p1=""http://schemas.microsoft.com/2003/10/Serialization/Arrays"" /><IsCompleet>true</IsCompleet><Creatie><Tijdstip>2012-09-23T23:13:50+02:00</Tijdstip><Organisatie>Gemeente</Organisatie><Reden>Decentrale bijhouding CRAB</Reden></Creatie>
+  </Object></Content>]]>
+</content>
+</entry>
+<entry>
+    <id>1</id>
+    <title>ParcelWasRealized-1</title>
+    <updated>2012-09-23T23:13:50+02:00</updated>
+    <published>2012-09-23T23:13:50+02:00</published>
+    <link href=""https://data.vlaanderen.be/id/perceel/0"" rel=""related"" />
+    <author>
+        <name>Gemeente</name>
     </author>
     <category term=""percelen"" />
-    <content><![CDATA[{ContentExample.ToXml()}]]></content>
-  </entry>
+    <content>
+        <![CDATA[<Content xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><Event><ParcelWasRealized><ParcelId>10ad670a-ab6e-5fda-9a8a-733e11f59902</ParcelId><Provenance><Timestamp>2012-09-23T21:13:50Z</Timestamp><Organisation>Municipality</Organisation><Reason>Decentrale bijhouding CRAB</Reason></Provenance>
+    </ParcelWasRealized>
+  </Event><Object><Id>10ad670a-ab6e-5fda-9a8a-733e11f59902</Id><Identificator><Id>https://data.vlaanderen.be/id/perceel/0</Id><Naamruimte>https://data.vlaanderen.be/id/perceel</Naamruimte><ObjectId>0</ObjectId><VersieId>2012-09-23T23:13:50+02:00</VersieId></Identificator><PerceelStatus>Gerealiseerd</PerceelStatus><AdressenIds xmlns:d3p1=""http://schemas.microsoft.com/2003/10/Serialization/Arrays"" /><IsCompleet>true</IsCompleet><Creatie><Tijdstip>2012-09-23T23:13:50+02:00</Tijdstip><Organisatie>Gemeente</Organisatie><Reden>Decentrale bijhouding CRAB</Reden></Creatie>
+  </Object></Content>]]>
+</content>
+</entry>
 </feed>";
+
+        public XmlElement GetExamples()
+        {
+            var example = new XmlDocument();
+            example.LoadXml(RawXml);
+            return example.DocumentElement;
         }
     }
 }
