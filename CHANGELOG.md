@@ -1,3 +1,12 @@
+## [3.16.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.16.3...v3.16.4) (2020-11-13)
+
+
+### Bug Fixes
+
+* display sync response example as correct xml GRAR-1599 ([a156ac9](https://github.com/informatievlaanderen/parcel-registry/commit/a156ac90d5922def2d4086a864a9bec061d81c16))
+* upgrade swagger GRAR-1599 ([375057f](https://github.com/informatievlaanderen/parcel-registry/commit/375057fb09eea60f23e0fbdf153dd279b8067b92))
+* use production url for sync examples ([00c3d60](https://github.com/informatievlaanderen/parcel-registry/commit/00c3d600799bd1b0f38d23f9a79a03e950e3a58f))
+
 ## [3.16.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.16.2...v3.16.3) (2020-11-12)
 
 
