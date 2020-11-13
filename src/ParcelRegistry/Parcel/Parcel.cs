@@ -31,7 +31,9 @@ namespace ParcelRegistry.Parcel
             CrabModification? modification,
             CrabOrganisation? organisation)
         {
-            if (IsRemoved)
+            if (IsRemoved && modification == CrabModification.Insert)
+                ApplyChange(new ParcelWasRecovered(_parcelId));
+            else if (IsRemoved)
                 throw new ParcelRemovedException($"Cannot change removed parcel for parcel id {_parcelId}");
 
             if (modification == CrabModification.Delete)

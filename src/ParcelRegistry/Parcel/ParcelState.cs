@@ -11,7 +11,6 @@ namespace ParcelRegistry.Parcel
         private ParcelId _parcelId;
 
         public bool IsRemoved { get; private set; }
-        public Version Version { get; private set; }
         public bool IsRetired { get; private set; }
         public bool IsRealized { get; private set; }
 
@@ -25,6 +24,7 @@ namespace ParcelRegistry.Parcel
         {
             Register<ParcelWasRegistered>(When);
             Register<ParcelWasRemoved>(When);
+            Register<ParcelWasRecovered>(When);
 
             Register<ParcelWasRetired>(When);
             Register<ParcelWasCorrectedToRetired>(When);
@@ -100,7 +100,14 @@ namespace ParcelRegistry.Parcel
         private void When(ParcelWasRegistered @event)
         {
             _parcelId = new ParcelId(@event.ParcelId);
-            Version = new Version(0);
+        }
+
+        private void When(ParcelWasRecovered @event)
+        {
+            IsRemoved = false;
+            IsRealized = false;
+            IsRetired = false;
+            _addressCollection.Clear();
         }
 
         private void WhenCrabEventApplied(bool isDeleted = false)
