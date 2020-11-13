@@ -24,11 +24,14 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
             _parcelId = _fixture.Create<ParcelId>();
         }
 
-        [Fact]
-        public void WhenLifetimeIsFinite()
+        [Theory]
+        [InlineData(CrabModification.Correction)]
+        [InlineData(CrabModification.Delete)]
+        [InlineData(CrabModification.Historize)]
+        public void WhenModificationIsNotInsertThenExceptionIsThrown(CrabModification modification)
         {
             var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), _fixture.Create<LocalDateTime>()));
+                .WithModification(modification);
 
             Assert(new Scenario()
                 .Given(_parcelId,
@@ -36,6 +39,24 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
                     _fixture.Create<ParcelWasRemoved>())
                 .When(command)
                 .Throws(new ParcelRemovedException($"Cannot change removed parcel for parcel id {_parcelId}")));
+        }
+
+        [Fact]
+        public void WhenModificationIsInsertThenParcelWasRecovered()
+        {
+            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+                .WithModification(CrabModification.Insert);
+
+            Assert(new Scenario()
+                .Given(_parcelId,
+                    _fixture.Create<ParcelWasRegistered>(),
+                    _fixture.Create<ParcelWasRemoved>())
+                .When(command)
+                .Then(_parcelId,
+                    new ParcelWasRecovered(_parcelId),
+                    new ParcelWasRealized(_parcelId),
+                    command.ToLegacyEvent()));
         }
     }
 }

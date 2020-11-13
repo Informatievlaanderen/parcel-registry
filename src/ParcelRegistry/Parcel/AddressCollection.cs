@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Parcel
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Crab;
@@ -31,6 +32,8 @@ namespace ParcelRegistry.Parcel
         public bool Contains(AddressId addressId) => _addressIds.Contains(addressId);
 
         public IEnumerable<AddressId> AllAddressIds() => _addressIds;
+
+        internal void Clear() => _addressIds.Clear();
 
         public IEnumerable<AddressId> AddressIdsEligableToAddFor(CrabHouseNumberId houseNumberId)
         {
