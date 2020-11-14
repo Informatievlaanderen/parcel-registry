@@ -94,6 +94,22 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                     ct);
             });
 
+            When<Envelope<ParcelWasRecovered>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelExtract(
+                    message.Message.ParcelId,
+                    parcel =>
+                    {
+                        UpdateRecord(parcel, p =>
+                        {
+                            p.IsDeleted = false;
+                            p.status.Value = string.Empty;
+                        });
+                        UpdateVersie(parcel, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
             When<Envelope<ParcelAddressWasAttached>>(async (context, message, ct) => DoNothing());
             When<Envelope<ParcelAddressWasDetached>>(async (context, message, ct) => DoNothing());
             When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
