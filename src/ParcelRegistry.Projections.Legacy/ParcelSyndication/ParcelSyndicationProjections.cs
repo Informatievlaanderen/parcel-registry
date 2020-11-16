@@ -74,7 +74,11 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 await context.CreateNewParcelSyndicationItem(
                     message.Message.ParcelId,
                     message,
-                    x => { },
+                    x =>
+                    {
+                        foreach (var addressId in x.AddressIds)
+                            x.RemoveAddressId(addressId);
+                    },
                     ct);
             });
 
