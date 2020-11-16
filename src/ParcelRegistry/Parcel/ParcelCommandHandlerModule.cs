@@ -21,7 +21,8 @@ namespace ParcelRegistry.Parcel
             EventMapping eventMapping,
             EventSerializer eventSerializer,
             ParcelProvenanceFactory provenanceFactory,
-            FixGrar1475ProvenanceFactory fixGrar1475ProvenanceFactory)
+            FixGrar1475ProvenanceFactory fixGrar1475ProvenanceFactory,
+            FixGrar1637ProvenanceFactory fixGrar1637ProvenanceFactory)
         {
             For<ImportTerrainObjectFromCrab>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
@@ -42,6 +43,11 @@ namespace ParcelRegistry.Parcel
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 .AddProvenance(getUnitOfWork, fixGrar1475ProvenanceFactory)
                 .Handle(async (message, ct) => { await FixGrar1475(getParcels, message, ct); });
+
+            For<FixGrar1637>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddProvenance(getUnitOfWork, fixGrar1637ProvenanceFactory)
+                .Handle(async (message, ct) => { await FixGrar1637(getParcels, message, ct); });
         }
 
         public async Task ImportSubaddress(
@@ -128,6 +134,19 @@ namespace ParcelRegistry.Parcel
             var parcel = await parcels.GetOptionalAsync(parcelId, ct);
 
             parcel.Value.FixGrar1475();
+        }
+
+        public async Task FixGrar1637(
+            Func<IParcels> getParcels,
+            CommandMessage<FixGrar1637> message,
+            CancellationToken ct)
+        {
+            var parcels = getParcels();
+            var parcelId = message.Command.ParcelId;
+
+            var parcel = await parcels.GetOptionalAsync(parcelId, ct);
+
+            parcel.Value.FixGrar1637();
         }
     }
 }
