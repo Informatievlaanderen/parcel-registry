@@ -26,6 +26,24 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                         });
             });
 
+            When<Envelope<ParcelWasRecovered>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelDetail(
+                    message.Message.ParcelId,
+                    entity =>
+                    {
+                        entity.Removed = false;
+                        entity.Complete = true;
+                        entity.Status = null;
+                        UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
+
+                        context.Entry(entity).Collection(x => x.Addresses).Load();
+
+                        entity.Addresses.Clear();
+                    },
+                    ct);
+            });
+
             When<Envelope<ParcelWasRemoved>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateParcelDetail(
