@@ -1,3 +1,19 @@
+# [3.17.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.16.4...v3.17.0) (2020-11-16)
+
+
+### Bug Fixes
+
+* fixed tests ioc ([e7286c1](https://github.com/informatievlaanderen/parcel-registry/commit/e7286c1411f42ba1a611dfb35774dd3d6c9d99dc))
+* when ParcelWasRemoved also remove linked addresses ([c1d872b](https://github.com/informatievlaanderen/parcel-registry/commit/c1d872bb20a49e227b1e4d2763d755e02a9e257e))
+
+
+### Features
+
+* add fix command for GRAR-1637 ([4c458fb](https://github.com/informatievlaanderen/parcel-registry/commit/4c458fb31f92aaf37aadcb0cd137c2052e7c0673))
+* add ParcelWasRecovered event ([f80c23c](https://github.com/informatievlaanderen/parcel-registry/commit/f80c23ce0ca8aee308afc15dc7db4a621c93ba89))
+* update extract and lastchanged projections for Recovered event ([f34b802](https://github.com/informatievlaanderen/parcel-registry/commit/f34b802ddb91cd7d9d59f5985e88592daca669ee))
+* update legacy projections for Recovered event ([f9cdd6b](https://github.com/informatievlaanderen/parcel-registry/commit/f9cdd6b83535adb0b4501207a7e0406b289e9d09))
+
 ## [3.16.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.16.3...v3.16.4) (2020-11-13)
 
 
