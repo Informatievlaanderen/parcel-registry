@@ -52,6 +52,10 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     {
                         entity.Removed = true;
                         UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
+
+                        context.Entry(entity).Collection(x => x.Addresses).Load();
+
+                        entity.Addresses.Clear();
                     },
                     ct);
             });
