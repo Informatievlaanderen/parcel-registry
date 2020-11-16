@@ -25,6 +25,7 @@ namespace ParcelRegistry.Tests
 
             builder.RegisterModule(new CommandHandlingModule(configuration));
             builder.RegisterType<FixGrar1475ProvenanceFactory>().AsSelf();
+            builder.RegisterType<FixGrar1637ProvenanceFactory>().AsSelf();
         }
 
         protected override void ConfigureEventHandling(ContainerBuilder builder)
