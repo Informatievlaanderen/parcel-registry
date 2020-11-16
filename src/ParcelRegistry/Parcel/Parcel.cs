@@ -193,6 +193,18 @@ namespace ParcelRegistry.Parcel
             ApplyChange(new ParcelWasRemoved(_parcelId));
         }
 
+        /// <summary>
+        /// Fixes issue where parcel should've been recovered but hasn't due to change applied later.
+        /// </summary>
+        public void FixGrar1637()
+        {
+            if (!IsRemoved)
+                return;
+
+            ApplyChange(new ParcelWasRecovered(_parcelId));
+            ApplyChange(new ParcelWasRealized(_parcelId));
+        }
+
         private void GuardRemoved(CrabModification? modification)
         {
             if (IsRemoved && modification != CrabModification.Delete)
