@@ -78,6 +78,20 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     ct);
             });
 
+            When<Envelope<ParcelWasRecovered>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x =>
+                    {
+                        x.Status = null;
+                        foreach (var addressId in x.AddressIds)
+                            x.RemoveAddressId(addressId);
+                    },
+                    ct);
+            });
+
             When<Envelope<ParcelAddressWasAttached>>(async (context, message, ct) =>
             {
                 await context.CreateNewParcelSyndicationItem(
