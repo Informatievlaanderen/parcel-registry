@@ -1,3 +1,10 @@
+## [3.17.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.0...v3.17.1) (2020-11-18)
+
+
+### Bug Fixes
+
+* remove set-env usage in gh-actions ([e75378b](https://github.com/informatievlaanderen/parcel-registry/commit/e75378b78e8b224610ba9a60e35fb66d746bf796))
+
 # [3.17.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.16.4...v3.17.0) (2020-11-16)
 
 
