@@ -1,3 +1,10 @@
+## [3.17.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.1...v3.17.2) (2020-12-03)
+
+
+### Bug Fixes
+
+* parcelStatus should be null in syndication GRAR-1651 ([a623530](https://github.com/informatievlaanderen/parcel-registry/commit/a62353066bbdaf8d078f692d55c089874babf619))
+
 ## [3.17.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.0...v3.17.1) (2020-11-18)
 
 
