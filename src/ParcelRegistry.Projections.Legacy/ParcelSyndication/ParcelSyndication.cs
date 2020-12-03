@@ -26,8 +26,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             set => StatusAsString = value.HasValue ? value.Value.Status : string.Empty;
         }
 
-        public bool IsComplete { get; set; }
-
         public string? AddressesAsString { get; set; }
 
         public IReadOnlyCollection<Guid> AddressIds
@@ -96,7 +94,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 CaPaKey = CaPaKey,
                 AddressIds = AddressIds,
                 Status = Status,
-                IsComplete = IsComplete,
 
                 RecordCreatedAt = RecordCreatedAt,
                 Application = Application,
@@ -138,8 +135,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             b.Ignore(x => x.AddressIds);
             b.Property(x => x.AddressesAsString)
                 .HasColumnName("AddressPersistentLocalIds");
-
-            b.Property(x => x.IsComplete);
 
             b.Property(x => x.RecordCreatedAtAsDateTimeOffset).HasColumnName("RecordCreatedAt");
             b.Property(x => x.LastChangedOnAsDateTimeOffset).HasColumnName("LastChangedOn");

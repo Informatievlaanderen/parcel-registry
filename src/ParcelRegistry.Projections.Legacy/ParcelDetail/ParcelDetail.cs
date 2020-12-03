@@ -18,7 +18,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
         public virtual Collection<ParcelDetailAddress> Addresses { get; set; }
 
-        public bool Complete { get; set; }
         public bool Removed { get; set; }
 
         private DateTimeOffset VersionTimestampAsDateTimeOffset { get; set; }
@@ -52,7 +51,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     value => value == null ? (ParcelStatus?)null : ParcelStatus.Parse(value))
                 .HasColumnName("Status");
 
-            builder.Property(p => p.Complete);
             builder.Property(p => p.Removed);
             builder.Property(ParcelDetail.VersionTimestampBackingPropertyName)
                 .HasColumnName("VersionTimestamp");
@@ -64,8 +62,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
             builder.HasIndex(x => x.PersistentLocalId).IsClustered();
             builder.HasIndex(x => x.Removed);
-            builder.HasIndex(x => x.Complete);
-            builder.HasIndex(x => new { x.Complete, x.Removed });
             builder.HasIndex(x => x.Status);
         }
     }

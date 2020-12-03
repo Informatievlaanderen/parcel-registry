@@ -21,7 +21,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                             ParcelId = message.Message.ParcelId,
                             PersistentLocalId = message.Message.VbrCaPaKey,
                             VersionTimestamp = message.Message.Provenance.Timestamp,
-                            Complete = true,
                             Removed = false
                         });
             });
@@ -33,7 +32,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     entity =>
                     {
                         entity.Removed = false;
-                        entity.Complete = true;
                         entity.Status = null;
                         UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
 
