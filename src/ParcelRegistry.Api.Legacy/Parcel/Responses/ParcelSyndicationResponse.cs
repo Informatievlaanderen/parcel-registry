@@ -86,7 +86,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
                     naamruimte,
                     parcel.CaPaKey,
                     parcel.LastChangedOn.ToBelgianDateTimeOffset(),
-                    parcel.Status.MapToPerceelStatus(),
+                    parcel.Status.MapToPerceelStatusSyndication(),
                     parcel.AddressIds,
                     parcel.IsComplete,
                     parcel.Organisation,

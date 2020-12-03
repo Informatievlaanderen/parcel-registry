@@ -4,6 +4,9 @@ namespace ParcelRegistry.Api.Legacy.Convertors
 
     public static class ParcelStatusExtensions
     {
+        public static PerceelStatus? MapToPerceelStatusSyndication(this ParcelStatus? status)
+            => status.HasValue ? MapToPerceelStatus(status.Value) : (PerceelStatus?)null;
+
         public static PerceelStatus MapToPerceelStatus(this ParcelStatus? status)
             => MapToPerceelStatus(status ?? ParcelStatus.Realized);
 
