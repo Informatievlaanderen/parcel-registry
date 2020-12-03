@@ -21,7 +21,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     RecordCreatedAt = message.Message.Provenance.Timestamp,
                     LastChangedOn = message.Message.Provenance.Timestamp,
                     ChangeType = message.EventName,
-                    IsComplete = true,
                     SyndicationItemCreatedAt = DateTimeOffset.Now,
                 };
 

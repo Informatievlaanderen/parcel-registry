@@ -88,7 +88,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
                     parcel.LastChangedOn.ToBelgianDateTimeOffset(),
                     parcel.Status.MapToPerceelStatusSyndication(),
                     parcel.AddressIds,
-                    parcel.IsComplete,
                     parcel.Organisation,
                     parcel.Reason);
 
@@ -141,12 +140,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         public List<Guid> AddressIds { get; set; }
 
         /// <summary>
-        /// Duidt aan of het item compleet is.
-        /// </summary>
-        [DataMember(Name = "IsCompleet", Order = 5)]
-        public bool IsComplete { get; set; }
-
-        /// <summary>
         /// Creatie data ivm het item.
         /// </summary>
         [DataMember(Name = "Creatie", Order = 6)]
@@ -159,7 +152,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             DateTimeOffset version,
             PerceelStatus? status,
             IEnumerable<Guid> addressIds,
-            bool isComplete,
             Organisation? organisation,
             string reason)
         {
@@ -167,7 +159,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             Identificator = new PerceelIdentificator(naamruimte, string.IsNullOrEmpty(caPaKey) ? string.Empty : caPaKey, version);
             Status = status;
             AddressIds = addressIds.ToList();
-            IsComplete = isComplete;
 
             Provenance = new Provenance(version, organisation, new Reason(reason));
         }
@@ -205,7 +196,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         <content>
             <![CDATA[<Content xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><Event><ParcelWasRegistered><ParcelId>10ad670a-ab6e-5fda-9a8a-733e11f59902</ParcelId><VbrCaPaKey>0</VbrCaPaKey><Provenance><Timestamp>2012-09-23T21:13:50Z</Timestamp><Organisation>Municipality</Organisation><Reason>Decentrale bijhouding CRAB</Reason></Provenance>
     </ParcelWasRegistered>
-  </Event><Object><Id>10ad670a-ab6e-5fda-9a8a-733e11f59902</Id><Identificator><Id>https://data.vlaanderen.be/id/perceel/0</Id><Naamruimte>https://data.vlaanderen.be/id/perceel</Naamruimte><ObjectId>0</ObjectId><VersieId>2012-09-23T23:13:50+02:00</VersieId></Identificator><PerceelStatus>Gerealiseerd</PerceelStatus><AdressenIds xmlns:d3p1=""http://schemas.microsoft.com/2003/10/Serialization/Arrays"" /><IsCompleet>true</IsCompleet><Creatie><Tijdstip>2012-09-23T23:13:50+02:00</Tijdstip><Organisatie>Gemeente</Organisatie><Reden>Decentrale bijhouding CRAB</Reden></Creatie>
+  </Event><Object><Id>10ad670a-ab6e-5fda-9a8a-733e11f59902</Id><Identificator><Id>https://data.vlaanderen.be/id/perceel/0</Id><Naamruimte>https://data.vlaanderen.be/id/perceel</Naamruimte><ObjectId>0</ObjectId><VersieId>2012-09-23T23:13:50+02:00</VersieId></Identificator><PerceelStatus>Gerealiseerd</PerceelStatus><AdressenIds xmlns:d3p1=""http://schemas.microsoft.com/2003/10/Serialization/Arrays"" /><Creatie><Tijdstip>2012-09-23T23:13:50+02:00</Tijdstip><Organisatie>Gemeente</Organisatie><Reden>Decentrale bijhouding CRAB</Reden></Creatie>
   </Object></Content>]]>
 </content>
 </entry>
@@ -222,7 +213,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     <content>
         <![CDATA[<Content xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><Event><ParcelWasRealized><ParcelId>10ad670a-ab6e-5fda-9a8a-733e11f59902</ParcelId><Provenance><Timestamp>2012-09-23T21:13:50Z</Timestamp><Organisation>Municipality</Organisation><Reason>Decentrale bijhouding CRAB</Reason></Provenance>
     </ParcelWasRealized>
-  </Event><Object><Id>10ad670a-ab6e-5fda-9a8a-733e11f59902</Id><Identificator><Id>https://data.vlaanderen.be/id/perceel/0</Id><Naamruimte>https://data.vlaanderen.be/id/perceel</Naamruimte><ObjectId>0</ObjectId><VersieId>2012-09-23T23:13:50+02:00</VersieId></Identificator><PerceelStatus>Gerealiseerd</PerceelStatus><AdressenIds xmlns:d3p1=""http://schemas.microsoft.com/2003/10/Serialization/Arrays"" /><IsCompleet>true</IsCompleet><Creatie><Tijdstip>2012-09-23T23:13:50+02:00</Tijdstip><Organisatie>Gemeente</Organisatie><Reden>Decentrale bijhouding CRAB</Reden></Creatie>
+  </Event><Object><Id>10ad670a-ab6e-5fda-9a8a-733e11f59902</Id><Identificator><Id>https://data.vlaanderen.be/id/perceel/0</Id><Naamruimte>https://data.vlaanderen.be/id/perceel</Naamruimte><ObjectId>0</ObjectId><VersieId>2012-09-23T23:13:50+02:00</VersieId></Identificator><PerceelStatus>Gerealiseerd</PerceelStatus><AdressenIds xmlns:d3p1=""http://schemas.microsoft.com/2003/10/Serialization/Arrays"" /><Creatie><Tijdstip>2012-09-23T23:13:50+02:00</Tijdstip><Organisatie>Gemeente</Organisatie><Reden>Decentrale bijhouding CRAB</Reden></Creatie>
   </Object></Content>]]>
 </content>
 </entry>

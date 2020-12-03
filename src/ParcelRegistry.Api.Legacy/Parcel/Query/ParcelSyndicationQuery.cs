@@ -26,7 +26,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         public Instant LastChangedOn { get; }
         public ParcelStatus? Status { get; }
         public IEnumerable<Guid> AddressIds { get; } = new List<Guid>();
-        public bool IsComplete { get; }
         public Organisation? Organisation { get; }
         public string Reason { get; }
         public string EventDataAsXml { get; }
@@ -86,7 +85,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             string changeType,
             Instant recordCreateAt,
             Instant lastChangedOn,
-            bool isComplete,
             ParcelStatus? status,
             IEnumerable<Guid> addressIds,
             Organisation? organisation,
@@ -103,7 +101,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         {
             ContainsObject = true;
 
-            IsComplete = isComplete;
             Status = status;
             AddressIds = addressIds;
         }
@@ -115,7 +112,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             string changeType,
             Instant recordCreateAt,
             Instant lastChangedOn,
-            bool isComplete,
             ParcelStatus? status,
             IEnumerable<Guid> addressIds,
             Organisation? organisation,
@@ -128,7 +124,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                 changeType,
                 recordCreateAt,
                 lastChangedOn,
-                isComplete,
                 status,
                 addressIds,
                 organisation,
@@ -167,7 +162,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                         x.ChangeType,
                         x.RecordCreatedAt,
                         x.LastChangedOn,
-                        x.IsComplete,
                         x.Status,
                         x.AddressIds,
                         x.Organisation,
@@ -194,7 +188,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                         x.ChangeType,
                         x.RecordCreatedAt,
                         x.LastChangedOn,
-                        x.IsComplete,
                         x.Status,
                         x.AddressIds,
                         x.Organisation,

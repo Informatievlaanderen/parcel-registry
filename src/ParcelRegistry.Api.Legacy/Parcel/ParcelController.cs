@@ -77,7 +77,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             if (parcel != null && parcel.Removed)
                 throw new ApiException("Perceel werd verwijderd.", StatusCodes.Status410Gone);
 
-            if (parcel == null || !parcel.Complete)
+            if (parcel == null)
                 throw new ApiException("Onbestaand perceel.", StatusCodes.Status404NotFound);
 
             var addressIds = parcel.Addresses.Select(x => x.AddressId);
