@@ -1,3 +1,10 @@
+## [3.17.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.3...v3.17.4) (2020-12-11)
+
+
+### Bug Fixes
+
+* correct remove complete migration ([b433dc4](https://github.com/informatievlaanderen/parcel-registry/commit/b433dc4e7ede539d419e0d97e159f864628304e4))
+
 ## [3.17.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.2...v3.17.3) (2020-12-03)
 
 ## [3.17.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.1...v3.17.2) (2020-12-03)
