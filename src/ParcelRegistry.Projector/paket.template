@@ -22,7 +22,7 @@ dependencies
     Be.Vlaanderen.Basisregisters.Projector >= LOCKEDVERSION
 
 files
-  ParcelRegistry.Projector.dll => lib\netcoreapp3.1
-  ParcelRegistry.Projector.pdb => lib\netcoreapp3.1
-  ParcelRegistry.Projector.xml => lib\netcoreapp3.1
+  ParcelRegistry.Projector.dll => lib\net5.0
+  ParcelRegistry.Projector.pdb => lib\net5.0
+  ParcelRegistry.Projector.xml => lib\net5.0
   ParcelRegistry.Projector.xml => content

@@ -1,8 +1,8 @@
 #r "paket:
-version 5.241.6
+version 6.0.0-beta8
 framework: netstandard20
 source https://api.nuget.org/v3/index.json
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.2.3 //"
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 5.0.1 //"
 
 #load "packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/build-generic.fsx"
 
@@ -20,10 +20,10 @@ let dockerRepository = "parcel-registry"
 let assemblyVersionNumber = (sprintf "2.%s")
 let nugetVersionNumber = (sprintf "%s")
 
-let build = buildSolution assemblyVersionNumber
+let buildSource = build assemblyVersionNumber
+let buildTest = buildTest assemblyVersionNumber
 let setVersions = (setSolutionVersions assemblyVersionNumber product copyright company)
-let test = testSolution
-let publish = publish assemblyVersionNumber
+let publishSource = publish assemblyVersionNumber
 let pack = pack nugetVersionNumber
 let containerize = containerize dockerRepository
 let push = push dockerRepository
@@ -36,9 +36,22 @@ Target.create "Restore_Solution" (fun _ -> restore "ParcelRegistry")
 
 Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
-  build "ParcelRegistry")
+  buildSource "ParcelRegistry.Projector"
+  buildSource "ParcelRegistry.Api.Legacy"
+  buildSource "ParcelRegistry.Api.Extract"
+  buildSource "ParcelRegistry.Api.CrabImport"
+  buildSource "ParcelRegistry.Projections.Legacy"
+  buildSource "ParcelRegistry.Projections.Extract"
+  buildSource "ParcelRegistry.Projections.LastChangedList"
+  buildSource "ParcelRegistry.Projections.Syndication"
+  buildTest "ParcelRegistry.Tests"
+)
 
-Target.create "Test_Solution" (fun _ -> test "ParcelRegistry")
+Target.create "Test_Solution" (fun _ ->
+    [
+        "test" @@ "ParcelRegistry.Tests"
+    ] |> List.iter testWithDotNet
+)
 
 Target.create "Publish_Solution" (fun _ ->
   [
@@ -50,7 +63,7 @@ Target.create "Publish_Solution" (fun _ ->
     "ParcelRegistry.Projections.Extract"
     "ParcelRegistry.Projections.LastChangedList"
     "ParcelRegistry.Projections.Syndication"
-  ] |> List.iter publish)
+  ] |> List.iter publishSource)
 
 Target.create "Pack_Solution" (fun _ ->
   [
