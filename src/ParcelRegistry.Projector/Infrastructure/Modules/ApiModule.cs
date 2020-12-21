@@ -8,6 +8,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.Projector;
+    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Be.Vlaanderen.Basisregisters.Shaperon;
     using Microsoft.Extensions.Configuration;
@@ -78,7 +79,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ParcelExtractProjections, ExtractContext>(
-                    context => new ParcelExtractProjections(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding()));
+                    context => new ParcelExtractProjections(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding()), ConnectedProjectionSettings.Default);
         }
 
         private void RegisterLastChangedProjections(ContainerBuilder builder)
@@ -94,7 +95,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<ParcelRegistry.Projections.LastChangedList.LastChangedListContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<LastChangedListProjections, LastChangedListContext>();
+                .RegisterProjections<LastChangedListProjections, LastChangedListContext>(ConnectedProjectionSettings.Default);
         }
 
         private void RegisterLegacyProjections(ContainerBuilder builder)
@@ -109,8 +110,8 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<LegacyContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<ParcelDetailProjections, LegacyContext>()
-                .RegisterProjections<ParcelSyndicationProjections, LegacyContext>();
+                .RegisterProjections<ParcelDetailProjections, LegacyContext>(ConnectedProjectionSettings.Default)
+                .RegisterProjections<ParcelSyndicationProjections, LegacyContext>(ConnectedProjectionSettings.Default);
         }
     }
 }

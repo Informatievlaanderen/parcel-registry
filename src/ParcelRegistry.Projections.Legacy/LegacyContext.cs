@@ -15,8 +15,8 @@ namespace ParcelRegistry.Projections.Legacy
         public DbSet<ParcelDetailAddress> ParcelAddresses { get; set; }
         public DbSet<ParcelSyndicationItem> ParcelSyndication { get; set; }
 
-        public DbQuery<ParcelDetailListViewCount> ParcelDetailListViewCount { get; set; }
-        
+        public DbSet<ParcelDetailListViewCount> ParcelDetailListViewCount { get; set; }
+
         // This needs to be here to please EF
         public LegacyContext() { }
 
@@ -27,7 +27,8 @@ namespace ParcelRegistry.Projections.Legacy
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Query<ParcelDetailListViewCount>()
+            modelBuilder.Entity<ParcelDetailListViewCount>()
+                .HasNoKey()
                 .ToView(ParcelDetailListCountName, Schema.Legacy);
         }
     }

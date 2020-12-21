@@ -15,20 +15,20 @@ licenseUrl https://opensource.org/licenses/EUPL-1.2
 description Parcel Registry.
 
 dependencies
-  framework: netcoreapp31
+  framework: net5.0
     Be.Vlaanderen.Basisregisters.GrAr.Legacy >= LOCKEDVERSION
 
 files
-  ParcelRegistry.Api.Legacy.dll => lib\netcoreapp3.1
-  ParcelRegistry.Api.Legacy.pdb => lib\netcoreapp3.1
-  ParcelRegistry.Api.Legacy.xml => lib\netcoreapp3.1
+  ParcelRegistry.Api.Legacy.dll => lib\net5.0
+  ParcelRegistry.Api.Legacy.pdb => lib\net5.0
+  ParcelRegistry.Api.Legacy.xml => lib\net5.0
   ParcelRegistry.Api.Legacy.xml => content
 
-  ParcelRegistry.Projections.Legacy.dll => lib\netcoreapp3.1
-  ParcelRegistry.Projections.Legacy.pdb => lib\netcoreapp3.1
+  ParcelRegistry.Projections.Legacy.dll => lib\net5.0
+  ParcelRegistry.Projections.Legacy.pdb => lib\net5.0
 
-  ParcelRegistry.Projections.Syndication.dll => lib\netcoreapp3.1
-  ParcelRegistry.Projections.Syndication.pdb => lib\netcoreapp3.1
+  ParcelRegistry.Projections.Syndication.dll => lib\net5.0
+  ParcelRegistry.Projections.Syndication.pdb => lib\net5.0
   
-  ParcelRegistry.dll => lib\netcoreapp3.1
-  ParcelRegistry.pdb => lib\netcoreapp3.1
+  ParcelRegistry.dll => lib\net5.0
+  ParcelRegistry.pdb => lib\net5.0
