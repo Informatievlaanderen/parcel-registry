@@ -1,3 +1,10 @@
+## [3.17.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.5...v3.17.6) (2020-12-28)
+
+
+### Bug Fixes
+
+* update basisregisters api dependency ([55fbfc8](https://github.com/informatievlaanderen/parcel-registry/commit/55fbfc8df8ddbd3fd521c9841e2825b4980a2760))
+
 ## [3.17.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.4...v3.17.5) (2020-12-21)
 
 
