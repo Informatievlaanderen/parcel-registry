@@ -6,10 +6,13 @@ namespace ParcelRegistry.Parcel.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 
     [EventName("ParcelWasCorrectedToRetired")]
-    [EventDescription("Het perceel werd gehistoreerd via correctie.")]
+    [EventDescription("Het perceel kreeg status 'gehistoreerd' (via correctie).")]
     public class ParcelWasCorrectedToRetired : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public ParcelWasCorrectedToRetired(
