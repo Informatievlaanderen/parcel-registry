@@ -6,11 +6,16 @@ namespace ParcelRegistry.Parcel.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 
     [EventName("ParcelAddressWasDetached")]
-    [EventDescription("Aan het perceel werd een adres ontkoppeld.")]
+    [EventDescription("Er werd een adres losgekoppeld van het perceel.")]
     public class ParcelAddressWasDetached : IHasProvenance, ISetProvenance
     {
+        [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }
+        
+        [EventPropertyDescription("Interne GUID van het adres dat van het perceel werd losgekoppeld.")]
         public Guid AddressId { get; }
+        
+        [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
         public ParcelAddressWasDetached(
