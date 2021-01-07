@@ -1,3 +1,10 @@
+## [3.17.8](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.7...v3.17.8) (2021-01-07)
+
+
+### Bug Fixes
+
+* improve cache status page GRAR-1734 ([e59ff0b](https://github.com/informatievlaanderen/parcel-registry/commit/e59ff0bdad8354d6ea574599dc81d9bce8688a3f))
+
 ## [3.17.7](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.6...v3.17.7) (2021-01-07)
 
 
