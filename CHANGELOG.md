@@ -1,3 +1,10 @@
+## [3.17.7](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.6...v3.17.7) (2021-01-07)
+
+
+### Bug Fixes
+
+* update deps ([a825831](https://github.com/informatievlaanderen/parcel-registry/commit/a825831d9023b618abfff1640ee35c636a1b9806))
+
 ## [3.17.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.5...v3.17.6) (2020-12-28)
 
 
