@@ -1,3 +1,10 @@
+# [3.18.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.8...v3.18.0) (2021-01-12)
+
+
+### Features
+
+* add syndication status to projector api GRAR-1567 ([14a13a3](https://github.com/informatievlaanderen/parcel-registry/commit/14a13a35834ecda45a358e0c624e23452cb152dc))
+
 ## [3.17.8](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.7...v3.17.8) (2021-01-07)
 
 
