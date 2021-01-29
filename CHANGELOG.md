@@ -1,3 +1,10 @@
+## [3.18.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.18.0...v3.18.1) (2021-01-29)
+
+
+### Bug Fixes
+
+* remove sync alternate links ([2d90806](https://github.com/informatievlaanderen/parcel-registry/commit/2d90806d4414c30f7dd12c566fe8e074b17160c3))
+
 # [3.18.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.17.8...v3.18.0) (2021-01-12)
 
 
