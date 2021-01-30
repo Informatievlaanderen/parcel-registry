@@ -1,3 +1,10 @@
+# [3.19.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.18.1...v3.19.0) (2021-01-30)
+
+
+### Features
+
+* add sync tags on events ([07b1a3c](https://github.com/informatievlaanderen/parcel-registry/commit/07b1a3c235e2c94028721aae69919cfae09641db))
+
 ## [3.18.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.18.0...v3.18.1) (2021-01-29)
 
 
