@@ -5,16 +5,17 @@ namespace ParcelRegistry.Parcel.Events
     using Newtonsoft.Json;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 
+    [EventTags(EventTag.For.Sync)]
     [EventName("ParcelAddressWasAttached")]
     [EventDescription("Er werd een adres gekoppeld aan het perceel.")]
     public class ParcelAddressWasAttached : IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }
-        
+
         [EventPropertyDescription("Interne GUID van het adres dat aan het perceel werd gekoppeld.")]
         public Guid AddressId { get; }
-        
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 

@@ -5,13 +5,14 @@ namespace ParcelRegistry.Parcel.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
+    [EventTags(EventTag.For.Sync)]
     [EventName("ParcelWasRecovered")]
     [EventDescription("Een verwijderd perceel werd teruggeplaatst.")]
     public class ParcelWasRecovered : IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }
-        
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
