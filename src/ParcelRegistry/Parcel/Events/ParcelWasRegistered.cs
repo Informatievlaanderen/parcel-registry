@@ -5,16 +5,17 @@ namespace ParcelRegistry.Parcel.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
+    [EventTags(EventTag.For.Sync)]
     [EventName("ParcelWasRegistered")]
     [EventDescription("Het perceel werd aangemaakt in het register met zijn persistente lokale identificator.")]
     public class ParcelWasRegistered : IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }
-        
+
         [EventPropertyDescription("CaPaKey (= objectidentificator) van het perceel, waarbij forward slashes vervangen zijn door koppeltekens i.f.v. gebruik in URI's.")]
         public string VbrCaPaKey { get; }
-        
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
