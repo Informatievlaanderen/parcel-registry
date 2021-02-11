@@ -1,3 +1,10 @@
+## [3.19.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.19.1...v3.19.2) (2021-02-11)
+
+
+### Bug Fixes
+
+* update api with use of problemdetailshelper GRAR-1814 ([e7277ec](https://github.com/informatievlaanderen/parcel-registry/commit/e7277ecc19e2b3499845aeb1e2fbfc6f818bfa12))
+
 ## [3.19.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.19.0...v3.19.1) (2021-02-02)
 
 
