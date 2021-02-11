@@ -3,6 +3,7 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -35,6 +36,10 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure.Modules
 
             containerBuilder
                 .RegisterModule(new DataDogModule(_configuration));
+
+            containerBuilder
+                .RegisterType<ProblemDetailsHelper>()
+                .AsSelf();
 
             containerBuilder.Populate(_services);
         }

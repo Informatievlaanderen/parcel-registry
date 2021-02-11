@@ -7,6 +7,7 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Api;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CrabImport;
     using CrabImport;
@@ -65,6 +66,10 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure.Modules
             containerBuilder
                 .RegisterType<IdempotentCommandHandlerModuleProcessor>()
                 .As<IIdempotentCommandHandlerModuleProcessor>();
+
+            containerBuilder
+                .RegisterType<ProblemDetailsHelper>()
+                .AsSelf();
 
             containerBuilder.Populate(_services);
         }
