@@ -1,3 +1,10 @@
+## [3.19.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.19.2...v3.19.3) (2021-02-15)
+
+
+### Bug Fixes
+
+* register problem details helper for projector GRAR-1814 ([d7fe02e](https://github.com/informatievlaanderen/parcel-registry/commit/d7fe02ebec1e5e136ba08b7472f88495bdc7718b))
+
 ## [3.19.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.19.1...v3.19.2) (2021-02-11)
 
 
