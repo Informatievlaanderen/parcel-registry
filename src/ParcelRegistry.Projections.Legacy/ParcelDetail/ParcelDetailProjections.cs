@@ -7,6 +7,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
     using System.Linq;
     using Parcel.Events.Crab;
 
+    [ConnectedProjectionName("Legacy - ParcelDetail")]
+    [ConnectedProjectionDescription("Perceel detail data.")]
     public class ParcelDetailProjections : ConnectedProjection<LegacyContext>
     {
         public ParcelDetailProjections()
