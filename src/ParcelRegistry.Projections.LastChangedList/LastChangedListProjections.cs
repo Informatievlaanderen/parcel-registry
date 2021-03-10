@@ -1,10 +1,13 @@
 namespace ParcelRegistry.Projections.LastChangedList
 {
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Parcel.Events;
     using Parcel.Events.Crab;
 
+    [ConnectedProjectionName("LastChangedList")]
+    [ConnectedProjectionDescription("Markeert de percelen waarvan de cached data moet geupdate worden.")]
     public class LastChangedListProjections : LastChangedListConnectedProjection
     {
         protected override string CacheKeyFormat => "legacy/parcel:{{0}}.{1}";

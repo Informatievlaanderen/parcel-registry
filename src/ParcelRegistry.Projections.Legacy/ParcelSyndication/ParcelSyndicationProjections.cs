@@ -7,6 +7,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using Parcel.Events;
     using Parcel.Events.Crab;
 
+    [ConnectedProjectionName("Legacy - ParcelSyndication")]
+    [ConnectedProjectionDescription("Perceel data voor de feed.")]
     public class ParcelSyndicationProjections : ConnectedProjection<LegacyContext>
     {
         public ParcelSyndicationProjections()
