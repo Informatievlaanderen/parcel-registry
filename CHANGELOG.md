@@ -1,3 +1,15 @@
+# [3.20.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.19.3...v3.20.0) (2021-03-11)
+
+
+### Bug Fixes
+
+* update projector dependency GRAR-1876 ([1084ce9](https://github.com/informatievlaanderen/parcel-registry/commit/1084ce9236fc32228a66aacbd5a08fd861301609))
+
+
+### Features
+
+* add projection attributes GRAR-1876 ([fe0e976](https://github.com/informatievlaanderen/parcel-registry/commit/fe0e976fad5b2225b897717a08d23e165f932aa6))
+
 ## [3.19.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.19.2...v3.19.3) (2021-02-15)
 
 
