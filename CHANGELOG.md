@@ -1,3 +1,10 @@
+## [3.20.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.20.0...v3.20.1) (2021-03-22)
+
+
+### Bug Fixes
+
+* remove ridingwolf, collaboration ended ([ab96c1c](https://github.com/informatievlaanderen/parcel-registry/commit/ab96c1ccd0abca1ecd9b9088e705e1f5e79c03ae))
+
 # [3.20.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.19.3...v3.20.0) (2021-03-11)
 
 
