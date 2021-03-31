@@ -11,8 +11,8 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     using NodaTime;
     using Parcel.Events.Crab;
 
-    [ConnectedProjectionName("Extract - ParcelExtract")]
-    [ConnectedProjectionDescription("Perceel data voor testbestand.")]
+    [ConnectedProjectionName("Extract percelen")]
+    [ConnectedProjectionDescription("Projectie die de percelen data voor het percelen extract voorziet.")]
     public class ParcelExtractProjections : ConnectedProjection<ExtractContext>
     {
         private const string InUse = "Gerealiseerd";

@@ -3,12 +3,11 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using System;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using NodaTime;
     using Parcel.Events;
     using Parcel.Events.Crab;
 
-    [ConnectedProjectionName("Legacy - ParcelSyndication")]
-    [ConnectedProjectionDescription("Perceel data voor de feed.")]
+    [ConnectedProjectionName("Feed endpoint percelen")]
+    [ConnectedProjectionDescription("Projectie die de percelen data voor de percelen feed voorziet.")]
     public class ParcelSyndicationProjections : ConnectedProjection<LegacyContext>
     {
         public ParcelSyndicationProjections()
