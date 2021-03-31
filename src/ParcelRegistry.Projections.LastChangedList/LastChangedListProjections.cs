@@ -6,8 +6,8 @@ namespace ParcelRegistry.Projections.LastChangedList
     using Parcel.Events;
     using Parcel.Events.Crab;
 
-    [ConnectedProjectionName("LastChangedList")]
-    [ConnectedProjectionDescription("Markeert de percelen waarvan de cached data moet geupdate worden.")]
+    [ConnectedProjectionName("Cache markering percelen")]
+    [ConnectedProjectionDescription("Projectie die markeert voor hoeveel percelen de gecachte data nog geüpdated moeten worden.")]
     public class LastChangedListProjections : LastChangedListConnectedProjection
     {
         protected override string CacheKeyFormat => "legacy/parcel:{{0}}.{1}";
