@@ -1,3 +1,15 @@
+# [3.21.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.20.1...v3.21.0) (2021-04-01)
+
+
+### Bug Fixes
+
+* update docs projections ([9c9fad9](https://github.com/informatievlaanderen/parcel-registry/commit/9c9fad912cdfdb23be26294952e78981f28e8be4))
+
+
+### Features
+
+* bump projector & projection-handling ([da5dc0b](https://github.com/informatievlaanderen/parcel-registry/commit/da5dc0b6eb79d20db98a431522d0cb199dcfa0bc))
+
 ## [3.20.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.20.0...v3.20.1) (2021-03-22)
 
 
