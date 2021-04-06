@@ -25,20 +25,20 @@ nuget Microsoft.EntityFrameworkCore.Design 5.0.2
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 5.0.2
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.3.3 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource 5.0.13
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 5.0.13
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 5.0.13
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 5.0.13
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 5.0.13
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 5.0.13
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 5.1.2
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 5.1.2
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 5.1.2
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 5.1.2
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 5.1.2
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 5.1.2
 
 nuget Be.Vlaanderen.Basisregisters.Api 14.1.2
 
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 2.2.11
 
-nuget Be.Vlaanderen.Basisregisters.CommandHandling 5.0.13
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 5.0.13
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 5.0.13
+nuget Be.Vlaanderen.Basisregisters.CommandHandling 5.1.2
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 5.1.2
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 5.1.2
 
 nuget Be.Vlaanderen.Basisregisters.EventHandling 3.0.4
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 3.0.4
