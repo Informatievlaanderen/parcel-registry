@@ -6,8 +6,9 @@ namespace ParcelRegistry.Parcel
     using Events.Crab;
     using System;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
 
-    public partial class Parcel : AggregateRootEntity
+    public partial class Parcel : AggregateRootEntity, ISnapshotable
     {
         public static readonly Func<Parcel> Factory = () => new Parcel();
 
@@ -210,5 +211,25 @@ namespace ParcelRegistry.Parcel
             if (IsRemoved && modification != CrabModification.Delete)
                 throw new ParcelRemovedException($"Cannot change removed parcel for parcel id {_parcelId}");
         }
+
+        public object TakeSnapshot()
+        {
+            var parcelStatus = (ParcelStatus?) null;
+            if(IsRetired)
+                parcelStatus = ParcelStatus.Retired;
+            else if(IsRealized)
+                parcelStatus = ParcelStatus.Realized;
+
+            return new ParcelSnapshot(
+                _parcelId,
+                parcelStatus,
+                IsRemoved,
+                LastModificationBasedOnCrab,
+                _activeHouseNumberIdsByTerreinObjectHouseNr,
+                _addressCollection.AllSubaddressWasImportedFromCrabEvents(),
+                _addressCollection.AllAddressIds());
+        }
+
+        public virtual ISnapshotStrategy Strategy => IntervalStrategy.Default;
     }
 }

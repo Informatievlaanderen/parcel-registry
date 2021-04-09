@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Parcel
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Events;
@@ -20,7 +21,7 @@ namespace ParcelRegistry.Parcel
         private readonly Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
             _activeHouseNumberIdsByTerreinObjectHouseNr = new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>();
 
-        private Parcel()
+        protected Parcel()
         {
             Register<ParcelWasRegistered>(When);
             Register<ParcelWasRemoved>(When);
@@ -37,6 +38,34 @@ namespace ParcelRegistry.Parcel
             Register<AddressSubaddressWasImportedFromCrab>(When);
             Register<TerrainObjectHouseNumberWasImportedFromCrab>(When);
             Register<TerrainObjectWasImportedFromCrab>(@event => WhenCrabEventApplied(@event.Modification == CrabModification.Delete));
+
+            Register<ParcelSnapshot>(When);
+        }
+
+        private void When(ParcelSnapshot snapshot)
+        {
+            if (!string.IsNullOrEmpty(snapshot.ParcelStatus))
+            {
+                var status = ParcelStatus.Parse(snapshot.ParcelStatus);
+                if (status == ParcelStatus.Realized)
+                    IsRealized = true;
+                if (status == ParcelStatus.Retired)
+                    IsRetired = true;
+            }
+
+            IsRemoved = snapshot.IsRemoved;
+            LastModificationBasedOnCrab = snapshot.LastModificationBasedOnCrab;
+
+            foreach (var activeHouseNumberByTerrainObject in snapshot.ActiveHouseNumberIdsByTerrainObjectHouseNr)
+                _activeHouseNumberIdsByTerreinObjectHouseNr.Add(
+                    new CrabTerrainObjectHouseNumberId(activeHouseNumberByTerrainObject.Key),
+                    new CrabHouseNumberId(activeHouseNumberByTerrainObject.Value));
+
+            foreach (var addressId in snapshot.AddressIds)
+                _addressCollection.Add(new AddressId(addressId));
+
+            foreach (var subaddressWasImportedFromCrab in snapshot.ImportedSubaddressFromCrab)
+                _addressCollection.Add(subaddressWasImportedFromCrab);
         }
 
         private void When(TerrainObjectHouseNumberWasImportedFromCrab @event)

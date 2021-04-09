@@ -33,6 +33,8 @@ namespace ParcelRegistry.Parcel
 
         public IEnumerable<AddressId> AllAddressIds() => _addressIds;
 
+        public IEnumerable<AddressSubaddressWasImportedFromCrab> AllSubaddressWasImportedFromCrabEvents() => _importedSubaddressFromCrabs;
+
         internal void Clear() => _addressIds.Clear();
 
         public IEnumerable<AddressId> AddressIdsEligableToAddFor(CrabHouseNumberId houseNumberId)
