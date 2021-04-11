@@ -11,7 +11,7 @@ namespace ParcelRegistry.Tests.SnapshotTests
 
     public static class SnapshotBuilder
     {
-        public static ParcelSnapshot WithParcelStatus(this ParcelSnapshot snapshot, ParcelStatus parcelStatus)
+        public static ParcelSnapshot WithParcelStatus(this ParcelSnapshot snapshot, ParcelStatus? parcelStatus)
         {
             return new ParcelSnapshot(new ParcelId(snapshot.ParcelId),
                 parcelStatus,

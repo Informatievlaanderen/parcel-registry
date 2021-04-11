@@ -7,6 +7,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
     using NodaTime;
     using Parcel.Commands.Crab;
     using Parcel.Events;
+    using SnapshotTests;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -14,6 +15,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
     {
         private readonly Fixture _fixture;
         private readonly ParcelId _parcelId;
+        private readonly string _snapshotId;
 
         public GivenParcelIsRemoved(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -22,6 +24,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
             _fixture.Customize(new WithFixedParcelId());
             _fixture.Customize(new WithNoDeleteModification());
             _parcelId = _fixture.Create<ParcelId>();
+            _snapshotId = GetSnapshotIdentifier(_parcelId);
         }
 
         [Theory]
@@ -57,6 +60,24 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
                     new ParcelWasRecovered(_parcelId),
                     new ParcelWasRealized(_parcelId),
                     command.ToLegacyEvent()));
+        }
+
+        [Fact]
+        public void WhenModificationIsInsertThenParcelWasRecovered_Snapshot()
+        {
+            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+                .WithModification(CrabModification.Insert);
+
+            Assert(new Scenario()
+                .Given(_parcelId,
+                    _fixture.Create<ParcelWasRegistered>(),
+                    _fixture.Create<ParcelWasRemoved>())
+                .When(command)
+                .Then(_snapshotId,
+                    SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                        .WithParcelStatus(ParcelStatus.Realized)
+                        .Build(4, EventSerializerSettings)));
         }
     }
 }

@@ -1,12 +1,16 @@
 namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
 {
+    using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;
     using NodaTime;
     using Parcel.Commands.Crab;
     using Parcel.Events;
+    using Parcel.Events.Crab;
+    using SnapshotTests;
     using WhenImportingTerrainObjectHouseNumberFromCrab;
     using Xunit;
     using Xunit.Abstractions;
@@ -15,6 +19,7 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
     {
         private readonly Fixture _fixture;
         private readonly ParcelId _parcelId;
+        private readonly string _snapshotId;
 
         public GivenParcelWithAddressByHouseNumber(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -23,6 +28,7 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
             _fixture.Customize(new WithFixedParcelId());
             _fixture.Customize(new WithNoDeleteModification());
             _parcelId = _fixture.Create<ParcelId>();
+            _snapshotId = GetSnapshotIdentifier(_parcelId);
         }
 
         [Fact]
@@ -44,6 +50,40 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
                 .Then(_parcelId,
                     new ParcelAddressWasAttached(_parcelId, addressId),
                     command.ToLegacyEvent()));
+        }
+
+        [Fact]
+        public void WithNoDeleteAndInfiniteLifetime_Snapshot()
+        {
+            var command = _fixture.Create<ImportSubaddressFromCrab>()
+                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null));
+            var addressId = AddressId.CreateFor(command.SubaddressId);
+
+            var terrainObjectHouseNumberWasImportedFromCrab = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                .WithHouseNumberId(command.HouseNumberId)
+                .ToLegacyEvent();
+
+            Assert(new Scenario()
+                .Given(_parcelId,
+                    _fixture.Create<ParcelWasRegistered>(),
+                    _fixture.Create<ParcelWasRealized>(),
+                    _fixture.Create<ParcelAddressWasAttached>()
+                        .WithAddressId(AddressId.CreateFor(command.HouseNumberId)),
+                    terrainObjectHouseNumberWasImportedFromCrab)
+                .When(command)
+                .Then(_snapshotId,
+                    SnapshotBuilder
+                        .CreateDefaultSnapshot(_parcelId)
+                        .WithParcelStatus(ParcelStatus.Realized)
+                        .WithAddressIds(new List<AddressId> { AddressId.CreateFor(command.HouseNumberId), addressId })
+                        .WithLastModificationBasedOnCrab(Modification.Update)
+                        .WithImportedSubaddressFromCrab(new List<AddressSubaddressWasImportedFromCrab> { command.ToLegacyEvent() })
+                        .WithActiveHouseNumberIdsByTerrainObjectHouseNr(new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
+                        {
+                            { new CrabTerrainObjectHouseNumberId(terrainObjectHouseNumberWasImportedFromCrab.TerrainObjectHouseNumberId), new CrabHouseNumberId(command.HouseNumberId) }
+                        })
+                        .Build(5, EventSerializerSettings)
+                ));
         }
 
         [Fact]
@@ -113,6 +153,41 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
                 .Then(_parcelId,
                     new ParcelAddressWasDetached(_parcelId, addressId),
                     command.ToLegacyEvent()));
+        }
+
+        [Fact]
+        public void WhenDeleteAndInfiniteLifetimeWithAddress_Snapshot()
+        {
+            var command = _fixture.Create<ImportSubaddressFromCrab>()
+                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+                .WithModification(CrabModification.Delete);
+
+            var addressId = AddressId.CreateFor(command.SubaddressId);
+
+            var terrainObjectHouseNumberWasImportedFromCrab = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                .WithHouseNumberId(command.HouseNumberId)
+                .ToLegacyEvent();
+            Assert(new Scenario()
+                .Given(_parcelId,
+                    _fixture.Create<ParcelWasRegistered>(),
+                    _fixture.Create<ParcelAddressWasAttached>()
+                        .WithAddressId(AddressId.CreateFor(command.HouseNumberId)),
+                    terrainObjectHouseNumberWasImportedFromCrab,
+                    _fixture.Create<ParcelAddressWasAttached>()
+                        .WithAddressId(addressId))
+                .When(command)
+                .Then(_snapshotId,
+                    SnapshotBuilder
+                        .CreateDefaultSnapshot(_parcelId)
+                        .WithParcelStatus(null)
+                        .WithAddressIds(new List<AddressId> { AddressId.CreateFor(command.HouseNumberId) })
+                        .WithLastModificationBasedOnCrab(Modification.Update)
+                        .WithImportedSubaddressFromCrab(new List<AddressSubaddressWasImportedFromCrab> { command.ToLegacyEvent() })
+                        .WithActiveHouseNumberIdsByTerrainObjectHouseNr(new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
+                        {
+                            { new CrabTerrainObjectHouseNumberId(terrainObjectHouseNumberWasImportedFromCrab.TerrainObjectHouseNumberId), new CrabHouseNumberId(command.HouseNumberId) }
+                        })
+                        .Build(5, EventSerializerSettings)));
         }
 
         [Fact]

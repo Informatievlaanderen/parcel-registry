@@ -6,6 +6,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
     using global::AutoFixture;
     using Parcel.Commands.Crab;
     using Parcel.Events;
+    using SnapshotTests;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -27,12 +28,31 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
 
             var parcelId = new ParcelId(command.CaPaKey.CreateDeterministicId());
             Assert(new Scenario()
-            .GivenNone()
-            .When(command)
-            .Then(parcelId,
-                    new ParcelWasRegistered(parcelId, command.CaPaKey),
-                    new ParcelWasRealized(parcelId),
-                    command.ToLegacyEvent()));
+                .GivenNone()
+                .When(command)
+                .Then(parcelId,
+                        new ParcelWasRegistered(parcelId, command.CaPaKey),
+                        new ParcelWasRealized(parcelId),
+                        command.ToLegacyEvent()));
+        }
+
+        [Fact]
+        public void ThenIsRegistered_Snapshot()
+        {
+            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(null, null))
+                .WithModification(CrabModification.Insert);
+
+            var parcelId = new ParcelId(command.CaPaKey.CreateDeterministicId());
+            var snapshotId = GetSnapshotIdentifier(parcelId);
+
+            Assert(new Scenario()
+                .GivenNone()
+                .When(command)
+                .Then(snapshotId,
+                    SnapshotBuilder.CreateDefaultSnapshot(parcelId)
+                        .WithParcelStatus(ParcelStatus.Realized)
+                        .Build(2, EventSerializerSettings)));
         }
     }
 }

@@ -1,7 +1,7 @@
 namespace ParcelRegistry.Parcel
 {
     using System.Collections.Generic;
-    using System.Linq;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Events;
@@ -20,6 +20,11 @@ namespace ParcelRegistry.Parcel
 
         private readonly Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
             _activeHouseNumberIdsByTerreinObjectHouseNr = new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>();
+
+        internal Parcel(ISnapshotStrategy snapshotStrategy) : this()
+        {
+            Strategy = snapshotStrategy;
+        }
 
         protected Parcel()
         {
@@ -148,5 +153,25 @@ namespace ParcelRegistry.Parcel
             else if (LastModificationBasedOnCrab == Modification.Insert)
                 LastModificationBasedOnCrab = Modification.Update;
         }
+
+        public object TakeSnapshot()
+        {
+            var parcelStatus = (ParcelStatus?)null;
+            if (IsRetired)
+                parcelStatus = ParcelStatus.Retired;
+            else if (IsRealized)
+                parcelStatus = ParcelStatus.Realized;
+
+            return new ParcelSnapshot(
+                _parcelId,
+                parcelStatus,
+                IsRemoved,
+                LastModificationBasedOnCrab,
+                _activeHouseNumberIdsByTerreinObjectHouseNr,
+                _addressCollection.AllSubaddressWasImportedFromCrabEvents(),
+                _addressCollection.AllAddressIds());
+        }
+
+        public ISnapshotStrategy Strategy { get; }
     }
 }

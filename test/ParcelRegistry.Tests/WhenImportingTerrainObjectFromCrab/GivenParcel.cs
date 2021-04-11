@@ -3,10 +3,12 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;
     using NodaTime;
     using Parcel.Commands.Crab;
     using Parcel.Events;
+    using SnapshotTests;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -14,6 +16,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
     {
         private readonly Fixture _fixture;
         private readonly ParcelId _parcelId;
+        private readonly string _snapshotId;
 
         public GivenParcel(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -22,6 +25,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
             _fixture.Customize(new WithFixedParcelId());
             _fixture.Customize(new WithNoDeleteModification());
             _parcelId = _fixture.Create<ParcelId>();
+            _snapshotId = GetSnapshotIdentifier(_parcelId);
         }
 
         [Fact]
@@ -37,6 +41,22 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
                 .Then(_parcelId,
                     new ParcelWasRetired(_parcelId),
                     command.ToLegacyEvent()));
+        }
+
+        [Fact]
+        public void WhenLifetimeIsFinite_Snapshot()
+        {
+            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), _fixture.Create<LocalDateTime>()));
+
+            Assert(new Scenario()
+                .Given(_parcelId,
+                    _fixture.Create<ParcelWasRegistered>())
+                .When(command)
+                .Then(_snapshotId,
+                    SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                        .WithParcelStatus(ParcelStatus.Retired)
+                        .Build(2, EventSerializerSettings)));
         }
 
         [Fact]
@@ -159,6 +179,23 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
                 .Then(_parcelId,
                     new ParcelWasRemoved(_parcelId),
                     command.ToLegacyEvent()));
+        }
+
+        [Fact]
+        public void WhenModificationDelete_Snapshot()
+        {
+            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithModification(CrabModification.Delete);
+
+            Assert(new Scenario()
+                .Given(_parcelId,
+                    _fixture.Create<ParcelWasRegistered>())
+                .When(command)
+                .Then(_snapshotId,
+                    SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                        .WithIsRemoved(true)
+                        .WithLastModificationBasedOnCrab(Modification.Delete)
+                        .Build(2, EventSerializerSettings)));
         }
     }
 }
