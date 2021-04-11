@@ -11,7 +11,6 @@ namespace ParcelRegistry.Tests.SnapshotTests
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Infrastructure;
-    using Infrastructure.Modules;
     using KellermanSoftware.CompareNetObjects;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
@@ -21,7 +20,7 @@ namespace ParcelRegistry.Tests.SnapshotTests
 
     public abstract class ParcelRegistrySnapshotTest : AutofacBasedTest
     {
-        public JsonSerializerSettings EventSerializerSettings { get; } = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
+        protected JsonSerializerSettings EventSerializerSettings { get; } = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
 
         protected ParcelRegistrySnapshotTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper) { }
 
@@ -71,5 +70,7 @@ namespace ParcelRegistry.Tests.SnapshotTests
             comparer.Config.MembersToIgnore.Add("Provenance");
             return new CompareNetObjectsBasedFactComparer(comparer);
         }
+
+        public string GetSnapshotIdentifier(string identifier) => $"{identifier}-snapshots";
     }
 }
