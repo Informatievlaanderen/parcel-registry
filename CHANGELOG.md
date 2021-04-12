@@ -1,3 +1,10 @@
+# [3.22.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.21.0...v3.22.0) (2021-04-12)
+
+
+### Features
+
+* add snapshotting ([8b46ed7](https://github.com/informatievlaanderen/parcel-registry/commit/8b46ed7d9327fe9e605b224b981032634f61aae4))
+
 # [3.21.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.20.1...v3.21.0) (2021-04-01)
 
 
