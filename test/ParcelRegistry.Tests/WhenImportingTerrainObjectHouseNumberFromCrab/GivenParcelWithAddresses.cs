@@ -4,6 +4,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
     using System.Collections.Generic;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -18,51 +19,49 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
 
     public class GivenParcelWithAddresses : ParcelRegistryTest
     {
-        private readonly Fixture _fixture;
         private readonly ParcelId _parcelId;
         private readonly string _snapshotId;
 
         public GivenParcelWithAddresses(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _fixture = new Fixture();
-            _fixture.Customize(new InfrastructureCustomization());
-            _fixture.Customize(new WithFixedParcelId());
-            _fixture.Customize(new WithNoDeleteModification());
-            _parcelId = _fixture.Create<ParcelId>();
+            Fixture.Customize(new InfrastructureCustomization());
+            Fixture.Customize(new WithFixedParcelId());
+            Fixture.Customize(new WithNoDeleteModification());
+            _parcelId = Fixture.Create<ParcelId>();
             _snapshotId = GetSnapshotIdentifier(_parcelId);
         }
 
         [Fact]
         public void WithDeleteAndInfiniteLifetime()
         {
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithModification(CrabModification.Insert);
 
-            var subaddress1 = _fixture.Create<ImportSubaddressFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var subaddress1 = Fixture.Create<ImportSubaddressFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithHouseNumberId(command.HouseNumberId);
 
-            var subaddress2 = _fixture.Create<ImportSubaddressFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var subaddress2 = Fixture.Create<ImportSubaddressFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithHouseNumberId(command.HouseNumberId);
 
-            var deleteCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var deleteCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithTerrainObjectHouseNumberId(command.TerrainObjectHouseNumberId)
                 .WithHouseNumberId(command.HouseNumberId)
                 .WithModification(CrabModification.Delete);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(command.HouseNumberId)),
                     command.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress1.SubaddressId)),
                     subaddress1.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress2.SubaddressId)),
                     subaddress2.ToLegacyEvent())
                 .When(deleteCommand)
@@ -76,26 +75,26 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void WithNoDeleteAndFiniteLifetime()
         {
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>();
+            var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>();
 
-            var subaddress1 = _fixture.Create<ImportSubaddressFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var subaddress1 = Fixture.Create<ImportSubaddressFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithHouseNumberId(command.HouseNumberId);
 
-            var subaddress2 = _fixture.Create<ImportSubaddressFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var subaddress2 = Fixture.Create<ImportSubaddressFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithHouseNumberId(command.HouseNumberId);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(command.HouseNumberId)),
                     command.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress1.SubaddressId)),
                     subaddress1.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress2.SubaddressId)),
                     subaddress2.ToLegacyEvent())
                 .When(command)
@@ -107,81 +106,62 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         }
 
         [Fact]
-        public void WithDifferentHouseNumberId()
+        public void WithDifferentHouseNumberId_WithSnapshot()
         {
+            Fixture.Register(() => (ISnapshotStrategy)IntervalStrategy.SnapshotEvery(1));
+
             var oldHouseNumberId = new CrabHouseNumberId(-1);
-            var oldCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var oldCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(oldHouseNumberId);
 
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Correction)
                 .WithTerrainObjectHouseNumberId(oldCommand.TerrainObjectHouseNumberId);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(oldHouseNumberId)),
                     oldCommand.ToLegacyEvent())
                 .When(command)
-                .Then(_parcelId,
-                    new ParcelAddressWasDetached(_parcelId, AddressId.CreateFor(oldHouseNumberId)),
-                    new ParcelAddressWasAttached(_parcelId, AddressId.CreateFor(command.HouseNumberId)),
-                    command.ToLegacyEvent()));
-        }
-
-        [Fact]
-        public void WithDifferentHouseNumberId_Snapshot()
-        {
-            var oldHouseNumberId = new CrabHouseNumberId(-1);
-            var oldCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
-                .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
-                .WithModification(CrabModification.Insert)
-                .WithHouseNumberId(oldHouseNumberId);
-
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
-                .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
-                .WithModification(CrabModification.Correction)
-                .WithTerrainObjectHouseNumberId(oldCommand.TerrainObjectHouseNumberId);
-
-            Assert(new Scenario()
-                .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
-                        .WithAddressId(AddressId.CreateFor(oldHouseNumberId)),
-                    oldCommand.ToLegacyEvent())
-                .When(command)
-                .Then(_snapshotId,
-                    SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
-                        .WithLastModificationBasedOnCrab(Modification.Update)
-                        .WithAddressIds(new List<AddressId> { AddressId.CreateFor(command.HouseNumberId)})
-                        .WithActiveHouseNumberIdsByTerrainObjectHouseNr(new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
-                        {
-                            { new CrabTerrainObjectHouseNumberId(command.TerrainObjectHouseNumberId), new CrabHouseNumberId(command.HouseNumberId) }
-                        })
-                        .Build(5, EventSerializerSettings)));
+                .Then(new[]
+                {
+                    new Fact(_parcelId, new ParcelAddressWasDetached(_parcelId, AddressId.CreateFor(oldHouseNumberId))),
+                    new Fact(_parcelId, new ParcelAddressWasAttached(_parcelId, AddressId.CreateFor(command.HouseNumberId))),
+                    new Fact(_parcelId, command.ToLegacyEvent()),
+                    new Fact(_snapshotId,
+                        SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                            .WithLastModificationBasedOnCrab(Modification.Update)
+                            .WithAddressIds(new List<AddressId> { AddressId.CreateFor(command.HouseNumberId)})
+                            .WithActiveHouseNumberIdsByTerrainObjectHouseNr(new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
+                            {
+                                { new CrabTerrainObjectHouseNumberId(command.TerrainObjectHouseNumberId), new CrabHouseNumberId(command.HouseNumberId) }
+                            })
+                            .Build(5, EventSerializerSettings))
+                }));
         }
 
         [Fact]
         public void AddAnotherTerrainObjectHouseNumber()
         {
             var oldHouseNumberId = new CrabHouseNumberId(-1);
-            var oldCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var oldCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(oldHouseNumberId);
 
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Correction);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(oldHouseNumberId)),
                     oldCommand.ToLegacyEvent())
                 .When(command)
@@ -193,35 +173,35 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void AddAnotherTerrainObjectHouseNumberWithSameHouseNumber()
         {
-            var firstHouseNrCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var firstHouseNrCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert);
 
-            var subaddress1 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress1 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var subaddress2 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress2 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var secondCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var secondCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId)
                 .WithModification(CrabModification.Correction);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(firstHouseNrCommand.HouseNumberId)),
                     firstHouseNrCommand.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress1.SubaddressId)),
                     subaddress1.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress2.SubaddressId)),
                     subaddress2.ToLegacyEvent())
                 .When(secondCommand)
@@ -232,35 +212,35 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void AddAlreadyExistingSubaddressForOtherTerrainObjectHouseNr()
         {
-            var firstHouseNrCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var firstHouseNrCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert);
 
-            var subaddress1 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress1 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var subaddress2 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress2 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var secondCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var secondCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId)
                 .WithModification(CrabModification.Correction);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(firstHouseNrCommand.HouseNumberId)),
                     firstHouseNrCommand.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress1.SubaddressId)),
                     subaddress1.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress2.SubaddressId)),
                     subaddress2.ToLegacyEvent(),
                     secondCommand.ToLegacyEvent())
@@ -272,41 +252,41 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void ChangeAddedTerrainObjectHouseNumberToNewHouseNumber()
         {
-            var firstHouseNrCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var firstHouseNrCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithHouseNumberId(new CrabHouseNumberId(-1))
                 .WithModification(CrabModification.Insert);
 
-            var subaddress1 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress1 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var subaddress2 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress2 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var secondCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var secondCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithHouseNumberId(new CrabHouseNumberId(-1))
                 .WithModification(CrabModification.Insert);
 
-            var firstChangedCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var firstChangedCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithTerrainObjectHouseNumberId(firstHouseNrCommand.TerrainObjectHouseNumberId)
                 .WithModification(CrabModification.Correction);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(firstHouseNrCommand.HouseNumberId)),
                     firstHouseNrCommand.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress1.SubaddressId)),
                     subaddress1.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress2.SubaddressId)),
                     subaddress2.ToLegacyEvent(),
                     secondCommand.ToLegacyEvent())
@@ -319,26 +299,26 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void RemoveSubaddressCoupledToTwoTerrainObjectHouseNumbers()
         {
-            var firstHouseNrCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var firstHouseNrCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert);
 
-            var subaddress1 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress1 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var subaddress2 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress2 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var secondCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var secondCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId)
                 .WithModification(CrabModification.Correction);
 
-            var removeSubaddress2 = _fixture.Create<ImportSubaddressFromCrab>()
+            var removeSubaddress2 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithSubaddressId(subaddress2.SubaddressId)
                 .WithModification(CrabModification.Delete)
@@ -346,14 +326,14 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(firstHouseNrCommand.HouseNumberId)),
                     firstHouseNrCommand.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress1.SubaddressId)),
                     subaddress1.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress2.SubaddressId)),
                     subaddress2.ToLegacyEvent(),
                     secondCommand.ToLegacyEvent(),
@@ -367,40 +347,40 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void RemoveOneHouseNumberCoupledToTwoSubaddresses()
         {
-            var firstHouseNrCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var firstHouseNrCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert);
 
-            var subaddress1 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress1 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var subaddress2 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress2 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var secondCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var secondCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId)
                 .WithModification(CrabModification.Correction);
 
-            var removeFirstHouseNr = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var removeFirstHouseNr = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId)
                 .WithModification(CrabModification.Delete);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(firstHouseNrCommand.HouseNumberId)),
                     firstHouseNrCommand.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress1.SubaddressId)),
                     subaddress1.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress2.SubaddressId)),
                     subaddress2.ToLegacyEvent(),
                     secondCommand.ToLegacyEvent(),
@@ -414,40 +394,40 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void RemoveOneHouseNumberCoupledToTwoSubaddressesOtherHouseNumber()
         {
-            var firstHouseNrCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var firstHouseNrCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert);
 
-            var subaddress1 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress1 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var subaddress2 = _fixture.Create<ImportSubaddressFromCrab>()
+            var subaddress2 = Fixture.Create<ImportSubaddressFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithModification(CrabModification.Insert)
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId);
 
-            var secondCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var secondCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithHouseNumberId(firstHouseNrCommand.HouseNumberId)
                 .WithModification(CrabModification.Correction);
 
-            var removeSecondHouseNr = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var removeSecondHouseNr = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithLifetime(new CrabLifetime(LocalDateTime.FromDateTime(DateTime.Now), null))
                 .WithHouseNumberId(secondCommand.HouseNumberId)
                 .WithModification(CrabModification.Delete);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(firstHouseNrCommand.HouseNumberId)),
                     firstHouseNrCommand.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress1.SubaddressId)),
                     subaddress1.ToLegacyEvent(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(subaddress2.SubaddressId)),
                     subaddress2.ToLegacyEvent(),
                     secondCommand.ToLegacyEvent(),

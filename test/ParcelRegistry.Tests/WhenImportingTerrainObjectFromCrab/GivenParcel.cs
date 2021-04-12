@@ -3,6 +3,8 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using global::AutoFixture;
     using NodaTime;
@@ -14,61 +16,51 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
 
     public class GivenParcel : ParcelRegistryTest
     {
-        private readonly Fixture _fixture;
         private readonly ParcelId _parcelId;
         private readonly string _snapshotId;
 
         public GivenParcel(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _fixture = new Fixture();
-            _fixture.Customize(new InfrastructureCustomization());
-            _fixture.Customize(new WithFixedParcelId());
-            _fixture.Customize(new WithNoDeleteModification());
-            _parcelId = _fixture.Create<ParcelId>();
+            Fixture.Customize(new InfrastructureCustomization());
+            Fixture.Customize(new WithFixedParcelId());
+            Fixture.Customize(new WithNoDeleteModification());
+            _parcelId = Fixture.Create<ParcelId>();
             _snapshotId = GetSnapshotIdentifier(_parcelId);
         }
 
         [Fact]
-        public void WhenLifetimeIsFinite()
+        public void WhenLifetimeIsFinite_WithSnapshot()
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), _fixture.Create<LocalDateTime>()));
+            Fixture.Register(() => (ISnapshotStrategy)IntervalStrategy.SnapshotEvery(1));
+
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), Fixture.Create<LocalDateTime>()));
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>())
+                    Fixture.Create<ParcelWasRegistered>())
                 .When(command)
-                .Then(_parcelId,
-                    new ParcelWasRetired(_parcelId),
-                    command.ToLegacyEvent()));
-        }
-
-        [Fact]
-        public void WhenLifetimeIsFinite_Snapshot()
-        {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), _fixture.Create<LocalDateTime>()));
-
-            Assert(new Scenario()
-                .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>())
-                .When(command)
-                .Then(_snapshotId,
-                    SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
-                        .WithParcelStatus(ParcelStatus.Retired)
-                        .Build(2, EventSerializerSettings)));
+                .Then(new []
+                {
+                    new Fact(_parcelId, new ParcelWasRetired(_parcelId)),
+                    new Fact(_parcelId, command.ToLegacyEvent()),
+                    new Fact(_snapshotId,
+                        SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                            .WithParcelStatus(ParcelStatus.Retired)
+                            .Build(2, EventSerializerSettings))
+                }));
         }
 
         [Fact]
         public void WhenLifetimeIsFiniteAndCorrection()
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), _fixture.Create<LocalDateTime>()))
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), Fixture.Create<LocalDateTime>()))
                 .WithModification(CrabModification.Correction);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>())
+                    Fixture.Create<ParcelWasRegistered>())
                 .When(command)
                 .Then(_parcelId,
                     new ParcelWasCorrectedToRetired(_parcelId),
@@ -78,13 +70,13 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
         [Fact]
         public void WhenLifetimeIsFiniteWithAlreadyRetired()
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), _fixture.Create<LocalDateTime>()));
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), Fixture.Create<LocalDateTime>()));
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelWasRetired>())
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelWasRetired>())
                 .When(command)
                 .Then(_parcelId,
                     command.ToLegacyEvent()));
@@ -93,13 +85,13 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
         [Fact]
         public void WhenLifetimeIsFiniteWithAlreadyCorrectedToRetired()
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), _fixture.Create<LocalDateTime>()));
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), Fixture.Create<LocalDateTime>()));
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelWasCorrectedToRetired>())
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelWasCorrectedToRetired>())
                 .When(command)
                 .Then(_parcelId,
                     command.ToLegacyEvent()));
@@ -108,12 +100,12 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
         [Fact]
         public void WhenLifetimeIsInfinite()
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null));
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null));
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>())
+                    Fixture.Create<ParcelWasRegistered>())
                 .When(command)
                 .Then(_parcelId,
                     new ParcelWasRealized(_parcelId),
@@ -123,13 +115,13 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
         [Fact]
         public void WhenLifetimeIsInfiniteAndCorrection()
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithModification(CrabModification.Correction);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>())
+                    Fixture.Create<ParcelWasRegistered>())
                 .When(command)
                 .Then(_parcelId,
                     new ParcelWasCorrectedToRealized(_parcelId),
@@ -139,13 +131,13 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
         [Fact]
         public void WhenLifetimeIsInfiniteWhenAlreadyRealized()
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), _fixture.Create<LocalDateTime>()));
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), Fixture.Create<LocalDateTime>()));
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelWasRetired>())
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelWasRetired>())
                 .When(command)
                 .Then(_parcelId,
                     command.ToLegacyEvent()));
@@ -154,48 +146,40 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
         [Fact]
         public void WhenInfifetimeIsInfiniteWhenAlreadyCorrectedToRealized()
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), _fixture.Create<LocalDateTime>()));
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), Fixture.Create<LocalDateTime>()));
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelWasCorrectedToRetired>())
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelWasCorrectedToRetired>())
                 .When(command)
                 .Then(_parcelId,
                     command.ToLegacyEvent()));
         }
 
         [Fact]
-        public void WhenModificationDelete()
+        public void WhenModificationDelete_WithSnapshot()
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
+            Fixture.Register(() => (ISnapshotStrategy)IntervalStrategy.SnapshotEvery(1));
+
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
                 .WithModification(CrabModification.Delete);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>())
+                    Fixture.Create<ParcelWasRegistered>())
                 .When(command)
-                .Then(_parcelId,
-                    new ParcelWasRemoved(_parcelId),
-                    command.ToLegacyEvent()));
-        }
-
-        [Fact]
-        public void WhenModificationDelete_Snapshot()
-        {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithModification(CrabModification.Delete);
-
-            Assert(new Scenario()
-                .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>())
-                .When(command)
-                .Then(_snapshotId,
-                    SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
-                        .WithIsRemoved(true)
-                        .WithLastModificationBasedOnCrab(Modification.Delete)
-                        .Build(2, EventSerializerSettings)));
+                .Then(new []
+                {
+                    new Fact(_parcelId, new ParcelWasRemoved(_parcelId)),
+                    new Fact(_parcelId, command.ToLegacyEvent()),
+                    new Fact(_snapshotId,
+                        SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                            .WithIsRemoved(true)
+                            .WithLastModificationBasedOnCrab(Modification.Delete)
+                            .Build(2, EventSerializerSettings))
+                }));
         }
     }
 }
