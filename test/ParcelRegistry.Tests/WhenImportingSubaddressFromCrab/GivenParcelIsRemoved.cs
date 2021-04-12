@@ -13,34 +13,32 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
 
     public class GivenParcelIsRemoved : ParcelRegistryTest
     {
-        private readonly Fixture _fixture;
         private readonly ParcelId _parcelId;
 
         public GivenParcelIsRemoved(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _fixture = new Fixture();
-            _fixture.Customize(new InfrastructureCustomization());
-            _fixture.Customize(new WithFixedParcelId());
-            _fixture.Customize(new WithNoDeleteModification());
-            _parcelId = _fixture.Create<ParcelId>();
+            Fixture.Customize(new InfrastructureCustomization());
+            Fixture.Customize(new WithFixedParcelId());
+            Fixture.Customize(new WithNoDeleteModification());
+            _parcelId = Fixture.Create<ParcelId>();
         }
 
         [Fact]
         public void AddTerrainObjectHouseNumber()
         {
-            var command = _fixture.Create<ImportSubaddressFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var command = Fixture.Create<ImportSubaddressFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithModification(CrabModification.Insert);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(command.HouseNumberId)),
-                    _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                    Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                         .WithHouseNumberId(command.HouseNumberId)
                         .ToLegacyEvent(),
-                    _fixture.Create<ParcelWasRemoved>()
+                    Fixture.Create<ParcelWasRemoved>()
                 )
                 .When(command)
                 .Throws(new ParcelRemovedException($"Cannot change removed parcel for parcel id {_parcelId}")));

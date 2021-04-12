@@ -8,7 +8,7 @@ namespace ParcelRegistry.Infrastructure.Repositories
 
     public class Parcels : Repository<Parcel, ParcelId>, IParcels
     {
-        public Parcels(ConcurrentUnitOfWork unitOfWork, IStreamStore eventStore, EventMapping eventMapping, EventDeserializer eventDeserializer)
-            : base(Parcel.Factory, unitOfWork, eventStore, eventMapping, eventDeserializer) { }
+        public Parcels(IParcelFactory parcelFactory, ConcurrentUnitOfWork unitOfWork, IStreamStore eventStore, EventMapping eventMapping, EventDeserializer eventDeserializer)
+            : base(parcelFactory.Create, unitOfWork, eventStore, eventMapping, eventDeserializer) { }
     }
 }

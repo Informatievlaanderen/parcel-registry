@@ -4,7 +4,9 @@ namespace ParcelRegistry.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Microsoft.Extensions.Configuration;
+    using Parcel;
 
     public class CommandHandlingModule : Module
     {
@@ -15,6 +17,10 @@ namespace ParcelRegistry.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder containerBuilder)
         {
+            containerBuilder
+                .Register(c => new ParcelFactory(IntervalStrategy.Default))
+                .As<IParcelFactory>();
+
             containerBuilder
                 .RegisterModule<RepositoriesModule>();
 

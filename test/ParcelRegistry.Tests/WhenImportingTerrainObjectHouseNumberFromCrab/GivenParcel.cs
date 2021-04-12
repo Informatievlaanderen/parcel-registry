@@ -12,27 +12,25 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
 
     public class GivenParcel : ParcelRegistryTest
     {
-        private readonly Fixture _fixture;
         private readonly ParcelId _parcelId;
 
         public GivenParcel(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _fixture = new Fixture();
-            _fixture.Customize(new InfrastructureCustomization());
-            _fixture.Customize(new WithFixedParcelId());
-            _fixture.Customize(new WithNoDeleteModification());
-            _parcelId = _fixture.Create<ParcelId>();
+            Fixture.Customize(new InfrastructureCustomization());
+            Fixture.Customize(new WithFixedParcelId());
+            Fixture.Customize(new WithNoDeleteModification());
+            _parcelId = Fixture.Create<ParcelId>();
         }
 
         [Fact]
         public void WhenNoDeleteAndInfiniteLifetime()
         {
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null));
+            var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null));
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                        _fixture.Create<ParcelWasRegistered>())
+                        Fixture.Create<ParcelWasRegistered>())
                 .When(command)
                 .Then(_parcelId,
                         new ParcelAddressWasAttached(_parcelId, AddressId.CreateFor(command.HouseNumberId)),
@@ -42,15 +40,15 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void WhenNoDeleteAndInfiniteLifetimeWithAddressAlreadyAdded()
         {
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null));
+            var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null));
 
             var addressId = AddressId.CreateFor(command.HouseNumberId);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(addressId))
                 .When(command)
                 .Then(_parcelId,
@@ -61,13 +59,13 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void WhenDeleteAndInfiniteLifetimeWithNoAddresses()
         {
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithModification(CrabModification.Delete);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>())
+                    Fixture.Create<ParcelWasRegistered>())
                 .When(command)
                 .Then(_parcelId,
                     command.ToLegacyEvent()));
@@ -76,12 +74,12 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void WhenDeleteAndInfiniteLifetimeWithAddress()
         {
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithModification(CrabModification.Insert);
 
-            var deleteCommand = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            var deleteCommand = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithTerrainObjectHouseNumberId(command.TerrainObjectHouseNumberId)
                 .WithHouseNumberId(command.HouseNumberId)
                 .WithModification(CrabModification.Delete);
@@ -90,8 +88,8 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(addressId),
                     command.ToLegacyEvent())
                 .When(deleteCommand)
@@ -103,11 +101,11 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void WhenNoDeleteAndFiniteLifetimeWithNoAddresses()
         {
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>();
+            var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>();
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>())
+                    Fixture.Create<ParcelWasRegistered>())
                 .When(command)
                 .Then(_parcelId,
                     command.ToLegacyEvent()));
@@ -116,14 +114,14 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
         [Fact]
         public void WhenNoDeleteAndFiniteLifetimeWithAddress()
         {
-            var command = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>();
+            var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>();
 
             var addressId = AddressId.CreateFor(command.HouseNumberId);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelAddressWasAttached>()
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(addressId),
                     command.ToLegacyEvent())
                 .When(command)

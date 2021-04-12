@@ -16,6 +16,7 @@ namespace ParcelRegistry.Parcel
     {
         public ParcelCommandHandlerModule(
             Func<IParcels> getParcels,
+            IParcelFactory parcelFactory,
             Func<ConcurrentUnitOfWork> getUnitOfWork,
             Func<IStreamStore> getStreamStore,
             EventMapping eventMapping,
@@ -27,7 +28,7 @@ namespace ParcelRegistry.Parcel
             For<ImportTerrainObjectFromCrab>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
-                .Handle(async (message, ct) => { await ImportTerrainObject(getParcels, message, ct); });
+                .Handle(async (message, ct) => { await ImportTerrainObject(getParcels, parcelFactory, message, ct); });
 
             For<ImportTerrainObjectHouseNumberFromCrab>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
@@ -95,6 +96,7 @@ namespace ParcelRegistry.Parcel
 
         public async Task ImportTerrainObject(
             Func<IParcels> getParcels,
+            IParcelFactory parcelFactory,
             CommandMessage<ImportTerrainObjectFromCrab> message,
             CancellationToken ct)
         {
@@ -105,7 +107,7 @@ namespace ParcelRegistry.Parcel
 
             if (!parcel.HasValue)
             {
-                parcel = new Optional<Parcel>(Parcel.Register(parcelId, message.Command.CaPaKey));
+                parcel = new Optional<Parcel>(Parcel.Register(parcelId, message.Command.CaPaKey, parcelFactory));
                 parcels.Add(parcelId, parcel.Value);
             }
 

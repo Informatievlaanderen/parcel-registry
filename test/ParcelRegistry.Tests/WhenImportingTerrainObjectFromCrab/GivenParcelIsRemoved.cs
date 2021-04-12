@@ -1,27 +1,30 @@
 namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
 {
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
     using global::AutoFixture;
     using NodaTime;
     using Parcel.Commands.Crab;
     using Parcel.Events;
+    using SnapshotTests;
     using Xunit;
     using Xunit.Abstractions;
 
     public class GivenParcelIsRemoved : ParcelRegistryTest
     {
-        private readonly Fixture _fixture;
         private readonly ParcelId _parcelId;
+        private readonly string _snapshotId;
 
         public GivenParcelIsRemoved(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _fixture = new Fixture();
-            _fixture.Customize(new InfrastructureCustomization());
-            _fixture.Customize(new WithFixedParcelId());
-            _fixture.Customize(new WithNoDeleteModification());
-            _parcelId = _fixture.Create<ParcelId>();
+            Fixture.Customize(new InfrastructureCustomization());
+            Fixture.Customize(new WithFixedParcelId());
+            Fixture.Customize(new WithNoDeleteModification());
+            _parcelId = Fixture.Create<ParcelId>();
+            _snapshotId = GetSnapshotIdentifier(_parcelId);
         }
 
         [Theory]
@@ -30,33 +33,41 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
         [InlineData(CrabModification.Historize)]
         public void WhenModificationIsNotInsertThenExceptionIsThrown(CrabModification modification)
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
                 .WithModification(modification);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelWasRemoved>())
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelWasRemoved>())
                 .When(command)
                 .Throws(new ParcelRemovedException($"Cannot change removed parcel for parcel id {_parcelId}")));
         }
 
         [Fact]
-        public void WhenModificationIsInsertThenParcelWasRecovered()
+        public void WhenModificationIsInsertThenParcelWasRecovered_WithSnapshot()
         {
-            var command = _fixture.Create<ImportTerrainObjectFromCrab>()
-                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
+            Fixture.Register(() => (ISnapshotStrategy)IntervalStrategy.SnapshotEvery(1));
+
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
                 .WithModification(CrabModification.Insert);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    _fixture.Create<ParcelWasRegistered>(),
-                    _fixture.Create<ParcelWasRemoved>())
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelWasRemoved>())
                 .When(command)
-                .Then(_parcelId,
-                    new ParcelWasRecovered(_parcelId),
-                    new ParcelWasRealized(_parcelId),
-                    command.ToLegacyEvent()));
+                .Then(new []
+                {
+                    new Fact(_parcelId, new ParcelWasRecovered(_parcelId)),
+                    new Fact(_parcelId, new ParcelWasRealized(_parcelId)),
+                    new Fact(_parcelId, command.ToLegacyEvent()),
+                    new Fact(_snapshotId,
+                        SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                            .WithParcelStatus(ParcelStatus.Realized)
+                            .Build(4, EventSerializerSettings))
+                }));
         }
     }
 }

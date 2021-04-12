@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Parcel
 {
     using System.Collections.Generic;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Events;
@@ -20,7 +21,12 @@ namespace ParcelRegistry.Parcel
         private readonly Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
             _activeHouseNumberIdsByTerreinObjectHouseNr = new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>();
 
-        private Parcel()
+        internal Parcel(ISnapshotStrategy snapshotStrategy) : this()
+        {
+            Strategy = snapshotStrategy;
+        }
+
+        protected Parcel()
         {
             Register<ParcelWasRegistered>(When);
             Register<ParcelWasRemoved>(When);
@@ -37,6 +43,34 @@ namespace ParcelRegistry.Parcel
             Register<AddressSubaddressWasImportedFromCrab>(When);
             Register<TerrainObjectHouseNumberWasImportedFromCrab>(When);
             Register<TerrainObjectWasImportedFromCrab>(@event => WhenCrabEventApplied(@event.Modification == CrabModification.Delete));
+
+            Register<ParcelSnapshot>(When);
+        }
+
+        private void When(ParcelSnapshot snapshot)
+        {
+            if (!string.IsNullOrEmpty(snapshot.ParcelStatus))
+            {
+                var status = ParcelStatus.Parse(snapshot.ParcelStatus);
+                if (status == ParcelStatus.Realized)
+                    IsRealized = true;
+                if (status == ParcelStatus.Retired)
+                    IsRetired = true;
+            }
+
+            IsRemoved = snapshot.IsRemoved;
+            LastModificationBasedOnCrab = snapshot.LastModificationBasedOnCrab;
+
+            foreach (var activeHouseNumberByTerrainObject in snapshot.ActiveHouseNumberIdsByTerrainObjectHouseNr)
+                _activeHouseNumberIdsByTerreinObjectHouseNr.Add(
+                    new CrabTerrainObjectHouseNumberId(activeHouseNumberByTerrainObject.Key),
+                    new CrabHouseNumberId(activeHouseNumberByTerrainObject.Value));
+
+            foreach (var addressId in snapshot.AddressIds)
+                _addressCollection.Add(new AddressId(addressId));
+
+            foreach (var subaddressWasImportedFromCrab in snapshot.ImportedSubaddressFromCrab)
+                _addressCollection.Add(subaddressWasImportedFromCrab);
         }
 
         private void When(TerrainObjectHouseNumberWasImportedFromCrab @event)
@@ -119,5 +153,25 @@ namespace ParcelRegistry.Parcel
             else if (LastModificationBasedOnCrab == Modification.Insert)
                 LastModificationBasedOnCrab = Modification.Update;
         }
+
+        public object TakeSnapshot()
+        {
+            var parcelStatus = (ParcelStatus?)null;
+            if (IsRetired)
+                parcelStatus = ParcelStatus.Retired;
+            else if (IsRealized)
+                parcelStatus = ParcelStatus.Realized;
+
+            return new ParcelSnapshot(
+                _parcelId,
+                parcelStatus,
+                IsRemoved,
+                LastModificationBasedOnCrab,
+                _activeHouseNumberIdsByTerreinObjectHouseNr,
+                _addressCollection.AllSubaddressWasImportedFromCrabEvents(),
+                _addressCollection.AllAddressIds());
+        }
+
+        public ISnapshotStrategy Strategy { get; }
     }
 }

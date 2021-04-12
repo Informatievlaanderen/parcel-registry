@@ -20,11 +20,13 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
         private readonly ParcelCommandHandlerModule _parcelCommandHandlerModule;
         private readonly Func<IHasCrabProvenance, Parcel, Provenance> _provenanceFactory;
         private readonly Func<IParcels> _getParcels;
+        private readonly IParcelFactory _parcelFactory;
         private readonly Func<FixGrar1475, Parcel, Provenance> _fixGrar1475ProvenanceFactory;
         private readonly Func<FixGrar1637, Parcel, Provenance> _fixGrar1637ProvenanceFactory;
 
         public IdempotentCommandHandlerModuleProcessor(
             Func<IParcels> getParcels,
+            IParcelFactory parcelFactory,
             ConcurrentUnitOfWork concurrentUnitOfWork,
             Func<IStreamStore> getStreamStore,
             EventMapping eventMapping,
@@ -32,6 +34,7 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
             ParcelProvenanceFactory provenanceFactory)
         {
             _getParcels = getParcels;
+            _parcelFactory = parcelFactory;
             _concurrentUnitOfWork = concurrentUnitOfWork;
             _provenanceFactory = provenanceFactory.CreateFrom;
 
@@ -43,6 +46,7 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
 
             _parcelCommandHandlerModule = new ParcelCommandHandlerModule(
                 getParcels,
+                parcelFactory,
                 () => concurrentUnitOfWork,
                 getStreamStore,
                 eventMapping,
@@ -62,7 +66,7 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
             {
                 case ImportTerrainObjectFromCrab command:
                     var commandTerrainObject = new CommandMessage<ImportTerrainObjectFromCrab>(command.CreateCommandId(), command, metadata);
-                    await _parcelCommandHandlerModule.ImportTerrainObject(_getParcels, commandTerrainObject, cancellationToken);
+                    await _parcelCommandHandlerModule.ImportTerrainObject(_getParcels, _parcelFactory, commandTerrainObject, cancellationToken);
                     AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandTerrainObject, _provenanceFactory, currentPosition);
                     return commandTerrainObject;
 

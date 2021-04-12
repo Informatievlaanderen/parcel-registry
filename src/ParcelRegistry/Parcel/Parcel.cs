@@ -4,16 +4,13 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.Crab;
     using Events;
     using Events.Crab;
-    using System;
     using System.Linq;
 
-    public partial class Parcel : AggregateRootEntity
+    public partial class Parcel : AggregateRootEntity, ISnapshotable
     {
-        public static readonly Func<Parcel> Factory = () => new Parcel();
-
-        public static Parcel Register(ParcelId id, VbrCaPaKey vbrCaPaKey)
+        public static Parcel Register(ParcelId id, VbrCaPaKey vbrCaPaKey, IParcelFactory factory)
         {
-            var parcel = Factory();
+            var parcel = factory.Create();
             parcel.ApplyChange(new ParcelWasRegistered(id, vbrCaPaKey));
             return parcel;
         }
