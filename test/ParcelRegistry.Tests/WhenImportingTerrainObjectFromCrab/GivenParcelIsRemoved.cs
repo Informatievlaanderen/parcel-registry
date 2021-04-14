@@ -69,5 +69,27 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
                             .Build(4, EventSerializerSettings))
                 }));
         }
+
+        [Fact]
+        public void WhenModificationIsInsertThenParcelWasRecovered_BasedOnSnapshot()
+        {
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
+                .WithModification(CrabModification.Insert);
+
+            Assert(new Scenario()
+                .Given(_parcelId, Fixture.Create<ParcelWasRegistered>())
+                .Given(_snapshotId,
+                    SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                        .WithIsRemoved(true)
+                        .Build(0, EventSerializerSettings))
+                .When(command)
+                .Then(new[]
+                {
+                    new Fact(_parcelId, new ParcelWasRecovered(_parcelId)),
+                    new Fact(_parcelId, new ParcelWasRealized(_parcelId)),
+                    new Fact(_parcelId, command.ToLegacyEvent())
+                }));
+        }
     }
 }
