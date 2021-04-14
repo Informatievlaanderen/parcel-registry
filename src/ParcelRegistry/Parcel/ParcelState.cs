@@ -47,32 +47,6 @@ namespace ParcelRegistry.Parcel
             Register<ParcelSnapshot>(When);
         }
 
-        private void When(ParcelSnapshot snapshot)
-        {
-            if (!string.IsNullOrEmpty(snapshot.ParcelStatus))
-            {
-                var status = ParcelStatus.Parse(snapshot.ParcelStatus);
-                if (status == ParcelStatus.Realized)
-                    IsRealized = true;
-                if (status == ParcelStatus.Retired)
-                    IsRetired = true;
-            }
-
-            IsRemoved = snapshot.IsRemoved;
-            LastModificationBasedOnCrab = snapshot.LastModificationBasedOnCrab;
-
-            foreach (var activeHouseNumberByTerrainObject in snapshot.ActiveHouseNumberIdsByTerrainObjectHouseNr)
-                _activeHouseNumberIdsByTerreinObjectHouseNr.Add(
-                    new CrabTerrainObjectHouseNumberId(activeHouseNumberByTerrainObject.Key),
-                    new CrabHouseNumberId(activeHouseNumberByTerrainObject.Value));
-
-            foreach (var addressId in snapshot.AddressIds)
-                _addressCollection.Add(new AddressId(addressId));
-
-            foreach (var subaddressWasImportedFromCrab in snapshot.ImportedSubaddressFromCrab)
-                _addressCollection.Add(subaddressWasImportedFromCrab);
-        }
-
         private void When(TerrainObjectHouseNumberWasImportedFromCrab @event)
         {
             var crabTerrainObjectHouseNumberId = new CrabTerrainObjectHouseNumberId(@event.TerrainObjectHouseNumberId);
@@ -152,6 +126,33 @@ namespace ParcelRegistry.Parcel
                 LastModificationBasedOnCrab = Modification.Insert;
             else if (LastModificationBasedOnCrab == Modification.Insert)
                 LastModificationBasedOnCrab = Modification.Update;
+        }
+
+        private void When(ParcelSnapshot snapshot)
+        {
+            _parcelId = new ParcelId(snapshot.ParcelId);
+            if (!string.IsNullOrEmpty(snapshot.ParcelStatus))
+            {
+                var status = ParcelStatus.Parse(snapshot.ParcelStatus);
+                if (status == ParcelStatus.Realized)
+                    IsRealized = true;
+                if (status == ParcelStatus.Retired)
+                    IsRetired = true;
+            }
+
+            IsRemoved = snapshot.IsRemoved;
+            LastModificationBasedOnCrab = snapshot.LastModificationBasedOnCrab;
+
+            foreach (var activeHouseNumberByTerrainObject in snapshot.ActiveHouseNumberIdsByTerrainObjectHouseNr)
+                _activeHouseNumberIdsByTerreinObjectHouseNr.Add(
+                    new CrabTerrainObjectHouseNumberId(activeHouseNumberByTerrainObject.Key),
+                    new CrabHouseNumberId(activeHouseNumberByTerrainObject.Value));
+
+            foreach (var addressId in snapshot.AddressIds)
+                _addressCollection.Add(new AddressId(addressId));
+
+            foreach (var subaddressWasImportedFromCrab in snapshot.ImportedSubaddressFromCrab)
+                _addressCollection.Add(subaddressWasImportedFromCrab);
         }
 
         public object TakeSnapshot()

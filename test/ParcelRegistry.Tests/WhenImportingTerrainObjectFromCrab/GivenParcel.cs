@@ -52,6 +52,23 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
         }
 
         [Fact]
+        public void WhenLifetimeIsFinite_BasedOnSnapshot()
+        {
+            var command = Fixture.Create<ImportTerrainObjectFromCrab>()
+                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), Fixture.Create<LocalDateTime>()));
+
+            Assert(new Scenario()
+                .Given(_parcelId, Fixture.Create<ParcelWasRegistered>())
+                .Given(_snapshotId, SnapshotBuilder.CreateDefaultSnapshot(_parcelId).Build(0, EventSerializerSettings))
+                .When(command)
+                .Then(new[]
+                {
+                    new Fact(_parcelId, new ParcelWasRetired(_parcelId)),
+                    new Fact(_parcelId, command.ToLegacyEvent())
+                }));
+        }
+
+        [Fact]
         public void WhenLifetimeIsFiniteAndCorrection()
         {
             var command = Fixture.Create<ImportTerrainObjectFromCrab>()
