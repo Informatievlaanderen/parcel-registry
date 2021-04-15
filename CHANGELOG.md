@@ -1,3 +1,10 @@
+## [3.22.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.0...v3.22.1) (2021-04-15)
+
+
+### Bug Fixes
+
+* set parcelid when retrieving snapshot + add snapshot tests ([4e0ac47](https://github.com/informatievlaanderen/parcel-registry/commit/4e0ac47e57ada951a8f375dd644595a46ea2e1ba))
+
 # [3.22.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.21.0...v3.22.0) (2021-04-12)
 
 
