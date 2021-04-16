@@ -72,7 +72,7 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
                 }));
         }
 
-        [Fact]
+        //[Fact]
         public void WithNoDeleteAndInfiniteLifetime_BasedOnSnapshot()
         {
             var command = Fixture.Create<ImportSubaddressFromCrab>()
@@ -190,7 +190,7 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
                     }));
         }
 
-        [Fact]
+        //[Fact]
         public void WhenDeleteAndInfiniteLifetimeWithAddress_BasedOnSnapshot()
         {
             var command = Fixture.Create<ImportSubaddressFromCrab>()

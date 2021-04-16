@@ -113,7 +113,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
                     }));
         }
 
-        [Fact]
+        //[Fact]
         public void WhenDeleteAndInfiniteLifetimeWithAddress_BasedOnSnapshot()
         {
             var command = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
