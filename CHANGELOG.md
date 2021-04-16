@@ -1,3 +1,10 @@
+## [3.22.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.3...v3.22.4) (2021-04-16)
+
+
+### Bug Fixes
+
+* enabled one more test to try build ([44dc689](https://github.com/informatievlaanderen/parcel-registry/commit/44dc689c0b7ac57c7e1ef0bcb339836f014db1f8))
+
 ## [3.22.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.2...v3.22.3) (2021-04-16)
 
 
