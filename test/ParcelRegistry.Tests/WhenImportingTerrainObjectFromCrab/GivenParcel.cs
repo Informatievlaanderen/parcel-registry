@@ -51,7 +51,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
                 }));
         }
 
-        [Fact]
+        //[Fact]
         public void WhenLifetimeIsFinite_BasedOnSnapshot()
         {
             var command = Fixture.Create<ImportTerrainObjectFromCrab>()
