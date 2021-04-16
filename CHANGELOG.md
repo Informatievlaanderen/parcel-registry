@@ -1,3 +1,10 @@
+## [3.22.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.4...v3.22.5) (2021-04-16)
+
+
+### Bug Fixes
+
+* enabled 3 more snapshot tests ([0c66964](https://github.com/informatievlaanderen/parcel-registry/commit/0c6696474efa23c088796b1a727f5463eb3eaf68))
+
 ## [3.22.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.3...v3.22.4) (2021-04-16)
 
 
