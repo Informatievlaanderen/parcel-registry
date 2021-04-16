@@ -70,7 +70,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectFromCrab
                 }));
         }
 
-        //[Fact]
+        [Fact]
         public void WhenModificationIsInsertThenParcelWasRecovered_BasedOnSnapshot()
         {
             var command = Fixture.Create<ImportTerrainObjectFromCrab>()
