@@ -1,3 +1,11 @@
+## [3.22.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.2...v3.22.3) (2021-04-16)
+
+
+### Bug Fixes
+
+* disabled 2 out of 3 snapshottests to test build ([b91d2d6](https://github.com/informatievlaanderen/parcel-registry/commit/b91d2d66631c081b12eff750b3a3a40510deb956))
+* enabled 3 basedonsnapshot tests to test build ([dd1d945](https://github.com/informatievlaanderen/parcel-registry/commit/dd1d9457823dd24561f2dfd6a36551af50b842fb))
+
 ## [3.22.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.1...v3.22.2) (2021-04-16)
 
 
