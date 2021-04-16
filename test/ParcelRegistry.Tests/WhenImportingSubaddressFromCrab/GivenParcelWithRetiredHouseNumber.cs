@@ -77,7 +77,7 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
                 }));
         }
 
-        //[Fact]
+        [Fact]
         public void WhenLifetimeIsFinite_BasedOnSnapshot()
         {
             var command = Fixture.Create<ImportSubaddressFromCrab>()
