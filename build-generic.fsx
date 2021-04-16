@@ -135,7 +135,10 @@ let determineInstalledSdkVersion () =
   sdkVersion
 
 let setCommonOptions (dotnet: DotNet.Options) =
-  { dotnet with DotNetCliPath = getDotnetExePath dotnet.DotNetCliPath }
+  { dotnet with 
+        DotNetCliPath = getDotnetExePath dotnet.DotNetCliPath
+        Verbosity = Some DotNet.Verbosity.Detailed
+  }
 
 let merge a b =
   a @ b |> List.distinct
