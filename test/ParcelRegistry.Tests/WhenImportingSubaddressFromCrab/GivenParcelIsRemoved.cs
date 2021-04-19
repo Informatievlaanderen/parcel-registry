@@ -13,6 +13,7 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
     using Xunit;
     using Xunit.Abstractions;
 
+    [Collection("BasedOnSnapshotCollection")]
     public class GivenParcelIsRemoved : ParcelRegistryTest
     {
         private readonly ParcelId _parcelId;

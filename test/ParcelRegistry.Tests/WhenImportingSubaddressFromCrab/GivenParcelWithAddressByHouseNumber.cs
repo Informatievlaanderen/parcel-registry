@@ -17,6 +17,7 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
     using Xunit;
     using Xunit.Abstractions;
 
+    [Collection("BasedOnSnapshotCollection")]
     public class GivenParcelWithAddressByHouseNumber : ParcelRegistryTest
     {
         private readonly ParcelId _parcelId;
