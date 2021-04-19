@@ -17,32 +17,34 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
     {
         private readonly ParcelId _parcelId;
         private readonly string _snapshotId;
+        private readonly Fixture _fixture;
 
         public GivenParcelIsRemoved(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            Fixture.Customize(new InfrastructureCustomization());
-            Fixture.Customize(new WithFixedParcelId());
-            Fixture.Customize(new WithNoDeleteModification());
-            _parcelId = Fixture.Create<ParcelId>();
+            _fixture = new Fixture();
+            _fixture.Customize(new InfrastructureCustomization());
+            _fixture.Customize(new WithFixedParcelId());
+            _fixture.Customize(new WithNoDeleteModification());
+            _parcelId = _fixture.Create<ParcelId>();
             _snapshotId = GetSnapshotIdentifier(_parcelId);
         }
 
         [Fact]
         public void AddTerrainObjectHouseNumber()
         {
-            var command = Fixture.Create<ImportSubaddressFromCrab>()
-                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
+            var command = _fixture.Create<ImportSubaddressFromCrab>()
+                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
                 .WithModification(CrabModification.Insert);
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    Fixture.Create<ParcelWasRegistered>(),
-                    Fixture.Create<ParcelAddressWasAttached>()
+                    _fixture.Create<ParcelWasRegistered>(),
+                    _fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(AddressId.CreateFor(command.HouseNumberId)),
-                    Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+                    _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                         .WithHouseNumberId(command.HouseNumberId)
                         .ToLegacyEvent(),
-                    Fixture.Create<ParcelWasRemoved>()
+                    _fixture.Create<ParcelWasRemoved>()
                 )
                 .When(command)
                 .Throws(new ParcelRemovedException($"Cannot change removed parcel for parcel id {_parcelId}")));
@@ -51,16 +53,16 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
         [Fact]
         public void AddTerrainObjectHouseNumber_BasedOnSnapshot()
         {
-            var command = Fixture.Create<ImportSubaddressFromCrab>()
-                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null))
+            var command = _fixture.Create<ImportSubaddressFromCrab>()
+                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null))
                 .WithModification(CrabModification.Insert);
 
-            var terrainObjectHouseNumberWasImportedFromCrab = Fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
+            var terrainObjectHouseNumberWasImportedFromCrab = _fixture.Create<ImportTerrainObjectHouseNumberFromCrab>()
                 .WithHouseNumberId(command.HouseNumberId)
                 .ToLegacyEvent();
 
             Assert(new Scenario()
-                .Given(_parcelId, Fixture.Create<ParcelWasRegistered>())
+                .Given(_parcelId, _fixture.Create<ParcelWasRegistered>())
                 .Given(_snapshotId,
                     SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
                         .WithAddressIds(new[] { AddressId.CreateFor(command.HouseNumberId) })

@@ -13,24 +13,26 @@ namespace ParcelRegistry.Tests.WhenImportingSubaddressFromCrab
     public class GivenParcel : ParcelRegistryTest
     {
         private readonly ParcelId _parcelId;
+        private readonly Fixture _fixture;
 
         public GivenParcel(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            Fixture.Customize(new InfrastructureCustomization());
-            Fixture.Customize(new WithFixedParcelId());
-            Fixture.Customize(new WithNoDeleteModification());
-            _parcelId = Fixture.Create<ParcelId>();
+            _fixture = new Fixture();
+            _fixture.Customize(new InfrastructureCustomization());
+            _fixture.Customize(new WithFixedParcelId());
+            _fixture.Customize(new WithNoDeleteModification());
+            _parcelId = _fixture.Create<ParcelId>();
         }
 
         [Fact]
         public void ThenLegacyEventIsAdded()
         {
-            var command = Fixture.Create<ImportSubaddressFromCrab>()
-                .WithLifetime(new CrabLifetime(Fixture.Create<LocalDateTime>(), null));
+            var command = _fixture.Create<ImportSubaddressFromCrab>()
+                .WithLifetime(new CrabLifetime(_fixture.Create<LocalDateTime>(), null));
 
             Assert(new Scenario()
                 .Given(_parcelId,
-                    Fixture.Create<ParcelWasRegistered>())
+                    _fixture.Create<ParcelWasRegistered>())
                 .When(command)
                 .Then(_parcelId,
                     command.ToLegacyEvent()));
