@@ -1,3 +1,11 @@
+## [3.22.7](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.6...v3.22.7) (2021-04-19)
+
+
+### Bug Fixes
+
+* revert "fix: rewrote tests to try to fix build" ([cce1d0c](https://github.com/informatievlaanderen/parcel-registry/commit/cce1d0cf3b34ef86c1b6365abf0c35a33c0221a8))
+* use default build script ([f95f31b](https://github.com/informatievlaanderen/parcel-registry/commit/f95f31be679ac8e612907a408175a1dd468ce21c))
+
 ## [3.22.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.5...v3.22.6) (2021-04-19)
 
 
