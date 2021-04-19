@@ -3,7 +3,6 @@ namespace ParcelRegistry.Tests.AutoFixture
     using System;
     using System.Linq;
     using System.Reflection;
-    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using global::AutoFixture;
     using global::AutoFixture.Dsl;
     using global::AutoFixture.Kernel;
@@ -17,7 +16,6 @@ namespace ParcelRegistry.Tests.AutoFixture
         {
             fixture.Customize(new NodaTimeCustomization());
             fixture.Customize(new SetProvenanceImplementationsCallSetProvenance());
-            fixture.Register(() => (ISnapshotStrategy)IntervalStrategy.Default);
         }
     }
 

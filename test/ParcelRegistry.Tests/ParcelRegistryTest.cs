@@ -8,6 +8,7 @@ namespace ParcelRegistry.Tests
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
+    using global::AutoFixture;
     using Infrastructure.Modules;
     using KellermanSoftware.CompareNetObjects;
     using Microsoft.Extensions.Configuration;
@@ -18,9 +19,15 @@ namespace ParcelRegistry.Tests
 
     public abstract class ParcelRegistryTest : AutofacBasedTest
     {
+        protected Fixture Fixture { get; }
+
         protected JsonSerializerSettings EventSerializerSettings { get; } = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
 
-        protected ParcelRegistryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper) { }
+        protected ParcelRegistryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+            Fixture = new Fixture();
+            Fixture.Register(() => (ISnapshotStrategy)IntervalStrategy.Default);
+        }
 
         protected override void ConfigureCommandHandling(ContainerBuilder builder)
         {
@@ -30,7 +37,7 @@ namespace ParcelRegistry.Tests
 
             builder.RegisterModule(new CommandHandlingModule(configuration));
             builder
-                .Register(c => new ParcelFactory(IntervalStrategy.Default))
+                .Register(c => new ParcelFactory(Fixture.Create<ISnapshotStrategy>()))
                 .As<IParcelFactory>();
 
             builder.RegisterType<FixGrar1475ProvenanceFactory>().AsSelf();
@@ -59,18 +66,5 @@ namespace ParcelRegistry.Tests
         }
 
         public string GetSnapshotIdentifier(string identifier) => $"{identifier}-snapshots";
-    }
-
-    public abstract class ParcelRegistrySnapshotTest : ParcelRegistryTest
-    {
-        protected ParcelRegistrySnapshotTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper) { }
-
-        protected override void ConfigureCommandHandling(ContainerBuilder builder)
-        {
-            base.ConfigureCommandHandling(builder);
-            builder
-                .Register(c => new ParcelFactory(IntervalStrategy.SnapshotEvery(1)))
-                .As<IParcelFactory>();
-        }
     }
 }
