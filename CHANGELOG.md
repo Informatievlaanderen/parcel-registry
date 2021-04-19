@@ -1,3 +1,18 @@
+## [3.22.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.5...v3.22.6) (2021-04-19)
+
+
+### Bug Fixes
+
+* add config to run tests in serial ([5d9d2cf](https://github.com/informatievlaanderen/parcel-registry/commit/5d9d2cf19313f060364b8db1a6feb4a9d11b9171))
+* build add verbosity logging ([6acca23](https://github.com/informatievlaanderen/parcel-registry/commit/6acca23f50ba312ccad6092a7db487bfdd454997))
+* build only output test detailed ([93f214b](https://github.com/informatievlaanderen/parcel-registry/commit/93f214b73df2e95eb79d2f467a1a789f08b39f8e))
+* build to 5.0.102 ([4ce60f0](https://github.com/informatievlaanderen/parcel-registry/commit/4ce60f0bc66eb8da38206bb0cfcd4a48c1ef41e4))
+* bump dotnet sdk to 5.0.104 and clr 5.0.4 ([d495672](https://github.com/informatievlaanderen/parcel-registry/commit/d495672ebcc04bcbccbd799d80b27c73f78c2a6d))
+* bump Test SDK ([8b10114](https://github.com/informatievlaanderen/parcel-registry/commit/8b10114c0f7955eae5c95472f78f6b99a455d986))
+* fix build enable diagnostic logging for tests ([a026c88](https://github.com/informatievlaanderen/parcel-registry/commit/a026c8810d767e6cdbd64c6fa982c46bde9045b7))
+* rewrote tests to try to fix build ([1f4385d](https://github.com/informatievlaanderen/parcel-registry/commit/1f4385de70d105e3079dcbd4853b1adaf29a634e))
+* try to fix build with knowing working test ([a9a108d](https://github.com/informatievlaanderen/parcel-registry/commit/a9a108d72cc911a0e3d9e69df03c9bd0c3a6c3ce))
+
 ## [3.22.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.4...v3.22.5) (2021-04-16)
 
 
