@@ -1,3 +1,10 @@
+## [3.22.8](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.7...v3.22.8) (2021-04-19)
+
+
+### Bug Fixes
+
+* removed xunit config to run in serial and use collections ([80d5667](https://github.com/informatievlaanderen/parcel-registry/commit/80d5667d56d2d4842a97912fd6d7caacc10eb7ea))
+
 ## [3.22.7](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.6...v3.22.7) (2021-04-19)
 
 
