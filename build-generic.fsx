@@ -136,6 +136,11 @@ let determineInstalledSdkVersion () =
 
 let setCommonOptions (dotnet: DotNet.Options) =
   { dotnet with 
+        DotNetCliPath = getDotnetExePath dotnet.DotNetCliPath        
+  }
+
+let setCommonOptionsTest (dotnet: DotNet.Options) =
+  { dotnet with 
         DotNetCliPath = getDotnetExePath dotnet.DotNetCliPath
         Verbosity = Some DotNet.Verbosity.Detailed
   }
@@ -171,7 +176,7 @@ let testWithDotNet path =
 
   DotNet.test (fun p ->
   { p with
-      Common = setCommonOptions p.Common
+      Common = setCommonOptionsTest p.Common
       Configuration = DotNet.Release
       NoBuild = true
       NoRestore = true
