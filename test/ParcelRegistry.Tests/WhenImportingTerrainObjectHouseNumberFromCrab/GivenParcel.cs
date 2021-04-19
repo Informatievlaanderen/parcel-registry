@@ -15,6 +15,7 @@ namespace ParcelRegistry.Tests.WhenImportingTerrainObjectHouseNumberFromCrab
     using Xunit;
     using Xunit.Abstractions;
 
+    [Collection("BasedOnSnapshotCollection")]
     public class GivenParcel : ParcelRegistryTest
     {
         private readonly ParcelId _parcelId;

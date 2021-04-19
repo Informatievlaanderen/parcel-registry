@@ -6,9 +6,5 @@
     <ProjectReference Include="..\..\src\ParcelRegistry\ParcelRegistry.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
