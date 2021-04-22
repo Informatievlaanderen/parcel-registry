@@ -1,3 +1,10 @@
+# [3.23.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.8...v3.23.0) (2021-04-22)
+
+
+### Features
+
+* bump grar-common packages ([016634c](https://github.com/informatievlaanderen/parcel-registry/commit/016634cae4a95843dc760261c22b8670d4e1dce7))
+
 ## [3.22.8](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.7...v3.22.8) (2021-04-19)
 
 
