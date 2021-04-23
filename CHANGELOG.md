@@ -1,3 +1,10 @@
+## [3.23.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.23.0...v3.23.1) (2021-04-23)
+
+
+### Bug Fixes
+
+* bump snapshot packages ([3793db7](https://github.com/informatievlaanderen/parcel-registry/commit/3793db72801db796f28346ca21c44aafb60ad62f))
+
 # [3.23.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.22.8...v3.23.0) (2021-04-22)
 
 
