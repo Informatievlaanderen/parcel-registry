@@ -3,6 +3,7 @@ namespace ParcelRegistry.Parcel.Events
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -10,6 +11,7 @@ namespace ParcelRegistry.Parcel.Events
     using Newtonsoft.Json;
 
     [EventName("ParcelSnapshot")]
+    [EventSnapshot(nameof(SnapshotContainer) + "<ParcelSnapshot>", typeof(SnapshotContainer))]
     [EventDescription("Snapshot of Parcel")]
     public class ParcelSnapshot
     {
