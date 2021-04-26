@@ -32,7 +32,7 @@ namespace ParcelRegistry.Projector.Caches
             return Ok(new[]
             {
                 new {
-                    name = "LastChangedList",
+                    name = "Cache detail percelen",
                     numberOfRecordsToProcess = numberOfRecords
                 }
             });
