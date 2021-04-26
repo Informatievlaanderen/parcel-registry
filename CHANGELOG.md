@@ -1,3 +1,10 @@
+## [3.23.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.23.1...v3.23.2) (2021-04-26)
+
+
+### Bug Fixes
+
+* projections can handle snapshot events ([297f6bd](https://github.com/informatievlaanderen/parcel-registry/commit/297f6bdc77aa3b986205904ea2592f493fc7435d))
+
 ## [3.23.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.23.0...v3.23.1) (2021-04-23)
 
 
