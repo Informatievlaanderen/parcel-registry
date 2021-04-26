@@ -47,15 +47,6 @@ namespace ParcelRegistry.Tests
         protected override void ConfigureEventHandling(ContainerBuilder builder)
         {
             builder.RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, EventSerializerSettings));
-
-            var eventMappingDictionary =
-                new Dictionary<string, System.Type>(
-                    EventMapping.DiscoverEventNamesInAssembly(typeof(DomainAssemblyMarker).Assembly))
-                {
-                    {$"{nameof(SnapshotContainer)}<{nameof(ParcelSnapshot)}>", typeof(SnapshotContainer)}
-                };
-
-            builder.RegisterInstance(new EventMapping(eventMappingDictionary)).As<EventMapping>();
         }
 
         protected override IFactComparer CreateFactComparer()
