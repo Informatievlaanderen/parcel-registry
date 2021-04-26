@@ -1,3 +1,10 @@
+## [3.23.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.23.2...v3.23.3) (2021-04-26)
+
+
+### Bug Fixes
+
+* rename cache status endpoint in projector ([0f91af2](https://github.com/informatievlaanderen/parcel-registry/commit/0f91af202c0a92e0ceec856f1f0f1d312b27b916))
+
 ## [3.23.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.23.1...v3.23.2) (2021-04-26)
 
 
