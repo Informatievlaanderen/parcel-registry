@@ -141,7 +141,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         private readonly bool _embedEvent;
         private readonly bool _embedObject;
 
-        public ParcelSyndicationQuery(LegacyContext context, EmbedValue embed)
+        public ParcelSyndicationQuery(LegacyContext context, SyncEmbedValue embed)
         {
             _context = context;
             _embedEvent = embed?.Event ?? false;
@@ -235,6 +235,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
     public class ParcelSyndicationFilter
     {
         public long? Position { get; set; }
-        public EmbedValue Embed { get; set; }
+        public SyncEmbedValue Embed { get; set; }
     }
 }
