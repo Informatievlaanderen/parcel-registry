@@ -1,3 +1,10 @@
+# [3.24.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.23.3...v3.24.0) (2021-05-04)
+
+
+### Features
+
+* bump packages ([350cedb](https://github.com/informatievlaanderen/parcel-registry/commit/350cedb0995f9695264051b1eca570dd1f274d23))
+
 ## [3.23.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.23.2...v3.23.3) (2021-04-26)
 
 
