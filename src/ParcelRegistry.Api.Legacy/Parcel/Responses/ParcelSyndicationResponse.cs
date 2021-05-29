@@ -175,8 +175,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     <rights>Gratis hergebruik volgens https://overheid.vlaanderen.be/sites/default/files/documenten/ict-egov/licenties/hergebruik/modellicentie_gratis_hergebruik_v1_0.html</rights>
     <updated>2020-11-06T19:36:06Z</updated>
     <author>
-        <name>agentschap Informatie Vlaanderen</name>
-        <email>informatie.vlaanderen@vlaanderen.be</email>
+        <name>Digitaal Vlaanderen</name>
+        <email>digitaal.vlaanderen@vlaanderen.be</email>
     </author>
     <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/percelen"" rel=""self"" />
     <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/percelen.atom"" rel=""alternate"" type=""application/atom+xml"" />
