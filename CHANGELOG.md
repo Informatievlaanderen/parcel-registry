@@ -1,3 +1,10 @@
+## [3.24.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.0...v3.24.1) (2021-05-29)
+
+
+### Bug Fixes
+
+* move to 5.0.6 ([6505a6e](https://github.com/informatievlaanderen/parcel-registry/commit/6505a6e16529caf6417530f0b5c69fe27c21cb12))
+
 # [3.24.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.23.3...v3.24.0) (2021-05-04)
 
 
