@@ -1,3 +1,10 @@
+## [3.24.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.1...v3.24.2) (2021-05-31)
+
+
+### Bug Fixes
+
+* update pipeline & api ([a69eb92](https://github.com/informatievlaanderen/parcel-registry/commit/a69eb92b6800b9e9560546b167ef7db39be39d21))
+
 ## [3.24.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.0...v3.24.1) (2021-05-29)
 
 
