@@ -1,3 +1,10 @@
+## [3.24.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.3...v3.24.4) (2021-06-17)
+
+
+### Bug Fixes
+
+*  update nuget pakage ([bef1ae3](https://github.com/informatievlaanderen/parcel-registry/commit/bef1ae34a7067e18ab5f0a977986d1562c29717a))
+
 ## [3.24.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.2...v3.24.3) (2021-05-31)
 
 
