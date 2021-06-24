@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParcelRegistry.Projections.Legacy;
 
 namespace ParcelRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
-    partial class LegacyContextModelSnapshot : ModelSnapshot
+    [Migration("20210624144541_AddNullableUniqueConstraint")]
+    partial class AddNullableUniqueConstraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,7 +68,7 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
                         .IsClustered(false);
 
                     b.HasIndex("PersistentLocalId")
-                        .IsClustered(true);
+                        .IsClustered();
 
                     b.HasIndex("PersistentLocalId")
                         .IsUnique()

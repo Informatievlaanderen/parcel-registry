@@ -60,7 +60,14 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
             builder.HasMany(x => x.Addresses).WithOne()
                 .HasForeignKey(x => x.ParcelId);
 
-            builder.HasIndex(x => x.PersistentLocalId).IsClustered();
+            builder.HasIndex(x => x.PersistentLocalId)
+                .IsClustered();
+
+            builder.HasIndex(x => x.PersistentLocalId)
+                .IsUnique()
+                .HasFilter($"([{nameof(ParcelDetail.PersistentLocalId)}] IS NOT NULL)")
+                .HasDatabaseName($"IX_ParcelDetails_PersistentLocalId_1");
+
             builder.HasIndex(x => x.Removed);
             builder.HasIndex(x => x.Status);
         }
