@@ -1,3 +1,10 @@
+## [3.24.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.4...v3.24.5) (2021-06-25)
+
+
+### Bug Fixes
+
+* added unique constraint to the persistentlocalid ([7a78692](https://github.com/informatievlaanderen/parcel-registry/commit/7a786920ea3025a803e6afc09838af95f7b842f6))
+
 ## [3.24.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.3...v3.24.4) (2021-06-17)
 
 
