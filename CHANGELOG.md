@@ -1,3 +1,10 @@
+## [3.24.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.5...v3.24.6) (2021-06-25)
+
+
+### Bug Fixes
+
+* update aws DistributedMutex package ([a7b8af9](https://github.com/informatievlaanderen/parcel-registry/commit/a7b8af97f8a07e65a83b089f7cd9a77d0daa4134))
+
 ## [3.24.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.4...v3.24.5) (2021-06-25)
 
 
