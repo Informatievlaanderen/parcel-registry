@@ -37,7 +37,8 @@ namespace ParcelRegistry.Projections.Extract
                 nameof(ExtractContext), Schema.Extract, MigrationTables.Extract);
         }
 
-        private static void RunOnSqlServer(IConfiguration configuration,
+        private static void RunOnSqlServer(
+            IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
             string backofficeProjectionsConnectionString,
