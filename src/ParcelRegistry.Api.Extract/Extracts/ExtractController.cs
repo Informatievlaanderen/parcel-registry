@@ -35,7 +35,7 @@ namespace ParcelRegistry.Api.Extract.Extracts
         public IActionResult Get(
             [FromServices] ExtractContext context,
             CancellationToken cancellationToken = default) =>
-            new ExtractArchive($"{ZipName}-{DateTime.Now:yyyy-MM-dd}") { ParcelRegistryExtractBuilder.CreateParcelFile(context) }
+            new IsolationExtractArchive($"{ZipName}-{DateTime.Now:yyyy-MM-dd}", context) { ParcelRegistryExtractBuilder.CreateParcelFiles(context) }
                 .CreateFileCallbackResult(cancellationToken);
     }
 }
