@@ -1,3 +1,10 @@
+## [3.25.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.0...v3.25.1) (2021-08-26)
+
+
+### Bug Fixes
+
+* update grar-common dependencies GRAR-2060 ([8c74a2f](https://github.com/informatievlaanderen/parcel-registry/commit/8c74a2ffb387689c34a9b27387ac1ea161cf3006))
+
 # [3.25.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.6...v3.25.0) (2021-08-26)
 
 
