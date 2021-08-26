@@ -8,7 +8,7 @@ namespace ParcelRegistry.Api.Extract.Extracts
 
     public class ParcelRegistryExtractBuilder
     {
-        public static ExtractFile CreateParcelFile(ExtractContext context)
+        public static ExtractFile CreateParcelFiles(ExtractContext context)
         {
             var extractItems = context
                 .ParcelExtract
