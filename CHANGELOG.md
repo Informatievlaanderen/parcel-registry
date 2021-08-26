@@ -1,3 +1,10 @@
+# [3.25.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.6...v3.25.0) (2021-08-26)
+
+
+### Features
+
+* add metadata file with latest event id to parcel extract GRAR-2060 ([b279096](https://github.com/informatievlaanderen/parcel-registry/commit/b279096ad83c63bb80e4088cf4f54f471c12a5c2))
+
 ## [3.24.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.24.5...v3.24.6) (2021-06-25)
 
 
