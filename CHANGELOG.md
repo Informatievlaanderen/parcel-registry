@@ -1,3 +1,10 @@
+## [3.25.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.1...v3.25.2) (2021-09-20)
+
+
+### Bug Fixes
+
+* update package ([23249cc](https://github.com/informatievlaanderen/parcel-registry/commit/23249ccde0ea311bf0b029a290356e136d74e58b))
+
 ## [3.25.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.0...v3.25.1) (2021-08-26)
 
 
