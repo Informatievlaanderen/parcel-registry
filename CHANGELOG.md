@@ -1,3 +1,10 @@
+## [3.25.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.2...v3.25.3) (2021-09-22)
+
+
+### Bug Fixes
+
+* gawr-611 fix exception detail ([d9b6500](https://github.com/informatievlaanderen/parcel-registry/commit/d9b650050a98dec8d55c5454993fcf6f4849971f))
+
 ## [3.25.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.1...v3.25.2) (2021-09-20)
 
 
