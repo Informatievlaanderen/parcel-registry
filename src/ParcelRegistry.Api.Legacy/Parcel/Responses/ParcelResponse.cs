@@ -114,7 +114,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             ProblemTypeUri = "urn:be.vlaanderen.basisregisters.api:parcel:gone",
             HttpStatus = StatusCodes.Status410Gone,
             Title = ProblemDetails.DefaultTitle,
-            Detail = "Perceel werd verwijderd.",
+            Detail = "Verwijderd perceel.",
             ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext)
         };
     }
