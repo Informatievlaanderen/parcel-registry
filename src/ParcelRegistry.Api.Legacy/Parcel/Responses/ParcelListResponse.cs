@@ -3,6 +3,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
     using Infrastructure.Options;
@@ -85,8 +86,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         {
             var samples = new List<ParcelListItemResponse>
             {
-                new ParcelListItemResponse("11001B0001-00S000", _responseOptions.Naamruimte, _responseOptions.DetailUrl, PerceelStatus.Gerealiseerd, DateTimeOffset.Now),
-                new ParcelListItemResponse("11001B0009-00G004", _responseOptions.Naamruimte, _responseOptions.DetailUrl, PerceelStatus.Gerealiseerd, DateTimeOffset.Now.AddHours(-40))
+                new ParcelListItemResponse("11001B0001-00S000", _responseOptions.Naamruimte, _responseOptions.DetailUrl, PerceelStatus.Gerealiseerd, DateTimeOffset.Now.ToExampleOffset()),
+                new ParcelListItemResponse("11001B0009-00G004", _responseOptions.Naamruimte, _responseOptions.DetailUrl, PerceelStatus.Gerealiseerd, DateTimeOffset.Now.AddHours(-40).ToExampleOffset())
             };
 
             return new ParcelListResponse
