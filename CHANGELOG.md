@@ -1,3 +1,10 @@
+## [3.25.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.4...v3.25.5) (2021-10-06)
+
+
+### Bug Fixes
+
+* add Test to ECR ([1c6b47a](https://github.com/informatievlaanderen/parcel-registry/commit/1c6b47a2e12f6176d1a87b6662b638b3ab7b824e))
+
 ## [3.25.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.3...v3.25.4) (2021-10-01)
 
 
