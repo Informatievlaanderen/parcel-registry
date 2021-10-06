@@ -1,3 +1,10 @@
+## [3.25.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.5...v3.25.6) (2021-10-06)
+
+
+### Bug Fixes
+
+* gawr-615 add offset+2 to version id ([2da917e](https://github.com/informatievlaanderen/parcel-registry/commit/2da917ee9312334ff69b5a094a8f22cf87670447))
+
 ## [3.25.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.4...v3.25.5) (2021-10-06)
 
 
