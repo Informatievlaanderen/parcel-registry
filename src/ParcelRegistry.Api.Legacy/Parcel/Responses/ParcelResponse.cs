@@ -11,6 +11,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     using System.Linq;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Newtonsoft.Json;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
@@ -68,7 +69,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
                 _responseOptions.Naamruimte,
                 PerceelStatus.Gerealiseerd,
                 "11001B0001-00S000",
-                DateTimeOffset.Now,
+                DateTimeOffset.Now.ToExampleOffset(),
                 new List<string> { "200001" },
                 _responseOptions.AdresDetailUrl);
     }
