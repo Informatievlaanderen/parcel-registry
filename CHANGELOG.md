@@ -1,3 +1,10 @@
+## [3.25.7](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.6...v3.25.7) (2021-10-21)
+
+
+### Bug Fixes
+
+* gawr-2202 api documentation changes ([3982180](https://github.com/informatievlaanderen/parcel-registry/commit/39821804dcf48e9a623fe37db22a7909bd208147))
+
 ## [3.25.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.5...v3.25.6) (2021-10-06)
 
 
