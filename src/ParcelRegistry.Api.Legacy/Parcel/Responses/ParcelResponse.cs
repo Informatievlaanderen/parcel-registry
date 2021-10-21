@@ -33,7 +33,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         public PerceelStatus PerceelStatus { get; set; }
 
         /// <summary>
-        /// De aan het perceel gelinkte adressen
+        /// De aan het perceel gekoppelde adressen.
         /// </summary>
         [DataMember(Name = "Adressen", Order = 3)]
         [JsonProperty(Required = Required.DisallowNull)]
