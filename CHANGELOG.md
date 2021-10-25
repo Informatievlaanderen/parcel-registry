@@ -1,3 +1,10 @@
+# [3.26.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.7...v3.26.0) (2021-10-25)
+
+
+### Features
+
+* gawr 2202 paket bump ([46ba639](https://github.com/informatievlaanderen/parcel-registry/commit/46ba639def46f8b086b01036e55329513b6c8e53))
+
 ## [3.25.7](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.6...v3.25.7) (2021-10-21)
 
 
