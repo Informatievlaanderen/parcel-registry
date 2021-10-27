@@ -1,3 +1,10 @@
+## [3.26.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.26.0...v3.26.1) (2021-10-27)
+
+
+### Bug Fixes
+
+* remove default accesskey/secret ([fb17501](https://github.com/informatievlaanderen/parcel-registry/commit/fb17501aa520dc3604afb2f5609c3495bedfbe30))
+
 # [3.26.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.25.7...v3.26.0) (2021-10-25)
 
 
