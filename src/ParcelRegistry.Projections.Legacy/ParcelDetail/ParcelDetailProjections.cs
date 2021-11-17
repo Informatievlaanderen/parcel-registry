@@ -116,12 +116,15 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     {
                         context.Entry(entity).Collection(x => x.Addresses).Load();
 
-                        // TODO: look up persistent local id of address
-                        entity.Addresses.Add(new ParcelDetailAddress
+                        if (!entity.Addresses.Any(parcelAddress => parcelAddress.AddressId == message.Message.AddressId && parcelAddress.ParcelId == message.Message.ParcelId))
                         {
-                            ParcelId = message.Message.ParcelId,
-                            AddressId = message.Message.AddressId,
-                        });
+                            entity.Addresses.Add(new ParcelDetailAddress
+                            {
+                                ParcelId = message.Message.ParcelId,
+                                AddressId = message.Message.AddressId,
+                            });
+                        }
+
                         UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
                     },
                     ct);
