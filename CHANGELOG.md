@@ -1,3 +1,10 @@
+## [3.26.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.26.1...v3.26.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* when address is already added, do not add again in projection ([4859c65](https://github.com/informatievlaanderen/parcel-registry/commit/4859c658640f5c299a3c2778a2e267fc9cd7a0bb))
+
 ## [3.26.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.26.0...v3.26.1) (2021-10-27)
 
 
