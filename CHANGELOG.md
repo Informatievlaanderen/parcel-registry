@@ -1,3 +1,10 @@
+## [3.27.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.27.0...v3.27.1) (2021-12-08)
+
+
+### Bug Fixes
+
+* remove event db connection, remove unused classes, unused methods and modify launchsettings ([ab6b24b](https://github.com/informatievlaanderen/parcel-registry/commit/ab6b24b9257cfc770cba4635e3b13c575d4dead7))
+
 # [3.27.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.26.2...v3.27.0) (2021-12-08)
 
 
