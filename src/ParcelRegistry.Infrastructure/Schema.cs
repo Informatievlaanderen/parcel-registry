@@ -1,6 +1,6 @@
 namespace ParcelRegistry.Infrastructure
 {
-    public class Schema
+    public static class Schema
     {
         public const string Default = "ParcelRegistry";
 
@@ -10,10 +10,11 @@ namespace ParcelRegistry.Infrastructure
         public const string Syndication = "ParcelRegistrySyndication";
     }
 
-    public class MigrationTables
+    public static class MigrationTables
     {
         public const string Legacy = "__EFMigrationsHistoryLegacy";
         public const string Extract = "__EFMigrationsHistoryExtract";
+        public const string RedisDataMigration = "__EFMigrationsHistoryDataMigration";
         public const string Syndication = "__EFMigrationsHistorySyndication";
     }
 }

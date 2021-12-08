@@ -84,23 +84,29 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ParcelExtractProjections, ExtractContext>(
-                    context => new ParcelExtractProjections(context.Resolve<IOptions<ExtractConfig>>(), DbaseCodePage.Western_European_ANSI.ToEncoding()), ConnectedProjectionSettings.Default);
+                    context => new ParcelExtractProjections(context.Resolve<IOptions<ExtractConfig>>(),
+                        DbaseCodePage.Western_European_ANSI.ToEncoding()), ConnectedProjectionSettings.Default);
         }
 
         private void RegisterLastChangedProjections(ContainerBuilder builder)
         {
             builder.RegisterModule(
-                new LastChangedListModule(
+                new ParcelLastChangedListModule(
                     _configuration.GetConnectionString("LastChangedList"),
                     _configuration["DataDog:ServiceName"],
                     _services,
                     _loggerFactory));
 
             builder
-                .RegisterProjectionMigrator<ParcelRegistry.Projections.LastChangedList.LastChangedListContextMigrationFactory>(
+                .RegisterProjectionMigrator<
+                    ParcelRegistry.Projections.LastChangedList.LastChangedListContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<LastChangedListProjections, LastChangedListContext>(ConnectedProjectionSettings.Default);
+                .RegisterProjectionMigrator<DataMigrationContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<LastChangedListProjections, LastChangedListContext>(ConnectedProjectionSettings
+                    .Default);
         }
 
         private void RegisterLegacyProjections(ContainerBuilder builder)
