@@ -1,3 +1,10 @@
+## [3.27.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.27.1...v3.27.2) (2021-12-08)
+
+
+### Bug Fixes
+
+* github workflow ([05ae1e1](https://github.com/informatievlaanderen/parcel-registry/commit/05ae1e14999c8944278459d779f5f99dd9d91400))
+
 ## [3.27.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.27.0...v3.27.1) (2021-12-08)
 
 
