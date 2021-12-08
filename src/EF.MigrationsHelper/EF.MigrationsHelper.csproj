@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ParcelRegistry.Projections.Extract\ParcelRegistry.Projections.Extract.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.Legacy\ParcelRegistry.Projections.Legacy.csproj" />
+    <ProjectReference Include="..\ParcelRegistry.Projections.LastChangedList\ParcelRegistry.Projections.LastChangedList.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.Syndication\ParcelRegistry.Projections.Syndication.csproj" />
   </ItemGroup>
 
