@@ -1,3 +1,10 @@
+# [3.27.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.26.2...v3.27.0) (2021-12-08)
+
+
+### Features
+
+* add parcel v2 oslo endpoints ([044ccb5](https://github.com/informatievlaanderen/parcel-registry/commit/044ccb5ac6283a3d7aac7f2f63ad238be09ac0dd))
+
 ## [3.26.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.26.1...v3.26.2) (2021-11-17)
 
 
