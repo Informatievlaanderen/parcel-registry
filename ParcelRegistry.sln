@@ -54,6 +54,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Console.Redo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Console.RedoParcelImport", "test\ParcelRegistry.Console.RedoParcelImport\ParcelRegistry.Console.RedoParcelImport.csproj", "{DBA3A7BD-A9E2-4FC2-8FDE-A1E9449CFB9C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Api.Oslo", "src\ParcelRegistry.Api.Oslo\ParcelRegistry.Api.Oslo.csproj", "{7E240AFA-8C3A-4060-A071-468D063E85F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -112,6 +114,10 @@ Global
 		{DBA3A7BD-A9E2-4FC2-8FDE-A1E9449CFB9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBA3A7BD-A9E2-4FC2-8FDE-A1E9449CFB9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBA3A7BD-A9E2-4FC2-8FDE-A1E9449CFB9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E240AFA-8C3A-4060-A071-468D063E85F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E240AFA-8C3A-4060-A071-468D063E85F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E240AFA-8C3A-4060-A071-468D063E85F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E240AFA-8C3A-4060-A071-468D063E85F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,6 +136,7 @@ Global
 		{3E07F9FB-8272-4D6A-95D5-70CDC60913F0} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{C4A9E879-A69F-4105-AD66-11D9C87803E3} = {DF5FFD7D-3020-4F80-87EF-BE2D2CACD27E}
 		{DBA3A7BD-A9E2-4FC2-8FDE-A1E9449CFB9C} = {DF5FFD7D-3020-4F80-87EF-BE2D2CACD27E}
+		{7E240AFA-8C3A-4060-A071-468D063E85F2} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF9223F3-B20E-4F63-A894-F1B3F66280AD}
