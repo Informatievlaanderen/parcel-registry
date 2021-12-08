@@ -1,21 +1,17 @@
-namespace ParcelRegistry.Api.Legacy.Parcel
+namespace ParcelRegistry.Api.Oslo.Parcel
 {
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
-    using Be.Vlaanderen.Basisregisters.Api.Syndication;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Convertors;
     using Infrastructure.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
-    using Microsoft.SyndicationFeed;
-    using Microsoft.SyndicationFeed.Atom;
     using Projections.Legacy;
     using Projections.Syndication;
     using Query;
@@ -23,20 +19,18 @@ namespace ParcelRegistry.Api.Legacy.Parcel
     using Swashbuckle.AspNetCore.Filters;
     using System;
     using System.Linq;
-    using System.Net.Mime;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Xml;
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Infrastructure;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
-    [ApiVersion("1.0")]
-    [AdvertiseApiVersions("1.0")]
+    [ApiVersion("2.0")]
+    [AdvertiseApiVersions("2.0")]
     [ApiRoute("percelen")]
     [ApiExplorerSettings(GroupName = "Percelen")]
+
     public class ParcelController : ApiController
     {
         /// <summary>
@@ -52,11 +46,12 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         /// <response code="410">Als het perceel verwijderd is.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
         [HttpGet("{caPaKey}")]
-        [ProducesResponseType(typeof(ParcelResponse), StatusCodes.Status200OK)]
+        [Produces(AcceptTypes.JsonLd)]
+        [ProducesResponseType(typeof(ParcelOsloResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status410Gone)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParcelResponseExamples))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParcelOsloResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ParcelNotFoundResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status410Gone, typeof(ParcelGoneResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
@@ -91,7 +86,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                 .ToListAsync(cancellationToken);
 
             return Ok(
-                new ParcelResponse(
+                new ParcelOsloResponse(
                     responseOptions.Value.Naamruimte,
                     parcel.Status.MapToPerceelStatus(),
                     parcel.PersistentLocalId,
@@ -109,9 +104,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         /// <response code="200">Als de opvraging van een lijst met percelen gelukt is.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(ParcelListResponse), StatusCodes.Status200OK)]
+        [Produces(AcceptTypes.JsonLd)]
+        [ProducesResponseType(typeof(ParcelListOsloResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParcelListResponseExamples))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParcelListOsloResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> List(
             [FromServices] LegacyContext context,
@@ -122,15 +118,15 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedParcels = new ParcelListQuery(context)
+            var pagedParcels = new ParcelListOsloQuery(context)
                 .Fetch(filtering, sorting, pagination);
 
             Response.AddPagedQueryResultHeaders(pagedParcels);
 
-            var response = new ParcelListResponse
+            var response = new ParcelListOsloResponse
             {
                 Percelen = await pagedParcels.Items
-                    .Select(m => new ParcelListItemResponse(
+                    .Select(m => new ParcelListItemOsloResponse(
                         m.PersistentLocalId,
                         reponseOptions.Value.Naamruimte,
                         reponseOptions.Value.DetailUrl,
@@ -151,9 +147,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         /// <response code="200">Als de opvraging van het totaal aantal gelukt is.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
         [HttpGet("totaal-aantal")]
+        [Produces(AcceptTypes.JsonLd)]
         [ProducesResponseType(typeof(TotaalAantalResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(TotalCountResponseExample))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(TotalCountOsloResponseExample))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> Count(
             [FromServices] LegacyContext context,
@@ -167,7 +164,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                 new TotaalAantalResponse
                 {
                     Aantal = filtering.ShouldFilter
-                        ? await new ParcelListQuery(context)
+                        ? await new ParcelListOsloQuery(context)
                             .Fetch(filtering, sorting, pagination)
                             .Items
                             .CountAsync(cancellationToken)
@@ -176,98 +173,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                             .First()
                             .Count)
                 });
-        }
-
-        /// <summary>
-        /// Vraag een lijst met wijzigingen van percelen op.
-        /// </summary>
-        /// <param name="configuration"></param>
-        /// <param name="context"></param>
-        /// <param name="responseOptions"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        [HttpGet("sync")]
-        [Produces("text/xml")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParcelSyndicationResponseExamples))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
-        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-        public async Task<IActionResult> Sync(
-            [FromServices] IConfiguration configuration,
-            [FromServices] LegacyContext context,
-            [FromServices] IOptions<ResponseOptions> responseOptions,
-            CancellationToken cancellationToken = default)
-        {
-            var filtering = Request.ExtractFilteringRequest<ParcelSyndicationFilter>();
-            var sorting = Request.ExtractSortingRequest();
-            var pagination = Request.ExtractPaginationRequest();
-
-            var lastFeedUpdate = await context
-                .ParcelSyndication
-                .AsNoTracking()
-                .OrderByDescending(item => item.Position)
-                .Select(item => item.SyndicationItemCreatedAt)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (lastFeedUpdate == default)
-                lastFeedUpdate = new DateTimeOffset(2020, 1, 1, 0, 0, 0, TimeSpan.Zero);
-
-            var pagedParcels = new ParcelSyndicationQuery(
-                context,
-                filtering.Filter?.Embed)
-                .Fetch(filtering, sorting, pagination);
-
-            return new ContentResult
-            {
-                Content = await BuildAtomFeed(lastFeedUpdate, pagedParcels, responseOptions, configuration),
-                ContentType = MediaTypeNames.Text.Xml,
-                StatusCode = StatusCodes.Status200OK
-            };
-        }
-
-        private static async Task<string> BuildAtomFeed(
-            DateTimeOffset lastUpdate,
-            PagedQueryable<ParcelSyndicationQueryResult> pagedParcels,
-            IOptions<ResponseOptions> responseOptions,
-            IConfiguration configuration)
-        {
-            var sw = new StringWriterWithEncoding(Encoding.UTF8);
-
-            using (var xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings { Async = true, Indent = true, Encoding = sw.Encoding }))
-            {
-                var formatter = new AtomFormatter(null, xmlWriter.Settings) { UseCDATA = true };
-                var writer = new AtomFeedWriter(xmlWriter, null, formatter);
-                var syndicationConfiguration = configuration.GetSection("Syndication");
-                var atomConfiguration = AtomFeedConfigurationBuilder.CreateFrom(syndicationConfiguration, lastUpdate);
-
-                await writer.WriteDefaultMetadata(atomConfiguration);
-
-                var parcels = pagedParcels.Items.ToList();
-
-                var nextFrom = parcels.Any()
-                    ? parcels.Max(x => x.Position) + 1
-                    : (long?)null;
-
-                var nextUri = BuildNextSyncUri(pagedParcels.PaginationInfo.Limit, nextFrom, syndicationConfiguration["NextUri"]);
-                if (nextUri != null)
-                    await writer.Write(new SyndicationLink(nextUri, "next"));
-
-                foreach (var parcel in pagedParcels.Items)
-                    await writer.WriteParcel(responseOptions, formatter, syndicationConfiguration["Category"], parcel);
-
-                xmlWriter.Flush();
-            }
-
-            return sw.ToString();
-        }
-
-        private static Uri BuildNextSyncUri(int limit, long? from, string nextUrlBase)
-        {
-            return from.HasValue
-                ? new Uri(string.Format(nextUrlBase, from, limit))
-                : null;
         }
     }
 }
