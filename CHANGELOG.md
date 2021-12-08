@@ -1,3 +1,10 @@
+# [3.28.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.27.2...v3.28.0) (2021-12-08)
+
+
+### Features
+
+* add projection handler ([b0b654e](https://github.com/informatievlaanderen/parcel-registry/commit/b0b654e6e4ec6e962c404af882d805e6abb70bfb))
+
 ## [3.27.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.27.1...v3.27.2) (2021-12-08)
 
 
