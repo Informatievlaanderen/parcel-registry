@@ -119,7 +119,7 @@ jobs:
       shell: bash
       run: |
         docker push $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-legacy:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-oslo:$
+        docker push $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-oslo:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-crab-import:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-extract:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projector:$SEMVER
