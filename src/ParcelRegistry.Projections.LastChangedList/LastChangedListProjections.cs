@@ -11,7 +11,7 @@ namespace ParcelRegistry.Projections.LastChangedList
     [ConnectedProjectionDescription("Projectie die markeert voor hoeveel percelen de gecachte data nog geüpdated moeten worden.")]
     public class LastChangedListProjections : LastChangedListConnectedProjection
     {
-        private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, /*AcceptType.JsonLd,*/ AcceptType.Xml };
+        private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, AcceptType.Xml, AcceptType.JsonLd };
 
         public LastChangedListProjections()
             : base(SupportedAcceptTypes)
