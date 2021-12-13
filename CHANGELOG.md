@@ -1,3 +1,10 @@
+## [3.28.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.0...v3.28.1) (2021-12-13)
+
+
+### Bug Fixes
+
+* include jsonld accepttyp in lastchangedlistprojections ([1d342de](https://github.com/informatievlaanderen/parcel-registry/commit/1d342deadcfed91690af7f2e31bc8c6034762fc2))
+
 # [3.28.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.27.2...v3.28.0) (2021-12-08)
 
 
