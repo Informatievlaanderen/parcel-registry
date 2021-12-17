@@ -1,3 +1,10 @@
+## [3.28.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.1...v3.28.2) (2021-12-17)
+
+
+### Bug Fixes
+
+* use async startup of projections to fix hanging migrations ([a2863d0](https://github.com/informatievlaanderen/parcel-registry/commit/a2863d060da0518601471d14e2edece497f6e6c5))
+
 ## [3.28.1](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.0...v3.28.1) (2021-12-13)
 
 
