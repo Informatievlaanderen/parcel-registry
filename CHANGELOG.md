@@ -1,3 +1,10 @@
+## [3.28.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.2...v3.28.3) (2021-12-21)
+
+
+### Bug Fixes
+
+* gawr-2496 & gwar-2499 api docs oslo eindpoints ([5052a6c](https://github.com/informatievlaanderen/parcel-registry/commit/5052a6ca632cdf48767266e2f41c57a93eb33233))
+
 ## [3.28.2](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.1...v3.28.2) (2021-12-17)
 
 
