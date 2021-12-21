@@ -15,6 +15,9 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Responses
     [DataContract(Name = "PerceelCollectie", Namespace = "")]
     public class ParcelListOsloResponse
     {
+        /// <summary>
+        /// De linked-data context van het perceel.
+        /// </summary>
         [DataMember(Name = "@context", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
         [JsonConverter(typeof(PlainStringJsonConverter))]
@@ -45,13 +48,6 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Responses
         public List<ParcelListItemOsloResponse> Percelen { get; set; }
 
         /// <summary>
-        /// Het totaal aantal percelen die overeenkomen met de vraag.
-        /// </summary>
-        //[DataMember(Name = "TotaalAantal", Order = 1)]
-        //[JsonProperty(Required = Required.DisallowNull)]
-        //public long TotaalAantal { get; set; }
-
-        /// <summary>
         /// De URL voor het ophalen van de volgende verzameling.
         /// </summary>
         [DataMember(Name = "Volgende", Order = 2, EmitDefaultValue = false)]
@@ -67,7 +63,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Responses
         /// </summary>
         [DataMember(Name = "@type", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
-        public string Type => "https://data.vlaanderen.be/ns/perceel";
+        public string Type => "Perceel";
 
         /// <summary>
         /// De identificator van het perceel.
