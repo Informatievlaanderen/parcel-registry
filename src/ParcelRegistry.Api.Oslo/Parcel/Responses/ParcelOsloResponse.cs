@@ -25,30 +25,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Responses
         [DataMember(Name = "@context", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
         [JsonConverter(typeof(PlainStringJsonConverter))]
-        public object Context => @"{
-        ""identificator"": ""@nest"",
-        ""id"": ""@id"",
-        ""versieId"": {
-            ""@id"": ""https://data.vlaanderen.be/ns/generiek#versieIdentificator"",
-            ""@type"": ""http://www.w3.org/2001/XMLSchema#string""
-        },
-
-    ""perceelStatus"": {
-    ""@id"": ""https://data.vlaanderen.be/ns/perceel"",
-    ""@type"": ""@id"",
-    ""@context"": {
-    ""@base"": ""https://data.vlaanderen.be/id/concept/perceelstatus/""
-}
-},
-""adressen"":{
-    ""@id"": ""https://data.vlaanderen.be/ns/adres"",
-    ""@type"":""@id"",
-    ""@context"":{
-        ""objectId"":""@index"",
-        ""detail"":""@value""
-    }
-}
-}";
+        public object Context { get; }
 
         /// <summary>
         /// Het linked-data type van het perceel.
@@ -80,12 +57,14 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Responses
 
         public ParcelOsloResponse(
             string naamruimte,
+            string contextUrlDetail,
             PerceelStatus status,
             string caPaKey,
             DateTimeOffset version,
             List<string> addressPersistentLocalIds,
             string adresDetailUrl)
         {
+            Context = contextUrlDetail;
             Identificator = new PerceelIdentificator(naamruimte, caPaKey, version);
             PerceelStatus = status;
 
@@ -106,6 +85,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Responses
         public ParcelOsloResponse GetExamples()
             => new ParcelOsloResponse(
                 _responseOptions.Naamruimte,
+                _responseOptions.ContextUrlDetail,
                 PerceelStatus.Gerealiseerd,
                 "11001B0001-00S000",
                 DateTimeOffset.Now.ToExampleOffset(),

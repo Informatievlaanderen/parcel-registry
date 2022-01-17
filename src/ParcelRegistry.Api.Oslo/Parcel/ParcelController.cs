@@ -88,6 +88,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel
             return Ok(
                 new ParcelOsloResponse(
                     responseOptions.Value.Naamruimte,
+                    responseOptions.Value.ContextUrlDetail,
                     parcel.Status.MapToPerceelStatus(),
                     parcel.PersistentLocalId,
                     parcel.VersionTimestamp.ToBelgianDateTimeOffset(),
@@ -125,6 +126,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel
 
             var response = new ParcelListOsloResponse
             {
+                Context = reponseOptions.Value.ContextUrlList,
                 Percelen = await pagedParcels.Items
                     .Select(m => new ParcelListItemOsloResponse(
                         m.PersistentLocalId,
