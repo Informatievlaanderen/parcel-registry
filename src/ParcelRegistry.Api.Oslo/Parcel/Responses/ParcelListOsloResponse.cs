@@ -102,7 +102,8 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Responses
             return new ParcelListOsloResponse
             {
                 Percelen = samples,
-                Volgende = new Uri(string.Format(_responseOptions.VolgendeUrl, 2, 10))
+                Volgende = new Uri(string.Format(_responseOptions.VolgendeUrl, 2, 10)),
+                Context = _responseOptions.ContextUrlList
             };
         }
     }
