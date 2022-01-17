@@ -21,24 +21,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Responses
         [DataMember(Name = "@context", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
         [JsonConverter(typeof(PlainStringJsonConverter))]
-        public object Context => @"{
-        ""identificator"": ""@nest"",
-        ""id"": ""@id"",
-        ""versieId"": {
-            ""@id"": ""https://data.vlaanderen.be/ns/generiek#versieIdentificator"",
-            ""@type"": ""http://www.w3.org/2001/XMLSchema#string""
-        },
-
-    ""perceelStatus"": {
-    ""@id"": ""https://data.vlaanderen.be/ns/perceel"",
-    ""@type"": ""@id"",
-    ""@context"": {
-    ""@base"": ""https://data.vlaanderen.be/id/concept/perceelstatus/""
-}
-},
-""detail"": ""http://www.iana.org/assignments/relation/self"",
-""percelen"": ""@graph""
-}";
+        public object Context { get; set; }
 
         /// <summary>
         /// De verzameling van percelen.
@@ -119,7 +102,8 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Responses
             return new ParcelListOsloResponse
             {
                 Percelen = samples,
-                Volgende = new Uri(string.Format(_responseOptions.VolgendeUrl, 2, 10))
+                Volgende = new Uri(string.Format(_responseOptions.VolgendeUrl, 2, 10)),
+                Context = _responseOptions.ContextUrlList
             };
         }
     }
