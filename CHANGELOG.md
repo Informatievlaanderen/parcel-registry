@@ -1,3 +1,10 @@
+## [3.28.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.4...v3.28.5) (2022-01-21)
+
+
+### Bug Fixes
+
+* correctly resume projections async ([a3333a2](https://github.com/informatievlaanderen/parcel-registry/commit/a3333a277b206fdde2e6d88f83c5583bf5934b7b))
+
 ## [3.28.4](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.3...v3.28.4) (2022-01-17)
 
 ## [3.28.3](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.2...v3.28.3) (2021-12-21)
