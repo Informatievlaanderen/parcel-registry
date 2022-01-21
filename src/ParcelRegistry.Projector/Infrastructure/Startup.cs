@@ -5,6 +5,7 @@ namespace ParcelRegistry.Projector.Infrastructure
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
+    using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -21,11 +22,10 @@ namespace ParcelRegistry.Projector.Infrastructure
     using System.Linq;
     using System.Reflection;
     using Be.Vlaanderen.Basisregisters.Projector;
-    using Microsoft.OpenApi.Models;
-using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
+    using Microsoft.OpenApi.Models;    
     using System.Threading;
 
-/// <summary>Represents the startup process for the application.</summary>
+    /// <summary>Represents the startup process for the application.</summary>
     public class Startup
     {
         private const string DatabaseTag = "db";
