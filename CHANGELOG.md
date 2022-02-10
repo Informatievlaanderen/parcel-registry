@@ -1,3 +1,10 @@
+## [3.28.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.5...v3.28.6) (2022-02-10)
+
+
+### Bug Fixes
+
+* update Api dependency to fix exception handler ([eac7350](https://github.com/informatievlaanderen/parcel-registry/commit/eac73505a8d28517598fa838794e06340717e308))
+
 ## [3.28.5](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.4...v3.28.5) (2022-01-21)
 
 
