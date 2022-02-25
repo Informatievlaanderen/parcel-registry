@@ -116,7 +116,7 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure
             ApiDebugDataDogToggle debugDataDogToggle,
             HealthCheckService healthCheckService)
         {
-            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag).GetAwaiter().GetResult();
+            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag, loggerFactory).GetAwaiter().GetResult();
 
             app
                 .UseDataDog<Startup>(new DataDogOptions

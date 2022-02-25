@@ -176,7 +176,7 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure
                 .UseIdempotencyDatabaseMigrations()
                 .UseCrabImportMigrations();
 
-            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag).GetAwaiter().GetResult();
+            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag, loggerFactory).GetAwaiter().GetResult();
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)
