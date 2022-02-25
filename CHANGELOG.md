@@ -1,3 +1,10 @@
+# [3.29.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.6...v3.29.0) (2022-02-25)
+
+
+### Features
+
+* update api to 17.0.0 ([810d345](https://github.com/informatievlaanderen/parcel-registry/commit/810d3459713302107a107f594d65fbfd37895341))
+
 ## [3.28.6](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.5...v3.28.6) (2022-02-10)
 
 
