@@ -1,3 +1,10 @@
+## [4.0.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.0...v4.0.1) (2022-03-30)
+
+
+### Bug Fixes
+
+* update CODEOWNERS to trigger build ([0204c07](https://github.com/informatievlaanderen/parcel-registry/commit/0204c07dd84923fed0aff1ea61bce2b24e6a9ec3))
+
 # [4.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.29.0...v4.0.0) (2022-03-30)
 
 
