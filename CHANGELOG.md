@@ -1,3 +1,15 @@
+# [4.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.29.0...v4.0.0) (2022-03-30)
+
+
+### Features
+
+* move to dotnet 6.0.3 ([3b00d77](https://github.com/informatievlaanderen/parcel-registry/commit/3b00d772da2babb6278ad37b5ebe87c9378d3adc))
+
+
+### BREAKING CHANGES
+
+* move to dotnet 6.0.3
+
 # [3.29.0](https://github.com/informatievlaanderen/parcel-registry/compare/v3.28.6...v3.29.0) (2022-02-25)
 
 
