@@ -1,19 +1,18 @@
 namespace ParcelRegistry.Api.Oslo.Parcel.Responses
 {
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
-    using Infrastructure.Options;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Options;
-    using Swashbuckle.AspNetCore.Filters;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.Api.JsonConverters;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
+    using Infrastructure.Options;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using Swashbuckle.AspNetCore.Filters;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [DataContract(Name = "PerceelDetail", Namespace = "")]
@@ -24,8 +23,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Responses
         /// </summary>
         [DataMember(Name = "@context", Order = 0)]
         [JsonProperty(Required = Required.DisallowNull)]
-        [JsonConverter(typeof(PlainStringJsonConverter))]
-        public object Context { get; }
+        public string Context { get; }
 
         /// <summary>
         /// Het linked-data type van het perceel.
