@@ -1,3 +1,10 @@
+## [4.0.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.1...v4.0.2) (2022-04-04)
+
+
+### Bug Fixes
+
+* set oslo context type to string GAWR-2931 ([0834085](https://github.com/informatievlaanderen/parcel-registry/commit/0834085764a045058c3a22dc9a1422ddb3b4d3ec))
+
 ## [4.0.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.0...v4.0.1) (2022-03-30)
 
 
