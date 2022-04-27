@@ -1,3 +1,10 @@
+## [4.0.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.2...v4.0.3) (2022-04-27)
+
+
+### Bug Fixes
+
+* redirect sonar to /dev/null ([db40645](https://github.com/informatievlaanderen/parcel-registry/commit/db4064552d4e456560300b0bd2b7d7787ebb29a0))
+
 ## [4.0.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.1...v4.0.2) (2022-04-04)
 
 
