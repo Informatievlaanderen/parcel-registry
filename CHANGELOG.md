@@ -1,3 +1,10 @@
+## [4.0.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.3...v4.0.4) (2022-04-29)
+
+
+### Bug Fixes
+
+* run sonar end when release version != none ([e97b23a](https://github.com/informatievlaanderen/parcel-registry/commit/e97b23a7a3579645848dc4905e00527e739bcf07))
+
 ## [4.0.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.2...v4.0.3) (2022-04-27)
 
 
