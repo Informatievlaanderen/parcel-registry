@@ -1,3 +1,10 @@
+## [4.0.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.4...v4.0.5) (2022-06-30)
+
+
+### Bug Fixes
+
+* add LABEL to Dockerfile (for easier DataDog filtering) ([32317de](https://github.com/informatievlaanderen/parcel-registry/commit/32317deca6898eed1d62408492e1ffd6da01e1bc))
+
 ## [4.0.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.3...v4.0.4) (2022-04-29)
 
 
