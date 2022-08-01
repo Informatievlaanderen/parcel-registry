@@ -33,11 +33,11 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure.Modules
             _loggerFactory = loggerFactory;
         }
 
-        protected override void Load(ContainerBuilder containerBuilder)
+        protected override void Load(ContainerBuilder builder)
         {
             var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
 
-            containerBuilder
+            builder
                 .RegisterModule(new DataDogModule(_configuration))
 
                 .RegisterModule(new IdempotencyModule(
@@ -59,19 +59,19 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure.Modules
                     Schema.Import,
                     _loggerFactory));
 
-            containerBuilder
+            builder
                 .RegisterType<IdempotentCommandHandlerModule>()
                 .AsSelf();
 
-            containerBuilder
+            builder
                 .RegisterType<IdempotentCommandHandlerModuleProcessor>()
                 .As<IIdempotentCommandHandlerModuleProcessor>();
 
-            containerBuilder
+            builder
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
 
-            containerBuilder.Populate(_services);
+            builder.Populate(_services);
         }
     }
 }

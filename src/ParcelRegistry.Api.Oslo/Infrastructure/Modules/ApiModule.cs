@@ -26,22 +26,22 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure.Modules
             _loggerFactory = loggerFactory;
         }
 
-        protected override void Load(ContainerBuilder containerBuilder)
+        protected override void Load(ContainerBuilder builder)
         {
-            containerBuilder
+            builder
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory));
 
-            containerBuilder
+            builder
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
 
-            containerBuilder
+            builder
                 .RegisterModule(new DataDogModule(_configuration));
 
-            containerBuilder
+            builder
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
 
-            containerBuilder.Populate(_services);
+            builder.Populate(_services);
         }
     }
 }
