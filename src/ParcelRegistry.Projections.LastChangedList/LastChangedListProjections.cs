@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Projections.LastChangedList
 {
     using System;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -22,8 +23,15 @@ namespace ParcelRegistry.Projections.LastChangedList
 
                 foreach (var lastChangedRecord in records)
                 {
-                    lastChangedRecord.CacheKey = string.Format(lastChangedRecord.CacheKey, message.Message.VbrCaPaKey);
-                    lastChangedRecord.Uri = string.Format(lastChangedRecord.Uri, message.Message.VbrCaPaKey);
+                    if (lastChangedRecord.CacheKey != null)
+                    {
+                        lastChangedRecord.CacheKey = string.Format(lastChangedRecord.CacheKey, message.Message.VbrCaPaKey);
+                    }
+
+                    if (lastChangedRecord.Uri != null)
+                    {
+                        lastChangedRecord.Uri = string.Format(lastChangedRecord.Uri, message.Message.VbrCaPaKey);
+                    }
                 }
             });
 
@@ -67,9 +75,9 @@ namespace ParcelRegistry.Projections.LastChangedList
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
             });
 
-            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
         }
 
         protected override string BuildCacheKey(AcceptType acceptType, string identifier)
@@ -77,9 +85,9 @@ namespace ParcelRegistry.Projections.LastChangedList
             var shortenedAcceptType = acceptType.ToString().ToLowerInvariant();
             return acceptType switch
             {
-                AcceptType.Json => string.Format("legacy/parcel:{{0}}.{1}", identifier, shortenedAcceptType),
-                AcceptType.Xml => string.Format("legacy/parcel:{{0}}.{1}", identifier, shortenedAcceptType),
-                AcceptType.JsonLd => string.Format("oslo/parcel:{{0}}.{1}", identifier, shortenedAcceptType),
+                AcceptType.Json => $"legacy/parcel:{{{identifier}}}.{shortenedAcceptType}",
+                AcceptType.Xml => $"legacy/parcel:{{{identifier}}}.{shortenedAcceptType}",
+                AcceptType.JsonLd => $"oslo/parcel:{{{identifier}}}.{shortenedAcceptType}",
                 _ => throw new NotImplementedException($"Cannot build CacheKey for type {typeof(AcceptType)}")
             };
         }
@@ -88,12 +96,16 @@ namespace ParcelRegistry.Projections.LastChangedList
         {
             return acceptType switch
             {
-                AcceptType.Json => string.Format("/v1/percelen/{{0}}", identifier),
-                AcceptType.Xml => string.Format("/v1/percelen/{{0}}", identifier),
-                AcceptType.JsonLd => string.Format("/v2/percelen/{{0}}", identifier),
+                AcceptType.Json => $"/v1/percelen/{{{identifier}}}",
+                AcceptType.Xml => $"/v1/percelen/{{{identifier}}}",
+                AcceptType.JsonLd => $"/v2/percelen/{{{identifier}}}",
                 _ => throw new NotImplementedException($"Cannot build Uri for type {typeof(AcceptType)}")
             };
         }
-        private static void DoNothing() { }
+
+        private static async Task DoNothing()
+        {
+            await Task.Yield();
+        }
     }
 }
