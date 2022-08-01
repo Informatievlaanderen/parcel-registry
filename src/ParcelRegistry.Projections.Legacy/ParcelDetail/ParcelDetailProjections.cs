@@ -5,6 +5,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
     using NodaTime;
     using Parcel.Events;
     using System.Linq;
+    using System.Threading.Tasks;
     using Parcel.Events.Crab;
 
     [ConnectedProjectionName("API endpoint detail/lijst percelen")]
@@ -121,7 +122,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                             entity.Addresses.Add(new ParcelDetailAddress
                             {
                                 ParcelId = message.Message.ParcelId,
-                                AddressId = message.Message.AddressId,
+                                AddressId = message.Message.AddressId
                             });
                         }
 
@@ -139,21 +140,27 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                         context.Entry(entity).Collection(x => x.Addresses).Load();
 
                         var address = entity.Addresses.SingleOrDefault(x => x.AddressId == message.Message.AddressId);
-                        entity.Addresses.Remove(address);
+                        if (address is not null)
+                        {
+                            entity.Addresses.Remove(address);
+                        }
 
                         UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
                     },
                     ct);
             });
 
-            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
         }
 
         private static void UpdateVersionTimestamp(ParcelDetail parcel, Instant versionTimestamp)
             => parcel.VersionTimestamp = versionTimestamp;
 
-        private static void DoNothing() { }
+        private static async Task DoNothing()
+        {
+            await Task.Yield();
+        }
     }
 }
