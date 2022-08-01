@@ -1,10 +1,16 @@
 namespace ParcelRegistry
 {
     using System;
+    using System.Runtime.Serialization;
 
-    public class ParcelRemovedException : ParcelRegistryException
+    [Serializable]
+    public sealed class ParcelRemovedException : ParcelRegistryException
     {
         public ParcelRemovedException() { }
+
+        private ParcelRemovedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        { }
 
         public ParcelRemovedException(string message) : base(message) { }
 
