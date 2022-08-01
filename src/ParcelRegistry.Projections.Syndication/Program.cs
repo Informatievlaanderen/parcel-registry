@@ -3,7 +3,6 @@ namespace ParcelRegistry.Projections.Syndication
     using Address;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Autofac.Features.OwnedInstances;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +11,6 @@ namespace ParcelRegistry.Projections.Syndication
     using Modules;
     using Serilog;
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -21,6 +19,9 @@ namespace ParcelRegistry.Projections.Syndication
     {
         private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
         private static readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
+
+        protected Program()
+        { }
 
         public static async Task Main(string[] args)
         {
@@ -43,7 +44,7 @@ namespace ParcelRegistry.Projections.Syndication
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
                 .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
                 .AddEnvironmentVariables()
-                .AddCommandLine(args ?? new string[0])
+                .AddCommandLine(args)
                 .Build();
 
             var container = ConfigureServices(configuration);
@@ -59,11 +60,11 @@ namespace ParcelRegistry.Projections.Syndication
                         {
                             await MigrationsHelper.RunAsync(
                                 configuration.GetConnectionString("SyndicationProjectionsAdmin"),
-                                container.GetService<ILoggerFactory>(),
+                                container.GetRequiredService<ILoggerFactory>(),
                                 ct);
 
                             await container
-                                .GetService<FeedProjector<SyndicationContext>>()
+                                .GetRequiredService<FeedProjector<SyndicationContext>>()
                                 .Register(BuildProjectionRunner(configuration, container))
                                 .Start(ct);
                         }
@@ -73,8 +74,8 @@ namespace ParcelRegistry.Projections.Syndication
                             throw;
                         }
                     },
-                    DistributedLockOptions.LoadFromConfiguration(configuration) ?? DistributedLockOptions.Defaults,
-                    container.GetService<ILogger<Program>>());
+                    DistributedLockOptions.LoadFromConfiguration(configuration),
+                    container.GetRequiredService<ILogger<Program>>());
             }
             catch (Exception e)
             {
@@ -100,8 +101,8 @@ namespace ParcelRegistry.Projections.Syndication
                 configuration.GetValue<int>("SyndicationFeeds:AddressPollingInMilliseconds"),
                 false,
                 true,
-                container.GetService<ILogger<Program>>(),
-                container.GetService<IRegistryAtomFeedReader>(),
+                container.GetRequiredService<ILogger<Program>>(),
+                container.GetRequiredService<IRegistryAtomFeedReader>(),
                 new AddressPersistentLocalIdProjection());
         }
 
@@ -113,7 +114,7 @@ namespace ParcelRegistry.Projections.Syndication
             builder.RegisterModule(new LoggingModule(configuration, services));
 
             var tempProvider = services.BuildServiceProvider();
-            builder.RegisterModule(new SyndicationModule(configuration, services, tempProvider.GetService<ILoggerFactory>()));
+            builder.RegisterModule(new SyndicationModule(configuration, services, tempProvider.GetRequiredService<ILoggerFactory>()));
 
             builder.Populate(services);
 

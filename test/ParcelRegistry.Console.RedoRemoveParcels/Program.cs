@@ -23,18 +23,21 @@ namespace ParcelRegistry.Console.RedoRemoveParcels
     {
         const string FilesToProcessPath = "FilesToProcess";
 
-        static void Main(string[] args)
+        protected Program()
+        { }
+        
+        public static void Main(string[] args)
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
                 .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
                 .AddEnvironmentVariables()
-                .AddCommandLine(args ?? new string[0])
+                .AddCommandLine(args)
                 .Build();
 
             var eventsConnectionString = configuration.GetConnectionString("Events");
-            var eventsJsonSerializerSettings = new JsonSerializerSettings().ConfigureDefaultForEvents();
+            _ = new JsonSerializerSettings().ConfigureDefaultForEvents();
             var commandsJsonSerializerSettings = new JsonSerializerSettings().ConfigureForCrabImports();
 
             var appSettings = new ApplicationSettings(configuration.GetSection("ApplicationSettings"));
@@ -57,7 +60,7 @@ namespace ParcelRegistry.Console.RedoRemoveParcels
             JsonSerializerSettings commandsJsonSerializerSettings,
             ApplicationSettings appSettings)
         {
-            var processedPath = "Processed";
+            const string processedPath = "Processed";
             Directory.CreateDirectory(processedPath);
 
             foreach (var file in Directory.GetFiles(FilesToProcessPath))
@@ -100,29 +103,25 @@ namespace ParcelRegistry.Console.RedoRemoveParcels
         private static void SendCommands(List<RegisterCrabImportRequest[]> commandsToSend, JsonSerializerSettings commandsJsonSerializerSettings, ApplicationSettings appSettings)
         {
             var jsonToSend = JsonConvert.SerializeObject(commandsToSend, commandsJsonSerializerSettings);
-            using (var client = CreateImportClient(appSettings))
-            {
-                var response = client
-                    .PostAsync(
-                        appSettings.EndpointUrl,
-                        CreateJsonContent(jsonToSend))
-                    .GetAwaiter()
-                    .GetResult();
+            using var client = CreateImportClient(appSettings);
+            var response = client
+                .PostAsync(
+                    appSettings.EndpointUrl,
+                    CreateJsonContent(jsonToSend))
+                .GetAwaiter()
+                .GetResult();
 
-                response.EnsureSuccessStatusCode();
-            }
+            response.EnsureSuccessStatusCode();
         }
 
         private static List<string> GetParcelIds(string sqlConnectionString)
         {
-            using (var sqlConnection = new SqlConnection(sqlConnectionString))
-            {
-                return sqlConnection.Query<string>(@"SELECT s.Id FROM [parcel-registry-events].[ParcelRegistry].[Streams] s
+            using var sqlConnection = new SqlConnection(sqlConnectionString);
+            return sqlConnection.Query<string>(@"SELECT s.Id FROM [parcel-registry-events].[ParcelRegistry].[Streams] s
                     INNER JOIN [parcel-registry-events].[ParcelRegistry].[Messages] m on s.IdInternal = m.StreamIdInternal and m.[Type] = 'ParcelWasRemoved'
                     INNER JOIN [parcel-registry-events].[ParcelRegistry].[Messages] ma on s.IdInternal = ma.StreamIdInternal and ma.[Type] = 'ParcelAddressWasAttached'
                     GROUP BY s.Id
                     HAVING max(ma.position) > max(m.position)", commandTimeout: 3600).ToList(); //not many parcels are removed, can take a while before finding
-            }
         }
 
         protected static HttpClient CreateImportClient(ApplicationSettings settings)
