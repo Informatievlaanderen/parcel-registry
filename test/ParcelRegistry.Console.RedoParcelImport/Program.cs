@@ -17,14 +17,17 @@ namespace ParcelRegistry.Console.RedoParcelImport
     {
         const string FilesToProcessPath = "FilesToProcess";
 
-        static void Main(string[] args)
+        protected Program()
+        { }
+        
+        public static void Main(string[] args)
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
                 .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
                 .AddEnvironmentVariables()
-                .AddCommandLine(args ?? new string[0])
+                .AddCommandLine(args)
                 .Build();
 
             var commandsJsonSerializerSettings = new JsonSerializerSettings().ConfigureForCrabImports();
@@ -63,17 +66,15 @@ namespace ParcelRegistry.Console.RedoParcelImport
         private static void SendCommands(List<RegisterCrabImportRequest[]> commandsToSend, JsonSerializerSettings commandsJsonSerializerSettings, ApplicationSettings appSettings)
         {
             var jsonToSend = JsonConvert.SerializeObject(commandsToSend, commandsJsonSerializerSettings);
-            using (var client = CreateImportClient(appSettings))
-            {
-                var response = client
-                    .PostAsync(
-                        appSettings.EndpointUrl,
-                        CreateJsonContent(jsonToSend))
-                    .GetAwaiter()
-                    .GetResult();
+            using var client = CreateImportClient(appSettings);
+            var response = client
+                .PostAsync(
+                    appSettings.EndpointUrl,
+                    CreateJsonContent(jsonToSend))
+                .GetAwaiter()
+                .GetResult();
 
-                response.EnsureSuccessStatusCode();
-            }
+            response.EnsureSuccessStatusCode();
         }
 
         protected static HttpClient CreateImportClient(ApplicationSettings settings)

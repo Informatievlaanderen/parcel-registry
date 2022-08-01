@@ -8,7 +8,7 @@ namespace ParcelRegistry.Api.Extract.Extracts
     using Projections.Extract;
     using Projections.Extract.ParcelExtract;
 
-    public class ParcelRegistryExtractBuilder
+    public static class ParcelRegistryExtractBuilder
     {
         public static IEnumerable<ExtractFile> CreateParcelFiles(ExtractContext context)
         {

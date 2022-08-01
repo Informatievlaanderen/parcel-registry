@@ -9,7 +9,7 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure
     using Microsoft.SyndicationFeed;
     using Microsoft.SyndicationFeed.Atom;
 
-    public class AtomFeedConfigurationBuilder
+    public static class AtomFeedConfigurationBuilder
     {
         public static AtomFeedConfiguration CreateFrom(IConfigurationSection configuration, DateTimeOffset lastUpdated)
         {
@@ -19,7 +19,7 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure
                 configuration["Subtitle"],
                 configuration["GeneratorTitle"],
                 configuration["GeneratorUri"],
-                Assembly.GetEntryAssembly().GetName().Version.ToString(),
+                Assembly.GetEntryAssembly()?.GetName().Version?.ToString(),
                 configuration["Rights"],
                 lastUpdated,
                 new SyndicationPerson(configuration["AuthorName"], configuration["AuthorEmail"], AtomContributorTypes.Author),
