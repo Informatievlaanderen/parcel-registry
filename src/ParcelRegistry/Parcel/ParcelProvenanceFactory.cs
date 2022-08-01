@@ -12,7 +12,9 @@ namespace ParcelRegistry.Parcel
         public Provenance CreateFrom(object provenanceHolder, Parcel aggregate)
         {
             if (!(provenanceHolder is IHasCrabProvenance crabProvenance))
-                throw new ApplicationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+            {
+                throw new InvalidOperationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+            }
 
             return CreateFrom(
                 aggregate.LastModificationBasedOnCrab,
@@ -30,7 +32,9 @@ namespace ParcelRegistry.Parcel
         public Provenance CreateFrom(object provenanceHolder, Parcel aggregate)
         {
             if (!(provenanceHolder is FixGrar1475))
-                throw new ApplicationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+            {
+                throw new InvalidOperationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+            }
 
             return new Provenance(Instant.FromDateTimeUtc(DateTime.UtcNow), Application.Unknown, new Reason("Rechtzetting adressen verwijderde percelen"), new Operator("crabadmin"), Modification.Delete, Organisation.Aiv);
         }
@@ -43,7 +47,9 @@ namespace ParcelRegistry.Parcel
         public Provenance CreateFrom(object provenanceHolder, Parcel aggregate)
         {
             if (!(provenanceHolder is FixGrar1637))
-                throw new ApplicationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+            {
+                throw new InvalidOperationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+            }
 
             return new Provenance(Instant.FromDateTimeUtc(DateTime.UtcNow), Application.Unknown, new Reason("Rechtzetting herstelde percelen"), new Operator("crabadmin"), Modification.Insert, Organisation.Aiv);
         }
