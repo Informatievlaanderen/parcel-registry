@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 {
     using System;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Parcel.Events;
@@ -22,7 +23,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     RecordCreatedAt = message.Message.Provenance.Timestamp,
                     LastChangedOn = message.Message.Provenance.Timestamp,
                     ChangeType = message.EventName,
-                    SyndicationItemCreatedAt = DateTimeOffset.Now,
+                    SyndicationItemCreatedAt = DateTimeOffset.Now
                 };
 
                 parcelSyndicationItem.ApplyProvenance(message.Message.Provenance);
@@ -77,7 +78,9 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     x =>
                     {
                         foreach (var addressId in x.AddressIds)
+                        {
                             x.RemoveAddressId(addressId);
+                        }
                     },
                     ct);
             });
@@ -91,7 +94,9 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     {
                         x.Status = null;
                         foreach (var addressId in x.AddressIds)
+                        {
                             x.RemoveAddressId(addressId);
+                        }
                     },
                     ct);
             });
@@ -114,11 +119,14 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     ct);
             });
 
-            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
         }
 
-        private static void DoNothing() { }
+        private static async Task DoNothing()
+        {
+            await Task.Yield();
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     using Parcel.Events;
     using System;
     using System.Text;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Microsoft.Extensions.Options;
@@ -112,11 +113,11 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                     ct);
             });
 
-            When<Envelope<ParcelAddressWasAttached>>(async (context, message, ct) => DoNothing());
-            When<Envelope<ParcelAddressWasDetached>>(async (context, message, ct) => DoNothing());
-            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => DoNothing());
+            When<Envelope<ParcelAddressWasAttached>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<ParcelAddressWasDetached>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
         }
 
         private void SetDelete(ParcelExtractItem parcel)
@@ -130,14 +131,20 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
 
         private void UpdateRecord(ParcelExtractItem parcel, Action<ParcelDbaseRecord> updateFunc)
         {
-            var record = new ParcelDbaseRecord();
-            record.FromBytes(parcel.DbaseRecord, _encoding);
+            if (parcel.DbaseRecord is not null)
+            {
+                var record = new ParcelDbaseRecord();
+                record.FromBytes(parcel.DbaseRecord, _encoding);
 
-            updateFunc(record);
+                updateFunc(record);
 
-            parcel.DbaseRecord = record.ToBytes(_encoding);
+                parcel.DbaseRecord = record.ToBytes(_encoding);
+            }
         }
 
-        private static void DoNothing() { }
+        private static async Task DoNothing()
+        {
+            await Task.Yield();
+        }
     }
 }
