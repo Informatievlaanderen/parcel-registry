@@ -1,3 +1,17 @@
+## [4.0.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.5...v4.0.6) (2022-08-01)
+
+
+### Bug Fixes
+
+* conform to Serializable ([c7fbd1b](https://github.com/informatievlaanderen/parcel-registry/commit/c7fbd1b91b48388bdfbda65be167f3a49f1b6d82))
+* correct format strings ([32507ce](https://github.com/informatievlaanderen/parcel-registry/commit/32507ce0ac37d827cfa876d3080e6f26cfda122c))
+* correct parameter names ([cda38b9](https://github.com/informatievlaanderen/parcel-registry/commit/cda38b9825b180f897eb1352ceffe2c99eebb32e))
+* don't throw general exceptions ([b6a52fc](https://github.com/informatievlaanderen/parcel-registry/commit/b6a52fce2431b07430258ceaffc43dd419c0bedf))
+* empty methods ([4a36dfd](https://github.com/informatievlaanderen/parcel-registry/commit/4a36dfda126e33caa733b78e000a06e4e60ef7e3))
+* nested ternary clauses ([ec40c02](https://github.com/informatievlaanderen/parcel-registry/commit/ec40c026ba993413d214f5f5fb8b4a3805a08322))
+* utility classes static or protected ctor ([d8682bb](https://github.com/informatievlaanderen/parcel-registry/commit/d8682bb538f9b054186bc41c3796a49eeefcaf5e))
+* visibility of fields ([e5a08b5](https://github.com/informatievlaanderen/parcel-registry/commit/e5a08b50dcac51c9899da9d0e2c7787cd4125219))
+
 ## [4.0.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.4...v4.0.5) (2022-06-30)
 
 
