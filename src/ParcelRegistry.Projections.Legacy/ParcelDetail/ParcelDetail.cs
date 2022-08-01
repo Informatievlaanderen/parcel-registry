@@ -9,7 +9,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
     public class ParcelDetail
     {
-        public static string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
+        public const string VersionTimestampBackingPropertyName = nameof(VersionTimestampAsDateTimeOffset);
 
         public Guid ParcelId { get; set; }
         public string? PersistentLocalId { get; set; }
@@ -48,7 +48,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
             builder.Property(x => x.Status)
                 .HasConversion(
                     value => value == null ? null : value.Value.Status,
-                    value => value == null ? (ParcelStatus?)null : ParcelStatus.Parse(value))
+                    value => value == null ? null : ParcelStatus.Parse(value))
                 .HasColumnName("Status");
 
             builder.Property(p => p.Removed);
@@ -66,7 +66,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
             builder.HasIndex(x => x.PersistentLocalId)
                 .IsUnique()
                 .HasFilter($"([{nameof(ParcelDetail.PersistentLocalId)}] IS NOT NULL)")
-                .HasDatabaseName($"IX_ParcelDetails_PersistentLocalId_1");
+                .HasDatabaseName("IX_ParcelDetails_PersistentLocalId_1");
 
             builder.HasIndex(x => x.Removed);
             builder.HasIndex(x => x.Status);
