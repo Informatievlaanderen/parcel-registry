@@ -1,3 +1,10 @@
+## [4.0.7](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.6...v4.0.7) (2022-08-10)
+
+
+### Bug Fixes
+
+* revert "fix: correct format strings" ([6fa7632](https://github.com/informatievlaanderen/parcel-registry/commit/6fa7632cc1a057f2c4cce0f4a365f1682834bdbd))
+
 ## [4.0.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.5...v4.0.6) (2022-08-01)
 
 
