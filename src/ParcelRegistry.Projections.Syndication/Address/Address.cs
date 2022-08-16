@@ -24,7 +24,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
         /// De id van de straatnaam.
         /// </summary>
         [DataMember(Name = "StraatnaamId", Order = 3)]
-        public Guid? SteetnameId { get; set; }
+        public string? SteetnameId { get; set; }
 
         /// <summary>
         /// De id van de postinfo.
