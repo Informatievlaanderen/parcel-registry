@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Projections.Syndication.Address
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication;
     using System.Threading;
     using System.Threading.Tasks;
@@ -58,7 +59,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
             {
                 latestItem = new AddressPersistentLocalIdItem
                 {
-                    AddressId = entry.Content.Object.AddressId,
+                    AddressId = Guid.Parse(entry.Content.Object.AddressId),
                     Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
                     PersistentLocalId = entry.Content.Object.Identificator?.ObjectId,
