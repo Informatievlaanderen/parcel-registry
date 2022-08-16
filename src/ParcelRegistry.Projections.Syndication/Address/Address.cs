@@ -12,7 +12,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
         /// De technische id van het adres.
         /// </summary>
         [DataMember(Name = "Id", Order = 1)]
-        public Guid AddressId { get; set; }
+        public string AddressId { get; set; }
 
         /// <summary>
         /// De identificator van het adres.
