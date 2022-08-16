@@ -1,3 +1,10 @@
+## [4.0.9](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.8...v4.0.9) (2022-08-16)
+
+
+### Bug Fixes
+
+* correct address syndiction streetnameid type ([f966a18](https://github.com/informatievlaanderen/parcel-registry/commit/f966a1875f97a461e6cd8a81a13d7bc1184c189f))
+
 ## [4.0.8](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.7...v4.0.8) (2022-08-16)
 
 
