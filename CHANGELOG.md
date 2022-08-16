@@ -1,3 +1,10 @@
+## [4.0.8](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.7...v4.0.8) (2022-08-16)
+
+
+### Bug Fixes
+
+* correct syndication event dto ([da29a3a](https://github.com/informatievlaanderen/parcel-registry/commit/da29a3aeb05d3073252db733790d75125c9d9f6d))
+
 ## [4.0.7](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.6...v4.0.7) (2022-08-10)
 
 
