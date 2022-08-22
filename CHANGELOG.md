@@ -1,3 +1,10 @@
+# [4.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.9...v4.1.0) (2022-08-22)
+
+
+### Features
+
+* bump deps ([0b0ff7c](https://github.com/informatievlaanderen/parcel-registry/commit/0b0ff7c404ef5bf0939a8789a875176e57a71f37))
+
 ## [4.0.9](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.8...v4.0.9) (2022-08-16)
 
 
