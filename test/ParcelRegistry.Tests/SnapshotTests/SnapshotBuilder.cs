@@ -95,12 +95,12 @@ namespace ParcelRegistry.Tests.SnapshotTests
 
         public static SnapshotContainer Build(
             this ParcelSnapshot snapshot,
-            long position,
+            long version,
             JsonSerializerSettings serializerSettings)
         {
             return new SnapshotContainer
             {
-                Info = new SnapshotInfo { Position = position, Type = nameof(ParcelSnapshot) },
+                Info = new SnapshotInfo { StreamVersion = version, Type = nameof(ParcelSnapshot) },
                 Data = JsonConvert.SerializeObject(snapshot, serializerSettings)
             };
         }
