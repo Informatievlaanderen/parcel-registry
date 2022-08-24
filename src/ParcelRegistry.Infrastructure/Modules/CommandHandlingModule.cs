@@ -18,7 +18,7 @@ namespace ParcelRegistry.Infrastructure.Modules
         protected override void Load(ContainerBuilder builder)
         {
             builder
-                .Register(c => new ParcelFactory(IntervalStrategy.Default))
+                .Register(c => new ParcelFactory(NoSnapshotStrategy.Instance))
                 .As<IParcelFactory>();
 
             builder
