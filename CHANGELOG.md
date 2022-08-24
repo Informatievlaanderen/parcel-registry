@@ -1,3 +1,10 @@
+## [4.1.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.0...v4.1.1) (2022-08-24)
+
+
+### Bug Fixes
+
+* disable snapshotting ([ac4c3a9](https://github.com/informatievlaanderen/parcel-registry/commit/ac4c3a92e0445c929252b6de99ac133b73829a11))
+
 # [4.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.0.9...v4.1.0) (2022-08-22)
 
 
