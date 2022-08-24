@@ -1,3 +1,10 @@
+## [4.1.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.1...v4.1.2) (2022-08-24)
+
+
+### Bug Fixes
+
+* bump command-handling ([27f881c](https://github.com/informatievlaanderen/parcel-registry/commit/27f881c78cae1b0d820f8c92af382891cc2bc888))
+
 ## [4.1.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.0...v4.1.1) (2022-08-24)
 
 
