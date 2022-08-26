@@ -50,16 +50,18 @@ namespace ParcelRegistry.Projections.Syndication.Address
 
         private static async Task AddSyndicationItemEntry(AtomEntry<SyndicationContent<Address>> entry, SyndicationContext context, CancellationToken ct)
         {
+            var addressId = Guid.Parse(entry.Content.Object.AddressId);
+
             var latestItem =
                 await context
                     .AddressPersistentLocalIds
-                    .FindAsync(entry.Content.Object.AddressId);
+                    .FindAsync(addressId);
 
             if (latestItem == null)
             {
                 latestItem = new AddressPersistentLocalIdItem
                 {
-                    AddressId = Guid.Parse(entry.Content.Object.AddressId),
+                    AddressId = addressId,
                     Version = entry.Content.Object.Identificator?.Versie,
                     Position = long.Parse(entry.FeedEntry.Id),
                     PersistentLocalId = entry.Content.Object.Identificator?.ObjectId,
@@ -81,10 +83,11 @@ namespace ParcelRegistry.Projections.Syndication.Address
 
         private static async Task RemoveSyndicationItemEntry(AtomEntry<SyndicationContent<Address>> entry, SyndicationContext context, CancellationToken ct)
         {
+            var addressId = Guid.Parse(entry.Content.Object.AddressId);
             var latestItem =
                 await context
                     .AddressPersistentLocalIds
-                    .FindAsync(entry.Content.Object.AddressId);
+                    .FindAsync(addressId);
 
             latestItem.Version = entry.Content.Object.Identificator?.Versie;
             latestItem.Position = long.Parse(entry.FeedEntry.Id);
