@@ -1,3 +1,10 @@
+## [4.1.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.2...v4.1.3) (2022-08-26)
+
+
+### Bug Fixes
+
+* bump common packages ([f69e845](https://github.com/informatievlaanderen/parcel-registry/commit/f69e8457027c79fbf18d5bc9bd0f3e1d732f50b8))
+
 ## [4.1.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.1...v4.1.2) (2022-08-24)
 
 
