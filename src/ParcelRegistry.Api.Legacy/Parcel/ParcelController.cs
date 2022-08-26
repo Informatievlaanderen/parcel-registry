@@ -245,7 +245,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel
                 await writer.WriteDefaultMetadata(atomConfiguration);
 
                 var parcels = pagedParcels.Items.ToList();
-
                 var nextFrom = parcels.Any()
                     ? parcels.Max(x => x.Position) + 1
                     : (long?)null;
