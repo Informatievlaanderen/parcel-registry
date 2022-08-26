@@ -1,3 +1,10 @@
+## [4.1.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.4...v4.1.5) (2022-08-26)
+
+
+### Bug Fixes
+
+* correct type to find address syndication ([3e183e2](https://github.com/informatievlaanderen/parcel-registry/commit/3e183e2191767fcbefc90068d6b6b7d88f0be2ed))
+
 ## [4.1.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.3...v4.1.4) (2022-08-26)
 
 
