@@ -77,9 +77,9 @@ namespace ParcelRegistry.Projections.LastChangedList
             var shortenedAcceptType = acceptType.ToString().ToLowerInvariant();
             return acceptType switch
             {
-                AcceptType.Json => string.Format("legacy/parcel:{{0}}.{1}", identifier, shortenedAcceptType),
-                AcceptType.Xml => string.Format("legacy/parcel:{{0}}.{1}", identifier, shortenedAcceptType),
-                AcceptType.JsonLd => string.Format("oslo/parcel:{{0}}.{1}", identifier, shortenedAcceptType),
+                AcceptType.Json => $"legacy/parcel:{{0}}.{shortenedAcceptType}",
+                AcceptType.Xml => $"legacy/parcel:{{0}}.{shortenedAcceptType}",
+                AcceptType.JsonLd => $"oslo/parcel:{{0}}.{shortenedAcceptType}",
                 _ => throw new NotImplementedException($"Cannot build CacheKey for type {typeof(AcceptType)}")
             };
         }
@@ -88,9 +88,9 @@ namespace ParcelRegistry.Projections.LastChangedList
         {
             return acceptType switch
             {
-                AcceptType.Json => string.Format("/v1/percelen/{{0}}", identifier),
-                AcceptType.Xml => string.Format("/v1/percelen/{{0}}", identifier),
-                AcceptType.JsonLd => string.Format("/v2/percelen/{{0}}", identifier),
+                AcceptType.Json => $"/v1/percelen/{{0}}",
+                AcceptType.Xml => $"/v1/percelen/{{0}}",
+                AcceptType.JsonLd => $"/v2/percelen/{{0}}",
                 _ => throw new NotImplementedException($"Cannot build Uri for type {typeof(AcceptType)}")
             };
         }
