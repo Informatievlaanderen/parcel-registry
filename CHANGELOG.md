@@ -1,3 +1,10 @@
+## [4.1.7](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.6...v4.1.7) (2022-09-06)
+
+
+### Bug Fixes
+
+* change workflow ([15847f6](https://github.com/informatievlaanderen/parcel-registry/commit/15847f67797a475c03a061131b8073ebdc81ca91))
+
 ## [4.1.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.5...v4.1.6) (2022-09-05)
 
 
