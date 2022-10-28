@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   build:
@@ -89,8 +89,9 @@ jobs:
     - name: Test
       shell: bash
       run: dotnet dotcover test --dcReportType=HTML --nologo --no-build ParcelRegistry.sln
-
+        
     - name: Sonar end build & analyze
+      if: env.RELEASE_VERSION != 'none'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
