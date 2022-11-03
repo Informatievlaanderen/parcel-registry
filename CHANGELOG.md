@@ -1,3 +1,14 @@
+## [4.1.9](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.8...v4.1.9) (2022-11-03)
+
+
+### Bug Fixes
+
+* add nuget to dependabot ([4faf8b3](https://github.com/informatievlaanderen/parcel-registry/commit/4faf8b37bc1a500f398977c14ae3600330dd2205))
+* enable pr's & coverage ([#446](https://github.com/informatievlaanderen/parcel-registry/issues/446)) ([1d2d989](https://github.com/informatievlaanderen/parcel-registry/commit/1d2d989a20e7a580c49dc9eb051b5475ce023ab6))
+* fix empty methods ([11c2ce0](https://github.com/informatievlaanderen/parcel-registry/commit/11c2ce0c2202948b303f360387bd132a9a7735b8))
+* update ci & test branch protection ([93a5b3b](https://github.com/informatievlaanderen/parcel-registry/commit/93a5b3b576e672777844309b06cc6436675e4053))
+* use VBR_SONAR_TOKEN ([cd594f0](https://github.com/informatievlaanderen/parcel-registry/commit/cd594f02821e0e8c9bac3809afa4dfd5150457e9))
+
 ## [4.1.8](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.7...v4.1.8) (2022-10-05)
 
 
