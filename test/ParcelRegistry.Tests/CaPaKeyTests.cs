@@ -238,7 +238,7 @@ namespace ParcelRegistry.Tests
             key2.CaPaKeyCrabNotation2.Should().Be("11001B0213/02_000");
             key2.VbrCaPaKey.ToString().Should().Be("11001B0213-02_000");
 
-            var list = new List<CaPaKey> {key2, key};
+            var list = new List<CaPaKey> { key2, key };
 
             list.Distinct().Count().Should().Be(1);
         }

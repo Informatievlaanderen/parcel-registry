@@ -3,10 +3,11 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using NodaTime;
-    using Parcel.Events;
     using System.Linq;
     using System.Threading.Tasks;
-    using Parcel.Events.Crab;
+    using ParcelRegistry.Legacy;
+    using ParcelRegistry.Legacy.Events;
+    using ParcelRegistry.Legacy.Events.Crab;
 
     [ConnectedProjectionName("API endpoint detail/lijst percelen")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor het percelen detail & lijst voorziet.")]

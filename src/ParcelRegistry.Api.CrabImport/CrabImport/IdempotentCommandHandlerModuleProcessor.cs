@@ -5,14 +5,14 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Api;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Parcel;
-    using Parcel.Commands.Crab;
     using SqlStreamStore;
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Parcel.Commands.Fixes;
+    using Legacy;
+    using Legacy.Commands.Crab;
+    using Legacy.Commands.Fixes;
 
     public class IdempotentCommandHandlerModuleProcessor : IIdempotentCommandHandlerModuleProcessor
     {

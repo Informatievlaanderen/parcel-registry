@@ -10,6 +10,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Microsoft.EntityFrameworkCore;
     using NodaTime;
+    using ParcelRegistry.Legacy;
     using Projections.Legacy;
     using Projections.Legacy.ParcelSyndication;
 

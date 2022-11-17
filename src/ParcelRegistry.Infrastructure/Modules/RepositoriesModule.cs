@@ -1,7 +1,7 @@
 namespace ParcelRegistry.Infrastructure.Modules
 {
     using Autofac;
-    using Parcel;
+    using Legacy;
     using Repositories;
 
     public class RepositoriesModule : Module

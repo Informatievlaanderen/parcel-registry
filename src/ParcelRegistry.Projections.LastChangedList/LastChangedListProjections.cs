@@ -5,8 +5,8 @@ namespace ParcelRegistry.Projections.LastChangedList
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using Parcel.Events;
-    using Parcel.Events.Crab;
+    using Legacy.Events;
+    using Legacy.Events.Crab;
 
     [ConnectedProjectionName("Cache markering percelen")]
     [ConnectedProjectionDescription("Projectie die markeert voor hoeveel percelen de gecachte data nog geüpdated moeten worden.")]

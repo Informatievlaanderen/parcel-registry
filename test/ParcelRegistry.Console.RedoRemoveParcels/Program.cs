@@ -13,10 +13,11 @@ namespace ParcelRegistry.Console.RedoRemoveParcels
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Json;
     using Dapper;
+    using Legacy;
+    using Legacy.Commands.Fixes;
     using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
-    using Parcel.Commands.Fixes;
 
     //Case 5f: when housenumber relation is retired then becomes active again (correction), buildings with more than 2 subaddresses don't have the right amount of units
     public class Program
