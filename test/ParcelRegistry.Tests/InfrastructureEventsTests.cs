@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Tests
+namespace Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events
 {
     using System;
     using System.Collections.Generic;
