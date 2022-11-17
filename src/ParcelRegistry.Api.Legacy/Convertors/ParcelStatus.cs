@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Api.Legacy.Convertors
 {
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
+    using ParcelRegistry.Legacy;
 
     public static class ParcelStatusExtensions
     {

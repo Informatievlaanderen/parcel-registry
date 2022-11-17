@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Api.CrabImport.CrabImport.Requests
 {
     using System.ComponentModel.DataAnnotations;
+    using Legacy;
     using Newtonsoft.Json;
     using Swashbuckle.AspNetCore.Filters;
 
@@ -31,7 +32,7 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport.Requests
     {
         public static dynamic Map(RegisterCrabImportRequest message)
         {
-            var assembly = typeof(Parcel.Parcel).Assembly;
+            var assembly = typeof(Parcel).Assembly;
             var type = assembly.GetType(message.Type);
 
             return JsonConvert.DeserializeObject(message.CrabItem, type);

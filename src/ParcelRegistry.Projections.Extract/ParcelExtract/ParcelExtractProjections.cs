@@ -2,15 +2,15 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
 {
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using Parcel.Events;
     using System;
     using System.Text;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
+    using Legacy.Events;
+    using Legacy.Events.Crab;
     using Microsoft.Extensions.Options;
     using NodaTime;
-    using Parcel.Events.Crab;
 
     [ConnectedProjectionName("Extract percelen")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor het percelen extract voorziet.")]

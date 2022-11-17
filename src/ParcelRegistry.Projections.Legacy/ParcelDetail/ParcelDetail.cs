@@ -6,6 +6,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using NodaTime;
+    using ParcelRegistry.Legacy;
 
     public class ParcelDetail
     {

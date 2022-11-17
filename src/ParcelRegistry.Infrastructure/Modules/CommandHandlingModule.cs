@@ -5,8 +5,8 @@ namespace ParcelRegistry.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
+    using Legacy;
     using Microsoft.Extensions.Configuration;
-    using Parcel;
 
     public class CommandHandlingModule : Module
     {

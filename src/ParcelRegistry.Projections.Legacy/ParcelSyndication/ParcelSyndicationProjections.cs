@@ -4,8 +4,9 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using Parcel.Events;
-    using Parcel.Events.Crab;
+    using ParcelRegistry.Legacy;
+    using ParcelRegistry.Legacy.Events;
+    using ParcelRegistry.Legacy.Events.Crab;
 
     [ConnectedProjectionName("Feed endpoint percelen")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor de percelen feed voorziet.")]
