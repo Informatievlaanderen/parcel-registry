@@ -33,9 +33,12 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport.Requests
         public static dynamic Map(RegisterCrabImportRequest message)
         {
             var assembly = typeof(Parcel).Assembly;
-            var type = assembly.GetType(message.Type);
+            var type = assembly.GetType(MakeNamespaceBackwardsCompatible(message));
 
             return JsonConvert.DeserializeObject(message.CrabItem, type);
         }
+
+        private static string MakeNamespaceBackwardsCompatible(RegisterCrabImportRequest message)
+            => message.Type.Replace("ParcelRegistry.Parcel.Commands.Crab", "ParcelRegistry.Legacy.Commands.Crab");
     }
 }
