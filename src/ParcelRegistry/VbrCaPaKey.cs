@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Legacy
+namespace ParcelRegistry
 {
     using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
@@ -6,7 +6,7 @@ namespace ParcelRegistry.Legacy
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Newtonsoft.Json;
 
-    public class VbrCaPaKey : StringValueObject<VbrCaPaKey>
+    public sealed class VbrCaPaKey : StringValueObject<VbrCaPaKey>
     {
         private static readonly Guid Namespace = new Guid("28068113-774a-4f6f-8264-9ddb39095bd4");
 
