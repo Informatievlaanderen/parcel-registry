@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Legacy
 {
     using System;
+    using System.Collections.Generic;
 
     public struct ParcelStatus
     {
@@ -20,5 +21,22 @@ namespace ParcelRegistry.Legacy
         }
 
         public static implicit operator string(ParcelStatus status) => status.Status;
+    }
+
+    public static class ParcelStatusHelpers
+    {
+        private static readonly IDictionary<ParcelStatus, ParcelRegistry.Parcel.ParcelStatus> Statusses =
+            new Dictionary<ParcelStatus, ParcelRegistry.Parcel.ParcelStatus>
+            {
+                { ParcelStatus.Realized, ParcelRegistry.Parcel.ParcelStatus.Realized },
+                { ParcelStatus.Retired, ParcelRegistry.Parcel.ParcelStatus.Retired }
+            };
+
+        public static ParcelRegistry.Parcel.ParcelStatus Map(this ParcelStatus status)
+        {
+            return Statusses.ContainsKey(status)
+                ? Statusses[status]
+                : throw new ArgumentOutOfRangeException(nameof(status), status, $"Non existing status '{status}'.");
+        }
     }
 }

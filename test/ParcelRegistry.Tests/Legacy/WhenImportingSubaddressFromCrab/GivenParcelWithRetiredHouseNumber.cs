@@ -7,6 +7,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingSubaddressFromCrab
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Fixtures;
     using global::AutoFixture;
     using NodaTime;
     using ParcelRegistry.Legacy;
@@ -18,6 +19,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingSubaddressFromCrab
     using WhenImportingTerrainObjectHouseNumberFromCrab;
     using Xunit;
     using Xunit.Abstractions;
+    using WithFixedParcelId = AutoFixture.WithFixedParcelId;
 
     [Collection("BasedOnSnapshotCollection")]
     public class GivenParcelWithRetiredHouseNumber : ParcelRegistryTest

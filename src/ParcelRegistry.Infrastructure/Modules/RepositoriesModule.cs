@@ -1,7 +1,7 @@
 namespace ParcelRegistry.Infrastructure.Modules
 {
     using Autofac;
-    using Legacy;
+    using Parcel;
     using Repositories;
 
     public class RepositoriesModule : Module
@@ -9,6 +9,10 @@ namespace ParcelRegistry.Infrastructure.Modules
         protected override void Load(ContainerBuilder builder)
         {
             // We could just scan the assembly for classes using Repository<> and registering them against the only interface they implement
+            builder
+                .RegisterType<LegacyParcels>()
+                .As<Legacy.IParcels>();
+
             builder
                 .RegisterType<Parcels>()
                 .As<IParcels>();

@@ -3,6 +3,7 @@ namespace ParcelRegistry.Tests.Legacy
     using System.Collections.Generic;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Comparers;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac;
@@ -39,8 +40,11 @@ namespace ParcelRegistry.Tests.Legacy
                 .Register(c => new ParcelFactory(Fixture.Create<ISnapshotStrategy>()))
                 .As<IParcelFactory>();
 
-            builder.RegisterType<FixGrar1475ProvenanceFactory>().AsSelf();
-            builder.RegisterType<FixGrar1637ProvenanceFactory>().AsSelf();
+            builder.RegisterModule(new SqlSnapshotStoreModule());
+
+            builder
+                .Register(c => new ParcelRegistry.Parcel.ParcelFactory(NoSnapshotStrategy.Instance))
+                .As<ParcelRegistry.Parcel.IParcelFactory>();
         }
 
         protected override void ConfigureEventHandling(ContainerBuilder builder)
