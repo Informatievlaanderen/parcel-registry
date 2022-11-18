@@ -11,7 +11,7 @@ namespace ParcelRegistry.Legacy.Events
     using Newtonsoft.Json;
 
     [EventName("ParcelSnapshot")]
-    [EventSnapshot(nameof(SnapshotContainer) + "<ParcelSnapshot>", typeof(SnapshotContainer))]
+    [EventSnapshot(nameof(LegacySnapshotContainer) + "<ParcelSnapshot>", typeof(LegacySnapshotContainer))]
     [EventDescription("Snapshot of Parcel")]
     public class ParcelSnapshot
     {
