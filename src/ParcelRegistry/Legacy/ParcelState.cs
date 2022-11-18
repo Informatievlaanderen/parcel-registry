@@ -21,6 +21,8 @@ namespace ParcelRegistry.Legacy
         private readonly Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
             _activeHouseNumberIdsByTerreinObjectHouseNr = new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>();
 
+        public bool IsMigrated { get; private set; }
+
         internal Parcel(ISnapshotStrategy snapshotStrategy) : this()
         {
             Strategy = snapshotStrategy;
@@ -44,9 +46,11 @@ namespace ParcelRegistry.Legacy
             Register<TerrainObjectHouseNumberWasImportedFromCrab>(When);
             Register<TerrainObjectWasImportedFromCrab>(@event => WhenCrabEventApplied(@event.Modification == CrabModification.Delete));
 
+            Register<ParcelWasMarkedAsMigrated>(When);
+
             Register<ParcelSnapshot>(When);
         }
-
+        
         private void When(TerrainObjectHouseNumberWasImportedFromCrab @event)
         {
             var crabTerrainObjectHouseNumberId = new CrabTerrainObjectHouseNumberId(@event.TerrainObjectHouseNumberId);
@@ -117,15 +121,10 @@ namespace ParcelRegistry.Legacy
             IsRetired = false;
             _addressCollection.Clear();
         }
-
-        private void WhenCrabEventApplied(bool isDeleted = false)
+        
+        private void When(ParcelWasMarkedAsMigrated @event)
         {
-            if (isDeleted)
-                LastModificationBasedOnCrab = Modification.Delete;
-            else if (LastModificationBasedOnCrab == Modification.Unknown)
-                LastModificationBasedOnCrab = Modification.Insert;
-            else if (LastModificationBasedOnCrab == Modification.Insert)
-                LastModificationBasedOnCrab = Modification.Update;
+            IsMigrated = true;
         }
 
         private void When(ParcelSnapshot snapshot)
@@ -153,6 +152,16 @@ namespace ParcelRegistry.Legacy
 
             foreach (var subaddressWasImportedFromCrab in snapshot.ImportedSubaddressFromCrab)
                 _addressCollection.Add(subaddressWasImportedFromCrab);
+        }
+
+        private void WhenCrabEventApplied(bool isDeleted = false)
+        {
+            if (isDeleted)
+                LastModificationBasedOnCrab = Modification.Delete;
+            else if (LastModificationBasedOnCrab == Modification.Unknown)
+                LastModificationBasedOnCrab = Modification.Insert;
+            else if (LastModificationBasedOnCrab == Modification.Insert)
+                LastModificationBasedOnCrab = Modification.Update;
         }
 
         public object TakeSnapshot()

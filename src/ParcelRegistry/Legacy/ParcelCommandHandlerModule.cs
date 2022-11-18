@@ -8,6 +8,7 @@ namespace ParcelRegistry.Legacy
     using Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Commands;
     using Commands.Crab;
     using Commands.Fixes;
     using SqlStreamStore;
@@ -21,23 +22,24 @@ namespace ParcelRegistry.Legacy
             Func<IStreamStore> getStreamStore,
             EventMapping eventMapping,
             EventSerializer eventSerializer,
-            ParcelProvenanceFactory provenanceFactory,
+            LegacyProvenanceFactory legacyProvenanceFactory,
+            IProvenanceFactory<Parcel> provenanceFactory,
             FixGrar1475ProvenanceFactory fixGrar1475ProvenanceFactory,
             FixGrar1637ProvenanceFactory fixGrar1637ProvenanceFactory)
         {
             For<ImportTerrainObjectFromCrab>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
-                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .AddProvenance(getUnitOfWork, legacyProvenanceFactory)
                 .Handle(async (message, ct) => { await ImportTerrainObject(getParcels, parcelFactory, message, ct); });
 
             For<ImportTerrainObjectHouseNumberFromCrab>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
-                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .AddProvenance(getUnitOfWork, legacyProvenanceFactory)
                 .Handle(async (message, ct) => { await ImportTerrainObjectHouseNumber(getParcels, message, ct); });
 
             For<ImportSubaddressFromCrab>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
-                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .AddProvenance(getUnitOfWork, legacyProvenanceFactory)
                 .Handle(async (message, ct) => { await ImportSubaddress(getParcels, message, ct); });
 
             For<FixGrar1475>()
@@ -49,6 +51,16 @@ namespace ParcelRegistry.Legacy
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 .AddProvenance(getUnitOfWork, fixGrar1637ProvenanceFactory)
                 .Handle(async (message, ct) => { await FixGrar1637(getParcels, message, ct); });
+
+            For<MarkParcelAsMigrated>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var parcel = await getParcels().GetAsync(message.Command.ParcelId, ct);
+
+                    parcel.MarkAsMigrated();
+                });
         }
 
         public async Task ImportSubaddress(

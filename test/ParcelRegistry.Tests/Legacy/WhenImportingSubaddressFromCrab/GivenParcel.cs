@@ -3,7 +3,6 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingSubaddressFromCrab
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
-    using Fixtures;
     using global::AutoFixture;
     using NodaTime;
     using ParcelRegistry.Legacy;
@@ -12,7 +11,6 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingSubaddressFromCrab
     using Legacy;
     using Xunit;
     using Xunit.Abstractions;
-    using WithFixedParcelId = AutoFixture.WithFixedParcelId;
 
     public class GivenParcel : ParcelRegistryTest
     {
