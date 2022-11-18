@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
+namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
 {
     using System;
     using System.Collections.Generic;
@@ -6,11 +6,11 @@
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
-    using ParcelRegistry.Consumer.Address;
-    using ParcelRegistry.Consumer.Address.Projections;
+    using Fixtures;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
-    using Tests.Legacy.AutoFixture;
+    using ParcelRegistry.Consumer.Address;
+    using ParcelRegistry.Consumer.Address.Projections;
     using Xunit;
     using Xunit.Abstractions;
 

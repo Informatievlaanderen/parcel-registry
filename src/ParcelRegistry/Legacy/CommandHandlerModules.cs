@@ -12,6 +12,9 @@ namespace ParcelRegistry.Legacy
                 .RegisterType<LegacyProvenanceFactory>()
                 .SingleInstance();
 
+            containerBuilder.RegisterType<FixGrar1475ProvenanceFactory>().AsSelf();
+            containerBuilder.RegisterType<FixGrar1637ProvenanceFactory>().AsSelf();
+
             containerBuilder
                 .RegisterType<ProvenanceFactory<Parcel>>()
                 .AsSelf()
