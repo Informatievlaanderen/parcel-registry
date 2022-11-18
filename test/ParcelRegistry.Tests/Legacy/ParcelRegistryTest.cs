@@ -1,10 +1,9 @@
 namespace ParcelRegistry.Tests.Legacy
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Comparers;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac;
@@ -41,26 +40,15 @@ namespace ParcelRegistry.Tests.Legacy
                 .Register(c => new ParcelFactory(Fixture.Create<ISnapshotStrategy>()))
                 .As<IParcelFactory>();
 
-            builder.RegisterType<FixGrar1475ProvenanceFactory>().AsSelf();
-            builder.RegisterType<FixGrar1637ProvenanceFactory>().AsSelf();
+            builder.RegisterModule(new SqlSnapshotStoreModule());
+
+            builder
+                .Register(c => new ParcelRegistry.Parcel.ParcelFactory(NoSnapshotStrategy.Instance))
+                .As<ParcelRegistry.Parcel.IParcelFactory>();
         }
 
         protected override void ConfigureEventHandling(ContainerBuilder builder)
         {
-            var types =
-                (from t in typeof(DomainAssemblyMarker).Assembly.GetTypes().AsParallel()
-                 let attributes = t.GetCustomAttributes(typeof(EventNameAttribute), true)
-                 where attributes != null && attributes.Length == 1
-                 select new { Type = t, EventName = attributes.Cast<EventNameAttribute>().Single().Value }).ToList();
-            var x = (from t in typeof(DomainAssemblyMarker).Assembly.GetTypes().AsParallel()
-                     let attributes = t.GetCustomAttributes(typeof(EventSnapshotAttribute), true)
-                     where attributes != null && attributes.Length == 1
-                     select new
-                     {
-                         Type = attributes.Cast<EventSnapshotAttribute>().Single().SnapshotType,
-                         EventName = attributes.Cast<EventSnapshotAttribute>().Single().EventName
-                     }).ToList();
-
             builder.RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, EventSerializerSettings));
         }
 

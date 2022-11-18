@@ -9,12 +9,11 @@ namespace ParcelRegistry.Parcel.Events
     using Newtonsoft.Json;
 
     [EventName("ParcelSnapshotV2")]
-    [EventSnapshot(nameof(SnapshotContainer) + "<ParcelSnapshotV2>", typeof(SnapshotContainer))]
+    [EventSnapshot(nameof(SnapshotContainer) + "<ParcelSnapshotV2>", typeof(SnapshotContainerV2))]
     [EventDescription("Snapshot of Parcel")]
     public class ParcelSnapshotV2
     {
         public Guid ParcelId { get; }
-        public int ParcelPersistentLocalId { get; }
         public string ParcelStatus { get; }
         public bool IsRemoved { get; }
         public IEnumerable<int> AddressPersistentLocalIds { get; }
@@ -23,18 +22,16 @@ namespace ParcelRegistry.Parcel.Events
 
         public ParcelSnapshotV2(
             ParcelId parcelId,
-            ParcelPersistentLocalId parcelPersistentLocalId,
             ParcelStatus parcelStatus,
             bool isRemoved,
-            IEnumerable<AddressPersistentLocalId> persistentLocalIds,
+            IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
             string lastEventHash,
             ProvenanceData lastProvenanceData)
         {
             ParcelId = parcelId;
-            ParcelPersistentLocalId = parcelPersistentLocalId;
             ParcelStatus = parcelStatus;
             IsRemoved = isRemoved;
-            AddressPersistentLocalIds = persistentLocalIds.Select(x => (int)x).ToList();
+            AddressPersistentLocalIds = addressPersistentLocalIds.Select(x => (int)x).ToList();
             LastEventHash = lastEventHash;
             LastProvenanceData = lastProvenanceData;
         }
@@ -50,7 +47,6 @@ namespace ParcelRegistry.Parcel.Events
             ProvenanceData lastProvenanceData)
             : this(
                 new ParcelId(parcelId),
-                new ParcelPersistentLocalId(parcelPersistentLocalId),
                 ParcelRegistry.Parcel.ParcelStatus.Parse(parcelStatus),
                 isRemoved,
                 addressPersistentLocalIds.Select(id => new AddressPersistentLocalId(id)),

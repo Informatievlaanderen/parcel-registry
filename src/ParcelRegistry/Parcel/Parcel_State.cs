@@ -12,15 +12,12 @@ namespace ParcelRegistry.Parcel
         private string _lastSnapshotEventHash = string.Empty;
         private ProvenanceData _lastSnapshotProvenance;
 
-        private List<AddressPersistentLocalId> _addressPersistentLocalIds = new List<AddressPersistentLocalId>();
+        private readonly List<AddressPersistentLocalId> _addressPersistentLocalIds = new();
+
         public ParcelId ParcelId { get; private set; }
-        public ParcelPersistentLocalId ParcelPersistentLocalId { get; private set; }
         public ParcelStatus ParcelStatus { get; private set; }
         public IReadOnlyList<AddressPersistentLocalId> AddressPersistentLocalIds => _addressPersistentLocalIds;
         public bool IsRemoved { get; private set; }
-
-        //private readonly Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
-        //    _activeHouseNumberIdsByTerreinObjectHouseNr = new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>();
 
         public string LastEventHash => _lastEvent is null ? _lastSnapshotEventHash : _lastEvent.GetHash();
         public ProvenanceData LastProvenanceData =>
@@ -31,14 +28,29 @@ namespace ParcelRegistry.Parcel
             Strategy = snapshotStrategy;
         }
 
-        protected Parcel()
+        private Parcel()
         {
+            Register<ParcelWasMigrated>(When);
             Register<ParcelSnapshotV2>(When);
+        }
+
+        private void When(ParcelWasMigrated @event)
+        {
+            ParcelId = new ParcelId(@event.ParcelId);
+            ParcelStatus = ParcelStatus.Parse(@event.ParcelStatus);
+            IsRemoved = @event.IsRemoved;
+
+            foreach (var addressPersistentLocalId in @event.AddressPersistentLocalIds)
+            {
+                _addressPersistentLocalIds.Add(new AddressPersistentLocalId(addressPersistentLocalId));
+            }
+
+            _lastEvent = @event;
         }
 
         private void When(ParcelSnapshotV2 @event)
         {
-            ParcelPersistentLocalId = new ParcelPersistentLocalId(@event.ParcelPersistentLocalId);
+            ParcelId = new ParcelId(@event.ParcelId);
             ParcelStatus = ParcelStatus.Parse(@event.ParcelStatus);
             IsRemoved = @event.IsRemoved;
 

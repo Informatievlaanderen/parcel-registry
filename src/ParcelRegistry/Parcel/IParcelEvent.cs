@@ -4,6 +4,6 @@ using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
 
 namespace ParcelRegistry.Parcel
 {
-    public interface IParcelEvent : IHasParcelPersistentLocalId, IHasProvenance, ISetProvenance, IHaveHash, IMessage
+    public interface IParcelEvent : IHasParcelId, IHasProvenance, ISetProvenance, IHaveHash, IMessage
     { }
 }

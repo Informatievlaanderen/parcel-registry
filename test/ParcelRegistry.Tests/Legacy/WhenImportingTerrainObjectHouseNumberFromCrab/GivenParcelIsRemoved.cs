@@ -3,6 +3,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectHouseNumberFromC
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Fixtures;
     using global::AutoFixture;
     using NodaTime;
     using ParcelRegistry.Legacy;
@@ -12,6 +13,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectHouseNumberFromC
     using Legacy;
     using Xunit;
     using Xunit.Abstractions;
+    using WithFixedParcelId = AutoFixture.WithFixedParcelId;
 
     public class GivenParcelIsRemoved : ParcelRegistryTest
     {

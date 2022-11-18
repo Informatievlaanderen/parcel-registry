@@ -1,10 +1,10 @@
 namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectFromCrab
 {
-    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Fixtures;
     using global::AutoFixture;
     using Legacy;
     using ParcelRegistry.Legacy;

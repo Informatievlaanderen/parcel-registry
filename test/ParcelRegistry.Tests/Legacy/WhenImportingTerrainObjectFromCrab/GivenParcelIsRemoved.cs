@@ -5,6 +5,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectFromCrab
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Fixtures;
     using global::AutoFixture;
     using NodaTime;
     using ParcelRegistry.Legacy;
@@ -15,6 +16,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectFromCrab
     using SnapshotTests;
     using Xunit;
     using Xunit.Abstractions;
+    using WithFixedParcelId = AutoFixture.WithFixedParcelId;
 
     [Collection("BasedOnSnapshotCollection")]
     public class GivenParcelIsRemoved : ParcelRegistryTest
