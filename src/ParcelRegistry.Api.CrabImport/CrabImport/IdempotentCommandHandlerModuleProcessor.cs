@@ -31,12 +31,13 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
             Func<IStreamStore> getStreamStore,
             EventMapping eventMapping,
             EventSerializer eventSerializer,
-            ParcelProvenanceFactory provenanceFactory)
+            LegacyProvenanceFactory legacyProvenanceFactory,
+            IProvenanceFactory<Parcel> provenanceFactory)
         {
             _getParcels = getParcels;
             _parcelFactory = parcelFactory;
             _concurrentUnitOfWork = concurrentUnitOfWork;
-            _provenanceFactory = provenanceFactory.CreateFrom;
+            _provenanceFactory = legacyProvenanceFactory.CreateFrom;
 
             var fixGrar1475ProvenanceFactory = new FixGrar1475ProvenanceFactory();
             _fixGrar1475ProvenanceFactory = fixGrar1475ProvenanceFactory.CreateFrom;
@@ -51,6 +52,7 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
                 getStreamStore,
                 eventMapping,
                 eventSerializer,
+                legacyProvenanceFactory,
                 provenanceFactory,
                 fixGrar1475ProvenanceFactory,
                 fixGrar1637ProvenanceFactory);

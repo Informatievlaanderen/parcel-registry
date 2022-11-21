@@ -5,7 +5,7 @@ namespace ParcelRegistry.Legacy
     using Commands.Fixes;
     using NodaTime;
 
-    public class ParcelProvenanceFactory : CrabProvenanceFactory, IProvenanceFactory<Parcel>
+    public class LegacyProvenanceFactory : CrabProvenanceFactory, IProvenanceFactory<Parcel>
     {
         public bool CanCreateFrom<TCommand>() => typeof(IHasCrabProvenance).IsAssignableFrom(typeof(TCommand));
 
