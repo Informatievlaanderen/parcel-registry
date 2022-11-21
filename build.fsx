@@ -45,6 +45,7 @@ Target.create "Build_Solution" (fun _ ->
   buildSource "ParcelRegistry.Projections.Extract"
   buildSource "ParcelRegistry.Projections.LastChangedList"
   buildSource "ParcelRegistry.Projections.Syndication"
+  buildSource "ParcelRegistry.Consumer.Address"
   buildTest "ParcelRegistry.Tests"
 )
 
@@ -65,6 +66,7 @@ Target.create "Publish_Solution" (fun _ ->
     "ParcelRegistry.Projections.Extract"
     "ParcelRegistry.Projections.LastChangedList"
     "ParcelRegistry.Projections.Syndication"
+    "ParcelRegistry.Consumer.Address"
   ] |> List.iter publishSource)
 
 Target.create "Pack_Solution" (fun _ ->
@@ -93,6 +95,9 @@ Target.create "PushContainer_ApiCrabImport" (fun _ -> push "api-crab-import")
 
 Target.create "Containerize_ProjectionsSyndication" (fun _ -> containerize "ParcelRegistry.Projections.Syndication" "projections-syndication")
 Target.create "PushContainer_ProjectionsSyndication" (fun _ -> push "projections-syndication")
+
+Target.create "Containerize_ConsumerAddress" (fun _ -> containerize "ParcelRegistry.Consumer.Address" "consumer-address")
+Target.create "PushContainer_ConsumerAddress" (fun _ -> push "consumer-address")
 
 // --------------------------------------------------------------------------------
 
@@ -129,6 +134,7 @@ Target.create "Push" ignore
   ==> "Containerize_ApiExtract"
   ==> "Containerize_ApiCrabImport"
   ==> "Containerize_ProjectionsSyndication"
+  ==> "Containerize_ConsumerAddress"
   ==> "Containerize"
 // Possibly add more projects to containerize here
 
@@ -140,6 +146,7 @@ Target.create "Push" ignore
   ==> "PushContainer_ApiExtract"
   ==> "PushContainer_ApiCrabImport"
   ==> "PushContainer_ProjectionsSyndication"
+  ==> "PushContainer_ConsumerAddress"
   ==> "Push"
 // Possibly add more projects to push here
 

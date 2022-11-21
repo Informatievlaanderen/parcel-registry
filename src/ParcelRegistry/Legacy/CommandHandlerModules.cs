@@ -2,13 +2,20 @@ namespace ParcelRegistry.Legacy
 {
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using ParcelRegistry.Parcel;
 
     public static class CommandHandlerModules
     {
         public static void Register(ContainerBuilder containerBuilder)
         {
             containerBuilder
-                .RegisterType<ParcelProvenanceFactory>()
+                .RegisterType<LegacyProvenanceFactory>()
+                .SingleInstance();
+
+            containerBuilder
+                .RegisterType<ProvenanceFactory<Parcel>>()
+                .AsSelf()
+                .AsImplementedInterfaces()
                 .SingleInstance();
 
             containerBuilder.RegisterType<FixGrar1475ProvenanceFactory>().AsSelf();

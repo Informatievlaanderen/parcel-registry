@@ -203,6 +203,16 @@ namespace ParcelRegistry.Legacy
             ApplyChange(new ParcelWasRealized(_parcelId));
         }
 
+        public void MarkAsMigrated()
+        {
+            if (IsMigrated)
+            {
+                return;
+            }
+
+            ApplyChange(new ParcelWasMarkedAsMigrated(_parcelId));
+        }
+
         private void GuardRemoved(CrabModification? modification)
         {
             if (IsRemoved && modification != CrabModification.Delete)
