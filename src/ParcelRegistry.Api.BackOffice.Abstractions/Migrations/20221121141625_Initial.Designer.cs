@@ -12,7 +12,7 @@ using ParcelRegistry.Api.BackOffice.Abstractions;
 namespace ParcelRegistry.Api.BackOffice.Abstractions.Migrations
 {
     [DbContext(typeof(BackOfficeContext))]
-    [Migration("20221121132548_Initial")]
+    [Migration("20221121141625_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,15 +26,19 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Migrations
 
             modelBuilder.Entity("ParcelRegistry.Api.BackOffice.Abstractions.ParcelAddressRelation", b =>
                 {
-                    b.Property<int>("AddressPersistentLocalId")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("ParcelId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("AddressPersistentLocalId");
+                    b.Property<int>("AddressPersistentLocalId")
+                        .HasColumnType("int");
 
-                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("AddressPersistentLocalId"));
+                    b.HasKey("ParcelId", "AddressPersistentLocalId");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("ParcelId", "AddressPersistentLocalId"));
+
+                    b.HasIndex("AddressPersistentLocalId");
+
+                    b.HasIndex("ParcelId");
 
                     b.ToTable("ParcelAddressRelation", "ParcelRegistryBackOffice");
                 });

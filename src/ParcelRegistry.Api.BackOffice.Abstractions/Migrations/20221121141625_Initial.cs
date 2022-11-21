@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -17,14 +17,26 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Migrations
                 schema: "ParcelRegistryBackOffice",
                 columns: table => new
                 {
-                    AddressPersistentLocalId = table.Column<int>(type: "int", nullable: false),
-                    ParcelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ParcelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AddressPersistentLocalId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ParcelAddressRelation", x => x.AddressPersistentLocalId)
+                    table.PrimaryKey("PK_ParcelAddressRelation", x => new { x.ParcelId, x.AddressPersistentLocalId })
                         .Annotation("SqlServer:Clustered", true);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParcelAddressRelation_AddressPersistentLocalId",
+                schema: "ParcelRegistryBackOffice",
+                table: "ParcelAddressRelation",
+                column: "AddressPersistentLocalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParcelAddressRelation_ParcelId",
+                schema: "ParcelRegistryBackOffice",
+                table: "ParcelAddressRelation",
+                column: "ParcelId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

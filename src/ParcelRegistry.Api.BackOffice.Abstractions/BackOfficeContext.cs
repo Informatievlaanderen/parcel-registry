@@ -22,15 +22,20 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
 
             modelBuilder.Entity<ParcelAddressRelation>()
                 .ToTable("ParcelAddressRelation", Schema.BackOffice)
-                .HasKey(x => x.AddressPersistentLocalId)
+                .HasKey(x => new { x.ParcelId, x.AddressPersistentLocalId })
                 .IsClustered();
 
             modelBuilder.Entity<ParcelAddressRelation>()
-                .Property(x => x.AddressPersistentLocalId)
+                .HasIndex(x => x.ParcelId);
+            modelBuilder.Entity<ParcelAddressRelation>()
+                .Property(x => x.ParcelId)
                 .ValueGeneratedNever();
 
             modelBuilder.Entity<ParcelAddressRelation>()
-                .Property(x => x.ParcelId);
+                .HasIndex(x => x.AddressPersistentLocalId);
+            modelBuilder.Entity<ParcelAddressRelation>()
+                .Property(x => x.AddressPersistentLocalId)
+                .ValueGeneratedNever();
         }
     }
 

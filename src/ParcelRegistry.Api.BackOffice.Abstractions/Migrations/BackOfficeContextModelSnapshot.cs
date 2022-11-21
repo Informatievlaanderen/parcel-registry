@@ -24,15 +24,19 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Migrations
 
             modelBuilder.Entity("ParcelRegistry.Api.BackOffice.Abstractions.ParcelAddressRelation", b =>
                 {
-                    b.Property<int>("AddressPersistentLocalId")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("ParcelId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("AddressPersistentLocalId");
+                    b.Property<int>("AddressPersistentLocalId")
+                        .HasColumnType("int");
 
-                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("AddressPersistentLocalId"));
+                    b.HasKey("ParcelId", "AddressPersistentLocalId");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("ParcelId", "AddressPersistentLocalId"));
+
+                    b.HasIndex("AddressPersistentLocalId");
+
+                    b.HasIndex("ParcelId");
 
                     b.ToTable("ParcelAddressRelation", "ParcelRegistryBackOffice");
                 });
