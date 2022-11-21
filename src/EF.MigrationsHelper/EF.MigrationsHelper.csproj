@@ -25,6 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ParcelRegistry.Api.BackOffice.Abstractions\ParcelRegistry.Api.BackOffice.Abstractions.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.Extract\ParcelRegistry.Projections.Extract.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.Legacy\ParcelRegistry.Projections.Legacy.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.LastChangedList\ParcelRegistry.Projections.LastChangedList.csproj" />

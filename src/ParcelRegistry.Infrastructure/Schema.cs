@@ -9,6 +9,7 @@ namespace ParcelRegistry.Infrastructure
         public const string Extract = "ParcelRegistryExtract";
         public const string Syndication = "ParcelRegistrySyndication";
         public const string ConsumerAddress = "ParcelRegistryConsumerAddress";
+        public const string BackOffice = "ParcelRegistryBackOffice";
     }
 
     public static class MigrationTables
@@ -18,5 +19,6 @@ namespace ParcelRegistry.Infrastructure
         public const string RedisDataMigration = "__EFMigrationsHistoryDataMigration";
         public const string Syndication = "__EFMigrationsHistorySyndication";
         public const string ConsumerAddress = "__EFMigrationsHistoryConsumerAddress";
+        public const string BackOffice = "__EFMigrationsHistoryBackOffice";
     }
 }
