@@ -54,4 +54,19 @@ namespace ParcelRegistry.Legacy
             return new Provenance(Instant.FromDateTimeUtc(DateTime.UtcNow), Application.Unknown, new Reason("Rechtzetting herstelde percelen"), new Operator("crabadmin"), Modification.Insert, Organisation.Aiv);
         }
     }
+
+    public class FixGrar3581ProvenanceFactory : CrabProvenanceFactory, IProvenanceFactory<Parcel>
+    {
+        public bool CanCreateFrom<TCommand>() => typeof(FixGrar3581).IsAssignableFrom(typeof(TCommand));
+
+        public Provenance CreateFrom(object provenanceHolder, Parcel aggregate)
+        {
+            if (!(provenanceHolder is FixGrar3581))
+            {
+                throw new InvalidOperationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
+            }
+
+            return new Provenance(Instant.FromDateTimeUtc(DateTime.UtcNow), Application.Unknown, new Reason("Rechtzetting staat percelen"), new Operator("crabadmin"), Modification.Update, Organisation.DigitaalVlaanderen);
+        }
+    }
 }
