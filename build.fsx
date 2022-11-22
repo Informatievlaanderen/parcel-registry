@@ -46,6 +46,7 @@ Target.create "Build_Solution" (fun _ ->
   buildSource "ParcelRegistry.Projections.LastChangedList"
   buildSource "ParcelRegistry.Projections.Syndication"
   buildSource "ParcelRegistry.Consumer.Address"
+  buildSource "ParcelRegistry.Migrator.Parcel"
   buildTest "ParcelRegistry.Tests"
 )
 
@@ -67,6 +68,7 @@ Target.create "Publish_Solution" (fun _ ->
     "ParcelRegistry.Projections.LastChangedList"
     "ParcelRegistry.Projections.Syndication"
     "ParcelRegistry.Consumer.Address"
+    "ParcelRegistry.Migrator.Parcel"
   ] |> List.iter publishSource)
 
 Target.create "Pack_Solution" (fun _ ->
@@ -76,6 +78,7 @@ Target.create "Pack_Solution" (fun _ ->
     "ParcelRegistry.Api.Oslo"
     "ParcelRegistry.Api.Extract"
     "ParcelRegistry.Api.CrabImport"
+    "ParcelRegistry.Migrator.Parcel"
   ] |> List.iter pack)
 
 Target.create "Containerize_Projector" (fun _ -> containerize "ParcelRegistry.Projector" "projector")
@@ -98,6 +101,9 @@ Target.create "PushContainer_ProjectionsSyndication" (fun _ -> push "projections
 
 Target.create "Containerize_ConsumerAddress" (fun _ -> containerize "ParcelRegistry.Consumer.Address" "consumer-address")
 Target.create "PushContainer_ConsumerAddress" (fun _ -> push "consumer-address")
+
+Target.create "Containerize_MigratorParcel" (fun _ -> containerize "ParcelRegistry.Migrator.Parcel" "migrator-parcel")
+Target.create "PushContainer_MigratorParcel" (fun _ -> push "migrator-parcel")
 
 // --------------------------------------------------------------------------------
 
@@ -135,6 +141,7 @@ Target.create "Push" ignore
   ==> "Containerize_ApiCrabImport"
   ==> "Containerize_ProjectionsSyndication"
   ==> "Containerize_ConsumerAddress"
+  ==> "Containerize_MigratorParcel"
   ==> "Containerize"
 // Possibly add more projects to containerize here
 
@@ -147,6 +154,7 @@ Target.create "Push" ignore
   ==> "PushContainer_ApiCrabImport"
   ==> "PushContainer_ProjectionsSyndication"
   ==> "PushContainer_ConsumerAddress"
+  ==> "PushContainer_MigratorParcel"
   ==> "Push"
 // Possibly add more projects to push here
 
