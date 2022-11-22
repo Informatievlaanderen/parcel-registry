@@ -119,7 +119,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
             When<AddressWasCorrectedFromRetiredToCurrent>(async (context, message, ct) =>
             {
                 var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);
-                address.Status = AddressStatus.Retired;
+                address.Status = AddressStatus.Current;
                 await context.SaveChangesAsync(ct);
             });
 
