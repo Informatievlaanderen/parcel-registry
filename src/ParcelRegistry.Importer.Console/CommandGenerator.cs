@@ -11,7 +11,7 @@ namespace ParcelRegistry.Importer.Console
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.Generate;
     using Crab;
     using NodaTime;
-    using Parcel.Commands.Crab;
+    using Legacy.Commands.Crab;
 
     public class CommandGenerator : ICommandGenerator<CaPaKey>
     {
