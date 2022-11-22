@@ -58,6 +58,7 @@ namespace ParcelRegistry.Parcel
                     var newParcel = Parcel.MigrateParcel(
                         parcelFactory,
                         message.Command.ParcelId,
+                        message.Command.CaPaKey,
                         message.Command.ParcelStatus,
                         message.Command.IsRemoved,
                         message.Command.AddressPersistentLocalIds,

@@ -137,6 +137,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectHouseNumberFromC
                     new Fact(_parcelId, command.ToLegacyEvent()),
                     new Fact(_snapshotId,
                         SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                            .WithVbrCaPaKey(command.CaPaKey)
                             .WithLastModificationBasedOnCrab(Modification.Update)
                             .WithAddressIds(new List<AddressId> { AddressId.CreateFor(command.HouseNumberId)})
                             .WithActiveHouseNumberIdsByTerrainObjectHouseNr(new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>

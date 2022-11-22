@@ -111,6 +111,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectHouseNumberFromC
                         new Fact(_parcelId, deleteCommand.ToLegacyEvent()),
                         new Fact(_snapshotId,
                             SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                                .WithVbrCaPaKey(command.CaPaKey)
                                 .WithLastModificationBasedOnCrab(Modification.Update)
                                 .Build(4, EventSerializerSettings))
                     }));

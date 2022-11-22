@@ -7,9 +7,9 @@ namespace ParcelRegistry.Parcel
 
     public sealed partial class Parcel : AggregateRootEntity, ISnapshotable
     {
-        public static Parcel MigrateParcel(
-            IParcelFactory parcelFactory,
+        public static Parcel MigrateParcel(IParcelFactory parcelFactory,
             ParcelId parcelId,
+            VbrCaPaKey caPaKey,
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
@@ -20,6 +20,7 @@ namespace ParcelRegistry.Parcel
             newParcel.ApplyChange(
                 new ParcelWasMigrated(
                     parcelId,
+                    caPaKey,
                     parcelStatus,
                     isRemoved,
                     addressPersistentLocalIds,

@@ -23,6 +23,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 
             var command = new MigrateParcel(
                 Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
+                Fixture.Create<VbrCaPaKey>(),
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),

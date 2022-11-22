@@ -49,6 +49,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectFromCrab
                     new Fact(_parcelId, command.ToLegacyEvent()),
                     new Fact(_snapshotId,
                         SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                            .WithVbrCaPaKey(command.CaPaKey)
                             .WithParcelStatus(ParcelStatus.Retired)
                             .WithCoordinates(command.XCoordinate, command.YCoordinate)
                             .Build(2, EventSerializerSettings))
@@ -197,6 +198,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectFromCrab
                     new Fact(_parcelId, command.ToLegacyEvent()),
                     new Fact(_snapshotId,
                         SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                            .WithVbrCaPaKey(command.CaPaKey)
                             .WithIsRemoved(true)
                             .WithLastModificationBasedOnCrab(Modification.Delete)
                             .WithCoordinates(command.XCoordinate, command.YCoordinate)

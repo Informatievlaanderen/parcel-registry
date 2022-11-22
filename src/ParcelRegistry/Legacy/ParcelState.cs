@@ -11,6 +11,7 @@ namespace ParcelRegistry.Legacy
     {
         public ParcelId ParcelId { get; private set; }
 
+        public VbrCaPaKey CaPaKey { get; private set; }
         public bool IsRemoved { get; private set; }
         public bool IsRetired { get; private set; }
         public bool IsRealized { get; private set; }
@@ -116,6 +117,7 @@ namespace ParcelRegistry.Legacy
         private void When(ParcelWasRegistered @event)
         {
             ParcelId = new ParcelId(@event.ParcelId);
+            CaPaKey = new VbrCaPaKey(@event.VbrCaPaKey);
         }
 
         private void When(ParcelWasRecovered @event)
@@ -147,6 +149,7 @@ namespace ParcelRegistry.Legacy
         private void When(ParcelSnapshot snapshot)
         {
             ParcelId = new ParcelId(snapshot.ParcelId);
+            CaPaKey = new VbrCaPaKey(snapshot.CaPaKey);
             if (!string.IsNullOrEmpty(snapshot.ParcelStatus))
             {
                 var status = ParcelStatus.Parse(snapshot.ParcelStatus);
@@ -199,6 +202,7 @@ namespace ParcelRegistry.Legacy
 
             return new ParcelSnapshot(
                 ParcelId,
+                CaPaKey,
                 parcelStatus,
                 IsRemoved,
                 LastModificationBasedOnCrab,
