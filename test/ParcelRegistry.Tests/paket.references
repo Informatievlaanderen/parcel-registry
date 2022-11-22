@@ -4,9 +4,15 @@ xunit.runner.visualstudio
 xunit.categories
 AutoFixture
 FluentAssertions
+Moq
 
+Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling
 Be.Vlaanderen.Basisregisters.AggregateSource.Testing
 Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac
 Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit
 
-Be.Vlaanderen.Basisregisters.EventHandling.Autofac
+Be.Vlaanderen.Basisregisters.EventHandling
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit
+Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events
