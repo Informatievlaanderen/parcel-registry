@@ -61,7 +61,7 @@ namespace ParcelRegistry.Parcel.Events
         [JsonConstructor]
         private ParcelWasMigrated(
             Guid parcelId,
-            string vbrCaPaKey,
+            string caPaKey,
             string parcelStatus,
             bool isRemoved,
             IEnumerable<int> addressPersistentLocalIds,
@@ -70,7 +70,7 @@ namespace ParcelRegistry.Parcel.Events
             ProvenanceData provenance)
             : this(
                 new ParcelId(parcelId),
-                new VbrCaPaKey(vbrCaPaKey),
+                new VbrCaPaKey(caPaKey),
                 ParcelRegistry.Parcel.ParcelStatus.Parse(parcelStatus),
                 isRemoved,
                 addressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
