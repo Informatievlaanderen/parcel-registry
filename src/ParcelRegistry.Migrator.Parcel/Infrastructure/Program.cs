@@ -56,6 +56,10 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             {
                 var watch = Stopwatch.StartNew();
 
+                MigrationsHelper.Run(
+                    configuration.GetConnectionString("BackOffice"),
+                    container.GetRequiredService<ILoggerFactory>());
+
                 var migrator = new StreamMigrator(
                     container.GetRequiredService<ILoggerFactory>(),
                     configuration,
