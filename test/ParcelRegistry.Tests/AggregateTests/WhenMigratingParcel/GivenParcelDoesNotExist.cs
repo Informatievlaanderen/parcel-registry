@@ -23,6 +23,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
         {
             var command = new MigrateParcel(
                 Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
+                Fixture.Create<VbrCaPaKey>(),
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
@@ -36,6 +37,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 .Then(new Fact(new ParcelStreamId(command.ParcelId),
                     new ParcelWasMigrated(
                         command.ParcelId,
+                        command.CaPaKey,
                         command.ParcelStatus,
                         command.IsRemoved,
                         command.AddressPersistentLocalIds,
@@ -48,6 +50,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
         {
             var command = new MigrateParcel(
                 Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
+                Fixture.Create<VbrCaPaKey>(),
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
@@ -59,6 +62,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
             var result = Parcel.MigrateParcel(
                 new ParcelFactory(NoSnapshotStrategy.Instance),
                 command.ParcelId,
+                command.CaPaKey,
                 command.ParcelStatus,
                 command.IsRemoved,
                 command.AddressPersistentLocalIds,
@@ -68,6 +72,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
             // Assert
             result.Should().NotBeNull();
             result.ParcelId.Should().Be(command.ParcelId);
+            result.CaPaKey.Should().Be(command.CaPaKey);
             result.ParcelStatus.Should().Be(command.ParcelStatus);
             result.IsRemoved.Should().Be(command.IsRemoved);
             result.AddressPersistentLocalIds.Should().BeEquivalentTo(command.AddressPersistentLocalIds);

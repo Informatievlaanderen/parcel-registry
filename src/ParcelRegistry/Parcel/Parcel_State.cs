@@ -16,6 +16,7 @@ namespace ParcelRegistry.Parcel
         private readonly List<AddressPersistentLocalId> _addressPersistentLocalIds = new();
 
         public ParcelId ParcelId { get; private set; }
+        public VbrCaPaKey CaPaKey { get; private set; }
         public ParcelStatus ParcelStatus { get; private set; }
         public IReadOnlyList<AddressPersistentLocalId> AddressPersistentLocalIds => _addressPersistentLocalIds;
 
@@ -42,6 +43,7 @@ namespace ParcelRegistry.Parcel
         private void When(ParcelWasMigrated @event)
         {
             ParcelId = new ParcelId(@event.ParcelId);
+            CaPaKey = new VbrCaPaKey(@event.CaPaKey);
             ParcelStatus = ParcelStatus.Parse(@event.ParcelStatus);
             IsRemoved = @event.IsRemoved;
 

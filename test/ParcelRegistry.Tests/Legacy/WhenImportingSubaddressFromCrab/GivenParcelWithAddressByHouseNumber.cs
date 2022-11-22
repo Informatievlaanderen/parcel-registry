@@ -63,6 +63,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingSubaddressFromCrab
                     new Fact(_snapshotId,
                         SnapshotBuilder
                             .CreateDefaultSnapshot(_parcelId)
+                            .WithVbrCaPaKey(command.CaPaKey)
                             .WithParcelStatus(ParcelStatus.Realized)
                             .WithAddressIds(new List<AddressId> { AddressId.CreateFor(command.HouseNumberId), addressId })
                             .WithLastModificationBasedOnCrab(Modification.Update)
@@ -181,6 +182,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingSubaddressFromCrab
                     new Fact(_snapshotId,
                         SnapshotBuilder
                             .CreateDefaultSnapshot(_parcelId)
+                            .WithVbrCaPaKey(command.CaPaKey)
                             .WithParcelStatus(null)
                             .WithAddressIds(new List<AddressId> { AddressId.CreateFor(command.HouseNumberId) })
                             .WithLastModificationBasedOnCrab(Modification.Update)

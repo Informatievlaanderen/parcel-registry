@@ -14,8 +14,32 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
     {
         public static ParcelSnapshot WithParcelStatus(this ParcelSnapshot snapshot, ParcelStatus? parcelStatus)
         {
-            return new ParcelSnapshot(new ParcelId(snapshot.ParcelId),
+            return new ParcelSnapshot(
+                new ParcelId(snapshot.ParcelId),
+                new VbrCaPaKey(snapshot.CaPaKey),
                 parcelStatus,
+                snapshot.IsRemoved,
+                snapshot.LastModificationBasedOnCrab,
+                snapshot.ActiveHouseNumberIdsByTerrainObjectHouseNr
+                    .ToDictionary(
+                        x => new CrabTerrainObjectHouseNumberId(x.Key),
+                        y => new CrabHouseNumberId(y.Value)),
+                snapshot.ImportedSubaddressFromCrab,
+                snapshot.AddressIds.Select(x => new AddressId(x)),
+                snapshot.XCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.XCoordinate.Value)
+                    : null,
+                snapshot.YCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.YCoordinate.Value)
+                    : null);
+        }
+
+        public static ParcelSnapshot WithVbrCaPaKey(this ParcelSnapshot snapshot, string vbrCaPaKey)
+        {
+            return new ParcelSnapshot(
+                new ParcelId(snapshot.ParcelId),
+                new VbrCaPaKey(vbrCaPaKey),
+                string.IsNullOrEmpty(snapshot.ParcelStatus) ? null : ParcelStatus.Parse(snapshot.ParcelStatus),
                 snapshot.IsRemoved,
                 snapshot.LastModificationBasedOnCrab,
                 snapshot.ActiveHouseNumberIdsByTerrainObjectHouseNr
@@ -34,7 +58,9 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
 
         public static ParcelSnapshot WithIsRemoved(this ParcelSnapshot snapshot, bool isRemoved)
         {
-            return new ParcelSnapshot(new ParcelId(snapshot.ParcelId),
+            return new ParcelSnapshot(
+                new ParcelId(snapshot.ParcelId),
+                new VbrCaPaKey(snapshot.CaPaKey),
                 string.IsNullOrEmpty(snapshot.ParcelStatus) ? null : ParcelStatus.Parse(snapshot.ParcelStatus),
                 isRemoved,
                 snapshot.LastModificationBasedOnCrab,
@@ -54,7 +80,9 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
 
         public static ParcelSnapshot WithCoordinates(this ParcelSnapshot snapshot, decimal x, decimal y)
         {
-            return new ParcelSnapshot(new ParcelId(snapshot.ParcelId),
+            return new ParcelSnapshot(
+                new ParcelId(snapshot.ParcelId),
+                new VbrCaPaKey(snapshot.CaPaKey),
                 string.IsNullOrEmpty(snapshot.ParcelStatus) ? null : ParcelStatus.Parse(snapshot.ParcelStatus),
                 snapshot.IsRemoved,
                 snapshot.LastModificationBasedOnCrab,
@@ -70,7 +98,9 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
 
         public static ParcelSnapshot WithLastModificationBasedOnCrab(this ParcelSnapshot snapshot, Modification lastModification)
         {
-            return new ParcelSnapshot(new ParcelId(snapshot.ParcelId),
+            return new ParcelSnapshot(
+                new ParcelId(snapshot.ParcelId),
+                new VbrCaPaKey(snapshot.CaPaKey),
                 string.IsNullOrEmpty(snapshot.ParcelStatus) ? null : ParcelStatus.Parse(snapshot.ParcelStatus),
                 snapshot.IsRemoved,
                 lastModification,
@@ -91,7 +121,9 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
         public static ParcelSnapshot WithActiveHouseNumberIdsByTerrainObjectHouseNr
             (this ParcelSnapshot snapshot, Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId> activeHouseNumberIdsByTerrainObjectHouseNr)
         {
-            return new ParcelSnapshot(new ParcelId(snapshot.ParcelId),
+            return new ParcelSnapshot(
+                new ParcelId(snapshot.ParcelId),
+                new VbrCaPaKey(snapshot.CaPaKey),
                 string.IsNullOrEmpty(snapshot.ParcelStatus) ? null : ParcelStatus.Parse(snapshot.ParcelStatus),
                 snapshot.IsRemoved,
                 snapshot.LastModificationBasedOnCrab,
@@ -108,7 +140,9 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
 
         public static ParcelSnapshot WithImportedSubaddressFromCrab(this ParcelSnapshot snapshot, IEnumerable<AddressSubaddressWasImportedFromCrab> importedSubaddressFromCrab)
         {
-            return new ParcelSnapshot(new ParcelId(snapshot.ParcelId),
+            return new ParcelSnapshot(
+                new ParcelId(snapshot.ParcelId),
+                new VbrCaPaKey(snapshot.CaPaKey),
                 string.IsNullOrEmpty(snapshot.ParcelStatus) ? null : ParcelStatus.Parse(snapshot.ParcelStatus),
                 snapshot.IsRemoved,
                 snapshot.LastModificationBasedOnCrab,
@@ -128,7 +162,9 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
 
         public static ParcelSnapshot WithAddressIds(this ParcelSnapshot snapshot, IEnumerable<AddressId> addressIds)
         {
-            return new ParcelSnapshot(new ParcelId(snapshot.ParcelId),
+            return new ParcelSnapshot(
+                new ParcelId(snapshot.ParcelId),
+                new VbrCaPaKey(snapshot.CaPaKey),
                 string.IsNullOrEmpty(snapshot.ParcelStatus) ? null : ParcelStatus.Parse(snapshot.ParcelStatus),
                 snapshot.IsRemoved,
                 snapshot.LastModificationBasedOnCrab,
@@ -162,6 +198,7 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
         {
             return new ParcelSnapshot(
                 parcelId,
+                new VbrCaPaKey(string.Empty),
                 null,
                 false,
                 Modification.Insert,

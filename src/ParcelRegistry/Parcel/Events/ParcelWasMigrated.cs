@@ -19,6 +19,9 @@ namespace ParcelRegistry.Parcel.Events
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }
 
+        [EventPropertyDescription("CaPaKey (= objectidentificator) van het perceel, waarbij forward slashes vervangen zijn door koppeltekens i.f.v. gebruik in URI's.")]
+        public string CaPaKey { get; }
+
         [EventPropertyDescription("De status van het perceel. Mogelijkheden: Realized en Retired.")]
         public string ParcelStatus { get; }
 
@@ -39,6 +42,7 @@ namespace ParcelRegistry.Parcel.Events
 
         public ParcelWasMigrated(
             ParcelId parcelId,
+            VbrCaPaKey caPaKey,
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
@@ -46,6 +50,7 @@ namespace ParcelRegistry.Parcel.Events
             Coordinate? yCoordinate)
         {
             ParcelId = parcelId;
+            CaPaKey = caPaKey;
             ParcelStatus = parcelStatus;
             IsRemoved = isRemoved;
             AddressPersistentLocalIds = addressPersistentLocalIds.Select(x => (int)x).ToList();
@@ -56,6 +61,7 @@ namespace ParcelRegistry.Parcel.Events
         [JsonConstructor]
         private ParcelWasMigrated(
             Guid parcelId,
+            string vbrCaPaKey,
             string parcelStatus,
             bool isRemoved,
             IEnumerable<int> addressPersistentLocalIds,
@@ -64,6 +70,7 @@ namespace ParcelRegistry.Parcel.Events
             ProvenanceData provenance)
             : this(
                 new ParcelId(parcelId),
+                new VbrCaPaKey(vbrCaPaKey),
                 ParcelRegistry.Parcel.ParcelStatus.Parse(parcelStatus),
                 isRemoved,
                 addressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
@@ -81,6 +88,7 @@ namespace ParcelRegistry.Parcel.Events
         {
             var fields = Provenance.GetHashFields().ToList();
             fields.Add(ParcelId.ToString("D"));
+            fields.Add(CaPaKey);
             fields.Add(ParcelStatus);
             fields.Add(IsRemoved.ToString());
             fields.AddRange(AddressPersistentLocalIds.Select(x => x.ToString(CultureInfo.InvariantCulture)));
