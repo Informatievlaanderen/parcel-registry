@@ -53,6 +53,7 @@ nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 10.0.1
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 10.0.1
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 10.0.1
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 10.0.1
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 10.0.1
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 10.0.1
 
 nuget Be.Vlaanderen.Basisregisters.Projector 12.0.0
@@ -89,6 +90,7 @@ nuget xunit.runner.visualstudio 2.4.3
 nuget xunit.categories 2.0.6
 nuget AutoFixture 4.17.0
 nuget FluentAssertions 6.5.1
+nuget Moq 4.17.2
 
 // BUILD STUFF
 nuget SourceLink.Embed.AllSourceFiles 2.8.3 copy_local: true
