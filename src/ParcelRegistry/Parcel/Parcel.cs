@@ -12,7 +12,9 @@ namespace ParcelRegistry.Parcel
             ParcelId parcelId,
             ParcelStatus parcelStatus,
             bool isRemoved,
-            IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds)
+            IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
+            Coordinate? xCoordinate,
+            Coordinate? yCoordinate)
         {
             var newParcel = parcelFactory.Create();
             newParcel.ApplyChange(
@@ -20,7 +22,9 @@ namespace ParcelRegistry.Parcel
                     parcelId,
                     parcelStatus,
                     isRemoved,
-                    addressPersistentLocalIds));
+                    addressPersistentLocalIds,
+                    xCoordinate,
+                    yCoordinate));
 
             return newParcel;
         }
@@ -44,6 +48,8 @@ namespace ParcelRegistry.Parcel
                 ParcelStatus,
                 IsRemoved,
                 _addressPersistentLocalIds,
+                XCoordinate,
+                YCoordinate,
                 LastEventHash,
                 LastProvenanceData);
         }

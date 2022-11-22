@@ -1,14 +1,39 @@
 namespace ParcelRegistry.Legacy
 {
+    using System;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Events;
     using Events.Crab;
     using Exceptions;
+    using NodaTime;
+    using ParcelRegistry.Parcel;
+    using ParcelRegistry.Parcel.Commands;
 
     public partial class Parcel : AggregateRootEntity, ISnapshotable
     {
+        public MigrateParcel CreateMigrateCommand(Func<AddressId, AddressPersistentLocalId> mapAddressPersistentLocalId)
+        {
+            return new MigrateParcel(
+                _parcelId,
+                IsRealized
+                    ? ParcelStatus.Realized
+                    : ParcelStatus.Retired,
+                IsRemoved,
+                _addressCollection.AllAddressIds().Select(mapAddressPersistentLocalId),
+                XCoordinate is not null ? new Coordinate(XCoordinate) : null,
+                YCoordinate is not null ? new Coordinate(YCoordinate) : null,
+                new Provenance(
+                    SystemClock.Instance.GetCurrentInstant(),
+                    Application.ParcelRegistry,
+                    new Reason("Migrate Parcel aggregate."),
+                    new Operator("Parcel Registry"),
+                    Modification.Insert,
+                    Organisation.DigitaalVlaanderen));
+        }
+
         public static Parcel Register(ParcelId id, VbrCaPaKey vbrCaPaKey, IParcelFactory factory)
         {
             var parcel = factory.Create();

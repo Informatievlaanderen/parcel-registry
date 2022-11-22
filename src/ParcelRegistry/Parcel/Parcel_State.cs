@@ -4,6 +4,7 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Events;
+    using ParcelRegistry.Legacy;
 
     public partial class Parcel
     {
@@ -17,6 +18,10 @@ namespace ParcelRegistry.Parcel
         public ParcelId ParcelId { get; private set; }
         public ParcelStatus ParcelStatus { get; private set; }
         public IReadOnlyList<AddressPersistentLocalId> AddressPersistentLocalIds => _addressPersistentLocalIds;
+
+        public Coordinate? XCoordinate { get; private set; }
+        public Coordinate? YCoordinate { get; private set; }
+
         public bool IsRemoved { get; private set; }
 
         public string LastEventHash => _lastEvent is null ? _lastSnapshotEventHash : _lastEvent.GetHash();
@@ -45,6 +50,14 @@ namespace ParcelRegistry.Parcel
                 _addressPersistentLocalIds.Add(new AddressPersistentLocalId(addressPersistentLocalId));
             }
 
+            XCoordinate = @event.XCoordinate.HasValue
+                ? new Coordinate(@event.XCoordinate.Value)
+                : null;
+
+            YCoordinate = @event.YCoordinate.HasValue
+                ? new Coordinate(@event.YCoordinate.Value)
+                : null;
+
             _lastEvent = @event;
         }
 
@@ -58,6 +71,14 @@ namespace ParcelRegistry.Parcel
             {
                 _addressPersistentLocalIds.Add(new AddressPersistentLocalId(addressPersistentLocalId));
             }
+
+            XCoordinate = @event.XCoordinate.HasValue
+                ? new Coordinate(@event.XCoordinate.Value)
+                : null;
+
+            YCoordinate = @event.YCoordinate.HasValue
+                ? new Coordinate(@event.YCoordinate.Value)
+                : null;
 
             _lastSnapshotEventHash = @event.LastEventHash;
             _lastSnapshotProvenance = @event.LastProvenanceData;

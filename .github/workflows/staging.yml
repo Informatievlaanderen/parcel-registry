@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: 
-        services: ['parcel-registry-api', 'parcel-registry-projections', 'parcel-registry-consumer-address']
+        services: ['parcel-registry-api', 'parcel-registry-projections', 'parcel-registry-consumer-address', 'parcel-registry-migrator-parcel']
     steps:
     - name: CD
       env:

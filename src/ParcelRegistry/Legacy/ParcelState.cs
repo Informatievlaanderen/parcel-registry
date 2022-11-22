@@ -6,6 +6,7 @@ namespace ParcelRegistry.Legacy
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Events;
     using Events.Crab;
+    using Microsoft.Extensions.Logging;
 
     public partial class Parcel
     {
@@ -20,6 +21,9 @@ namespace ParcelRegistry.Legacy
 
         private readonly Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
             _activeHouseNumberIdsByTerreinObjectHouseNr = new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>();
+
+        public CrabCoordinate? XCoordinate { get; private set; }
+        public CrabCoordinate? YCoordinate { get; private set; }
 
         public bool IsMigrated { get; private set; }
 
@@ -44,7 +48,7 @@ namespace ParcelRegistry.Legacy
 
             Register<AddressSubaddressWasImportedFromCrab>(When);
             Register<TerrainObjectHouseNumberWasImportedFromCrab>(When);
-            Register<TerrainObjectWasImportedFromCrab>(@event => WhenCrabEventApplied(@event.Modification == CrabModification.Delete));
+            Register<TerrainObjectWasImportedFromCrab>(When);
 
             Register<ParcelWasMarkedAsMigrated>(When);
 
@@ -121,7 +125,20 @@ namespace ParcelRegistry.Legacy
             IsRetired = false;
             _addressCollection.Clear();
         }
-        
+
+        private void When(TerrainObjectWasImportedFromCrab @event)
+        {
+            XCoordinate =  @event.XCoordinate.HasValue
+                ? new CrabCoordinate(@event.XCoordinate.Value)
+                : null;
+
+            YCoordinate = @event.YCoordinate.HasValue
+                ? new CrabCoordinate(@event.YCoordinate.Value)
+                : null;
+
+            WhenCrabEventApplied(@event.Modification == CrabModification.Delete);
+        }
+
         private void When(ParcelWasMarkedAsMigrated @event)
         {
             IsMigrated = true;
@@ -152,6 +169,14 @@ namespace ParcelRegistry.Legacy
 
             foreach (var subaddressWasImportedFromCrab in snapshot.ImportedSubaddressFromCrab)
                 _addressCollection.Add(subaddressWasImportedFromCrab);
+
+            XCoordinate = snapshot.XCoordinate.HasValue
+                ? new CrabCoordinate(snapshot.XCoordinate.Value)
+                : null;
+
+            YCoordinate = snapshot.YCoordinate.HasValue
+                ? new CrabCoordinate(snapshot.YCoordinate.Value)
+                : null;
         }
 
         private void WhenCrabEventApplied(bool isDeleted = false)
@@ -179,7 +204,9 @@ namespace ParcelRegistry.Legacy
                 LastModificationBasedOnCrab,
                 _activeHouseNumberIdsByTerreinObjectHouseNr,
                 _addressCollection.AllSubaddressWasImportedFromCrabEvents(),
-                _addressCollection.AllAddressIds());
+                _addressCollection.AllAddressIds(),
+                XCoordinate,
+                YCoordinate);
         }
 
         public ISnapshotStrategy Strategy { get; }

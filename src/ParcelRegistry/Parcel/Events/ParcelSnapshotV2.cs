@@ -17,6 +17,9 @@ namespace ParcelRegistry.Parcel.Events
         public string ParcelStatus { get; }
         public bool IsRemoved { get; }
         public IEnumerable<int> AddressPersistentLocalIds { get; }
+        public decimal? XCoordinate { get; }
+        public decimal? YCoordinate { get; }
+
         public string LastEventHash { get; }
         public ProvenanceData LastProvenanceData { get; }
 
@@ -25,6 +28,8 @@ namespace ParcelRegistry.Parcel.Events
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
+            Coordinate? xCoordinate,
+            Coordinate? yCoordinate,
             string lastEventHash,
             ProvenanceData lastProvenanceData)
         {
@@ -32,6 +37,8 @@ namespace ParcelRegistry.Parcel.Events
             ParcelStatus = parcelStatus;
             IsRemoved = isRemoved;
             AddressPersistentLocalIds = addressPersistentLocalIds.Select(x => (int)x).ToList();
+            XCoordinate = xCoordinate ?? (decimal?)null;
+            YCoordinate = yCoordinate ?? (decimal?) null;
             LastEventHash = lastEventHash;
             LastProvenanceData = lastProvenanceData;
         }
@@ -39,10 +46,11 @@ namespace ParcelRegistry.Parcel.Events
         [JsonConstructor]
         private ParcelSnapshotV2(
             Guid parcelId,
-            int parcelPersistentLocalId,
             string parcelStatus,
             bool isRemoved,
             IEnumerable<int> addressPersistentLocalIds,
+            decimal? xCoordinate,
+            decimal? yCoordinate,
             string lastEventHash,
             ProvenanceData lastProvenanceData)
             : this(
@@ -50,6 +58,8 @@ namespace ParcelRegistry.Parcel.Events
                 ParcelRegistry.Parcel.ParcelStatus.Parse(parcelStatus),
                 isRemoved,
                 addressPersistentLocalIds.Select(id => new AddressPersistentLocalId(id)),
+                xCoordinate.HasValue ? new Coordinate(xCoordinate.Value) : null,
+                yCoordinate.HasValue ? new Coordinate(yCoordinate.Value) : null,
                 lastEventHash,
                 lastProvenanceData)
         { }

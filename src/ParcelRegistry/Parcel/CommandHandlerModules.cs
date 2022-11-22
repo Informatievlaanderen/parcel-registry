@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Parcel
+namespace ParcelRegistry.Parcel
 {
     using System;
     using Autofac;
@@ -60,7 +60,9 @@
                         message.Command.ParcelId,
                         message.Command.ParcelStatus,
                         message.Command.IsRemoved,
-                        message.Command.AddressPersistentLocalIds);
+                        message.Command.AddressPersistentLocalIds,
+                        message.Command.XCoordinate,
+                        message.Command.YCoordinate);
 
                     parcelRepository().Add(streamId, newParcel);
                 });
