@@ -50,6 +50,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectFromCrab
                     new Fact(_snapshotId,
                         SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
                             .WithParcelStatus(ParcelStatus.Retired)
+                            .WithCoordinates(command.XCoordinate, command.YCoordinate)
                             .Build(2, EventSerializerSettings))
                 }));
         }
@@ -198,6 +199,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectFromCrab
                         SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
                             .WithIsRemoved(true)
                             .WithLastModificationBasedOnCrab(Modification.Delete)
+                            .WithCoordinates(command.XCoordinate, command.YCoordinate)
                             .Build(2, EventSerializerSettings))
                 }));
         }

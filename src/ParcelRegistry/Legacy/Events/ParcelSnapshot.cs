@@ -23,22 +23,29 @@ namespace ParcelRegistry.Legacy.Events
         public IEnumerable<AddressSubaddressWasImportedFromCrab> ImportedSubaddressFromCrab { get; }
         public IEnumerable<Guid> AddressIds { get; }
 
+        public decimal? XCoordinate { get; }
+        public decimal? YCoordinate { get; }
+
         public ParcelSnapshot(ParcelId parcelId,
             ParcelStatus? parcelStatus,
             bool isRemoved,
             Modification lastModificationBasedOnCrab,
             Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId> activeHouseNumberIdsByTerrainObjectHouseNr,
             IEnumerable<AddressSubaddressWasImportedFromCrab> importedSubaddressFromCrab,
-            IEnumerable<AddressId> addressIds)
+            IEnumerable<AddressId> addressIds,
+            CrabCoordinate? xCoordinate,
+            CrabCoordinate? yCoordinate)
         {
             ParcelId = parcelId;
             ParcelStatus = parcelStatus ?? string.Empty;
             IsRemoved = isRemoved;
             LastModificationBasedOnCrab = lastModificationBasedOnCrab;
             ActiveHouseNumberIdsByTerrainObjectHouseNr = activeHouseNumberIdsByTerrainObjectHouseNr
-                .ToDictionary(x => (int)x.Key, y=>(int)y.Value);
+                .ToDictionary(x => (int)x.Key, y => (int)y.Value);
             ImportedSubaddressFromCrab = importedSubaddressFromCrab;
             AddressIds = addressIds.Select(id => (Guid)id);
+            XCoordinate = xCoordinate ?? (decimal?)null;
+            YCoordinate = yCoordinate ?? (decimal?)null;
         }
 
         [JsonConstructor]
@@ -49,7 +56,9 @@ namespace ParcelRegistry.Legacy.Events
             Modification lastModificationBasedOnCrab,
             Dictionary<int,int> activeHouseNumberIdsByTerrainObjectHouseNr,
             IEnumerable<AddressSubaddressWasImportedFromCrab> importedSubaddressFromCrab,
-            IEnumerable<Guid> addressIds)
+            IEnumerable<Guid> addressIds,
+            decimal? xCoordinate,
+            decimal? yCoordinate)
             : this(
                 new ParcelId(parcelId),
                 string.IsNullOrEmpty(parcelStatus) ? null : Legacy.ParcelStatus.Parse(parcelStatus),
@@ -57,7 +66,9 @@ namespace ParcelRegistry.Legacy.Events
                 lastModificationBasedOnCrab,
                 activeHouseNumberIdsByTerrainObjectHouseNr.ToDictionary(x => new CrabTerrainObjectHouseNumberId(x.Key), y => new CrabHouseNumberId(y.Value)),
                 importedSubaddressFromCrab,
-                addressIds.Select(id => new AddressId(id)))
+                addressIds.Select(id => new AddressId(id)),
+                xCoordinate.HasValue ? new CrabCoordinate(xCoordinate.Value) : null,
+                yCoordinate.HasValue ? new CrabCoordinate(yCoordinate.Value) : null)
         { }
     }
 }

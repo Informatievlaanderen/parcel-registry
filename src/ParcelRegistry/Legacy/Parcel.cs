@@ -23,6 +23,8 @@ namespace ParcelRegistry.Legacy
                     : ParcelStatus.Retired,
                 IsRemoved,
                 _addressCollection.AllAddressIds().Select(mapAddressPersistentLocalId),
+                XCoordinate is not null ? new Coordinate(XCoordinate) : null,
+                YCoordinate is not null ? new Coordinate(YCoordinate) : null,
                 new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),
                     Application.ParcelRegistry,

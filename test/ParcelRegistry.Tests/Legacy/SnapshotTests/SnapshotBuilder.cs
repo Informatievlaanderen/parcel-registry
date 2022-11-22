@@ -23,7 +23,13 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
                         x => new CrabTerrainObjectHouseNumberId(x.Key),
                         y => new CrabHouseNumberId(y.Value)),
                 snapshot.ImportedSubaddressFromCrab,
-                snapshot.AddressIds.Select(x => new AddressId(x)));
+                snapshot.AddressIds.Select(x => new AddressId(x)),
+                snapshot.XCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.XCoordinate.Value)
+                    : null,
+                snapshot.YCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.YCoordinate.Value)
+                    : null);
         }
 
         public static ParcelSnapshot WithIsRemoved(this ParcelSnapshot snapshot, bool isRemoved)
@@ -37,7 +43,29 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
                         x => new CrabTerrainObjectHouseNumberId(x.Key),
                         y => new CrabHouseNumberId(y.Value)),
                 snapshot.ImportedSubaddressFromCrab,
-                snapshot.AddressIds.Select(x => new AddressId(x)));
+                snapshot.AddressIds.Select(x => new AddressId(x)),
+                snapshot.XCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.XCoordinate.Value)
+                    : null,
+                snapshot.YCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.YCoordinate.Value)
+                    : null);
+        }
+
+        public static ParcelSnapshot WithCoordinates(this ParcelSnapshot snapshot, decimal x, decimal y)
+        {
+            return new ParcelSnapshot(new ParcelId(snapshot.ParcelId),
+                string.IsNullOrEmpty(snapshot.ParcelStatus) ? null : ParcelStatus.Parse(snapshot.ParcelStatus),
+                snapshot.IsRemoved,
+                snapshot.LastModificationBasedOnCrab,
+                snapshot.ActiveHouseNumberIdsByTerrainObjectHouseNr
+                    .ToDictionary(
+                        x => new CrabTerrainObjectHouseNumberId(x.Key),
+                        y => new CrabHouseNumberId(y.Value)),
+                snapshot.ImportedSubaddressFromCrab,
+                snapshot.AddressIds.Select(x => new AddressId(x)),
+                new CrabCoordinate(x),
+                 new CrabCoordinate(y));
         }
 
         public static ParcelSnapshot WithLastModificationBasedOnCrab(this ParcelSnapshot snapshot, Modification lastModification)
@@ -51,7 +79,13 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
                         x => new CrabTerrainObjectHouseNumberId(x.Key),
                         y => new CrabHouseNumberId(y.Value)),
                 snapshot.ImportedSubaddressFromCrab,
-                snapshot.AddressIds.Select(x => new AddressId(x)));
+                snapshot.AddressIds.Select(x => new AddressId(x)),
+                snapshot.XCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.XCoordinate.Value)
+                    : null,
+                snapshot.YCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.YCoordinate.Value)
+                    : null);
         }
 
         public static ParcelSnapshot WithActiveHouseNumberIdsByTerrainObjectHouseNr
@@ -63,7 +97,13 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
                 snapshot.LastModificationBasedOnCrab,
                 activeHouseNumberIdsByTerrainObjectHouseNr,
                 snapshot.ImportedSubaddressFromCrab,
-                snapshot.AddressIds.Select(x => new AddressId(x)));
+                snapshot.AddressIds.Select(x => new AddressId(x)),
+                snapshot.XCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.XCoordinate.Value)
+                    : null,
+                snapshot.YCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.YCoordinate.Value)
+                    : null);
         }
 
         public static ParcelSnapshot WithImportedSubaddressFromCrab(this ParcelSnapshot snapshot, IEnumerable<AddressSubaddressWasImportedFromCrab> importedSubaddressFromCrab)
@@ -77,7 +117,13 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
                         x => new CrabTerrainObjectHouseNumberId(x.Key),
                         y => new CrabHouseNumberId(y.Value)),
                 importedSubaddressFromCrab,
-                snapshot.AddressIds.Select(x => new AddressId(x)));
+                snapshot.AddressIds.Select(x => new AddressId(x)),
+                snapshot.XCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.XCoordinate.Value)
+                    : null,
+                snapshot.YCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.YCoordinate.Value)
+                    : null);
         }
 
         public static ParcelSnapshot WithAddressIds(this ParcelSnapshot snapshot, IEnumerable<AddressId> addressIds)
@@ -91,7 +137,13 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
                         x => new CrabTerrainObjectHouseNumberId(x.Key),
                         y => new CrabHouseNumberId(y.Value)),
                 snapshot.ImportedSubaddressFromCrab,
-                addressIds);
+                addressIds,
+                snapshot.XCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.XCoordinate.Value)
+                    : null,
+                snapshot.YCoordinate.HasValue
+                    ? new CrabCoordinate(snapshot.YCoordinate.Value)
+                    : null);
         }
 
         public static SnapshotContainer Build(
@@ -115,7 +167,9 @@ namespace ParcelRegistry.Tests.Legacy.SnapshotTests
                 Modification.Insert,
                 new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>(),
                 new List<AddressSubaddressWasImportedFromCrab>(),
-                new List<AddressId>());
+                new List<AddressId>(),
+                null,
+                null);
         }
     }
 }
