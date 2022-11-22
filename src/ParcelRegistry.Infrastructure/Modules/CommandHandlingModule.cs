@@ -30,7 +30,7 @@ namespace ParcelRegistry.Infrastructure.Modules
             }
 
             builder
-                .Register(c => new Legacy.ParcelFactory(snapshotStrategy))
+                .Register(c => new Legacy.ParcelFactory(NoSnapshotStrategy.Instance))
                 .As<Legacy.IParcelFactory>();
 
             builder

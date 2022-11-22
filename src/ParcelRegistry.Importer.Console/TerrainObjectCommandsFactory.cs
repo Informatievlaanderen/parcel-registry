@@ -4,7 +4,8 @@ namespace ParcelRegistry.Importer.Console
     using Be.Vlaanderen.Basisregisters.Crab;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Crab;
-    using Parcel.Commands.Crab;
+    using Legacy;
+    using Legacy.Commands.Crab;
     using System.Collections.Generic;
     using System.Linq;
 

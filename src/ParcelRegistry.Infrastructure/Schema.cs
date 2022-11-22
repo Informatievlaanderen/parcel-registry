@@ -10,6 +10,7 @@ namespace ParcelRegistry.Infrastructure
         public const string Syndication = "ParcelRegistrySyndication";
         public const string ConsumerAddress = "ParcelRegistryConsumerAddress";
         public const string BackOffice = "ParcelRegistryBackOffice";
+        public const string MigrateParcel = "ParcelRegistryMigration";
     }
 
     public static class MigrationTables

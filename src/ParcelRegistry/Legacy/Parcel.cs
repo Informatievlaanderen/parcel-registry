@@ -1,14 +1,40 @@
 namespace ParcelRegistry.Legacy
 {
+    using System.Collections.Generic;
+    using System;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Crab;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Events;
     using Events.Crab;
     using Exceptions;
+    using NodaTime;
+    using ParcelRegistry.Parcel;
+    using ParcelRegistry.Parcel.Commands;
 
     public partial class Parcel : AggregateRootEntity, ISnapshotable
     {
+        public MigrateParcel CreateMigrateCommand(Func<AddressId, AddressPersistentLocalId> mapAddressPersistentLocalId)
+        {
+            return new MigrateParcel(
+                ParcelId,
+                IsRealized
+                    ? ParcelStatus.Realized
+                    : ParcelStatus.Retired,
+                IsRemoved,
+                _addressCollection.AllAddressIds().Select(mapAddressPersistentLocalId),
+                XCoordinate is not null ? new Coordinate(XCoordinate) : null,
+                YCoordinate is not null ? new Coordinate(YCoordinate) : null,
+                new Provenance(
+                    SystemClock.Instance.GetCurrentInstant(),
+                    Application.ParcelRegistry,
+                    new Reason("Migrate Parcel aggregate."),
+                    new Operator("Parcel Registry"),
+                    Modification.Insert,
+                    Organisation.DigitaalVlaanderen));
+        }
+
         public static Parcel Register(ParcelId id, VbrCaPaKey vbrCaPaKey, IParcelFactory factory)
         {
             var parcel = factory.Create();
@@ -30,29 +56,29 @@ namespace ParcelRegistry.Legacy
             CrabOrganisation? organisation)
         {
             if (IsRemoved && modification == CrabModification.Insert)
-                ApplyChange(new ParcelWasRecovered(_parcelId));
+                ApplyChange(new ParcelWasRecovered(ParcelId));
             else if (IsRemoved)
-                throw new ParcelRemovedException($"Cannot change removed parcel for parcel id {_parcelId}");
+                throw new ParcelRemovedException($"Cannot change removed parcel for parcel id {ParcelId}");
 
             if (modification == CrabModification.Delete)
             {
-                ApplyChange(new ParcelWasRemoved(_parcelId));
+                ApplyChange(new ParcelWasRemoved(ParcelId));
             }
             else
             {
                 if (lifetime.EndDateTime.HasValue && !IsRetired)
                 {
                     if (modification == CrabModification.Correction)
-                        ApplyChange(new ParcelWasCorrectedToRetired(_parcelId));
+                        ApplyChange(new ParcelWasCorrectedToRetired(ParcelId));
                     else
-                        ApplyChange(new ParcelWasRetired(_parcelId));
+                        ApplyChange(new ParcelWasRetired(ParcelId));
                 }
                 else if (!lifetime.EndDateTime.HasValue && !IsRealized)
                 {
                     if (modification == CrabModification.Correction)
-                        ApplyChange(new ParcelWasCorrectedToRealized(_parcelId));
+                        ApplyChange(new ParcelWasCorrectedToRealized(ParcelId));
                     else
-                        ApplyChange(new ParcelWasRealized(_parcelId));
+                        ApplyChange(new ParcelWasRealized(ParcelId));
                 }
             }
 
@@ -100,9 +126,9 @@ namespace ParcelRegistry.Legacy
                 if (_activeHouseNumberIdsByTerreinObjectHouseNr.Values.Count(x => x == houseNumberId) == 1)
                 {
                     foreach (var addressIdToRemove in _addressCollection.AddressIdsEligableToRemoveFor(houseNumberId))
-                        ApplyChange(new ParcelAddressWasDetached(_parcelId, addressIdToRemove));
+                        ApplyChange(new ParcelAddressWasDetached(ParcelId, addressIdToRemove));
 
-                    ApplyChange(new ParcelAddressWasDetached(_parcelId, addressId));
+                    ApplyChange(new ParcelAddressWasDetached(ParcelId, addressId));
                 }
             }
             else
@@ -115,9 +141,9 @@ namespace ParcelRegistry.Legacy
                     {
                         foreach (var addressIdToRemove in _addressCollection.AddressIdsEligableToRemoveFor(
                             currentCrabHouseNumberId))
-                            ApplyChange(new ParcelAddressWasDetached(_parcelId, addressIdToRemove));
+                            ApplyChange(new ParcelAddressWasDetached(ParcelId, addressIdToRemove));
 
-                        ApplyChange(new ParcelAddressWasDetached(_parcelId,
+                        ApplyChange(new ParcelAddressWasDetached(ParcelId,
                             AddressId.CreateFor(currentCrabHouseNumberId)));
                     }
                 }
@@ -126,10 +152,10 @@ namespace ParcelRegistry.Legacy
                     modification != CrabModification.Delete &&
                     !lifetime.EndDateTime.HasValue)
                 {
-                    ApplyChange(new ParcelAddressWasAttached(_parcelId, addressId));
+                    ApplyChange(new ParcelAddressWasAttached(ParcelId, addressId));
 
                     foreach (var addressIdToAdd in _addressCollection.AddressIdsEligableToAddFor(houseNumberId))
-                        ApplyChange(new ParcelAddressWasAttached(_parcelId, addressIdToAdd));
+                        ApplyChange(new ParcelAddressWasAttached(ParcelId, addressIdToAdd));
                 }
             }
 
@@ -156,12 +182,12 @@ namespace ParcelRegistry.Legacy
                 modification != CrabModification.Delete &&
                 !lifetime.EndDateTime.HasValue)
             {
-                ApplyChange(new ParcelAddressWasAttached(_parcelId, addressId));
+                ApplyChange(new ParcelAddressWasAttached(ParcelId, addressId));
             }
             else if (_addressCollection.Contains(addressId) &&
                      (modification == CrabModification.Delete || lifetime.EndDateTime.HasValue))
             {
-                ApplyChange(new ParcelAddressWasDetached(_parcelId, addressId));
+                ApplyChange(new ParcelAddressWasDetached(ParcelId, addressId));
             }
 
             ApplyChange(new AddressSubaddressWasImportedFromCrab(
@@ -186,9 +212,9 @@ namespace ParcelRegistry.Legacy
                 return;
 
             foreach (var addressId in _addressCollection.AllAddressIds().ToList())
-                ApplyChange(new ParcelAddressWasDetached(_parcelId, addressId));
+                ApplyChange(new ParcelAddressWasDetached(ParcelId, addressId));
 
-            ApplyChange(new ParcelWasRemoved(_parcelId));
+            ApplyChange(new ParcelWasRemoved(ParcelId));
         }
 
         /// <summary>
@@ -199,8 +225,36 @@ namespace ParcelRegistry.Legacy
             if (!IsRemoved)
                 return;
 
-            ApplyChange(new ParcelWasRecovered(_parcelId));
-            ApplyChange(new ParcelWasRealized(_parcelId));
+            ApplyChange(new ParcelWasRecovered(ParcelId));
+            ApplyChange(new ParcelWasRealized(ParcelId));
+        }
+
+        /// <summary>
+        /// Fixes state of aggregate because of possible invalid snapshot.
+        /// </summary>
+        public void FixGrar3581(
+            ParcelStatus parcelStatus,
+            IList<AddressId> addressIds)
+        {
+            if (parcelStatus == ParcelStatus.Realized && !IsRealized)
+            {
+                ApplyChange(new ParcelWasCorrectedToRealized(ParcelId));
+            }
+
+            if (parcelStatus == ParcelStatus.Retired && !IsRetired)
+            {
+                ApplyChange(new ParcelWasCorrectedToRetired(ParcelId));
+            }
+
+            AddressIds
+                .Except(addressIds)
+                .ToList()
+                .ForEach(addressId => ApplyChange(new ParcelAddressWasDetached(ParcelId, addressId)));
+
+            addressIds
+                .Except(AddressIds)
+                .ToList()
+                .ForEach(addressId => ApplyChange(new ParcelAddressWasAttached(ParcelId, addressId)));
         }
 
         public void MarkAsMigrated()
@@ -210,13 +264,13 @@ namespace ParcelRegistry.Legacy
                 return;
             }
 
-            ApplyChange(new ParcelWasMarkedAsMigrated(_parcelId));
+            ApplyChange(new ParcelWasMarkedAsMigrated(ParcelId));
         }
 
         private void GuardRemoved(CrabModification? modification)
         {
             if (IsRemoved && modification != CrabModification.Delete)
-                throw new ParcelRemovedException($"Cannot change removed parcel for parcel id {_parcelId}");
+                throw new ParcelRemovedException($"Cannot change removed parcel for parcel id {ParcelId}");
         }
     }
 }

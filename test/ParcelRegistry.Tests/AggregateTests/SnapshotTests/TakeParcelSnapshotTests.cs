@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
+namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
 {
     using System.Collections.Generic;
     using AutoFixture;
@@ -34,6 +34,8 @@
             parcelSnapshotV2.ParcelStatus.Should().Be(ParcelStatus.Parse(parcelSnapshotV2.ParcelStatus));
             parcelSnapshotV2.IsRemoved.Should().Be(parcelWasMigrated.IsRemoved);
             parcelSnapshotV2.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds);
+            parcelSnapshotV2.XCoordinate.Should().Be(parcelWasMigrated.XCoordinate);
+            parcelSnapshotV2.YCoordinate.Should().Be(parcelWasMigrated.YCoordinate);
             parcelSnapshotV2.LastEventHash.Should().Be(parcelWasMigrated.GetHash());
             parcelSnapshotV2.LastProvenanceData.Should().Be(parcelWasMigrated.Provenance);
         }

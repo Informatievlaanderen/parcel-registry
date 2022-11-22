@@ -9,17 +9,21 @@ namespace ParcelRegistry.Legacy
 
     public partial class Parcel
     {
-        private ParcelId _parcelId;
+        public ParcelId ParcelId { get; private set; }
 
         public bool IsRemoved { get; private set; }
         public bool IsRetired { get; private set; }
         public bool IsRealized { get; private set; }
 
         private readonly AddressCollection _addressCollection = new AddressCollection();
+        public IReadOnlyList<AddressId> AddressIds => new List<AddressId>(_addressCollection.AllAddressIds());
         public Modification LastModificationBasedOnCrab { get; private set; }
 
         private readonly Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>
             _activeHouseNumberIdsByTerreinObjectHouseNr = new Dictionary<CrabTerrainObjectHouseNumberId, CrabHouseNumberId>();
+
+        public CrabCoordinate? XCoordinate { get; private set; }
+        public CrabCoordinate? YCoordinate { get; private set; }
 
         public bool IsMigrated { get; private set; }
 
@@ -44,7 +48,7 @@ namespace ParcelRegistry.Legacy
 
             Register<AddressSubaddressWasImportedFromCrab>(When);
             Register<TerrainObjectHouseNumberWasImportedFromCrab>(When);
-            Register<TerrainObjectWasImportedFromCrab>(@event => WhenCrabEventApplied(@event.Modification == CrabModification.Delete));
+            Register<TerrainObjectWasImportedFromCrab>(When);
 
             Register<ParcelWasMarkedAsMigrated>(When);
 
@@ -111,7 +115,7 @@ namespace ParcelRegistry.Legacy
 
         private void When(ParcelWasRegistered @event)
         {
-            _parcelId = new ParcelId(@event.ParcelId);
+            ParcelId = new ParcelId(@event.ParcelId);
         }
 
         private void When(ParcelWasRecovered @event)
@@ -121,7 +125,20 @@ namespace ParcelRegistry.Legacy
             IsRetired = false;
             _addressCollection.Clear();
         }
-        
+
+        private void When(TerrainObjectWasImportedFromCrab @event)
+        {
+            XCoordinate =  @event.XCoordinate.HasValue
+                ? new CrabCoordinate(@event.XCoordinate.Value)
+                : null;
+
+            YCoordinate = @event.YCoordinate.HasValue
+                ? new CrabCoordinate(@event.YCoordinate.Value)
+                : null;
+
+            WhenCrabEventApplied(@event.Modification == CrabModification.Delete);
+        }
+
         private void When(ParcelWasMarkedAsMigrated @event)
         {
             IsMigrated = true;
@@ -129,7 +146,7 @@ namespace ParcelRegistry.Legacy
 
         private void When(ParcelSnapshot snapshot)
         {
-            _parcelId = new ParcelId(snapshot.ParcelId);
+            ParcelId = new ParcelId(snapshot.ParcelId);
             if (!string.IsNullOrEmpty(snapshot.ParcelStatus))
             {
                 var status = ParcelStatus.Parse(snapshot.ParcelStatus);
@@ -152,6 +169,14 @@ namespace ParcelRegistry.Legacy
 
             foreach (var subaddressWasImportedFromCrab in snapshot.ImportedSubaddressFromCrab)
                 _addressCollection.Add(subaddressWasImportedFromCrab);
+
+            XCoordinate = snapshot.XCoordinate.HasValue
+                ? new CrabCoordinate(snapshot.XCoordinate.Value)
+                : null;
+
+            YCoordinate = snapshot.YCoordinate.HasValue
+                ? new CrabCoordinate(snapshot.YCoordinate.Value)
+                : null;
         }
 
         private void WhenCrabEventApplied(bool isDeleted = false)
@@ -173,13 +198,15 @@ namespace ParcelRegistry.Legacy
                 parcelStatus = ParcelStatus.Realized;
 
             return new ParcelSnapshot(
-                _parcelId,
+                ParcelId,
                 parcelStatus,
                 IsRemoved,
                 LastModificationBasedOnCrab,
                 _activeHouseNumberIdsByTerreinObjectHouseNr,
                 _addressCollection.AllSubaddressWasImportedFromCrabEvents(),
-                _addressCollection.AllAddressIds());
+                _addressCollection.AllAddressIds(),
+                XCoordinate,
+                YCoordinate);
         }
 
         public ISnapshotStrategy Strategy { get; }

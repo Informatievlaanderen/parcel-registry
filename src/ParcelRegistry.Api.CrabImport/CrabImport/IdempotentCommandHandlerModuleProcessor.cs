@@ -23,6 +23,7 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
         private readonly IParcelFactory _parcelFactory;
         private readonly Func<FixGrar1475, Parcel, Provenance> _fixGrar1475ProvenanceFactory;
         private readonly Func<FixGrar1637, Parcel, Provenance> _fixGrar1637ProvenanceFactory;
+        private readonly Func<FixGrar3581, Parcel, Provenance> _fixGrar3581ProvenanceFactory;
 
         public IdempotentCommandHandlerModuleProcessor(
             Func<IParcels> getParcels,
@@ -45,6 +46,9 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
             var fixGrar1637ProvenanceFactory = new FixGrar1637ProvenanceFactory();
             _fixGrar1637ProvenanceFactory = fixGrar1637ProvenanceFactory.CreateFrom;
 
+            var fixGrar3581ProvenanceFactory = new FixGrar3581ProvenanceFactory();
+            _fixGrar3581ProvenanceFactory = fixGrar3581ProvenanceFactory.CreateFrom;
+
             _parcelCommandHandlerModule = new ParcelCommandHandlerModule(
                 getParcels,
                 parcelFactory,
@@ -55,7 +59,8 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
                 legacyProvenanceFactory,
                 provenanceFactory,
                 fixGrar1475ProvenanceFactory,
-                fixGrar1637ProvenanceFactory);
+                fixGrar1637ProvenanceFactory,
+                fixGrar3581ProvenanceFactory);
         }
 
         public async Task<CommandMessage> Process(
@@ -95,6 +100,12 @@ namespace ParcelRegistry.Api.CrabImport.CrabImport
                     await _parcelCommandHandlerModule.FixGrar1637(_getParcels, commandFixGrar1637, cancellationToken);
                     AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandFixGrar1637, _fixGrar1637ProvenanceFactory, currentPosition);
                     return commandFixGrar1637;
+
+                case FixGrar3581 command:
+                    var commandFixGrar3581 = new CommandMessage<FixGrar3581>(command.CreateCommandId(), command, metadata);
+                    await _parcelCommandHandlerModule.FixGrar3581(_getParcels, commandFixGrar3581, cancellationToken);
+                    AddProvenancePipe.AddProvenance(() => _concurrentUnitOfWork, commandFixGrar3581, _fixGrar3581ProvenanceFactory, currentPosition);
+                    return commandFixGrar3581;
 
                 default:
                     throw new NotImplementedException("Command to import is not recognized");

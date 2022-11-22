@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Legacy
 {
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
@@ -25,7 +26,8 @@ namespace ParcelRegistry.Legacy
             LegacyProvenanceFactory legacyProvenanceFactory,
             IProvenanceFactory<Parcel> provenanceFactory,
             FixGrar1475ProvenanceFactory fixGrar1475ProvenanceFactory,
-            FixGrar1637ProvenanceFactory fixGrar1637ProvenanceFactory)
+            FixGrar1637ProvenanceFactory fixGrar1637ProvenanceFactory,
+            FixGrar3581ProvenanceFactory fixGrar3581ProvenanceFactory)
         {
             For<ImportTerrainObjectFromCrab>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
@@ -51,6 +53,11 @@ namespace ParcelRegistry.Legacy
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
                 .AddProvenance(getUnitOfWork, fixGrar1637ProvenanceFactory)
                 .Handle(async (message, ct) => { await FixGrar1637(getParcels, message, ct); });
+
+            For<FixGrar3581>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddProvenance(getUnitOfWork, fixGrar3581ProvenanceFactory)
+                .Handle(async (message, ct) => { await FixGrar3581(getParcels, message, ct); });
 
             For<MarkParcelAsMigrated>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
@@ -161,6 +168,19 @@ namespace ParcelRegistry.Legacy
             var parcel = await parcels.GetOptionalAsync(parcelId, ct);
 
             parcel.Value.FixGrar1637();
+        }
+
+        public async Task FixGrar3581(
+            Func<IParcels> getParcels,
+            CommandMessage<FixGrar3581> message,
+            CancellationToken ct)
+        {
+            var parcels = getParcels();
+            var parcelId = message.Command.ParcelId;
+
+            var parcel = await parcels.GetOptionalAsync(parcelId, ct);
+
+            parcel.Value.FixGrar3581(message.Command.ParcelStatus, message.Command.AddressIds.ToList());
         }
     }
 }

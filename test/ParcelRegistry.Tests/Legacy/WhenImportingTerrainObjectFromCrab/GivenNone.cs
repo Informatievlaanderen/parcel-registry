@@ -44,6 +44,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectFromCrab
                     new Fact(snapshotId,
                         SnapshotBuilder.CreateDefaultSnapshot(parcelId)
                             .WithParcelStatus(ParcelStatus.Realized)
+                            .WithCoordinates(command.XCoordinate, command.YCoordinate)
                             .Build(2, EventSerializerSettings))
                 }));
         }

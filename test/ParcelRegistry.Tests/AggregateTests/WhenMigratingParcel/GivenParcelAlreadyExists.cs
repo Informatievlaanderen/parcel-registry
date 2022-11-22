@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
+namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 {
     using System.Collections.Generic;
     using AutoFixture;
@@ -26,6 +26,8 @@
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
+                xCoordinate: null,
+                yCoordinate: null,
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()

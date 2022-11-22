@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Parcel.Commands
+namespace ParcelRegistry.Parcel.Commands
 {
     using System;
     using System.Collections.Generic;
@@ -16,6 +16,9 @@
         public bool IsRemoved { get; }
         public List<AddressPersistentLocalId> AddressPersistentLocalIds { get; }
 
+        public Coordinate? XCoordinate { get; }
+        public Coordinate? YCoordinate { get; }
+
         public Provenance Provenance { get; }
 
         public MigrateParcel(
@@ -23,12 +26,16 @@
             Legacy.ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
+            Coordinate? xCoordinate,
+            Coordinate? yCoordinate,
             Provenance provenance)
         {
             ParcelId = new ParcelId(parcelId);
             ParcelStatus = Legacy.ParcelStatusHelpers.Map(parcelStatus);
             IsRemoved = isRemoved;
             AddressPersistentLocalIds = addressPersistentLocalIds.ToList();
+            XCoordinate = xCoordinate;
+            YCoordinate = yCoordinate;
             Provenance = provenance;
         }
 
@@ -47,6 +54,16 @@
             foreach (var addressPersistentLocalId in AddressPersistentLocalIds)
             {
                 yield return addressPersistentLocalId;
+            }
+
+            if (XCoordinate is not null)
+            {
+                yield return XCoordinate;
+            }
+
+            if (YCoordinate is not null)
+            {
+                yield return YCoordinate;
             }
         }
     }
