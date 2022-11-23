@@ -66,6 +66,7 @@ namespace ParcelRegistry.Parcel
         private void When(ParcelSnapshotV2 @event)
         {
             ParcelId = new ParcelId(@event.ParcelId);
+            CaPaKey = new VbrCaPaKey(@event.CaPaKey);
             ParcelStatus = ParcelStatus.Parse(@event.ParcelStatus);
             IsRemoved = @event.IsRemoved;
 

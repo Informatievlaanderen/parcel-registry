@@ -46,6 +46,7 @@ namespace ParcelRegistry.Parcel
         {
             return new ParcelSnapshotV2(
                 ParcelId,
+                CaPaKey,
                 ParcelStatus,
                 IsRemoved,
                 _addressPersistentLocalIds,
