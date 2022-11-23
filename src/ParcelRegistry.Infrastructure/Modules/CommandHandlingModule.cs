@@ -38,14 +38,12 @@ namespace ParcelRegistry.Infrastructure.Modules
                 .As<IParcelFactory>();
 
             builder
-                .RegisterModule<RepositoriesModule>();
+                .RegisterModule<RepositoriesModule>()
+                .RegisterEventStreamModule(_configuration);
 
             builder
                 .RegisterType<ConcurrentUnitOfWork>()
                 .InstancePerLifetimeScope();
-
-            builder
-                .RegisterEventstreamModule(_configuration);
 
             Legacy.CommandHandlerModules.Register(builder);
             CommandHandlerModules.Register(builder);
