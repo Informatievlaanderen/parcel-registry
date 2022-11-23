@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParcelRegistry.Projections.Legacy;
 
@@ -11,9 +12,10 @@ using ParcelRegistry.Projections.Legacy;
 namespace ParcelRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
-    partial class LegacyContextModelSnapshot : ModelSnapshot
+    [Migration("20221123143613_AddV2Tables_P1")]
+    partial class AddV2Tables_P1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,10 +178,6 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
                 {
                     b.Property<long>("Position")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("AddressPersistentLocalIdsAsString")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("AddressPersistentLocalIds");
 
                     b.Property<string>("AddressesAsString")
                         .HasColumnType("nvarchar(max)")

@@ -22,6 +22,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Projections.LastChangedList;
     using ParcelRegistry.Projections.Legacy;
     using ParcelRegistry.Projections.Legacy.ParcelDetail;
+    using ParcelRegistry.Projections.Legacy.ParcelDetailV2;
     using ParcelRegistry.Projections.Legacy.ParcelSyndication;
 
     public class ApiModule : Module
@@ -66,16 +67,16 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterEventStreamModule(_configuration)
                 .RegisterModule(new ProjectorModule(_configuration));
 
+            RegisterLastChangedProjections(builder);
+
             if (_useProjectionsV2Toggle.FeatureEnabled)
             {
                 RegisterExtractV2Projections(builder);
-                // RegisterLastChangedV2Projections(builder);
-                // RegisterLegacyV2Projections(builder);
+                RegisterLegacyV2Projections(builder);
             }
             else
             {
                 RegisterExtractProjections(builder);
-                RegisterLastChangedProjections(builder);
                 RegisterLegacyProjections(builder);
             }
         }
@@ -150,6 +151,22 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ParcelDetailProjections, LegacyContext>(ConnectedProjectionSettings.Default)
+                .RegisterProjections<ParcelSyndicationProjections, LegacyContext>(ConnectedProjectionSettings.Default);
+        }
+
+        private void RegisterLegacyV2Projections(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new LegacyModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory));
+            builder
+                .RegisterProjectionMigrator<LegacyContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<ParcelDetailV2Projections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelSyndicationProjections, LegacyContext>(ConnectedProjectionSettings.Default);
         }
     }

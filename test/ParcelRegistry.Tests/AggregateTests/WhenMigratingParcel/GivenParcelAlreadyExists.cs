@@ -33,10 +33,10 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 
             Assert(new Scenario()
                 .Given(
-                    new ParcelStreamId(command.ParcelId),
+                    new ParcelStreamId(command.NewParcelId),
                     parcelWasMigrated)
                 .When(command)
-                .Throws(new AggregateSourceException($"Parcel with id {command.ParcelId} already exists")));
+                .Throws(new AggregateSourceException($"Parcel with id {command.NewParcelId} already exists")));
         }
     }
 }

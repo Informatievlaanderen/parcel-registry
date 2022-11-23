@@ -4,6 +4,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Parcel.Events;
     using ParcelRegistry.Legacy;
     using ParcelRegistry.Legacy.Events;
     using ParcelRegistry.Legacy.Events.Crab;
@@ -14,6 +15,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     {
         public ParcelSyndicationProjections()
         {
+            #region Legacy
             When<Envelope<ParcelWasRegistered>>(async (context, message, ct) =>
             {
                 var parcelSyndicationItem = new ParcelSyndicationItem
@@ -123,6 +125,31 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
             When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
             When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            #endregion
+
+            When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
+            {
+                var parcelSyndicationItem = new ParcelSyndicationItem
+                {
+                    Position = message.Position,
+                    ParcelId = message.Message.ParcelId,
+                    CaPaKey = message.Message.CaPaKey,
+                    RecordCreatedAt = message.Message.Provenance.Timestamp,
+                    LastChangedOn = message.Message.Provenance.Timestamp,
+                    ChangeType = message.EventName,
+                    XCoordinate = message.Message.XCoordinate,
+                    YCoordinate = message.Message.YCoordinate,
+                    AddressPersistentLocalIds = message.Message.AddressPersistentLocalIds,
+                    SyndicationItemCreatedAt = DateTimeOffset.Now
+                };
+
+                parcelSyndicationItem.ApplyProvenance(message.Message.Provenance);
+                parcelSyndicationItem.SetEventData(message.Message, message.EventName);
+
+                await context
+                    .ParcelSyndication
+                    .AddAsync(parcelSyndicationItem, ct);
+            });
         }
 
         private static async Task DoNothing()

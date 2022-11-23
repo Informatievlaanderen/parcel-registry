@@ -7,7 +7,9 @@ namespace ParcelRegistry.Parcel
 
     public sealed partial class Parcel : AggregateRootEntity, ISnapshotable
     {
-        public static Parcel MigrateParcel(IParcelFactory parcelFactory,
+        public static Parcel MigrateParcel(
+            IParcelFactory parcelFactory,
+            Legacy.ParcelId oldParcelId,
             ParcelId parcelId,
             VbrCaPaKey caPaKey,
             ParcelStatus parcelStatus,
@@ -19,6 +21,7 @@ namespace ParcelRegistry.Parcel
             var newParcel = parcelFactory.Create();
             newParcel.ApplyChange(
                 new ParcelWasMigrated(
+                    oldParcelId,
                     parcelId,
                     caPaKey,
                     parcelStatus,

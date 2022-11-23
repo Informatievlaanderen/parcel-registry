@@ -7,7 +7,7 @@ namespace ParcelRegistry.Legacy.Events
 
     [EventName("ParcelWasMarkedAsMigrated")]
     [EventDescription("Het perceel werd gemarkeerd als gemigreerd.")]
-    public class ParcelWasMarkedAsMigrated : IHasProvenance, ISetProvenance
+    public class ParcelWasMarkedAsMigrated : IMessage, IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }

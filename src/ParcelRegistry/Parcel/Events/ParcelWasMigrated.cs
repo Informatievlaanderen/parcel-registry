@@ -16,7 +16,10 @@ namespace ParcelRegistry.Parcel.Events
     {
         public const string EventName = "ParcelWasMigrated"; // BE CAREFUL CHANGING THIS!!
 
-        [EventPropertyDescription("Interne GUID van het perceel.")]
+        [EventPropertyDescription("Interne GUID van het gemigreerde perceel.")]
+        public Guid OldParcelId { get; }
+
+        [EventPropertyDescription("Interne GUID van het nieuwe perceel.")]
         public Guid ParcelId { get; }
 
         [EventPropertyDescription("CaPaKey (= objectidentificator) van het perceel, waarbij forward slashes vervangen zijn door koppeltekens i.f.v. gebruik in URI's.")]
@@ -41,7 +44,8 @@ namespace ParcelRegistry.Parcel.Events
         public ProvenanceData Provenance { get; private set; }
 
         public ParcelWasMigrated(
-            ParcelId parcelId,
+            Legacy.ParcelId oldParcelId,
+            ParcelId newParcelId,
             VbrCaPaKey caPaKey,
             ParcelStatus parcelStatus,
             bool isRemoved,
@@ -49,7 +53,8 @@ namespace ParcelRegistry.Parcel.Events
             Coordinate? xCoordinate,
             Coordinate? yCoordinate)
         {
-            ParcelId = parcelId;
+            OldParcelId = oldParcelId;
+            ParcelId = newParcelId;
             CaPaKey = caPaKey;
             ParcelStatus = parcelStatus;
             IsRemoved = isRemoved;
@@ -60,6 +65,7 @@ namespace ParcelRegistry.Parcel.Events
 
         [JsonConstructor]
         private ParcelWasMigrated(
+            Guid oldParcelId,
             Guid parcelId,
             string caPaKey,
             string parcelStatus,
@@ -69,6 +75,7 @@ namespace ParcelRegistry.Parcel.Events
             decimal? yCoordinate,
             ProvenanceData provenance)
             : this(
+                new Legacy.ParcelId(oldParcelId),
                 new ParcelId(parcelId),
                 new VbrCaPaKey(caPaKey),
                 ParcelRegistry.Parcel.ParcelStatus.Parse(parcelStatus),
@@ -87,6 +94,7 @@ namespace ParcelRegistry.Parcel.Events
         public IEnumerable<string> GetHashFields()
         {
             var fields = Provenance.GetHashFields().ToList();
+            fields.Add(OldParcelId.ToString("D"));
             fields.Add(ParcelId.ToString("D"));
             fields.Add(CaPaKey);
             fields.Add(ParcelStatus);

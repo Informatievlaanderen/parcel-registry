@@ -8,7 +8,7 @@ namespace ParcelRegistry.Legacy.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("ParcelWasRegistered")]
     [EventDescription("Het perceel werd aangemaakt in het register met zijn persistente lokale identificator.")]
-    public class ParcelWasRegistered : IHasProvenance, ISetProvenance
+    public class ParcelWasRegistered : IMessage, IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }

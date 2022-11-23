@@ -93,23 +93,23 @@ namespace ParcelRegistry.Projector.Infrastructure
                                 .GetSection("ConnectionStrings")
                                 .GetChildren();
 
-                            foreach (var connectionString in connectionStrings)
-                                health.AddSqlServer(
-                                    connectionString.Value,
-                                    name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
-                                    tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            //foreach (var connectionString in connectionStrings)
+                            //    health.AddSqlServer(
+                            //        connectionString.Value,
+                            //        name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
+                            //        tags: new[] {DatabaseTag, "sql", "sqlserver"});
 
-                            health.AddDbContextCheck<ExtractContext>(
-                                $"dbcontext-{nameof(ExtractContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            //health.AddDbContextCheck<ExtractContext>(
+                            //    $"dbcontext-{nameof(ExtractContext).ToLowerInvariant()}",
+                            //    tags: new[] {DatabaseTag, "sql", "sqlserver"});
 
-                            health.AddDbContextCheck<LegacyContext>(
-                                $"dbcontext-{nameof(LegacyContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            //health.AddDbContextCheck<LegacyContext>(
+                            //    $"dbcontext-{nameof(LegacyContext).ToLowerInvariant()}",
+                            //    tags: new[] {DatabaseTag, "sql", "sqlserver"});
 
-                            health.AddDbContextCheck<LastChangedListContext>(
-                                $"dbcontext-{nameof(LastChangedListContext).ToLowerInvariant()}",
-                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            //health.AddDbContextCheck<LastChangedListContext>(
+                            //    $"dbcontext-{nameof(LastChangedListContext).ToLowerInvariant()}",
+                            //    tags: new[] {DatabaseTag, "sql", "sqlserver"});
                         }
                     }
                 })

@@ -34,9 +34,10 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
             Assert(new Scenario()
                 .GivenNone()
                 .When(command)
-                .Then(new Fact(new ParcelStreamId(command.ParcelId),
+                .Then(new Fact(new ParcelStreamId(command.NewParcelId),
                     new ParcelWasMigrated(
-                        command.ParcelId,
+                        command.OldParcelId,
+                        command.NewParcelId,
                         command.CaPaKey,
                         command.ParcelStatus,
                         command.IsRemoved,
@@ -46,7 +47,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
         }
 
         [Fact]
-        public void ThenParcelWasCorrectlyMutated()
+        public void StateCheck()
         {
             var command = new MigrateParcel(
                 Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
@@ -61,7 +62,8 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
             // Act
             var result = Parcel.MigrateParcel(
                 new ParcelFactory(NoSnapshotStrategy.Instance),
-                command.ParcelId,
+                command.OldParcelId,
+                command.NewParcelId,
                 command.CaPaKey,
                 command.ParcelStatus,
                 command.IsRemoved,
@@ -71,7 +73,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 
             // Assert
             result.Should().NotBeNull();
-            result.ParcelId.Should().Be(command.ParcelId);
+            result.ParcelId.Should().Be(command.NewParcelId);
             result.CaPaKey.Should().Be(command.CaPaKey);
             result.ParcelStatus.Should().Be(command.ParcelStatus);
             result.IsRemoved.Should().Be(command.IsRemoved);

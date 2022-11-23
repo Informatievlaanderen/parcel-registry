@@ -7,7 +7,7 @@ namespace ParcelRegistry.Legacy.Events.Crab
 
     [EventName("CRAB-TerrainObjectWasImported")]
     [EventDescription("Legacy event om tblterreinobject en tblterreinobject_hist te importeren voor kadPercelen.")]
-    public class TerrainObjectWasImportedFromCrab
+    public class TerrainObjectWasImportedFromCrab : IMessage
     {
         [EventPropertyDescription("CRAB-identificator van het terreinobject.")]
         public int TerrainObjectId { get; }

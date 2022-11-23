@@ -13,7 +13,7 @@ namespace ParcelRegistry.Legacy.Events
     [EventName("ParcelSnapshot")]
     [EventSnapshot(nameof(SnapshotContainer) + "<ParcelSnapshot>", typeof(SnapshotContainer))]
     [EventDescription("Snapshot of Parcel")]
-    public class ParcelSnapshot
+    public class ParcelSnapshot 
     {
         public Guid ParcelId { get; }
         public string CaPaKey { get; }
