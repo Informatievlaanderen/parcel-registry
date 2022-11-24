@@ -173,7 +173,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                 return new AddressPersistentLocalId(addressPersistentLocalId);
             });
             var markMigrated = new MarkParcelAsMigrated(
-                new Legacy.ParcelId(migrateParcel.ParcelId),
+                migrateParcel.OldParcelId,
                 migrateParcel.Provenance);
 
             await DispatchCommand(markMigrated, ct);
@@ -188,7 +188,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                 await backOfficeContext
                     .ParcelAddressRelations.AddAsync(
                         new ParcelAddressRelation(
-                            migrateParcel.ParcelId,
+                            migrateParcel.NewParcelId,
                             addressPersistentLocalId), ct);
             }
             await backOfficeContext.SaveChangesAsync(ct);

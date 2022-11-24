@@ -7,7 +7,7 @@ namespace ParcelRegistry.Legacy.Events.Crab
 
     [EventName("CRAB-TerrainObjectHouseNumberWasImported")]
     [EventDescription("Legacy event om tblterreinobject_huisnummer en tblterreinobject_huisnummer_hist te importeren voor kadPercelen.")]
-    public class TerrainObjectHouseNumberWasImportedFromCrab : ICrabEvent, IHasCrabKey<int>
+    public class TerrainObjectHouseNumberWasImportedFromCrab : IMessage, ICrabEvent, IHasCrabKey<int>
     {
         [EventPropertyDescription("Unieke sleutel.")]
         public int Key => TerrainObjectHouseNumberId;

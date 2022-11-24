@@ -21,8 +21,7 @@ namespace ParcelRegistry.Projector.Infrastructure
     using System;
     using System.Linq;
     using System.Reflection;
-    using Be.Vlaanderen.Basisregisters.Projector;
-    using Microsoft.OpenApi.Models;    
+    using Microsoft.OpenApi.Models;
     using System.Threading;
 
     /// <summary>Represents the startup process for the application.</summary>
@@ -116,9 +115,10 @@ namespace ParcelRegistry.Projector.Infrastructure
                 })
                 .Configure<ExtractConfig>(_configuration.GetSection("Extract"));
 
+            var featureToggleOptions =  _configuration.GetSection(FeatureToggleOptions.ConfigurationKey).Get<FeatureToggleOptions>();
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new LoggingModule(_configuration, services));
-            containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));
+            containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory, new UseProjectionsV2Toggle(featureToggleOptions.UseProjectionsV2)));
             _applicationContainer = containerBuilder.Build();
 
             return new AutofacServiceProvider(_applicationContainer);

@@ -6,10 +6,9 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
-    using ParcelRegistry.Parcel;
-    using ParcelRegistry.Parcel.Events;
-    using ParcelRegistry.Tests.Fixtures;
-    using Projections.Syndication.Address;
+    using Parcel;
+    using Parcel.Events;
+    using Fixtures;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -25,6 +24,7 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
             _sut = new ParcelFactory(IntervalStrategy.Default).Create();
             _parcelSnapshotV2 = new ParcelSnapshotV2(
                 Fixture.Create<ParcelId>(),
+                Fixture.Create<VbrCaPaKey>(),
                 Fixture.Create<ParcelStatus>(),
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
@@ -40,6 +40,7 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
         public void ThenAggregateParcelStateIsExpected()
         {
             _sut.ParcelId.Should().Be(new ParcelId(_parcelSnapshotV2.ParcelId));
+            _sut.CaPaKey.Should().Be(new VbrCaPaKey(_parcelSnapshotV2.CaPaKey));
             _sut.ParcelStatus.Should().Be(ParcelStatus.Parse(_parcelSnapshotV2.ParcelStatus));
             _sut.IsRemoved.Should().Be(_parcelSnapshotV2.IsRemoved);
             _sut.AddressPersistentLocalIds.Select(x => (int) x).Should()

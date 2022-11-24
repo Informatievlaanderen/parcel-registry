@@ -4,9 +4,9 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using FluentAssertions;
-    using ParcelRegistry.Parcel;
-    using ParcelRegistry.Parcel.Events;
-    using ParcelRegistry.Tests.Fixtures;
+    using Parcel;
+    using Parcel.Events;
+    using Fixtures;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -31,6 +31,7 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
 
             var parcelSnapshotV2 = (ParcelSnapshotV2)snapshot;
             parcelSnapshotV2.ParcelId.Should().Be(parcelWasMigrated.ParcelId);
+            parcelSnapshotV2.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
             parcelSnapshotV2.ParcelStatus.Should().Be(ParcelStatus.Parse(parcelSnapshotV2.ParcelStatus));
             parcelSnapshotV2.IsRemoved.Should().Be(parcelWasMigrated.IsRemoved);
             parcelSnapshotV2.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds);

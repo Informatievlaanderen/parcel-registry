@@ -8,7 +8,7 @@ namespace ParcelRegistry.Legacy.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("ParcelWasCorrectedToRetired")]
     [EventDescription("Het perceel kreeg status 'gehistoreerd' (via correctie).")]
-    public class ParcelWasCorrectedToRetired : IHasProvenance, ISetProvenance
+    public class ParcelWasCorrectedToRetired : IMessage, IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }

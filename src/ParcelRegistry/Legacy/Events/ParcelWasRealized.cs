@@ -8,7 +8,7 @@ namespace ParcelRegistry.Legacy.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("ParcelWasRealized")]
     [EventDescription("Het perceel kreeg status 'gerealiseerd'.")]
-    public class ParcelWasRealized : IHasProvenance, ISetProvenance
+    public class ParcelWasRealized : IMessage, IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }

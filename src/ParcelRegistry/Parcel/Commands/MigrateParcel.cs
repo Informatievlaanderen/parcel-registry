@@ -11,7 +11,9 @@ namespace ParcelRegistry.Parcel.Commands
     {
         private static readonly Guid Namespace = new Guid("2e07d81c-ebb9-43ed-96bc-d13911bc30c9");
 
-        public ParcelId ParcelId { get; }
+        public Legacy.ParcelId OldParcelId { get; }
+        public ParcelId NewParcelId { get; }
+        public VbrCaPaKey CaPaKey { get; }
         public ParcelStatus ParcelStatus { get; }
         public bool IsRemoved { get; }
         public List<AddressPersistentLocalId> AddressPersistentLocalIds { get; }
@@ -23,6 +25,7 @@ namespace ParcelRegistry.Parcel.Commands
 
         public MigrateParcel(
             Legacy.ParcelId parcelId,
+            VbrCaPaKey caPaKey,
             Legacy.ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
@@ -30,7 +33,9 @@ namespace ParcelRegistry.Parcel.Commands
             Coordinate? yCoordinate,
             Provenance provenance)
         {
-            ParcelId = new ParcelId(parcelId);
+            OldParcelId = parcelId;
+            NewParcelId = ParcelId.CreateFor(caPaKey);
+            CaPaKey = caPaKey;
             ParcelStatus = Legacy.ParcelStatusHelpers.Map(parcelStatus);
             IsRemoved = isRemoved;
             AddressPersistentLocalIds = addressPersistentLocalIds.ToList();
@@ -47,7 +52,9 @@ namespace ParcelRegistry.Parcel.Commands
 
         private IEnumerable<object> IdentityFields()
         {
-            yield return ParcelId.ToString();
+            yield return OldParcelId.ToString();
+            yield return NewParcelId.ToString();
+            yield return CaPaKey;
             yield return ParcelStatus;
             yield return IsRemoved.ToString();
 

@@ -23,6 +23,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 
             var command = new MigrateParcel(
                 Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
+                Fixture.Create<VbrCaPaKey>(),
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
@@ -32,10 +33,10 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 
             Assert(new Scenario()
                 .Given(
-                    new ParcelStreamId(command.ParcelId),
+                    new ParcelStreamId(command.NewParcelId),
                     parcelWasMigrated)
                 .When(command)
-                .Throws(new AggregateSourceException($"Parcel with id {command.ParcelId} already exists")));
+                .Throws(new AggregateSourceException($"Parcel with id {command.NewParcelId} already exists")));
         }
     }
 }
