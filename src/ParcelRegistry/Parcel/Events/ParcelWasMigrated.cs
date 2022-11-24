@@ -16,8 +16,14 @@ namespace ParcelRegistry.Parcel.Events
     {
         public const string EventName = "ParcelWasMigrated"; // BE CAREFUL CHANGING THIS!!
 
-        [EventPropertyDescription("Interne GUID van het perceel.")]
+        [EventPropertyDescription("Interne GUID van het gemigreerde perceel.")]
+        public Guid OldParcelId { get; }
+
+        [EventPropertyDescription("Interne GUID van het nieuwe perceel.")]
         public Guid ParcelId { get; }
+
+        [EventPropertyDescription("CaPaKey (= objectidentificator) van het perceel, waarbij forward slashes vervangen zijn door koppeltekens i.f.v. gebruik in URI's.")]
+        public string CaPaKey { get; }
 
         [EventPropertyDescription("De status van het perceel. Mogelijkheden: Realized en Retired.")]
         public string ParcelStatus { get; }
@@ -38,14 +44,18 @@ namespace ParcelRegistry.Parcel.Events
         public ProvenanceData Provenance { get; private set; }
 
         public ParcelWasMigrated(
-            ParcelId parcelId,
+            Legacy.ParcelId oldParcelId,
+            ParcelId newParcelId,
+            VbrCaPaKey caPaKey,
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
             Coordinate? xCoordinate,
             Coordinate? yCoordinate)
         {
-            ParcelId = parcelId;
+            OldParcelId = oldParcelId;
+            ParcelId = newParcelId;
+            CaPaKey = caPaKey;
             ParcelStatus = parcelStatus;
             IsRemoved = isRemoved;
             AddressPersistentLocalIds = addressPersistentLocalIds.Select(x => (int)x).ToList();
@@ -55,7 +65,9 @@ namespace ParcelRegistry.Parcel.Events
 
         [JsonConstructor]
         private ParcelWasMigrated(
+            Guid oldParcelId,
             Guid parcelId,
+            string caPaKey,
             string parcelStatus,
             bool isRemoved,
             IEnumerable<int> addressPersistentLocalIds,
@@ -63,7 +75,9 @@ namespace ParcelRegistry.Parcel.Events
             decimal? yCoordinate,
             ProvenanceData provenance)
             : this(
+                new Legacy.ParcelId(oldParcelId),
                 new ParcelId(parcelId),
+                new VbrCaPaKey(caPaKey),
                 ParcelRegistry.Parcel.ParcelStatus.Parse(parcelStatus),
                 isRemoved,
                 addressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
@@ -80,7 +94,9 @@ namespace ParcelRegistry.Parcel.Events
         public IEnumerable<string> GetHashFields()
         {
             var fields = Provenance.GetHashFields().ToList();
+            fields.Add(OldParcelId.ToString("D"));
             fields.Add(ParcelId.ToString("D"));
+            fields.Add(CaPaKey);
             fields.Add(ParcelStatus);
             fields.Add(IsRemoved.ToString());
             fields.AddRange(AddressPersistentLocalIds.Select(x => x.ToString(CultureInfo.InvariantCulture)));

@@ -8,7 +8,7 @@ namespace ParcelRegistry.Legacy.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("ParcelAddressWasDetached")]
     [EventDescription("Er werd een adres losgekoppeld van het perceel.")]
-    public class ParcelAddressWasDetached : IHasProvenance, ISetProvenance
+    public class ParcelAddressWasDetached : IMessage, IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }

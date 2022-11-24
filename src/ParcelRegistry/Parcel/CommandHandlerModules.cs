@@ -47,17 +47,19 @@ namespace ParcelRegistry.Parcel
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
-                    var streamId = new ParcelStreamId(message.Command.ParcelId);
+                    var streamId = new ParcelStreamId(message.Command.NewParcelId);
                     var parcel = await parcelRepository().GetOptionalAsync(streamId, ct);
 
                     if (parcel.HasValue)
                     {
-                        throw new AggregateSourceException($"Parcel with id {message.Command.ParcelId} already exists");
+                        throw new AggregateSourceException($"Parcel with id {message.Command.NewParcelId} already exists");
                     }
 
                     var newParcel = Parcel.MigrateParcel(
                         parcelFactory,
-                        message.Command.ParcelId,
+                        message.Command.OldParcelId,
+                        message.Command.NewParcelId,
+                        message.Command.CaPaKey,
                         message.Command.ParcelStatus,
                         message.Command.IsRemoved,
                         message.Command.AddressPersistentLocalIds,

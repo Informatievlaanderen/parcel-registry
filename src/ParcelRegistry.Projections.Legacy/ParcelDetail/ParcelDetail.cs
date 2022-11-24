@@ -67,7 +67,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
             builder.HasIndex(x => x.PersistentLocalId)
                 .IsUnique()
                 .HasFilter($"([{nameof(ParcelDetail.PersistentLocalId)}] IS NOT NULL)")
-                .HasDatabaseName("IX_ParcelDetails_PersistentLocalId_1");
+                .HasDatabaseName("IX_ParcelDetails_PersistentLocalId_1")
+                .IsClustered(false);
 
             builder.HasIndex(x => x.Removed);
             builder.HasIndex(x => x.Status);

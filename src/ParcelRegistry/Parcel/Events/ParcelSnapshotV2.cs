@@ -14,6 +14,7 @@ namespace ParcelRegistry.Parcel.Events
     public class ParcelSnapshotV2
     {
         public Guid ParcelId { get; }
+        public string CaPaKey { get; }
         public string ParcelStatus { get; }
         public bool IsRemoved { get; }
         public IEnumerable<int> AddressPersistentLocalIds { get; }
@@ -25,6 +26,7 @@ namespace ParcelRegistry.Parcel.Events
 
         public ParcelSnapshotV2(
             ParcelId parcelId,
+            VbrCaPaKey caPaKey,
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
@@ -34,6 +36,7 @@ namespace ParcelRegistry.Parcel.Events
             ProvenanceData lastProvenanceData)
         {
             ParcelId = parcelId;
+            CaPaKey = caPaKey;
             ParcelStatus = parcelStatus;
             IsRemoved = isRemoved;
             AddressPersistentLocalIds = addressPersistentLocalIds.Select(x => (int)x).ToList();
@@ -46,6 +49,7 @@ namespace ParcelRegistry.Parcel.Events
         [JsonConstructor]
         private ParcelSnapshotV2(
             Guid parcelId,
+            string caPaKey,
             string parcelStatus,
             bool isRemoved,
             IEnumerable<int> addressPersistentLocalIds,
@@ -55,6 +59,7 @@ namespace ParcelRegistry.Parcel.Events
             ProvenanceData lastProvenanceData)
             : this(
                 new ParcelId(parcelId),
+                new VbrCaPaKey(caPaKey),
                 ParcelRegistry.Parcel.ParcelStatus.Parse(parcelStatus),
                 isRemoved,
                 addressPersistentLocalIds.Select(id => new AddressPersistentLocalId(id)),

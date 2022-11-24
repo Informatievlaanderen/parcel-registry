@@ -8,7 +8,7 @@ namespace ParcelRegistry.Legacy.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("ParcelWasRemoved")]
     [EventDescription("Het perceel werd verwijderd.")]
-    public class ParcelWasRemoved : IHasProvenance, ISetProvenance
+    public class ParcelWasRemoved : IMessage, IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }

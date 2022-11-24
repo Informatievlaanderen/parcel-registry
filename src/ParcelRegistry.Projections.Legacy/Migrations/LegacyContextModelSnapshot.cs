@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParcelRegistry.Projections.Legacy;
 
+#nullable disable
+
 namespace ParcelRegistry.Projections.Legacy.Migrations
 {
     [DbContext(typeof(LegacyContext))]
@@ -15,9 +17,10 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.6")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.ProjectionStates.ProjectionStateItem", b =>
                 {
@@ -36,8 +39,9 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
                     b.Property<long>("Position")
                         .HasColumnType("bigint");
 
-                    b.HasKey("Name")
-                        .IsClustered();
+                    b.HasKey("Name");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Name"));
 
                     b.ToTable("ProjectionStates", "ParcelRegistryLegacy");
                 });
@@ -62,17 +66,16 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("VersionTimestamp");
 
-                    b.HasKey("ParcelId")
-                        .IsClustered(false);
+                    b.HasKey("ParcelId");
 
-                    b.HasIndex("PersistentLocalId")
-                        .IsClustered(true);
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("ParcelId"), false);
 
                     b.HasIndex("PersistentLocalId")
                         .IsUnique()
                         .HasDatabaseName("IX_ParcelDetails_PersistentLocalId_1")
-                        .HasFilter("([PersistentLocalId] IS NOT NULL)")
-                        .IsClustered(false);
+                        .HasFilter("([PersistentLocalId] IS NOT NULL)");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("PersistentLocalId"), false);
 
                     b.HasIndex("Removed");
 
@@ -89,8 +92,9 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
                     b.Property<Guid>("AddressId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("ParcelId", "AddressId")
-                        .IsClustered();
+                    b.HasKey("ParcelId", "AddressId");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("ParcelId", "AddressId"));
 
                     b.ToTable("ParcelAddresses", "ParcelRegistryLegacy");
                 });
@@ -103,14 +107,83 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
                     b.ToView("vw_ParcelDetailListCount", "ParcelRegistryLegacy");
                 });
 
+            modelBuilder.Entity("ParcelRegistry.Projections.Legacy.ParcelDetailV2.ParcelDetailAddressV2", b =>
+                {
+                    b.Property<Guid>("ParcelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AddressPersistentLocalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ParcelId", "AddressPersistentLocalId");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("ParcelId", "AddressPersistentLocalId"));
+
+                    b.ToTable("ParcelAddressesV2", "ParcelRegistryLegacy");
+                });
+
+            modelBuilder.Entity("ParcelRegistry.Projections.Legacy.ParcelDetailV2.ParcelDetailV2", b =>
+                {
+                    b.Property<Guid>("ParcelId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CaPaKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LastEventHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Removed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("Status");
+
+                    b.Property<DateTimeOffset>("VersionTimestampAsDateTimeOffset")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("VersionTimestamp");
+
+                    b.HasKey("ParcelId");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("ParcelId"), false);
+
+                    b.HasIndex("CaPaKey")
+                        .IsUnique();
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("CaPaKey"));
+
+                    b.HasIndex("Removed");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("ParcelDetailsV2", "ParcelRegistryLegacy");
+                });
+
+            modelBuilder.Entity("ParcelRegistry.Projections.Legacy.ParcelDetailV2.ParcelDetailV2ListViewCount", b =>
+                {
+                    b.Property<long>("Count")
+                        .HasColumnType("bigint");
+
+                    b.ToView("vw_ParcelDetailV2ListCount", "ParcelRegistryLegacy");
+                });
+
             modelBuilder.Entity("ParcelRegistry.Projections.Legacy.ParcelSyndication.ParcelSyndicationItem", b =>
                 {
                     b.Property<long>("Position")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("AddressesAsString")
+                    b.Property<string>("AddressPersistentLocalIdsAsString")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("AddressPersistentLocalIds");
+
+                    b.Property<string>("AddressesAsString")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("AddressIds");
 
                     b.Property<int?>("Application")
                         .HasColumnType("int");
@@ -155,8 +228,17 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
                     b.Property<DateTimeOffset>("SyndicationItemCreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.HasKey("Position")
-                        .IsClustered();
+                    b.Property<decimal?>("XCoordinate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("YCoordinate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Position");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Position"));
 
                     b.HasIndex("ParcelId");
 
@@ -176,7 +258,21 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ParcelRegistry.Projections.Legacy.ParcelDetailV2.ParcelDetailAddressV2", b =>
+                {
+                    b.HasOne("ParcelRegistry.Projections.Legacy.ParcelDetailV2.ParcelDetailV2", null)
+                        .WithMany("Addresses")
+                        .HasForeignKey("ParcelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ParcelRegistry.Projections.Legacy.ParcelDetail.ParcelDetail", b =>
+                {
+                    b.Navigation("Addresses");
+                });
+
+            modelBuilder.Entity("ParcelRegistry.Projections.Legacy.ParcelDetailV2.ParcelDetailV2", b =>
                 {
                     b.Navigation("Addresses");
                 });

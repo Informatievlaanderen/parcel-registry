@@ -63,6 +63,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectHouseNumberFromC
                     new Fact(_parcelId, command.ToLegacyEvent()),
                     new Fact(_snapshotId,
                         SnapshotBuilder.CreateDefaultSnapshot(_parcelId)
+                            .WithVbrCaPaKey(command.CaPaKey)
                             .WithLastModificationBasedOnCrab(Modification.Update)
                             .WithImportedSubaddressFromCrab(new List<AddressSubaddressWasImportedFromCrab>
                             {

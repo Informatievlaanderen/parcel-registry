@@ -18,8 +18,9 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         public Guid? ParcelId { get; set; }
         public string? CaPaKey { get; set; }
         public string? ChangeType { get; set; }
-
         public string? StatusAsString { get; set; }
+        public decimal? XCoordinate { get; set; }
+        public decimal? YCoordinate { get; set; }
 
         public ParcelStatus? Status
         {
@@ -33,6 +34,14 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         {
             get => GetDeserializedAddressIds();
             set => AddressesAsString = JsonConvert.SerializeObject(value);
+        }
+
+        public string? AddressPersistentLocalIdsAsString { get; set; }
+
+        public IReadOnlyCollection<int> AddressPersistentLocalIds
+        {
+            get => GetDeserializedAddressPersistentLocalIds();
+            set => AddressPersistentLocalIdsAsString = JsonConvert.SerializeObject(value);
         }
 
         public DateTimeOffset RecordCreatedAtAsDateTimeOffset { get; set; }
@@ -62,7 +71,14 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         {
             return string.IsNullOrEmpty(AddressesAsString)
                 ? new List<Guid>()
-                : JsonConvert.DeserializeObject<List<Guid>>(AddressesAsString);
+                : JsonConvert.DeserializeObject<List<Guid>>(AddressesAsString)!;
+        }
+
+        private List<int> GetDeserializedAddressPersistentLocalIds()
+        {
+            return string.IsNullOrEmpty(AddressPersistentLocalIdsAsString)
+                ? new List<int>()
+                : JsonConvert.DeserializeObject<List<int>>(AddressPersistentLocalIdsAsString)!;
         }
 
         public void AddAddressId(Guid addressId)
@@ -94,7 +110,10 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 ParcelId = ParcelId,
                 CaPaKey = CaPaKey,
                 AddressIds = AddressIds,
+                AddressPersistentLocalIds = AddressPersistentLocalIds,
                 Status = Status,
+                XCoordinate = XCoordinate,
+                YCoordinate = YCoordinate,
 
                 RecordCreatedAt = RecordCreatedAt,
                 Application = Application,
@@ -133,8 +152,15 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             b.Property(x => x.StatusAsString)
                 .HasColumnName("Status");
 
+            b.Property(x => x.XCoordinate).HasPrecision(18, 2);
+            b.Property(x => x.YCoordinate).HasPrecision(18, 2);
+
             b.Ignore(x => x.AddressIds);
             b.Property(x => x.AddressesAsString)
+                .HasColumnName("AddressIds");
+
+            b.Ignore(x => x.AddressPersistentLocalIds);
+            b.Property(x => x.AddressPersistentLocalIdsAsString)
                 .HasColumnName("AddressPersistentLocalIds");
 
             b.Property(x => x.RecordCreatedAtAsDateTimeOffset).HasColumnName("RecordCreatedAt");

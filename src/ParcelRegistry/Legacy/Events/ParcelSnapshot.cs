@@ -13,20 +13,22 @@ namespace ParcelRegistry.Legacy.Events
     [EventName("ParcelSnapshot")]
     [EventSnapshot(nameof(SnapshotContainer) + "<ParcelSnapshot>", typeof(SnapshotContainer))]
     [EventDescription("Snapshot of Parcel")]
-    public class ParcelSnapshot
+    public class ParcelSnapshot 
     {
         public Guid ParcelId { get; }
+        public string CaPaKey { get; }
         public string? ParcelStatus { get; }
         public bool IsRemoved { get; }
         public Modification LastModificationBasedOnCrab { get; }
         public Dictionary<int, int> ActiveHouseNumberIdsByTerrainObjectHouseNr { get; }
         public IEnumerable<AddressSubaddressWasImportedFromCrab> ImportedSubaddressFromCrab { get; }
         public IEnumerable<Guid> AddressIds { get; }
-
         public decimal? XCoordinate { get; }
         public decimal? YCoordinate { get; }
 
-        public ParcelSnapshot(ParcelId parcelId,
+        public ParcelSnapshot(
+            ParcelId parcelId,
+            VbrCaPaKey caPaKey,
             ParcelStatus? parcelStatus,
             bool isRemoved,
             Modification lastModificationBasedOnCrab,
@@ -37,6 +39,7 @@ namespace ParcelRegistry.Legacy.Events
             CrabCoordinate? yCoordinate)
         {
             ParcelId = parcelId;
+            CaPaKey = caPaKey;
             ParcelStatus = parcelStatus ?? string.Empty;
             IsRemoved = isRemoved;
             LastModificationBasedOnCrab = lastModificationBasedOnCrab;
@@ -51,6 +54,7 @@ namespace ParcelRegistry.Legacy.Events
         [JsonConstructor]
         private ParcelSnapshot(
             Guid parcelId,
+            string vbrCaPaKey,
             string parcelStatus,
             bool isRemoved,
             Modification lastModificationBasedOnCrab,
@@ -61,6 +65,7 @@ namespace ParcelRegistry.Legacy.Events
             decimal? yCoordinate)
             : this(
                 new ParcelId(parcelId),
+                new VbrCaPaKey(vbrCaPaKey),
                 string.IsNullOrEmpty(parcelStatus) ? null : Legacy.ParcelStatus.Parse(parcelStatus),
                 isRemoved,
                 lastModificationBasedOnCrab,

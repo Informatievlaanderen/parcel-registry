@@ -43,6 +43,7 @@ namespace ParcelRegistry.Tests.Legacy.WhenImportingTerrainObjectFromCrab
                     new Fact(parcelId, command.ToLegacyEvent()),
                     new Fact(snapshotId,
                         SnapshotBuilder.CreateDefaultSnapshot(parcelId)
+                            .WithVbrCaPaKey(command.CaPaKey)
                             .WithParcelStatus(ParcelStatus.Realized)
                             .WithCoordinates(command.XCoordinate, command.YCoordinate)
                             .Build(2, EventSerializerSettings))

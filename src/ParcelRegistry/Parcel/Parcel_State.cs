@@ -4,7 +4,6 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Events;
-    using ParcelRegistry.Legacy;
 
     public partial class Parcel
     {
@@ -16,6 +15,7 @@ namespace ParcelRegistry.Parcel
         private readonly List<AddressPersistentLocalId> _addressPersistentLocalIds = new();
 
         public ParcelId ParcelId { get; private set; }
+        public VbrCaPaKey CaPaKey { get; private set; }
         public ParcelStatus ParcelStatus { get; private set; }
         public IReadOnlyList<AddressPersistentLocalId> AddressPersistentLocalIds => _addressPersistentLocalIds;
 
@@ -42,6 +42,7 @@ namespace ParcelRegistry.Parcel
         private void When(ParcelWasMigrated @event)
         {
             ParcelId = new ParcelId(@event.ParcelId);
+            CaPaKey = new VbrCaPaKey(@event.CaPaKey);
             ParcelStatus = ParcelStatus.Parse(@event.ParcelStatus);
             IsRemoved = @event.IsRemoved;
 
@@ -64,6 +65,7 @@ namespace ParcelRegistry.Parcel
         private void When(ParcelSnapshotV2 @event)
         {
             ParcelId = new ParcelId(@event.ParcelId);
+            CaPaKey = new VbrCaPaKey(@event.CaPaKey);
             ParcelStatus = ParcelStatus.Parse(@event.ParcelStatus);
             IsRemoved = @event.IsRemoved;
 

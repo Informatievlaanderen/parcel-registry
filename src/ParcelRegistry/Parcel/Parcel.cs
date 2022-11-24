@@ -9,7 +9,9 @@ namespace ParcelRegistry.Parcel
     {
         public static Parcel MigrateParcel(
             IParcelFactory parcelFactory,
+            Legacy.ParcelId oldParcelId,
             ParcelId parcelId,
+            VbrCaPaKey caPaKey,
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
@@ -19,7 +21,9 @@ namespace ParcelRegistry.Parcel
             var newParcel = parcelFactory.Create();
             newParcel.ApplyChange(
                 new ParcelWasMigrated(
+                    oldParcelId,
                     parcelId,
+                    caPaKey,
                     parcelStatus,
                     isRemoved,
                     addressPersistentLocalIds,
@@ -45,6 +49,7 @@ namespace ParcelRegistry.Parcel
         {
             return new ParcelSnapshotV2(
                 ParcelId,
+                CaPaKey,
                 ParcelStatus,
                 IsRemoved,
                 _addressPersistentLocalIds,

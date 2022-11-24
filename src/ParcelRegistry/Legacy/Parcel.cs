@@ -19,6 +19,7 @@ namespace ParcelRegistry.Legacy
         {
             return new MigrateParcel(
                 ParcelId,
+                CaPaKey,
                 IsRealized
                     ? ParcelStatus.Realized
                     : ParcelStatus.Retired,

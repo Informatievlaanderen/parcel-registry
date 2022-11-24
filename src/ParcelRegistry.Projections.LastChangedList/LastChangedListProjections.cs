@@ -1,12 +1,15 @@
 namespace ParcelRegistry.Projections.LastChangedList
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList.Model;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Legacy.Events;
     using Legacy.Events.Crab;
+    using Parcel.Events;
 
     [ConnectedProjectionName("Cache markering percelen")]
     [ConnectedProjectionDescription("Projectie die markeert voor hoeveel percelen de gecachte data nog geüpdated moeten worden.")]
@@ -17,6 +20,7 @@ namespace ParcelRegistry.Projections.LastChangedList
         public LastChangedListProjections()
             : base(SupportedAcceptTypes)
         {
+            #region Legacy
             When<Envelope<ParcelWasRegistered>>(async (context, message, ct) =>
             {
                 var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
@@ -68,9 +72,43 @@ namespace ParcelRegistry.Projections.LastChangedList
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
             });
 
-            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
-            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (_, _, _) => await DoNothing());
+            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (_, _, _) => await DoNothing());
+            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (_, _, _) => await DoNothing());
+
+            When<Envelope<ParcelWasMarkedAsMigrated>>(async (context, message, ct) =>
+            {
+                var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
+                context.LastChangedList.RemoveRange(records);
+            });
+            #endregion
+
+            When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
+            {
+                var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
+                RebuildKeyAndUri(records, message.Message.ParcelId);
+            });
+        }
+
+        private static void RebuildKeyAndUri(IEnumerable<LastChangedRecord>? attachedRecords, Guid parcelId)
+        {
+            if (attachedRecords == null)
+            {
+                return;
+            }
+
+            foreach (var record in attachedRecords)
+            {
+                if (record.CacheKey != null)
+                {
+                    record.CacheKey = string.Format(record.CacheKey, parcelId.ToString());
+                }
+
+                if (record.Uri != null)
+                {
+                    record.Uri = string.Format(record.Uri, parcelId.ToString());
+                }
+            }
         }
 
         protected override string BuildCacheKey(AcceptType acceptType, string identifier)

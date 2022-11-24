@@ -8,7 +8,7 @@ namespace ParcelRegistry.Legacy.Events
     [EventTags(EventTag.For.Sync)]
     [EventName("ParcelAddressWasAttached")]
     [EventDescription("Er werd een adres gekoppeld aan het perceel.")]
-    public class ParcelAddressWasAttached : IHasProvenance, ISetProvenance
+    public class ParcelAddressWasAttached : IMessage, IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }

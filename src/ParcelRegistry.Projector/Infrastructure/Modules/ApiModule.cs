@@ -22,6 +22,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Projections.LastChangedList;
     using ParcelRegistry.Projections.Legacy;
     using ParcelRegistry.Projections.Legacy.ParcelDetail;
+    using ParcelRegistry.Projections.Legacy.ParcelDetailV2;
     using ParcelRegistry.Projections.Legacy.ParcelSyndication;
 
     public class ApiModule : Module
@@ -29,15 +30,18 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
         private readonly IConfiguration _configuration;
         private readonly IServiceCollection _services;
         private readonly ILoggerFactory _loggerFactory;
+        private readonly UseProjectionsV2Toggle _useProjectionsV2Toggle;
 
         public ApiModule(
             IConfiguration configuration,
             IServiceCollection services,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            UseProjectionsV2Toggle useProjectionsV2Toggle)
         {
             _configuration = configuration;
             _services = services;
             _loggerFactory = loggerFactory;
+            _useProjectionsV2Toggle = useProjectionsV2Toggle;
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -54,21 +58,27 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
 
         private void RegisterProjectionSetup(ContainerBuilder builder)
         {
-            builder.RegisterModule(
-                new EventHandlingModule(
-                    typeof(DomainAssemblyMarker).Assembly,
-                    EventsJsonSerializerSettingsProvider.CreateSerializerSettings()
-                )
-            );
+            builder
+                .RegisterModule(
+                    new EventHandlingModule(
+                        typeof(DomainAssemblyMarker).Assembly,
+                        EventsJsonSerializerSettingsProvider.CreateSerializerSettings()))
+                .RegisterModule<EnvelopeModule>()
+                .RegisterEventStreamModule(_configuration)
+                .RegisterModule(new ProjectorModule(_configuration));
 
-            builder.RegisterModule<EnvelopeModule>();
-
-            builder.RegisterEventstreamModule(_configuration);
-
-            builder.RegisterModule(new ProjectorModule(_configuration));
-            RegisterExtractProjections(builder);
             RegisterLastChangedProjections(builder);
-            RegisterLegacyProjections(builder);
+
+            if (_useProjectionsV2Toggle.FeatureEnabled)
+            {
+                RegisterExtractV2Projections(builder);
+                RegisterLegacyV2Projections(builder);
+            }
+            else
+            {
+                RegisterExtractProjections(builder);
+                RegisterLegacyProjections(builder);
+            }
         }
 
         private void RegisterExtractProjections(ContainerBuilder builder)
@@ -86,6 +96,25 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterProjections<ParcelExtractProjections, ExtractContext>(
                     context => new ParcelExtractProjections(context.Resolve<IOptions<ExtractConfig>>(),
                         DbaseCodePage.Western_European_ANSI.ToEncoding()), ConnectedProjectionSettings.Default);
+        }
+
+        private void RegisterExtractV2Projections(ContainerBuilder builder)
+        {
+            builder.RegisterModule(
+                new ExtractModule(
+                    _configuration,
+                    _services,
+                    _loggerFactory));
+
+            builder
+                .RegisterProjectionMigrator<ExtractContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<ParcelExtractV2Projections, ExtractContext>(
+                    context => new ParcelExtractV2Projections(
+                        context.Resolve<IOptions<ExtractConfig>>(),
+                        DbaseCodePage.Western_European_ANSI.ToEncoding()),
+                    ConnectedProjectionSettings.Default);
         }
 
         private void RegisterLastChangedProjections(ContainerBuilder builder)
@@ -122,6 +151,22 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ParcelDetailProjections, LegacyContext>(ConnectedProjectionSettings.Default)
+                .RegisterProjections<ParcelSyndicationProjections, LegacyContext>(ConnectedProjectionSettings.Default);
+        }
+
+        private void RegisterLegacyV2Projections(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new LegacyModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory));
+            builder
+                .RegisterProjectionMigrator<LegacyContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<ParcelDetailV2Projections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelSyndicationProjections, LegacyContext>(ConnectedProjectionSettings.Default);
         }
     }
