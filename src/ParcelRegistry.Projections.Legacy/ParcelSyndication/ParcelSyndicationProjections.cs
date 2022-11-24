@@ -134,12 +134,13 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     Position = message.Position,
                     ParcelId = message.Message.ParcelId,
                     CaPaKey = message.Message.CaPaKey,
-                    RecordCreatedAt = message.Message.Provenance.Timestamp,
-                    LastChangedOn = message.Message.Provenance.Timestamp,
-                    ChangeType = message.EventName,
+                    Status = ParcelStatus.Parse(message.Message.ParcelStatus),
                     XCoordinate = message.Message.XCoordinate,
                     YCoordinate = message.Message.YCoordinate,
                     AddressPersistentLocalIds = message.Message.AddressPersistentLocalIds,
+                    RecordCreatedAt = message.Message.Provenance.Timestamp,
+                    LastChangedOn = message.Message.Provenance.Timestamp,
+                    ChangeType = message.EventName,
                     SyndicationItemCreatedAt = DateTimeOffset.Now
                 };
 
