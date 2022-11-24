@@ -20,6 +20,7 @@ namespace ParcelRegistry.Tests.Fixtures
         {
             fixture.Customizations.Add(new LocalDateGenerator());
             fixture.Customizations.Add(new LocalTimeGenerator());
+            fixture.Customizations.Add(new InstantGenerator());
             fixture.Customizations.Add(new LocalDateTimeGenerator());
         }
 
@@ -56,6 +57,24 @@ namespace ParcelRegistry.Tests.Fixtures
                 }
 
                 return LocalTime.FromTicksSinceMidnight(DateTime.Now.TimeOfDay.Ticks);
+            }
+        }
+
+        public class InstantGenerator : ISpecimenBuilder
+        {
+            public object Create(object request, ISpecimenContext context)
+            {
+                if (context == null)
+                {
+                    throw new ArgumentNullException(nameof(context));
+                }
+
+                if (!typeof(Instant).Equals(request))
+                {
+                    return new NoSpecimen();
+                }
+
+                return Instant.FromDateTimeOffset(DateTimeOffset.Now);
             }
         }
 
