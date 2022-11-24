@@ -17,7 +17,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     [ConnectedProjectionDescription("Projectie die de percelen data voor het percelen extract voorziet.")]
     public class ParcelExtractV2Projections : ConnectedProjection<ExtractContext>
     {
-        private const string InUse = "Gerealiseerd";
+        private const string Realized = "Gerealiseerd";
         private const string Retired = "Gehistoreerd";
         private readonly Encoding _encoding;
 
@@ -49,7 +49,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
 
         private static readonly IDictionary<ParcelStatus, string> StatusMapping = new Dictionary<ParcelStatus, string>
         {
-            { ParcelStatus.Realized, InUse },
+            { ParcelStatus.Realized, Realized },
             { ParcelStatus.Retired, Retired }
         };
 

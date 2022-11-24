@@ -6,7 +6,6 @@ namespace ParcelRegistry.Projections.Legacy
     using ParcelDetail;
     using ParcelDetailV2;
     using ParcelSyndication;
-    using ParcelDetailListViewCount = ParcelDetail.ParcelDetailListViewCount;
 
     public class LegacyContext : RunnerDbContext<LegacyContext>
     {

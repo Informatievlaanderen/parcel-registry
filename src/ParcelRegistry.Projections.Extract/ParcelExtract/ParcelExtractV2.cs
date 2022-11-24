@@ -7,8 +7,8 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
 
     public class ParcelExtractItemV2
     {
-        public Guid? ParcelId { get; set; }
-        public string? CaPaKey { get; set; }
+        public Guid ParcelId { get; set; }
+        public string CaPaKey { get; set; }
         public byte[]? DbaseRecord { get; set; }
     }
 
