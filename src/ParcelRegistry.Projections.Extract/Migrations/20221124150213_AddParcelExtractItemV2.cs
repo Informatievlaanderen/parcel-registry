@@ -15,7 +15,7 @@ namespace ParcelRegistry.Projections.Extract.Migrations
                 columns: table => new
                 {
                     ParcelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CaPaKey = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CaPaKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DbaseRecord = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>

@@ -12,7 +12,7 @@ using ParcelRegistry.Projections.Extract;
 namespace ParcelRegistry.Projections.Extract.Migrations
 {
     [DbContext(typeof(ExtractContext))]
-    [Migration("20221123083657_AddParcelExtractItemV2")]
+    [Migration("20221124150213_AddParcelExtractItemV2")]
     partial class AddParcelExtractItemV2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,11 +73,12 @@ namespace ParcelRegistry.Projections.Extract.Migrations
 
             modelBuilder.Entity("ParcelRegistry.Projections.Extract.ParcelExtract.ParcelExtractItemV2", b =>
                 {
-                    b.Property<Guid?>("ParcelId")
+                    b.Property<Guid>("ParcelId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CaPaKey")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<byte[]>("DbaseRecord")

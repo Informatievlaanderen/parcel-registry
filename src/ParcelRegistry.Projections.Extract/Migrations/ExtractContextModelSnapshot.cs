@@ -71,11 +71,12 @@ namespace ParcelRegistry.Projections.Extract.Migrations
 
             modelBuilder.Entity("ParcelRegistry.Projections.Extract.ParcelExtract.ParcelExtractItemV2", b =>
                 {
-                    b.Property<Guid?>("ParcelId")
+                    b.Property<Guid>("ParcelId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CaPaKey")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<byte[]>("DbaseRecord")
