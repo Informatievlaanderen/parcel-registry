@@ -20,6 +20,9 @@ nuget AsyncEnumerator 4.0.2
 
 nuget Destructurama.JsonNet 2.0.0
 
+nuget MediatR 10.0.1
+nuget MediatR.Contracts 1.0.1
+
 nuget System.Interactive.Async 6.0.1 // try to remove later: seems some dependency on core app not being picked up
 
 nuget Microsoft.EntityFrameworkCore.Design 6.0.3
