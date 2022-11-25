@@ -1,3 +1,11 @@
+## [4.2.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.2.1...v4.2.2) (2022-11-25)
+
+
+### Bug Fixes
+
+* address consumer ([#477](https://github.com/informatievlaanderen/parcel-registry/issues/477)) ([9682cb5](https://github.com/informatievlaanderen/parcel-registry/commit/9682cb5efff650b88a8244d5b69a098ce3408ab4))
+* extend removed check GRAR-3581 ([32f96af](https://github.com/informatievlaanderen/parcel-registry/commit/32f96af1bf0c9220a95fcd09c4812081837edf6a))
+
 ## [4.2.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.2.0...v4.2.1) (2022-11-25)
 
 
