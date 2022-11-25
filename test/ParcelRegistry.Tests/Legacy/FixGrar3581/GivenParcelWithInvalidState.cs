@@ -21,7 +21,31 @@ namespace ParcelRegistry.Tests.Legacy.FixGrar3581
         }
 
         [Fact]
-        public void ThenStateIsFixed()
+        public void WithRetired_ThenStateIsFixed()
+        {
+            var commonAddressId = Fixture.Create<AddressId>();
+            var addressIdToRemove = Fixture.Create<AddressId>();
+            var addressIdToAdd = Fixture.Create<AddressId>();
+
+            var parcelId = Fixture.Create<ParcelId>();
+
+            Assert(new Scenario()
+                .Given(parcelId,
+                    Fixture.Create<ParcelWasRegistered>(),
+                    Fixture.Create<ParcelWasRetired>(),
+                    Fixture.Create<ParcelAddressWasAttached>()
+                        .WithAddressId(commonAddressId),
+                    Fixture.Create<ParcelAddressWasAttached>()
+                        .WithAddressId(addressIdToRemove)) 
+                .When(new FixGrar3581(parcelId, ParcelStatus.Realized, new List<AddressId> { commonAddressId, addressIdToAdd }))
+                .Then(
+                    new Fact(parcelId, new ParcelWasCorrectedToRealized(parcelId)),
+                    new Fact(parcelId, new ParcelAddressWasDetached(parcelId, addressIdToRemove)),
+                    new Fact(parcelId, new ParcelAddressWasAttached(parcelId, addressIdToAdd))));
+        }
+
+        [Fact]
+        public void WithRealized_ThenStateIsFixed()
         {
             var commonAddressId = Fixture.Create<AddressId>();
             var addressIdToRemove = Fixture.Create<AddressId>();
@@ -36,7 +60,7 @@ namespace ParcelRegistry.Tests.Legacy.FixGrar3581
                     Fixture.Create<ParcelAddressWasAttached>()
                         .WithAddressId(commonAddressId),
                     Fixture.Create<ParcelAddressWasAttached>()
-                        .WithAddressId(addressIdToRemove)) 
+                        .WithAddressId(addressIdToRemove))
                 .When(new FixGrar3581(parcelId, ParcelStatus.Retired, new List<AddressId> { commonAddressId, addressIdToAdd }))
                 .Then(
                     new Fact(parcelId, new ParcelWasCorrectedToRetired(parcelId)),
