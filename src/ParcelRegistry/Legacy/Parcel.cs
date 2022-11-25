@@ -237,6 +237,11 @@ namespace ParcelRegistry.Legacy
             ParcelStatus parcelStatus,
             IList<AddressId> addressIds)
         {
+            if (IsRemoved)
+            {
+                return;
+            }
+
             if (parcelStatus == ParcelStatus.Realized && !IsRealized)
             {
                 ApplyChange(new ParcelWasCorrectedToRealized(ParcelId));
