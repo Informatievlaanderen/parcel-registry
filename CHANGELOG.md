@@ -1,3 +1,23 @@
+## [4.2.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.2.0...v4.2.1) (2022-11-25)
+
+
+### Bug Fixes
+
+* remove migrator from deploy to stg ([21362db](https://github.com/informatievlaanderen/parcel-registry/commit/21362dbc0f9a1df8af9538858c4360b688e9deb4))
+
+# [4.2.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.9...v4.2.0) (2022-11-24)
+
+
+### Features
+
+* add ability to fix GRAR3581 invalid parcel state ([#471](https://github.com/informatievlaanderen/parcel-registry/issues/471)) ([0965e98](https://github.com/informatievlaanderen/parcel-registry/commit/0965e98f306d2d2991e2e54e5748099288d25d0c))
+* add address consumer ([496b80b](https://github.com/informatievlaanderen/parcel-registry/commit/496b80b221eb6ff7b1dbb3860acedfe577e53c58))
+* add backoffice proj ([5edde63](https://github.com/informatievlaanderen/parcel-registry/commit/5edde636e8424a015432759d39e5adf5208f7854))
+* add migrator ([0610725](https://github.com/informatievlaanderen/parcel-registry/commit/061072517fe54877f056a275969a561fefc755ac))
+* add V2 projections ([06c3baf](https://github.com/informatievlaanderen/parcel-registry/commit/06c3baf197da815dd13b48210f1f826961a6ec11))
+* mark as migrated ([6a44512](https://github.com/informatievlaanderen/parcel-registry/commit/6a4451284a7c66a6b4dd3eef908d0fa92c5d0f6b))
+* new aggregate snapshotting + migration event and command ([340593e](https://github.com/informatievlaanderen/parcel-registry/commit/340593e8be7f0757086598a4b920789e6cac6aa4))
+
 ## [4.1.9](https://github.com/informatievlaanderen/parcel-registry/compare/v4.1.8...v4.1.9) (2022-11-03)
 
 
