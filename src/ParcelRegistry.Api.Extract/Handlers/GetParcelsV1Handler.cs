@@ -5,11 +5,11 @@ namespace ParcelRegistry.Api.Extract.Handlers
     using MediatR;
     using ParcelRegistry.Projections.Extract;
 
-    public class GetParcelsHandler : RequestHandler<GetParcelsRequest, IsolationExtractArchive>
+    public class GetParcelsV1Handler : RequestHandler<GetParcelsRequest, IsolationExtractArchive>
     {
         private readonly ExtractContext _context;
 
-        public GetParcelsHandler(ExtractContext context)
+        public GetParcelsV1Handler(ExtractContext context)
         {
             _context = context;
         }

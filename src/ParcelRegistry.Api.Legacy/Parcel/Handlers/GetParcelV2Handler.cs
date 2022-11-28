@@ -47,14 +47,15 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
                 throw new ApiException("Onbestaand perceel.", StatusCodes.Status404NotFound);
             }
 
-            var addressPersistentLocalIds = parcel.Addresses.Select(x => x.AddressPersistentLocalId);
-
             return new ParcelResponse(
                     _responseOptions.Value.Naamruimte,
                     parcel.Status.MapToPerceelStatus(),
                     parcel.CaPaKey,
                     parcel.VersionTimestamp.ToBelgianDateTimeOffset(),
-                    addressPersistentLocalIds.Select(x => x.ToString()).ToList(),
+                    parcel.Addresses
+                        .Select(x => x.AddressPersistentLocalId.ToString())
+                        .OrderBy(x => x)
+                        .ToList(),
                     _responseOptions.Value.AdresDetailUrl);
         }
     }

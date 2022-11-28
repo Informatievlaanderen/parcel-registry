@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
+﻿namespace ParcelRegistry.Api.Oslo.Parcel.Handlers
 {
     using System.Linq;
     using System.Threading;
@@ -11,12 +11,12 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
     using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
-    using Requests;
     using Projections.Legacy;
     using Projections.Syndication;
+    using Requests;
     using Responses;
 
-    public class GetParcelV1Handler : IRequestHandler<GetParcelRequest, ParcelResponse>
+    public class GetParcelV1Handler : IRequestHandler<GetParcelRequest, ParcelOsloResponse>
     {
         private readonly LegacyContext _context;
         private readonly SyndicationContext _syndicationContext;
@@ -32,7 +32,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
             _responseOptions = responseOptions;
         }
 
-        public async Task<ParcelResponse> Handle(GetParcelRequest request, CancellationToken cancellationToken)
+        public async Task<ParcelOsloResponse> Handle(GetParcelRequest request, CancellationToken cancellationToken)
         {
             var parcel =
                 await _context
@@ -42,14 +42,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
                     .SingleOrDefaultAsync(item => item.PersistentLocalId == request.CaPaKey, cancellationToken);
 
             if (parcel is not null && parcel.Removed)
-            {
                 throw new ApiException("Perceel werd verwijderd.", StatusCodes.Status410Gone);
-            }
 
             if (parcel is null)
-            {
                 throw new ApiException("Onbestaand perceel.", StatusCodes.Status404NotFound);
-            }
 
             var addressIds = parcel.Addresses.Select(x => x.AddressId);
 
@@ -61,8 +57,9 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
                 .OrderBy(x => x) //sorts on string! other order as a number!
                 .ToListAsync(cancellationToken);
 
-            return new ParcelResponse(
+            return new ParcelOsloResponse(
                 _responseOptions.Value.Naamruimte,
+                _responseOptions.Value.ContextUrlDetail,
                 parcel.Status.MapToPerceelStatus(),
                 parcel.PersistentLocalId,
                 parcel.VersionTimestamp.ToBelgianDateTimeOffset(),
