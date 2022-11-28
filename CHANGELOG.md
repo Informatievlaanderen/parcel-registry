@@ -1,3 +1,10 @@
+## [4.3.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.3.0...v4.3.1) (2022-11-28)
+
+
+### Bug Fixes
+
+* deploy migrator ([79b18b5](https://github.com/informatievlaanderen/parcel-registry/commit/79b18b5ed887b7cd49252afaec99911438dfbcd5))
+
 # [4.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.2.2...v4.3.0) (2022-11-28)
 
 
