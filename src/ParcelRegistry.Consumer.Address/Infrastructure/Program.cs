@@ -150,7 +150,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
             var loggerFactory = tempProvider.GetRequiredService<ILoggerFactory>();
 
             builder.RegisterModule(new DataDogModule(configuration));
-            builder.RegisterModule(new ConsumerModule(configuration, services, loggerFactory, ServiceLifetime.Transient));
+            builder.RegisterModule(new ConsumerAddressModule(configuration, services, loggerFactory, ServiceLifetime.Transient));
 
             builder.Populate(services);
 

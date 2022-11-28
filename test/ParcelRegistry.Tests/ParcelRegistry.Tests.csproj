@@ -2,6 +2,8 @@
   <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ParcelRegistry.Api.BackOffice.Handlers.Lambda\ParcelRegistry.Api.BackOffice.Handlers.Lambda.csproj" />
+    <ProjectReference Include="..\..\src\ParcelRegistry.Api.BackOffice\ParcelRegistry.Api.BackOffice.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Api.Legacy\ParcelRegistry.Api.Legacy.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Consumer.Address\ParcelRegistry.Consumer.Address.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry\ParcelRegistry.csproj" />

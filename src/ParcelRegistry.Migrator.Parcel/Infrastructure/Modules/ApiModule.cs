@@ -44,7 +44,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure.Modules
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule<EnvelopeModule>()
                 .RegisterModule(new EditModule(_configuration))
-                .RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new ConsumerAddressModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory))
                 .RegisterEventStreamModule(_configuration);
 
