@@ -18,7 +18,6 @@ namespace ParcelRegistry.Parcel
         public VbrCaPaKey CaPaKey { get; private set; }
         public ParcelStatus ParcelStatus { get; private set; }
         public IReadOnlyList<AddressPersistentLocalId> AddressPersistentLocalIds => _addressPersistentLocalIds;
-
         public Coordinate? XCoordinate { get; private set; }
         public Coordinate? YCoordinate { get; private set; }
 

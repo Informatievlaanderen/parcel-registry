@@ -20,6 +20,9 @@ nuget AsyncEnumerator 4.0.2
 
 nuget Destructurama.JsonNet 2.0.0
 
+nuget MediatR 10.0.1
+nuget MediatR.Contracts 1.0.1
+
 nuget System.Interactive.Async 6.0.1 // try to remove later: seems some dependency on core app not being picked up
 
 nuget Microsoft.EntityFrameworkCore.Design 6.0.3
@@ -37,7 +40,7 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 7.0.0
 
 nuget Be.Vlaanderen.Basisregisters.Api 18.1.1
 
-nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 3.0.0
+nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 3.0.1
 
 nuget Be.Vlaanderen.Basisregisters.CommandHandling 7.0.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 7.0.0

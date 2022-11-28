@@ -27,10 +27,17 @@ namespace ParcelRegistry.Api.Extract.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder
-                .RegisterModule(new DataDogModule(_configuration));
+            var useProjectionsV2ConfigValue = _configuration.GetSection("FeatureToggles")["UseProjectionsV2"];
+            var useProjectionsV2 = false;
+
+            if (!string.IsNullOrEmpty(useProjectionsV2ConfigValue))
+            {
+                useProjectionsV2 = bool.Parse(useProjectionsV2ConfigValue);
+            }
 
             builder
+                .RegisterModule(new MediatRModule(useProjectionsV2))
+                .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory, false));
 
             builder

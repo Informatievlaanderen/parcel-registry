@@ -1,14 +1,15 @@
 namespace ParcelRegistry.Tests.Legacy.WhenParcelWasMarkedAsMigrated
 {
-    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using Fixtures;
+    using global::AutoFixture;
     using ParcelRegistry.Legacy;
     using ParcelRegistry.Legacy.Commands;
     using ParcelRegistry.Legacy.Events;
     using Xunit;
     using Xunit.Abstractions;
-    using global::AutoFixture;
+    using WithFixedParcelId = AutoFixture.WithFixedParcelId;
 
     public class GivenParcel : ParcelRegistryTest
     {

@@ -4,12 +4,14 @@ namespace ParcelRegistry.Tests.Legacy.FixGrar3581
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using Fixtures;
     using global::AutoFixture;
     using ParcelRegistry.Legacy;
     using ParcelRegistry.Legacy.Commands.Fixes;
     using ParcelRegistry.Legacy.Events;
     using Xunit;
     using Xunit.Abstractions;
+    using WithFixedParcelId = AutoFixture.WithFixedParcelId;
 
     public class GivenParcelWithInvalidState : ParcelRegistryTest
     {

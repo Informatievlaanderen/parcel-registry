@@ -5,6 +5,7 @@ namespace ParcelRegistry.Api.Extract.Extracts
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Microsoft.EntityFrameworkCore;
+    using Handlers;
     using Projections.Extract;
     using Projections.Extract.ParcelExtract;
 
@@ -26,13 +27,13 @@ namespace ParcelRegistry.Api.Extract.Extracts
             };
 
             yield return ExtractBuilder.CreateDbfFile<ParcelDbaseRecord>(
-                ExtractController.ZipName,
+                ExtractFileNames.ZipName,
                 new ParcelDbaseSchema(),
                 extractItems.OrderBy(m => m.CaPaKey).Select(org => org.DbaseRecord),
                 extractItems.Count);
 
             yield return ExtractBuilder.CreateMetadataDbfFile(
-                ExtractController.ZipName,
+                ExtractFileNames.ZipName,
                 extractMetadata);
         }
     }

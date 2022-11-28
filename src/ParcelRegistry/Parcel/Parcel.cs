@@ -61,6 +61,6 @@ namespace ParcelRegistry.Parcel
 
         public ISnapshotStrategy Strategy { get; }
 
-        #endregion
+        #endregion  
     }
 }
