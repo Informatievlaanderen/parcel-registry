@@ -4,23 +4,23 @@ namespace ParcelRegistry.Api.Extract.Extracts
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
-    using Microsoft.EntityFrameworkCore;
     using Handlers;
+    using Microsoft.EntityFrameworkCore;
     using Projections.Extract;
     using Projections.Extract.ParcelExtract;
 
-    public static class ParcelRegistryExtractBuilder
+    public static class ParcelRegistryExtractV2Builder
     {
         public static IEnumerable<ExtractFile> CreateParcelFiles(ExtractContext context)
         {
             var extractItems = context
-                .ParcelExtract
+                .ParcelExtractV2
                 .AsNoTracking();
 
             var parcelProjectionState = context
                 .ProjectionStates
                 .AsNoTracking()
-                .Single(m => m.Name == typeof(ParcelExtractProjections).FullName);
+                .Single(m => m.Name == typeof(ParcelExtractV2Projections).FullName);
             var extractMetadata = new Dictionary<string,string>
             {
                 { ExtractMetadataKeys.LatestEventId, parcelProjectionState.Position.ToString()}

@@ -1,3 +1,10 @@
+# [4.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.2.2...v4.3.0) (2022-11-28)
+
+
+### Features
+
+* implement v2 toggle on api's ([873739e](https://github.com/informatievlaanderen/parcel-registry/commit/873739e0cde17add17d6d9caffae5805f903e2cc))
+
 ## [4.2.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.2.1...v4.2.2) (2022-11-25)
 
 
