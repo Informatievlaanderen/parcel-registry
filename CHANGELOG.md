@@ -1,3 +1,10 @@
+## [4.3.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.3.1...v4.3.2) (2022-11-29)
+
+
+### Bug Fixes
+
+* add SkipNotFoundAddress migrator toggle ([0bcbbe8](https://github.com/informatievlaanderen/parcel-registry/commit/0bcbbe85c9722ce96780c8663701dbed1f846b40))
+
 ## [4.3.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.3.0...v4.3.1) (2022-11-28)
 
 
