@@ -30,6 +30,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
         private readonly SqlStreamsTable _sqlStreamTable;
         private Dictionary<Guid, int> _consumedAddressItems;
 
+        private bool _skipNotFoundAddress;
+
         private List<(int processedId, bool isPageCompleted)> _processedIds;
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
@@ -41,6 +43,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             var connectionString = configuration.GetConnectionString("events");
             _processedIdsTable = new ProcessedIdsTable(connectionString, loggerFactory);
             _sqlStreamTable = new SqlStreamsTable(connectionString);
+
+            _skipNotFoundAddress = bool.Parse(configuration["SkipNotFoundAddress"]);
         }
 
         public async Task ProcessAsync(CancellationToken ct)
@@ -165,13 +169,19 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
 
             var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(addressId =>
             {
-                if (!_consumedAddressItems.TryGetValue(addressId, out var addressPersistentLocalId))
+                if (_consumedAddressItems.TryGetValue(addressId, out var addressPersistentLocalId))
                 {
-                    throw new InvalidOperationException($"AddressConsumerItem for addressId '{addressId}' was not found in the ConsumerAddressContext.");
+                    return (true, new AddressPersistentLocalId(addressPersistentLocalId));
                 }
 
-                return new AddressPersistentLocalId(addressPersistentLocalId);
+                if (_skipNotFoundAddress)
+                {
+                    return (false, new AddressPersistentLocalId(-1));
+                }
+
+                throw new InvalidOperationException($"AddressConsumerItem for addressId '{addressId}' was not found in the ConsumerAddressContext.");
             });
+
             var markMigrated = new MarkParcelAsMigrated(
                 migrateParcel.OldParcelId,
                 migrateParcel.Provenance);
