@@ -15,7 +15,7 @@ namespace ParcelRegistry.Legacy
 
     public partial class Parcel : AggregateRootEntity, ISnapshotable
     {
-        public MigrateParcel CreateMigrateCommand(Func<AddressId, AddressPersistentLocalId> mapAddressPersistentLocalId)
+        public MigrateParcel CreateMigrateCommand(Func<AddressId, (bool success, AddressPersistentLocalId addressPersistentLocalId)> mapAddressPersistentLocalId)
         {
             return new MigrateParcel(
                 ParcelId,
@@ -24,7 +24,7 @@ namespace ParcelRegistry.Legacy
                     ? ParcelStatus.Realized
                     : ParcelStatus.Retired,
                 IsRemoved,
-                _addressCollection.AllAddressIds().Select(mapAddressPersistentLocalId),
+                _addressCollection.AllAddressIds().Select(mapAddressPersistentLocalId).Where(x => x.success).Select(x => x.addressPersistentLocalId),
                 XCoordinate is not null ? new Coordinate(XCoordinate) : null,
                 YCoordinate is not null ? new Coordinate(YCoordinate) : null,
                 new Provenance(
