@@ -2,14 +2,6 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Validation
 {
     using TicketingService.Abstractions;
 
-    public abstract class TicketErrorBase
-    {
-        public abstract string Code { get; }
-        public abstract string Message { get;}
-
-        public TicketError ToTicketError => new(Message, Code);
-    }
-
     public static partial class ValidationErrors
     {
         public static class Common
