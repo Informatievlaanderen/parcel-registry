@@ -1,23 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
-using Be.Vlaanderen.Basisregisters.Sqs.Responses;
-using Moq;
-using TicketingService.Abstractions;
-
 namespace ParcelRegistry.Tests.BackOffice.Lambda
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using Autofac;
+    using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
+    using Be.Vlaanderen.Basisregisters.Sqs.Responses;
+    using Moq;
     using Newtonsoft.Json;
+    using TicketingService.Abstractions;
     using Xunit.Abstractions;
+
 
     public class LambdaHandlerTest : ParcelRegistryTest
     {
         public LambdaHandlerTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         { }
+
+        public void DispatchArrangeCommand<T>(T command) where T : IHasCommandProvenance
+        {
+            using var scope = Container.BeginLifetimeScope();
+            var bus = scope.Resolve<ICommandHandlerResolver>();
+            bus.Dispatch(command.CreateCommandId(), command);
+        }
 
         protected Mock<ITicketing> MockTicketing(Action<ETagResponse> ticketingCompleteCallback)
         {

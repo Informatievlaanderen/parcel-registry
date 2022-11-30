@@ -6,14 +6,19 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using System.Threading.Tasks;
     using Autofac;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
+    using Consumer.Address;
     using Fixtures;
+    using FluentAssertions;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using Parcel;
+    using Parcel.Commands;
     using Parcel.Exceptions;
     using ParcelRegistry.Api.BackOffice.Abstractions;
     using ParcelRegistry.Api.BackOffice.Abstractions.Requests;
@@ -36,6 +41,67 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext(Array.Empty<string>());
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext(Array.Empty<string>());
+        }
+
+        [Fact]
+        public async Task ThenTicketingCompleteIsExpected()
+        {
+            // Arrange
+            string etag = string.Empty;
+            var ticketing = MockTicketing(response => { etag = response.ETag; });
+
+            var capakey = new VbrCaPaKey("capakey");
+            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(capakey);
+            var parcelId = ParcelId.CreateFor(capakey);
+            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
+
+            var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
+            consumerAddress.AddAddress(addressPersistentLocalId, AddressStatus.Current);
+
+            DispatchArrangeCommand(new MigrateParcel(
+                legacyParcelId,
+                capakey,
+                ParcelRegistry.Legacy.ParcelStatus.Realized,
+                isRemoved: false,
+                Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
+                Fixture.Create<Coordinate>(),
+                Fixture.Create<Coordinate>(),
+                Fixture.Create<Provenance>()));
+
+            var handler = new AttachAddressLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
+                Container.Resolve<IParcels>(),
+                _backOfficeContext);
+
+            // Act
+            var ticketId = Guid.NewGuid();
+            await handler.Handle(
+                new AttachAddressLambdaRequest(
+                    messageGroupId: parcelId,
+                    parcelId: parcelId,
+                    ticketId: ticketId,
+                    ifMatchHeaderValue: null,
+                    Fixture.Create<Provenance>(),
+                    new Dictionary<string, object?>(),
+                    new AttachAddressRequest{AddressPersistentLocalId = addressPersistentLocalId}
+                    ),
+                CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Complete(
+                    ticketId,
+                    new TicketResult(
+                        new ETagResponse(
+                            string.Format(ConfigDetailUrl, parcelId),
+                            etag)),
+                    CancellationToken.None));
+
+            var addressParcelRelation = _backOfficeContext.ParcelAddressRelations.Find((Guid)parcelId, (int)addressPersistentLocalId);
+            addressParcelRelation.Should().NotBeNull();
         }
 
         [Fact]
@@ -206,7 +272,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
-                MockExceptionIdempotentCommandHandler<ParcelHasInvalidStatusException>().Object,
+                MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object,
                 Container.Resolve<IParcels>(),
                 _backOfficeContext);
 

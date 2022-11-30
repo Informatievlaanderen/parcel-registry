@@ -26,7 +26,7 @@ namespace ParcelRegistry.Consumer.Address
 
         public AddressData? GetOptional(AddressPersistentLocalId addressPersistentLocalId)
         {
-            var item = AddressConsumerItems.Find(addressPersistentLocalId);
+            var item = AddressConsumerItems.Find((int)addressPersistentLocalId);
 
             if (item is null)
             {
