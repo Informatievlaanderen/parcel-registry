@@ -151,6 +151,15 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     .ParcelSyndication
                     .AddAsync(parcelSyndicationItem, ct);
             });
+
+            When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.AddAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    ct);
+            });
         }
 
         private static async Task DoNothing()

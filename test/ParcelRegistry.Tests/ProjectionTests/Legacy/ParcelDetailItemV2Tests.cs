@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Tests.ProjectionTests.Legacy
+namespace ParcelRegistry.Tests.ProjectionTests.Legacy
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -22,10 +22,12 @@
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize(new WithParcelStatus());
+            _fixture.Customize(new WithFixedParcelId());
+            _fixture.Customize(new Tests.Legacy.AutoFixture.WithFixedParcelId());
         }
 
         [Fact]
-        public async Task WhenAddressWasMigratedToStreetName()
+        public async Task WhenParcelWasMigrated()
         {
             var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
 
@@ -47,6 +49,37 @@
                         parcelWasMigrated.AddressPersistentLocalIds.Select(x => new ParcelDetailAddressV2(parcelWasMigrated.ParcelId, x)));
                     parcelDetailV2.VersionTimestamp.Should().Be(parcelWasMigrated.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(parcelWasMigrated.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasAttachedV2()
+        {
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() }
+            };
+
+            var addressWasAttached = _fixture.Create<ParcelAddressWasAttachedV2>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasAttached.GetHash() }
+            };
+
+            await Sut
+                .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
+                        new Envelope<ParcelAddressWasAttachedV2>(new Envelope(addressWasAttached, metadata2)))
+                .Then(async ct =>
+                {
+                    var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(parcelWasMigrated.ParcelId);
+                    parcelDetailV2.Should().NotBeNull();
+                    parcelDetailV2.Addresses.Should().BeEquivalentTo(
+                        parcelWasMigrated.AddressPersistentLocalIds
+                            .Concat(new []{addressWasAttached.AddressPersistentLocalId})
+                            .Select(x => new ParcelDetailAddressV2(addressWasAttached.ParcelId, x)));
+                    parcelDetailV2.VersionTimestamp.Should().Be(addressWasAttached.Provenance.Timestamp);
+                    parcelDetailV2.LastEventHash.Should().Be(addressWasAttached.GetHash());
                 });
         }
 
