@@ -4,7 +4,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
-    using ParcelRegistry.Projections.Legacy.ParcelDetail;
 
     public static class ParcelDetailV2Extensions
     {
@@ -25,7 +24,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             return parcel;
         }
 
-        private static ProjectionItemNotFoundException<ParcelDetailV2Projections> DatabaseItemNotFound(Guid streetNameId)
-            => new ProjectionItemNotFoundException<ParcelDetailV2Projections>(streetNameId.ToString("D"));
+        private static ProjectionItemNotFoundException<ParcelDetailV2Projections> DatabaseItemNotFound(Guid parcelId)
+            => new ProjectionItemNotFoundException<ParcelDetailV2Projections>(parcelId.ToString("D"));
     }
 }

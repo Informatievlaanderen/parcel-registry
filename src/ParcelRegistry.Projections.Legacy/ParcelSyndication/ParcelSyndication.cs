@@ -88,6 +88,13 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             AddressIds = addresses;
         }
 
+        public void AddAddressPersistentLocalId(int addressPersistentLocalId)
+        {
+            var addressPersistentLocalIds = GetDeserializedAddressPersistentLocalIds();
+            addressPersistentLocalIds.Add(addressPersistentLocalId);
+            AddressPersistentLocalIds = addressPersistentLocalIds;
+        }
+
         public void RemoveAddressId(Guid addressId)
         {
             var addresses = GetDeserializedAddressIds();

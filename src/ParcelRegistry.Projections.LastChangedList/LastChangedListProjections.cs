@@ -88,6 +88,11 @@ namespace ParcelRegistry.Projections.LastChangedList
                 var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
                 RebuildKeyAndUri(records, message.Message.ParcelId);
             });
+
+            When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
+            {
+                var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
+            });
         }
 
         private static void RebuildKeyAndUri(IEnumerable<LastChangedRecord>? attachedRecords, Guid parcelId)

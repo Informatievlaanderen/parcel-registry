@@ -5,16 +5,16 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     using System.Threading;
     using System.Threading.Tasks;
 
-    public static class ParcelExtractExtensions
+    public static class ParcelExtractV2Extensions
     {
-        public static async Task<ParcelExtractItem> FindAndUpdateParcelExtract(
+        public static async Task<ParcelExtractItemV2> FindAndUpdateParcelExtract(
             this ExtractContext context,
             Guid parcelId,
-            Action<ParcelExtractItem> updateFunc,
+            Action<ParcelExtractItemV2> updateFunc,
             CancellationToken ct)
         {
             var parcel = await context
-                .ParcelExtract
+                .ParcelExtractV2
                 .FindAsync(parcelId, cancellationToken: ct);
 
             if (parcel == null)
@@ -27,7 +27,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
             return parcel;
         }
 
-        private static ProjectionItemNotFoundException<ParcelExtractProjections> DatabaseItemNotFound(Guid parcelId)
-            => new ProjectionItemNotFoundException<ParcelExtractProjections>(parcelId.ToString("D"));
+        private static ProjectionItemNotFoundException<ParcelExtractV2Projections> DatabaseItemNotFound(Guid parcelId)
+            => new ProjectionItemNotFoundException<ParcelExtractV2Projections>(parcelId.ToString("D"));
     }
 }

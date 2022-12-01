@@ -1,6 +1,7 @@
-﻿namespace ParcelRegistry.Tests.ProjectionTests.Legacy
+namespace ParcelRegistry.Tests.ProjectionTests.Legacy
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Parcel.Events;
     using AutoFixture;
@@ -20,10 +21,12 @@
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize(new WithParcelStatus());
+            _fixture.Customize(new WithFixedParcelId());
+            _fixture.Customize(new Tests.Legacy.AutoFixture.WithFixedParcelId());
         }
 
         [Fact]
-        public async Task WhenAddressWasMigratedToStreetName()
+        public async Task WhenParcelWasMigrated()
         {
             const long position = 1L;
             var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
@@ -39,8 +42,7 @@
                 .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)))
                 .Then(async ct =>
                 {
-                    var parcelSyndicationItem =
-                        await ct.ParcelSyndication.FindAsync(position);
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
                     parcelSyndicationItem.Should().NotBeNull();
                     parcelSyndicationItem!.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
                     parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Parse(parcelWasMigrated.ParcelStatus));
@@ -51,6 +53,41 @@
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
                     parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);
                     parcelSyndicationItem.LastChangedOn.Should().Be(parcelWasMigrated.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasAttachedV2()
+        {
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() },
+                { Envelope.PositionMetadataKey, 1L },
+                { Envelope.EventNameMetadataKey, nameof(ParcelWasMigrated) },
+            };
+
+            const long position = 2L;
+            var addressWasAttached = _fixture.Create<ParcelAddressWasAttachedV2>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasAttached.GetHash() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelAddressWasAttachedV2) },
+            };
+
+            await Sut
+                .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
+                        new Envelope<ParcelAddressWasAttachedV2>(new Envelope(addressWasAttached, metadata2)))
+                .Then(async ct =>
+                {
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
+                    parcelSyndicationItem.Should().NotBeNull();
+                    parcelSyndicationItem.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds.Concat(new []{addressWasAttached.AddressPersistentLocalId}));
+                    parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelAddressWasAttachedV2));
+                    parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
+                    parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);
+                    parcelSyndicationItem.LastChangedOn.Should().Be(addressWasAttached.Provenance.Timestamp);
                 });
         }
 

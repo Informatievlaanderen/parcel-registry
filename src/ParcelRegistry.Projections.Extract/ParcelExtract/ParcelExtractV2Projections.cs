@@ -12,6 +12,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     using Microsoft.Extensions.Options;
     using NodaTime;
     using Parcel;
+    using Parcel.Commands;
 
     [ConnectedProjectionName("Extract percelen")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor het percelen extract voorziet.")]
@@ -42,6 +43,8 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                         }.ToBytes(_encoding)
                     }, ct);
             });
+
+            When<Envelope<ParcelAddressWasAttachedV2>>(async (_, _, _) => await DoNothing());
         }
 
         private void SetDelete(ParcelExtractItem parcel)

@@ -25,7 +25,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
             return parcel;
         }
 
-        private static ProjectionItemNotFoundException<ParcelDetailProjections> DatabaseItemNotFound(Guid streetNameId)
-            => new ProjectionItemNotFoundException<ParcelDetailProjections>(streetNameId.ToString("D"));
+        private static ProjectionItemNotFoundException<ParcelDetailProjections> DatabaseItemNotFound(Guid parcelId)
+            => new ProjectionItemNotFoundException<ParcelDetailProjections>(parcelId.ToString("D"));
     }
 }

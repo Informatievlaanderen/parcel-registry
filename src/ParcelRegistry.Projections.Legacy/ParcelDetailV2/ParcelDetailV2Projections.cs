@@ -33,6 +33,27 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                     .ParcelDetailV2
                     .AddAsync(item, ct);
             });
+
+            When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelDetail(
+                    message.Message.ParcelId,
+                    entity =>
+                    {
+                        context.Entry(entity).Collection(x => x.Addresses).Load();
+
+                        if (!entity.Addresses.Any(parcelAddress =>
+                                parcelAddress.AddressPersistentLocalId == message.Message.AddressPersistentLocalId
+                                && parcelAddress.ParcelId == message.Message.ParcelId))
+                        {
+                            entity.Addresses.Add(new ParcelDetailAddressV2(message.Message.ParcelId, message.Message.AddressPersistentLocalId));
+                        }
+
+                        UpdateHash(entity, message);
+                        UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
         }
 
         private static void UpdateHash<T>(ParcelDetailV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage
