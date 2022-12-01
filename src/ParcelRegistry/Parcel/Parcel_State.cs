@@ -7,6 +7,7 @@ namespace ParcelRegistry.Parcel
 
     public partial class Parcel
     {
+        private IAddresses _addresses;
         private IParcelEvent? _lastEvent;
 
         private string _lastSnapshotEventHash = string.Empty;
@@ -27,14 +28,16 @@ namespace ParcelRegistry.Parcel
         public ProvenanceData LastProvenanceData =>
             _lastEvent is null ? _lastSnapshotProvenance : _lastEvent.Provenance;
 
-        internal Parcel(ISnapshotStrategy snapshotStrategy) : this()
+        internal Parcel(ISnapshotStrategy snapshotStrategy, IAddresses addresses) : this()
         {
             Strategy = snapshotStrategy;
+            _addresses = addresses;
         }
 
         private Parcel()
         {
             Register<ParcelWasMigrated>(When);
+            Register<ParcelAddressWasAttachedV2>(When);
             Register<ParcelSnapshotV2>(When);
         }
 
@@ -57,6 +60,13 @@ namespace ParcelRegistry.Parcel
             YCoordinate = @event.YCoordinate.HasValue
                 ? new Coordinate(@event.YCoordinate.Value)
                 : null;
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelAddressWasAttachedV2 @event)
+        {
+            _addressPersistentLocalIds.Add(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
 
             _lastEvent = @event;
         }

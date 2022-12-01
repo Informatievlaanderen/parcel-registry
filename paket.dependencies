@@ -1,12 +1,14 @@
 framework: net6.0, net472
 source https://api.nuget.org/v3/index.json
 
-// PRODUCTION STUFF
 nuget Microsoft.Extensions.Configuration 6.0.1
+nuget Microsoft.Extensions.Configuration.Binder 6.0.0
 nuget Microsoft.Extensions.Configuration.CommandLine 6.0.0
-nuget Microsoft.Extensions.Configuration.FileExtensions 6.0.0
 nuget Microsoft.Extensions.Configuration.EnvironmentVariables 6.0.1
+nuget Microsoft.Extensions.Configuration.FileExtensions 6.0.0
 nuget Microsoft.Extensions.Configuration.Json 6.0.0
+nuget Microsoft.Extensions.DependencyInjection 6.0.0
+nuget MediatR.Extensions.Microsoft.DependencyInjection 10.0.1
 
 nuget Microsoft.Extensions.Http.Polly 6.0.3
 
@@ -38,9 +40,10 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 7.0.0
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 7.0.0
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 7.0.0
 
-nuget Be.Vlaanderen.Basisregisters.Api 18.1.1
+nuget Be.Vlaanderen.Basisregisters.Api 18.3.0
 
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 3.0.1
+nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 1.2.4
 
 nuget Be.Vlaanderen.Basisregisters.CommandHandling 7.0.0
 nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 7.0.0
@@ -48,8 +51,6 @@ nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 7.0.0
 
 nuget Be.Vlaanderen.Basisregisters.EventHandling 4.2.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 4.2.0
-
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 4.3.2
 
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 11.0.2
 nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 11.0.2
@@ -69,12 +70,26 @@ nuget Be.Vlaanderen.Basisregisters.Crab 3.0.0
 
 nuget Be.Vlaanderen.Basisregisters.GrAr.Common 17.34.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 17.34.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 17.34.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Import 17.34.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 17.34.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 17.34.0
 nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 17.34.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 17.34.0
 
 nuget Be.Vlaanderen.Basisregisters.Shaperon 9.0.1
+
+nuget Be.Vlaanderen.Basisregisters.Sqs 1.3.0
+nuget Be.Vlaanderen.Basisregisters.Sqs.Lambda 1.3.0
+nuget Amazon.Lambda.Serialization.Json 2.0.0
+nuget Amazon.Lambda.SQSEvents 2.1.0
+
+nuget Be.Vlaanderen.Basisregisters.TicketingService.Abstractions 1.7.11
+nuget Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy 1.7.11
+
+// LAMBDA STUFF
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 4.5.0
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 4.5.0
 
 // .NET CLASSIC STUFF
 nuget EntityFramework 6.4.4

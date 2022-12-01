@@ -1,9 +1,14 @@
-﻿namespace ParcelRegistry.Parcel
+namespace ParcelRegistry.Parcel
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
 
-    public interface IParcels : IAsyncRepository<Parcel, ParcelStreamId> { }
+    public interface IParcels : IAsyncRepository<Parcel, ParcelStreamId>
+    {
+        Task<string> GetHash(ParcelId parcelId, CancellationToken cancellationToken);
+    }
 
     public class ParcelStreamId : ValueObject<ParcelStreamId>
     {

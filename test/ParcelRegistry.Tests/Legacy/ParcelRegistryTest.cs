@@ -2,6 +2,7 @@ namespace ParcelRegistry.Tests.Legacy
 {
     using System.Collections.Generic;
     using Autofac;
+    using BackOffice;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
@@ -14,8 +15,10 @@ namespace ParcelRegistry.Tests.Legacy
     using KellermanSoftware.CompareNetObjects;
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
-    using ParcelRegistry.Legacy;
+    using Parcel;
     using Xunit.Abstractions;
+    using IParcelFactory = ParcelRegistry.Legacy.IParcelFactory;
+    using ParcelFactory = ParcelRegistry.Legacy.ParcelFactory;
 
     public abstract class ParcelRegistryTest : AutofacBasedTest
     {
@@ -35,15 +38,21 @@ namespace ParcelRegistry.Tests.Legacy
                 .AddInMemoryCollection(new Dictionary<string, string> { { "ConnectionStrings:Events", "x" } })
                 .Build();
 
+            builder.RegisterModule(new SqlSnapshotStoreModule());
             builder.RegisterModule(new CommandHandlingModule(configuration));
+
+            builder
+                .Register(c => new FakeConsumerAddressContextFactory().CreateDbContext())
+                .InstancePerLifetimeScope()
+                .As<IAddresses>()
+                .AsSelf();
+
             builder
                 .Register(c => new ParcelFactory(Fixture.Create<ISnapshotStrategy>()))
                 .As<IParcelFactory>();
 
-            builder.RegisterModule(new SqlSnapshotStoreModule());
-
             builder
-                .Register(c => new ParcelRegistry.Parcel.ParcelFactory(NoSnapshotStrategy.Instance))
+                .Register(c => new ParcelRegistry.Parcel.ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()))
                 .As<ParcelRegistry.Parcel.IParcelFactory>();
         }
 

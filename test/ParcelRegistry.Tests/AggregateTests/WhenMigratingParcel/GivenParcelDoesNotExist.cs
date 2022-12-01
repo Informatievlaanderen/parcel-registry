@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 {
     using System.Collections.Generic;
+    using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -61,7 +62,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 
             // Act
             var result = Parcel.MigrateParcel(
-                new ParcelFactory(NoSnapshotStrategy.Instance),
+                new ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()),
                 command.OldParcelId,
                 command.NewParcelId,
                 command.CaPaKey,

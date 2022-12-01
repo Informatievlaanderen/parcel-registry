@@ -58,11 +58,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Api.Oslo", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Consumer.Address", "src\ParcelRegistry.Consumer.Address\ParcelRegistry.Consumer.Address.csproj", "{83BAC377-BE1E-449F-996C-F0EABB559639}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Api.BackOffice.Abstractions", "src\ParcelRegistry.Api.BackOffice.Abstractions\ParcelRegistry.Api.BackOffice.Abstractions.csproj", "{28E28515-A3EF-4EE9-88DB-5D6FF6CE64C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Api.BackOffice.Abstractions", "src\ParcelRegistry.Api.BackOffice.Abstractions\ParcelRegistry.Api.BackOffice.Abstractions.csproj", "{28E28515-A3EF-4EE9-88DB-5D6FF6CE64C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Migrator.Parcel", "src\ParcelRegistry.Migrator.Parcel\ParcelRegistry.Migrator.Parcel.csproj", "{B77AE69E-EB2A-48F2-8C0B-E3B989E2C320}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Migrator.Parcel", "src\ParcelRegistry.Migrator.Parcel\ParcelRegistry.Migrator.Parcel.csproj", "{B77AE69E-EB2A-48F2-8C0B-E3B989E2C320}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Console.FixParcelSnapshot", "test\ParcelRegistry.Console.FixParcelSnapshot\ParcelRegistry.Console.FixParcelSnapshot.csproj", "{392E9CC9-13DF-4B10-8CC3-2C5D5FFCACCE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Api.BackOffice", "src\ParcelRegistry.Api.BackOffice\ParcelRegistry.Api.BackOffice.csproj", "{1685ADB9-33AB-4127-A0AB-8A80438069DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Api.BackOffice.Handlers.Lambda", "src\ParcelRegistry.Api.BackOffice.Handlers.Lambda\ParcelRegistry.Api.BackOffice.Handlers.Lambda.csproj", "{7A532536-462B-4511-B275-D6C45EA5B10A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -142,6 +146,14 @@ Global
 		{392E9CC9-13DF-4B10-8CC3-2C5D5FFCACCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{392E9CC9-13DF-4B10-8CC3-2C5D5FFCACCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{392E9CC9-13DF-4B10-8CC3-2C5D5FFCACCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1685ADB9-33AB-4127-A0AB-8A80438069DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1685ADB9-33AB-4127-A0AB-8A80438069DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1685ADB9-33AB-4127-A0AB-8A80438069DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1685ADB9-33AB-4127-A0AB-8A80438069DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A532536-462B-4511-B275-D6C45EA5B10A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A532536-462B-4511-B275-D6C45EA5B10A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A532536-462B-4511-B275-D6C45EA5B10A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A532536-462B-4511-B275-D6C45EA5B10A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -165,6 +177,8 @@ Global
 		{28E28515-A3EF-4EE9-88DB-5D6FF6CE64C2} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{B77AE69E-EB2A-48F2-8C0B-E3B989E2C320} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{392E9CC9-13DF-4B10-8CC3-2C5D5FFCACCE} = {DF5FFD7D-3020-4F80-87EF-BE2D2CACD27E}
+		{1685ADB9-33AB-4127-A0AB-8A80438069DE} = {B483712F-241C-411F-8CC7-D46B3530DF65}
+		{7A532536-462B-4511-B275-D6C45EA5B10A} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF9223F3-B20E-4F63-A894-F1B3F66280AD}

@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
 {
     using System.Collections.Generic;
+    using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using FluentAssertions;
@@ -20,7 +21,7 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
         [Fact]
         public void ParcelWasMigratedIsSavedInSnapshot()
         {
-            var aggregate = new ParcelFactory(IntervalStrategy.Default).Create();
+            var aggregate = new ParcelFactory(IntervalStrategy.Default, Container.Resolve<IAddresses>()).Create();
 
             var parcelWasMigrated = Fixture.Create<ParcelWasMigrated>();
 

@@ -4,14 +4,13 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure.Modules
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
-    using ParcelRegistry.Infrastructure;
-    using ParcelRegistry.Infrastructure.Modules;
     using Consumer.Address;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using ParcelRegistry.Infrastructure;
+    using ParcelRegistry.Infrastructure.Modules;
 
     public class ApiModule : Module
     {
@@ -42,9 +41,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure.Modules
 
             builder
                 .RegisterModule(new DataDogModule(_configuration))
-                .RegisterModule<EnvelopeModule>()
                 .RegisterModule(new EditModule(_configuration))
-                .RegisterModule(new ConsumerModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new ConsumerAddressModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory))
                 .RegisterEventStreamModule(_configuration);
 

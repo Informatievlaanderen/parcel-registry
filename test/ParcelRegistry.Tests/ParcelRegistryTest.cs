@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Tests
+namespace ParcelRegistry.Tests
 {
     using System.Collections.Generic;
     using Autofac;
@@ -14,6 +14,7 @@
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
     using Parcel;
+    using BackOffice;
     using Xunit.Abstractions;
 
     public class ParcelRegistryTest : AutofacBasedTest
@@ -56,7 +57,13 @@
             builder.RegisterModule(new SqlSnapshotStoreModule());
 
             builder
-                .Register(c => new ParcelFactory(Fixture.Create<ISnapshotStrategy>()))
+                .Register(c => new FakeConsumerAddressContextFactory().CreateDbContext())
+                .InstancePerLifetimeScope()
+                .As<IAddresses>()
+                .AsSelf();
+
+            builder
+                .Register(c => new ParcelFactory(Fixture.Create<ISnapshotStrategy>(), Container.Resolve<IAddresses>()))
                 .As<IParcelFactory>();
         }
 

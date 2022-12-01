@@ -5,7 +5,13 @@ Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 
 Microsoft.EntityFrameworkCore.SqlServer
 
+MediatR
+
 Newtonsoft.Json
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles
+
+Be.Vlaanderen.Basisregisters.TicketingService.Abstractions
+
+Be.Vlaanderen.Basisregisters.Sqs

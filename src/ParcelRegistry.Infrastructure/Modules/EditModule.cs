@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Infrastructure.Modules
+namespace ParcelRegistry.Infrastructure.Modules
 {
     using Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
@@ -21,9 +21,8 @@
 
             builder
                 .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
-                .RegisterModule(new CommandHandlingModule(_configuration));
-
-            builder.RegisterSnapshotModule(_configuration);
+                .RegisterModule(new CommandHandlingModule(_configuration))
+                .RegisterSnapshotModule(_configuration);
         }
     }
 }

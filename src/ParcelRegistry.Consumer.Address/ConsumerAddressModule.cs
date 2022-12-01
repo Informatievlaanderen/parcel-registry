@@ -10,15 +10,15 @@ namespace ParcelRegistry.Consumer.Address
     using Microsoft.Extensions.Logging;
     using ParcelRegistry.Infrastructure;
 
-    public class ConsumerModule : Module
+    public class ConsumerAddressModule : Module
     {
-        public ConsumerModule(
+        public ConsumerAddressModule(
             IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
-            var logger = loggerFactory.CreateLogger<ConsumerModule>();
+            var logger = loggerFactory.CreateLogger<ConsumerAddressModule>();
             var connectionString = configuration.GetConnectionString("ConsumerAddress");
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);

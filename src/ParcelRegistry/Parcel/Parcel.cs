@@ -1,9 +1,12 @@
 namespace ParcelRegistry.Parcel
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
+    using DataStructures;
     using Events;
+    using Exceptions;
 
     public sealed partial class Parcel : AggregateRootEntity, ISnapshotable
     {
@@ -31,6 +34,40 @@ namespace ParcelRegistry.Parcel
                     yCoordinate));
 
             return newParcel;
+        }
+
+        public void AttachAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            if (ParcelStatus != ParcelStatus.Realized)
+            {
+                throw new ParcelHasInvalidStatusException();
+            }
+
+            if(AddressPersistentLocalIds.Contains(addressPersistentLocalId))
+            {
+                return;
+            }
+
+            var address = _addresses.GetOptional(addressPersistentLocalId);
+
+            if (address is null)
+            {
+                throw new AddressNotFoundException();
+            }
+
+            if (address.Value.IsRemoved)
+            {
+                throw new AddressIsRemovedException();
+            }
+
+            var validStatuses = new[] { AddressStatus.Current, AddressStatus.Proposed };
+
+            if (!validStatuses.Contains(address.Value.Status))
+            {
+                throw new AddressHasInvalidStatusException();
+            }
+
+            ApplyChange(new ParcelAddressWasAttachedV2(ParcelId, addressPersistentLocalId));
         }
 
         #region Metadata

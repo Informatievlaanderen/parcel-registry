@@ -25,7 +25,7 @@ namespace ParcelRegistry.Infrastructure
             return builder;
         }
 
-        public static void RegisterSnapshotModule(this ContainerBuilder builder, IConfiguration configuration)
+        public static void RegisterSnapshotModule(this IModuleRegistrar builder, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("Snapshots");
 

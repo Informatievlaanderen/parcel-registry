@@ -11,6 +11,7 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
     using Fixtures;
     using Xunit;
     using Xunit.Abstractions;
+    using Autofac;
 
     public class RestoreParcelSnapshotV2Tests : ParcelRegistryTest
     {
@@ -21,7 +22,7 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
         {
             Fixture.Customize(new InfrastructureCustomization());
 
-            _sut = new ParcelFactory(IntervalStrategy.Default).Create();
+            _sut = new ParcelFactory(IntervalStrategy.Default, Container.Resolve<IAddresses>()).Create();
             _parcelSnapshotV2 = new ParcelSnapshotV2(
                 Fixture.Create<ParcelId>(),
                 Fixture.Create<VbrCaPaKey>(),
