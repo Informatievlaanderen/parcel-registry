@@ -1,8 +1,7 @@
 namespace ParcelRegistry.Consumer.Address
 {
     using System;
-    using System.Threading;
-    using System.Threading.Tasks;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Microsoft.EntityFrameworkCore;
     using Parcel;
@@ -26,7 +25,9 @@ namespace ParcelRegistry.Consumer.Address
 
         public AddressData? GetOptional(AddressPersistentLocalId addressPersistentLocalId)
         {
-            var item = AddressConsumerItems.Find((int)addressPersistentLocalId);
+            var item = AddressConsumerItems
+                .AsNoTracking()
+                .SingleOrDefault(x => x.AddressPersistentLocalId == addressPersistentLocalId);
 
             if (item is null)
             {

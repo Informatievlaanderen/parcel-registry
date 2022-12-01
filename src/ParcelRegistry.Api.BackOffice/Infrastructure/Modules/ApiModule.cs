@@ -6,12 +6,10 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Consumer.Address;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Parcel;
     using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Infrastructure.Modules;
     using Validators;
@@ -61,7 +59,6 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
                 _loggerFactory));
 
             builder
-                .RegisterModule(new EnvelopeModule())
                 .RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new EditModule(_configuration))
                 .RegisterModule(new MediatRModule())

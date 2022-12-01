@@ -1,13 +1,12 @@
 namespace ParcelRegistry.Api.CrabImport.Infrastructure.Modules
 {
+    using Autofac;
+    using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
-    using Autofac;
-    using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Api;
     using Be.Vlaanderen.Basisregisters.GrAr.Import.Processing.CrabImport;
     using CrabImport;
@@ -48,8 +47,6 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure.Modules
                     _loggerFactory))
 
                 .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
-
-                .RegisterModule(new EnvelopeModule())
 
                 .RegisterModule(new CommandHandlingModule(_configuration))
 
