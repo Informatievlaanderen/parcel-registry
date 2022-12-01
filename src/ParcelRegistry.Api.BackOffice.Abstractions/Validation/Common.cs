@@ -16,7 +16,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Validation
 
             public class ParcelNotFound
             {
-                public static string Code => "PerceelIsOnbestaand";
+                public static string Code => "OnbestaandPerceel";
                 public static string Message => "Onbestaand perceel.";
 
                 public static TicketError ToTicketError => new(Message, Code);

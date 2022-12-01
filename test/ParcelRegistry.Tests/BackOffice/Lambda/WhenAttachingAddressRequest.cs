@@ -12,6 +12,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
+    using Builders;
     using Consumer.Address;
     using Fixtures;
     using FluentAssertions;
@@ -21,9 +22,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Parcel.Commands;
     using Parcel.Exceptions;
     using ParcelRegistry.Api.BackOffice.Abstractions;
-    using ParcelRegistry.Api.BackOffice.Abstractions.Requests;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
-    using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
@@ -79,15 +78,11 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Act
             var ticketId = Guid.NewGuid();
             await handler.Handle(
-                new AttachAddressLambdaRequest(
-                    messageGroupId: parcelId,
-                    parcelId: parcelId,
-                    ticketId: ticketId,
-                    ifMatchHeaderValue: null,
-                    Fixture.Create<Provenance>(),
-                    new Dictionary<string, object?>(),
-                    new AttachAddressRequest{AddressPersistentLocalId = addressPersistentLocalId}
-                    ),
+                new AttachAddressLambdaRequestBuilder(Fixture)
+                    .WithParcelId(parcelId)
+                    .WithAddressPersistentLocalId(addressPersistentLocalId)
+                    .WithTicketId(ticketId)
+                    .Build(),
                 CancellationToken.None);
 
             //Assert
@@ -129,14 +124,10 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Act
             var ticketId = Guid.NewGuid();
             await handler.Handle(
-                new AttachAddressLambdaRequest(
-                    messageGroupId:parcelId,
-                    parcelId: parcelId,
-                    ticketId: ticketId,
-                    ifMatchHeaderValue: null,
-                    Fixture.Create<Provenance>(),
-                    new Dictionary<string, object?>(),
-                    Fixture.Create<AttachAddressRequest>()),
+                new AttachAddressLambdaRequestBuilder(Fixture)
+                    .WithParcelId(parcelId)
+                    .WithTicketId(ticketId)
+                    .Build(),
                 CancellationToken.None);
 
             //Assert
@@ -167,14 +158,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             // Act
             await handler.Handle(
-                new AttachAddressLambdaRequest(
-                    messageGroupId: Guid.NewGuid().ToString(),
-                    parcelId: Guid.NewGuid(),
-                    ticketId: Guid.NewGuid(),
-                    null,
-                    Fixture.Create<Provenance>(),
-                    new Dictionary<string, object?>(),
-                    new AttachAddressRequest() { AddressPersistentLocalId = addressPersistentLocalId }),
+                new AttachAddressLambdaRequestBuilder(Fixture)
+                    .WithAddressPersistentLocalId(addressPersistentLocalId)
+                    .Build(),
                 CancellationToken.None);
 
             //Assert
@@ -204,14 +190,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             // Act
             await handler.Handle(
-                new AttachAddressLambdaRequest(
-                    messageGroupId: Guid.NewGuid().ToString(),
-                    parcelId: Guid.NewGuid(),
-                    ticketId: Guid.NewGuid(),
-                    null,
-                    Fixture.Create<Provenance>(),
-                    new Dictionary<string, object?>(),
-                    new AttachAddressRequest() { AddressPersistentLocalId = addressPersistentLocalId }),
+                new AttachAddressLambdaRequestBuilder(Fixture)
+                    .WithAddressPersistentLocalId(addressPersistentLocalId)
+                    .Build(),
                 CancellationToken.None);
 
             //Assert
@@ -241,14 +222,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             // Act
             await handler.Handle(
-                new AttachAddressLambdaRequest(
-                    messageGroupId: Guid.NewGuid().ToString(),
-                    parcelId: Guid.NewGuid(),
-                    ticketId: Guid.NewGuid(),
-                    null,
-                    Fixture.Create<Provenance>(),
-                    new Dictionary<string, object?>(),
-                    new AttachAddressRequest() { AddressPersistentLocalId = addressPersistentLocalId }),
+                new AttachAddressLambdaRequestBuilder(Fixture)
+                    .WithAddressPersistentLocalId(addressPersistentLocalId)
+                    .Build(),
                 CancellationToken.None);
 
             //Assert
@@ -278,14 +254,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             // Act
             await handler.Handle(
-                new AttachAddressLambdaRequest(
-                    messageGroupId: Guid.NewGuid().ToString(),
-                    parcelId: Guid.NewGuid(),
-                    ticketId: Guid.NewGuid(),
-                    null,
-                    Fixture.Create<Provenance>(),
-                    new Dictionary<string, object?>(),
-                    new AttachAddressRequest() { AddressPersistentLocalId = addressPersistentLocalId }),
+                new AttachAddressLambdaRequestBuilder(Fixture)
+                    .WithAddressPersistentLocalId(addressPersistentLocalId)
+                    .Build(),
                 CancellationToken.None);
 
             //Assert

@@ -21,8 +21,7 @@ namespace ParcelRegistry.Parcel
             Func<ISnapshotStore> getSnapshotStore,
             EventMapping eventMapping,
             EventSerializer eventSerializer,
-            IProvenanceFactory<Parcel> provenanceFactory,
-            IAddresses addresses)
+            IProvenanceFactory<Parcel> provenanceFactory)
         {
             For<MigrateParcel>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
@@ -61,7 +60,7 @@ namespace ParcelRegistry.Parcel
                     var streamId = new ParcelStreamId(message.Command.ParcelId);
                     var parcel = await parcelRepository().GetAsync(streamId, ct);
 
-                    parcel.AttachAddress(message.Command.AddressPersistentLocalId, addresses);
+                    parcel.AttachAddress(message.Command.AddressPersistentLocalId);
                 });
         }
     }

@@ -36,7 +36,7 @@ namespace ParcelRegistry.Parcel
             return newParcel;
         }
 
-        public void AttachAddress(AddressPersistentLocalId addressPersistentLocalId, IAddresses addresses)
+        public void AttachAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
             if (ParcelStatus != ParcelStatus.Realized)
             {
@@ -48,7 +48,7 @@ namespace ParcelRegistry.Parcel
                 return;
             }
 
-            var address = addresses.GetOptional(addressPersistentLocalId);
+            var address = _addresses.GetOptional(addressPersistentLocalId);
 
             if (address is null)
             {

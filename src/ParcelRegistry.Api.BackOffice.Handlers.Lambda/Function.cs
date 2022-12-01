@@ -16,12 +16,12 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
+    using Consumer.Address;
     using MediatR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
-    using ParcelRegistry.Consumer.Address;
     using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Infrastructure.Modules;
     using ParcelRegistry.Parcel;
@@ -83,7 +83,6 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
 
             builder
                 .RegisterModule(new DataDogModule(configuration))
-                .RegisterModule<EnvelopeModule>()
                 .RegisterModule(new EditModule(configuration))
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
                 .RegisterModule(new IdempotencyModule(
@@ -104,7 +103,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
             builder
                 .RegisterType<ConsumerAddressContext>()
                 .As<IAddresses>()
-                .SingleInstance(); // TODO: TO REVIEW
+                .SingleInstance();
 
             builder.Populate(services);
 

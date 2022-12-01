@@ -13,7 +13,6 @@ Be.Vlaanderen.Basisregisters.Sqs
 Be.Vlaanderen.Basisregisters.TicketingService.Abstractions
 Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy
 
-
 AsyncEnumerator
 
 SourceLink.Embed.AllSourceFiles

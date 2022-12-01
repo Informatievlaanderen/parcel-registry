@@ -7,15 +7,14 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
+    using Builders;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using Parcel;
     using Parcel.Exceptions;
-    using ParcelRegistry.Api.BackOffice.Abstractions.Requests;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using TicketingService.Abstractions;
@@ -33,15 +32,10 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketing = new Mock<ITicketing>();
             var idempotentCommandHandler = new Mock<IIdempotentCommandHandler>();
 
-            var lambdaRequest = new AttachAddressLambdaRequest(
-                messageGroupId: Guid.NewGuid().ToString(),
-                parcelId: Guid.NewGuid(),
-                ticketId: Guid.NewGuid(),
-                null,
-                Fixture.Create<Provenance>(),
-                new Dictionary<string, object?>(),
-                new AttachAddressRequest() { AddressPersistentLocalId = 1 }
-            );
+            var lambdaRequest =
+                new AttachAddressLambdaRequestBuilder(Fixture)
+                    .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                    .Build();
 
             var sut = new FakeParcelLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -63,15 +57,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         {
             var ticketing = new Mock<ITicketing>();
 
-            var lambdaRequest = new AttachAddressLambdaRequest(
-                messageGroupId: Guid.NewGuid().ToString(),
-                parcelId: Guid.NewGuid(),
-                ticketId: Guid.NewGuid(),
-                null,
-                Fixture.Create<Provenance>(),
-                new Dictionary<string, object?>(),
-                new AttachAddressRequest() { AddressPersistentLocalId = 1 }
-            );
+            var lambdaRequest = new AttachAddressLambdaRequestBuilder(Fixture)
+                .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                .Build();
 
             var sut = new FakeParcelLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -113,17 +101,10 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             // Act
             await sut.Handle(
-                new AttachAddressLambdaRequest(
-                    addressPersistentLocalId.ToString(),
-                    Guid.NewGuid(),
-                    Guid.Empty,
-                    "OutdatedHash",
-                    Fixture.Create<Provenance>(),
-                    new Dictionary<string, object?>(),
-                    new AttachAddressRequest()
-                    {
-                        AddressPersistentLocalId = addressPersistentLocalId
-                    }),
+                new AttachAddressLambdaRequestBuilder(Fixture)
+                    .WithAddressPersistentLocalId(addressPersistentLocalId)
+                    .WithIfMatchHeaderValue("OutdatedHash")
+                    .Build(),
                 CancellationToken.None);
 
             //Assert
@@ -148,14 +129,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 idempotentCommandHandler.Object);
 
             await sut.Handle(
-                new AttachAddressLambdaRequest(
-                    messageGroupId: Guid.NewGuid().ToString(),
-                    parcelId: Guid.NewGuid(), 
-                    ticketId: Guid.NewGuid(),
-                    string.Empty,
-                    Fixture.Create<Provenance>(),
-                    new Dictionary<string, object?>(),
-                    new AttachAddressRequest() { AddressPersistentLocalId = 1 }),
+                new AttachAddressLambdaRequestBuilder(Fixture)
+                    .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
+                    .Build(),
                 CancellationToken.None);
 
             //Assert

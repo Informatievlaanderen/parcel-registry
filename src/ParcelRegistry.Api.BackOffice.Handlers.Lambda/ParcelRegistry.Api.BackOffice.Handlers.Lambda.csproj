@@ -16,7 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ParcelRegistry.Api.BackOffice.Abstractions\ParcelRegistry.Api.BackOffice.Abstractions.csproj" />
-    <ProjectReference Include="..\ParcelRegistry.Api.BackOffice\ParcelRegistry.Api.BackOffice.csproj" />
+    <ProjectReference Include="..\ParcelRegistry.Consumer.Address\ParcelRegistry.Consumer.Address.csproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

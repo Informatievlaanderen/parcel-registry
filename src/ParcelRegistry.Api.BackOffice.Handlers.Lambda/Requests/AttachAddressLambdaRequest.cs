@@ -1,8 +1,7 @@
 namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
 {
     using Abstractions.Requests;
-    using BackOffice.Requests;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using Parcel;
     using Parcel.Commands;
@@ -16,28 +15,15 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
         public AttachAddressLambdaRequest(
             string messageGroupId,
             AttachAddressSqsRequest sqsRequest)
-            : this(
+            : base(
                 messageGroupId,
-                sqsRequest.ParcelId,
                 sqsRequest.TicketId,
                 sqsRequest.IfMatchHeaderValue,
                 sqsRequest.ProvenanceData.ToProvenance(),
-                sqsRequest.Metadata,
-                sqsRequest.Request)
-        { }
-
-        public AttachAddressLambdaRequest(
-            string messageGroupId,
-            Guid parcelId,
-            Guid ticketId,
-            string? ifMatchHeaderValue,
-            Provenance provenance,
-            IDictionary<string, object?> metadata,
-            AttachAddressRequest request)
-            : base(messageGroupId, ticketId, ifMatchHeaderValue, provenance, metadata)
+                sqsRequest.Metadata)
         {
-            ParcelId = parcelId;
-            Request = request;
+            ParcelId = sqsRequest.ParcelId;
+            Request = sqsRequest.Request;
         }
 
         /// <summary>

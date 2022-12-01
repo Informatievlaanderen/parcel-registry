@@ -13,3 +13,5 @@ SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles
 
 Be.Vlaanderen.Basisregisters.TicketingService.Abstractions
+
+Be.Vlaanderen.Basisregisters.Sqs

@@ -2,8 +2,8 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Abstractions.SqsRequests;
     using Autofac;
-    using BackOffice.Requests;
     using Be.Vlaanderen.Basisregisters.Aws.Lambda;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using MediatR;

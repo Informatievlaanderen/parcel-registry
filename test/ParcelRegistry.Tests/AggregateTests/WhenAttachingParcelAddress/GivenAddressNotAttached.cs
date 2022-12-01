@@ -87,7 +87,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
             ((ISetProvenance)parcelAddressWasAttachedV2).SetProvenance(Fixture.Create<Provenance>());
 
             // Act
-            var sut = new ParcelFactory(NoSnapshotStrategy.Instance).Create();
+            var sut = new ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()).Create();
             sut.Initialize(new List<object> { parcelWasMigrated, parcelAddressWasAttachedV2 });
 
             // Assert

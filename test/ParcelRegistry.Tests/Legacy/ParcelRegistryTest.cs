@@ -52,7 +52,7 @@ namespace ParcelRegistry.Tests.Legacy
                 .As<IParcelFactory>();
 
             builder
-                .Register(c => new ParcelRegistry.Parcel.ParcelFactory(NoSnapshotStrategy.Instance))
+                .Register(c => new ParcelRegistry.Parcel.ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()))
                 .As<ParcelRegistry.Parcel.IParcelFactory>();
         }
 

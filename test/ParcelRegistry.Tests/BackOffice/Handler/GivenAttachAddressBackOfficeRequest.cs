@@ -12,8 +12,8 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
     using FluentAssertions;
     using Parcel;
     using ParcelRegistry.Api.BackOffice.Abstractions.Requests;
+    using ParcelRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using ParcelRegistry.Api.BackOffice.Handlers;
-    using ParcelRegistry.Api.BackOffice.Requests;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;

@@ -3,6 +3,7 @@ namespace ParcelRegistry.Api.BackOffice
     using System.Threading;
     using System.Threading.Tasks;
     using Abstractions.Requests;
+    using Abstractions.SqsRequests;
     using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
@@ -13,7 +14,6 @@ namespace ParcelRegistry.Api.BackOffice
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Parcel;
-    using Requests;
     using Swashbuckle.AspNetCore.Filters;
     using Validators;
 

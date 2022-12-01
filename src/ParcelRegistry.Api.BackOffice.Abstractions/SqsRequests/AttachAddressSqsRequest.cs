@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Api.BackOffice.Requests
+namespace ParcelRegistry.Api.BackOffice.Abstractions.SqsRequests
 {
     using Abstractions.Requests;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;

@@ -63,7 +63,7 @@ namespace ParcelRegistry.Tests
                 .AsSelf();
 
             builder
-                .Register(c => new ParcelFactory(Fixture.Create<ISnapshotStrategy>()))
+                .Register(c => new ParcelFactory(Fixture.Create<ISnapshotStrategy>(), Container.Resolve<IAddresses>()))
                 .As<IParcelFactory>();
         }
 

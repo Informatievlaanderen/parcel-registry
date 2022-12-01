@@ -10,8 +10,8 @@ namespace ParcelRegistry.Tests.BackOffice.Api.WhenAttachingAddress
     using Moq;
     using ParcelRegistry.Api.BackOffice;
     using ParcelRegistry.Api.BackOffice.Abstractions.Requests;
-    using ParcelRegistry.Api.BackOffice.Requests;
     using Parcel;
+    using ParcelRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using ParcelRegistry.Api.BackOffice.Validators;
     using SqlStreamStore;
     using Xunit;

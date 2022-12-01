@@ -13,7 +13,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using TicketingService.Abstractions;
     using Xunit.Abstractions;
 
-
     public class LambdaHandlerTest : ParcelRegistryTest
     {
         public LambdaHandlerTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)

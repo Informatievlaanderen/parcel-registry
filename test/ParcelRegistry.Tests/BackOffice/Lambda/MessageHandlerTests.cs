@@ -10,9 +10,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using FluentAssertions;
     using MediatR;
     using Moq;
+    using ParcelRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests;
-    using ParcelRegistry.Api.BackOffice.Requests;
     using Xunit;
     using Xunit.Abstractions;
 
