@@ -1,7 +1,6 @@
 using Amazon.Lambda.Core;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
-
 namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
 {
     using System.Reflection;
@@ -21,9 +20,9 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
-    using ParcelRegistry.Infrastructure;
-    using ParcelRegistry.Infrastructure.Modules;
-    using ParcelRegistry.Parcel;
+    using Infrastructure;
+    using Infrastructure.Modules;
+    using Parcel;
     using TicketingService.Proxy.HttpProxy;
 
     public class Function : FunctionBase
@@ -101,8 +100,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
 
             builder
                 .RegisterType<ConsumerAddressContext>()
-                .As<IAddresses>()
-                .SingleInstance();
+                .As<IAddresses>();
 
             builder.Populate(services);
 

@@ -232,8 +232,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Verwijderd address.",
-                        "VerwijderdAddress"),
+                        "Verwijderd adres.",
+                        "VerwijderdAdres"),
                     CancellationToken.None));
         }
 

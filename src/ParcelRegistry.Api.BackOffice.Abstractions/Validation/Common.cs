@@ -31,8 +31,8 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Validation
 
             public class AddressRemoved
             {
-                public static string Code => "VerwijderdAddress";
-                public static string Message => "Verwijderd address.";
+                public static string Code => "VerwijderdAdres";
+                public static string Message => "Verwijderd adres.";
                 public static TicketError ToTicketError => new(Message, Code);
             }
         }
