@@ -859,7 +859,7 @@ jobs:
       uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of streetname-registry to test has started
+        slack-message: Deployment of parcel-registry to test has started
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
@@ -947,7 +947,7 @@ jobs:
       uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of streetname-registry to test has finished
+        slack-message: Deployment of parcel-registry to test has finished
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
@@ -969,7 +969,7 @@ jobs:
       uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of streetname-registry to staging has started
+        slack-message: Deployment of parcel-registry to staging has started
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
@@ -1057,7 +1057,7 @@ jobs:
       uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of streetname-registry to staging has finished
+        slack-message: Deployment of parcel-registry to staging has finished
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
@@ -1079,7 +1079,7 @@ jobs:
       uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of streetname-registry to production has started
+        slack-message: Deployment of parcel-registry to production has started
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
@@ -1167,7 +1167,7 @@ jobs:
       uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of streetname-registry to production has finished
+        slack-message: Deployment of parcel-registry to production has finished
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
