@@ -16,6 +16,7 @@ jobs:
           'parcel-registry-api', 
           'parcel-registry-projections', 
           'parcel-registry-consumer-address', 
+          'parcel-registry-backoffice-api',
           'parcel-registry-migrator-parcel']
     steps:
     - name: CD

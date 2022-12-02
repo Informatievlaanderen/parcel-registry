@@ -36,25 +36,10 @@ Target.create "Restore_Solution" (fun _ -> restore "ParcelRegistry")
 
 Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
-  buildSource "ParcelRegistry.Projector"
-  buildSource "ParcelRegistry.Api.Legacy"
-  buildSource "ParcelRegistry.Api.Oslo"
-  buildSource "ParcelRegistry.Api.Extract"
-  buildSource "ParcelRegistry.Api.CrabImport"
-  buildSource "ParcelRegistry.Projections.Legacy"
-  buildSource "ParcelRegistry.Projections.Extract"
-  buildSource "ParcelRegistry.Projections.LastChangedList"
-  buildSource "ParcelRegistry.Projections.Syndication"
-  buildSource "ParcelRegistry.Consumer.Address"
-  buildSource "ParcelRegistry.Migrator.Parcel"
-  buildTest "ParcelRegistry.Tests"
+  buildSolution "ParcelRegistry"
 )
 
-Target.create "Test_Solution" (fun _ ->
-    [
-        "test" @@ "ParcelRegistry.Tests"
-    ] |> List.iter testWithDotNet
-)
+Target.create "Test_Solution" (fun _ -> test "ParcelRegistry")
 
 Target.create "Publish_Solution" (fun _ ->
   [
@@ -69,6 +54,8 @@ Target.create "Publish_Solution" (fun _ ->
     "ParcelRegistry.Projections.Syndication"
     "ParcelRegistry.Consumer.Address"
     "ParcelRegistry.Migrator.Parcel"
+    "ParcelRegistry.Api.BackOffice"
+    "ParcelRegistry.Api.BackOffice.Abstractions"
   ] |> List.iter publishSource)
 
 Target.create "Pack_Solution" (fun _ ->
@@ -79,6 +66,8 @@ Target.create "Pack_Solution" (fun _ ->
     "ParcelRegistry.Api.Extract"
     "ParcelRegistry.Api.CrabImport"
     "ParcelRegistry.Migrator.Parcel"
+    "ParcelRegistry.Api.BackOffice"
+    "ParcelRegistry.Api.BackOffice.Abstractions"
   ] |> List.iter pack)
 
 Target.create "Containerize_Projector" (fun _ -> containerize "ParcelRegistry.Projector" "projector")
@@ -104,6 +93,9 @@ Target.create "PushContainer_ConsumerAddress" (fun _ -> push "consumer-address")
 
 Target.create "Containerize_MigratorParcel" (fun _ -> containerize "ParcelRegistry.Migrator.Parcel" "migrator-parcel")
 Target.create "PushContainer_MigratorParcel" (fun _ -> push "migrator-parcel")
+
+Target.create "Containerize_ApiBackOffice" (fun _ -> containerize "ParcelRegistry.Api.BackOffice" "api-backoffice")
+Target.create "PushContainer_ApiBackOffice" (fun _ -> push "api-backoffice")
 
 // --------------------------------------------------------------------------------
 
@@ -142,6 +134,7 @@ Target.create "Push" ignore
   ==> "Containerize_ProjectionsSyndication"
   ==> "Containerize_ConsumerAddress"
   ==> "Containerize_MigratorParcel"
+  ==> "Containerize_ApiBackOffice"
   ==> "Containerize"
 // Possibly add more projects to containerize here
 
@@ -155,6 +148,7 @@ Target.create "Push" ignore
   ==> "PushContainer_ProjectionsSyndication"
   ==> "PushContainer_ConsumerAddress"
   ==> "PushContainer_MigratorParcel"
+  ==> "PushContainer_ApiBackOffice"
   ==> "Push"
 // Possibly add more projects to push here
 

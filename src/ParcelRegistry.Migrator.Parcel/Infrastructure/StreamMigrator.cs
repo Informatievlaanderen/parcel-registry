@@ -161,12 +161,6 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             _logger.LogInformation("Resolved aggregate in {timing}", _stopwatch.Elapsed.ToString("g", CultureInfo.InvariantCulture));
             _stopwatch.Reset();
 
-            if (legacyParcelAggregate.IsRemoved)
-            {
-                _logger.LogDebug($"Skipping removed parcel '{aggregateId}'.");
-                return;
-            }
-
             var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(addressId =>
             {
                 if (_consumedAddressItems.TryGetValue(addressId, out var addressPersistentLocalId))

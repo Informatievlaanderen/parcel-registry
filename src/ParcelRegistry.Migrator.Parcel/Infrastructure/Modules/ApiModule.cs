@@ -11,6 +11,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure.Modules
     using Microsoft.Extensions.Logging;
     using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Infrastructure.Modules;
+    using ParcelRegistry.Parcel;
 
     public class ApiModule : Module
     {
@@ -45,6 +46,10 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure.Modules
                 .RegisterModule(new ConsumerAddressModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory))
                 .RegisterEventStreamModule(_configuration);
+
+            builder
+                .RegisterType<ConsumerAddressContext>()
+                .As<IAddresses>();
 
             builder.Populate(_services);
         }
