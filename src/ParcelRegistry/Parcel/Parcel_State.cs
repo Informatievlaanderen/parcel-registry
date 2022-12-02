@@ -38,6 +38,7 @@ namespace ParcelRegistry.Parcel
         {
             Register<ParcelWasMigrated>(When);
             Register<ParcelAddressWasAttachedV2>(When);
+            Register<ParcelAddressWasDetachedV2>(When);
             Register<ParcelSnapshotV2>(When);
         }
 
@@ -67,6 +68,13 @@ namespace ParcelRegistry.Parcel
         private void When(ParcelAddressWasAttachedV2 @event)
         {
             _addressPersistentLocalIds.Add(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelAddressWasDetachedV2 @event)
+        {
+            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
 
             _lastEvent = @event;
         }

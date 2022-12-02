@@ -38,6 +38,8 @@ namespace ParcelRegistry.Parcel
 
         public void AttachAddress(AddressPersistentLocalId addressPersistentLocalId)
         {
+            GuardParcelNotRemoved();
+
             if (ParcelStatus != ParcelStatus.Realized)
             {
                 throw new ParcelHasInvalidStatusException();
@@ -70,6 +72,38 @@ namespace ParcelRegistry.Parcel
             ApplyChange(new ParcelAddressWasAttachedV2(ParcelId, addressPersistentLocalId));
         }
 
+        public void DetachAddress(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            GuardParcelNotRemoved();
+
+            var address = _addresses.GetOptional(addressPersistentLocalId);
+
+            if (address is null)
+            {
+                throw new AddressNotFoundException();
+            }
+
+            if (address.Value.IsRemoved)
+            {
+                throw new AddressIsRemovedException();
+            }
+
+            if (!AddressPersistentLocalIds.Contains(addressPersistentLocalId))
+            {
+                return;
+            }
+
+            ApplyChange(new ParcelAddressWasDetachedV2(ParcelId, addressPersistentLocalId));
+        }
+
+        private void GuardParcelNotRemoved()
+        {
+            if (IsRemoved)
+            {
+                throw new ParcelIsRemovedException(ParcelId);
+            }
+        }
+
         #region Metadata
 
         protected override void BeforeApplyChange(object @event)
@@ -98,6 +132,6 @@ namespace ParcelRegistry.Parcel
 
         public ISnapshotStrategy Strategy { get; }
 
-        #endregion  
+        #endregion
     }
 }

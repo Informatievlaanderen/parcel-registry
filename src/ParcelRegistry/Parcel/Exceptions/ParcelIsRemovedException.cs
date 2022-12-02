@@ -10,6 +10,10 @@ namespace ParcelRegistry.Parcel.Exceptions
         public ParcelIsRemovedException()
         { }
 
+        public ParcelIsRemovedException(ParcelId parcelId)
+            : base($"Parcel with Id '{parcelId}' is removed.")
+        { }
+
         private ParcelIsRemovedException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         { }
