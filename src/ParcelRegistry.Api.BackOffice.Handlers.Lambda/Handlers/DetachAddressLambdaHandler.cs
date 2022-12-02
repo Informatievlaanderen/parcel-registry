@@ -15,11 +15,11 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Requests;
     using TicketingService.Abstractions;
 
-    public sealed class AttachAddressLambdaHandler : ParcelLambdaHandler<AttachAddressLambdaRequest>
+    public sealed class DetachAddressLambdaHandler : ParcelLambdaHandler<DetachAddressLambdaRequest>
     {
         private readonly BackOfficeContext _backOfficeContext;
 
-        public AttachAddressLambdaHandler(
+        public DetachAddressLambdaHandler(
             IConfiguration configuration,
             ICustomRetryPolicy retryPolicy,
             ITicketing ticketing,
@@ -36,7 +36,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             _backOfficeContext = backOfficeContext;
         }
 
-        protected override async Task<ETagResponse> InnerHandle(AttachAddressLambdaRequest request, CancellationToken cancellationToken)
+        protected override async Task<ETagResponse> InnerHandle(DetachAddressLambdaRequest request, CancellationToken cancellationToken)
         {
             var cmd = request.ToCommand();
 
@@ -53,22 +53,19 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 // Idempotent: Do Nothing return last etag
             }
 
-            _backOfficeContext.ParcelAddressRelations.Add(new ParcelAddressRelation(cmd.ParcelId, cmd.AddressPersistentLocalId));
+            _backOfficeContext.ParcelAddressRelations.Remove(new ParcelAddressRelation(cmd.ParcelId, cmd.AddressPersistentLocalId));
             await _backOfficeContext.SaveChangesAsync(cancellationToken);
 
             var lastHash = await Parcels.GetHash(new ParcelId(request.ParcelId), cancellationToken);
             return new ETagResponse(string.Format(DetailUrlFormat, request.ParcelId), lastHash);
         }
 
-        protected override TicketError? InnerMapDomainException(DomainException exception, AttachAddressLambdaRequest request)
+        protected override TicketError? InnerMapDomainException(DomainException exception, DetachAddressLambdaRequest request)
         {
             return exception switch
             {
-                ParcelIsRemovedException => ValidationErrors.Common.ParcelRemoved.ToTicketError,
-                ParcelHasInvalidStatusException => ValidationErrors.AttachAddress.InvalidParcelStatus.ToTicketError,
                 AddressNotFoundException => ValidationErrors.Common.AddressNotFound.ToTicketError,
                 AddressIsRemovedException => ValidationErrors.Common.AddressRemoved.ToTicketError,
-                AddressHasInvalidStatusException => ValidationErrors.AttachAddress.InvalidAddressStatus.ToTicketError,
                 _ => null
             };
         }

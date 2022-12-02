@@ -2,6 +2,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
@@ -22,17 +23,20 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Parcel.Commands;
     using Parcel.Exceptions;
     using ParcelRegistry.Api.BackOffice.Abstractions;
+    using ParcelRegistry.Api.BackOffice.Abstractions.Requests;
+    using ParcelRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
+    using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAttachingAddressRequest : LambdaHandlerTest
+    public class WhenDetachingAddressRequest : LambdaHandlerTest
     {
         private readonly IdempotencyContext _idempotencyContext;
         private readonly BackOfficeContext _backOfficeContext;
 
-        public WhenAttachingAddressRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public WhenDetachingAddressRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedParcelId());
             Fixture.Customize(new Legacy.AutoFixture.WithFixedParcelId());
@@ -52,23 +56,26 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var capakey = new VbrCaPaKey("capakey");
             var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(capakey);
             var parcelId = ParcelId.CreateFor(capakey);
-
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
             consumerAddress.AddAddress(addressPersistentLocalId, AddressStatus.Current);
+
+            await _backOfficeContext.ParcelAddressRelations.AddAsync(new ParcelAddressRelation((Guid)parcelId, (int)addressPersistentLocalId));
+            await _backOfficeContext.SaveChangesAsync();
+            _backOfficeContext.ChangeTracker.Clear();
 
             DispatchArrangeCommand(new MigrateParcel(
                 legacyParcelId,
                 capakey,
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 isRemoved: false,
-                new List<AddressPersistentLocalId>(){ new AddressPersistentLocalId(456), new AddressPersistentLocalId(789) },
+                new List<AddressPersistentLocalId>(){ addressPersistentLocalId, new AddressPersistentLocalId(456) },
                 Fixture.Create<Coordinate>(),
                 Fixture.Create<Coordinate>(),
                 Fixture.Create<Provenance>()));
 
-            var handler = new AttachAddressLambdaHandler(
+            var handler = new DetachAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -76,10 +83,10 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 Container.Resolve<IParcels>(),
                 _backOfficeContext);
 
-            // Act
+         // Act
             var ticketId = Guid.NewGuid();
             await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
+                new DetachAddressLambdaRequestBuilder(Fixture)
                     .WithParcelId(parcelId)
                     .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .WithTicketId(ticketId)
@@ -96,8 +103,10 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                             etag)),
                     CancellationToken.None));
 
-            var addressParcelRelation = _backOfficeContext.ParcelAddressRelations.Find((Guid)parcelId, (int)addressPersistentLocalId);
-            addressParcelRelation.Should().NotBeNull();
+            var addressParcelRelation = _backOfficeContext.ParcelAddressRelations
+                .FirstOrDefault(x => x.ParcelId == (Guid)parcelId
+                                     && x.AddressPersistentLocalId == (int)addressPersistentLocalId);
+            addressParcelRelation.Should().BeNull();
         }
 
         [Fact]
@@ -106,6 +115,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Arrange
             var ticketing = new Mock<ITicketing>();
             var parcels = new Mock<IParcels>();
+            var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var parcelId =  Fixture.Create<ParcelId>();
             const string expectedEventHash = "lastEventHash";
@@ -114,7 +124,11 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 .Setup(x => x.GetHash(parcelId, CancellationToken.None))
                 .ReturnsAsync(() => expectedEventHash);
 
-            var handler = new AttachAddressLambdaHandler(
+            await _backOfficeContext.ParcelAddressRelations.AddAsync(new ParcelAddressRelation((Guid)parcelId, (int)addressPersistentLocalId));
+            await _backOfficeContext.SaveChangesAsync();
+            _backOfficeContext.ChangeTracker.Clear();
+
+            var handler = new DetachAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -125,7 +139,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Act
             var ticketId = Guid.NewGuid();
             await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
+                new DetachAddressLambdaRequestBuilder(Fixture)
+                    .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .WithParcelId(parcelId)
                     .WithTicketId(ticketId)
                     .Build(),
@@ -143,45 +158,13 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         }
 
         [Fact]
-        public async Task WhenParcelHasInvalidStatus_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            var handler = new AttachAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                MockExceptionIdempotentCommandHandler<ParcelHasInvalidStatusException>().Object,
-                Container.Resolve<IParcels>(),
-                _backOfficeContext);
-
-            // Act
-            await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
-                    .Build(),
-                CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "Enkel een gerealiseerd perceel kan gekoppeld worden.",
-                        "PerceelGehistoreerd"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
         public async Task WhenParcelIsRemoved_ThenTicketingErrorIsExpected()
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            var handler = new AttachAddressLambdaHandler(
+            var handler = new DetachAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -191,7 +174,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             // Act
             await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
+                new DetachAddressLambdaRequestBuilder(Fixture)
                     .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .Build(),
                 CancellationToken.None);
@@ -213,7 +196,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketing = new Mock<ITicketing>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            var handler = new AttachAddressLambdaHandler(
+            var handler = new DetachAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -223,7 +206,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             // Act
             await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
+                new DetachAddressLambdaRequestBuilder(Fixture)
                     .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .Build(),
                 CancellationToken.None);
@@ -245,7 +228,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketing = new Mock<ITicketing>();
             var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
-            var handler = new AttachAddressLambdaHandler(
+            var handler = new DetachAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
                 new FakeRetryPolicy(),
                 ticketing.Object,
@@ -255,7 +238,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             // Act
             await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
+                new DetachAddressLambdaRequestBuilder(Fixture)
                     .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .Build(),
                 CancellationToken.None);
@@ -267,38 +250,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                     new TicketError(
                         "Verwijderd adres.",
                         "VerwijderdAdres"),
-                    CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task WhenAddressHasInvalidStatus_ThenTicketingErrorIsExpected()
-        {
-            // Arrange
-            var ticketing = new Mock<ITicketing>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-
-            var handler = new AttachAddressLambdaHandler(
-                Container.Resolve<IConfiguration>(),
-                new FakeRetryPolicy(),
-                ticketing.Object,
-                MockExceptionIdempotentCommandHandler<AddressHasInvalidStatusException>().Object,
-                Container.Resolve<IParcels>(),
-                _backOfficeContext);
-
-            // Act
-            await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
-                    .Build(),
-                CancellationToken.None);
-
-            //Assert
-            ticketing.Verify(x =>
-                x.Error(
-                    It.IsAny<Guid>(),
-                    new TicketError(
-                        "Enkel een voorgesteld of adres in gebruik kan gekoppeld worden.",
-                        "AdresAfgekeurdGehistoreerd"),
                     CancellationToken.None));
         }
     }

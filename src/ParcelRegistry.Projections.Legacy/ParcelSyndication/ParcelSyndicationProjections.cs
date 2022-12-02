@@ -160,6 +160,15 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     x => x.AddAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     ct);
             });
+
+            When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.RemoveAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    ct);
+            });
         }
 
         private static async Task DoNothing()

@@ -45,6 +45,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
             });
 
             When<Envelope<ParcelAddressWasAttachedV2>>(async (_, _, _) => await DoNothing());
+            When<Envelope<ParcelAddressWasDetachedV2>>(async (_, _, _) => await DoNothing());
         }
 
         private void SetDelete(ParcelExtractItem parcel)
