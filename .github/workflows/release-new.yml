@@ -391,7 +391,7 @@ jobs:
           CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
           CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
           CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
-          JIRA_PREFIX: StreetName
+          JIRA_PREFIX: Parcel
           JIRA_PROJECT: GAWR
           JIRA_VERSION: ${{ needs.build.outputs.version }}
 
