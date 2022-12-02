@@ -1,3 +1,19 @@
+# [4.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.3.2...v4.4.0) (2022-12-02)
+
+
+### Bug Fixes
+
+* add backoffice-api to servicematrix in test & staging ([1b2f5fa](https://github.com/informatievlaanderen/parcel-registry/commit/1b2f5fac8095e62de7c376617c32bbaaafb07be3))
+* change workflow ([6265f2e](https://github.com/informatievlaanderen/parcel-registry/commit/6265f2e96ce6af68a32d8f83d7e0dc26c79c758d))
+* correct atlassian project ([15f627a](https://github.com/informatievlaanderen/parcel-registry/commit/15f627af65bfc9c89e3da835d59063afe3587ee7))
+* correct release-new.yml for slack notification ([5fb48cd](https://github.com/informatievlaanderen/parcel-registry/commit/5fb48cdbd2a663d24ccb21748954313cc9381d1b))
+
+
+### Features
+
+* add attachAddress projections ([bc523f3](https://github.com/informatievlaanderen/parcel-registry/commit/bc523f35ecd7919e9b679074b01a3877d9c2b657))
+* attach address ([#479](https://github.com/informatievlaanderen/parcel-registry/issues/479)) ([2b06af8](https://github.com/informatievlaanderen/parcel-registry/commit/2b06af890c3edd6c5ae40ee6ef0ba02146967822))
+
 ## [4.3.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.3.1...v4.3.2) (2022-11-29)
 
 
