@@ -120,7 +120,7 @@ jobs:
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER -o ~/pr-projections-syndication-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER -o ~/pr-consumer-address-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER -o ~/pr-migrator-parcel-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER -o ~/pr-api-backoffice-image.tar
+        #docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER -o ~/pr-api-backoffice-image.tar
       env:
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
         SEMVER: ${{ env.RELEASE_VERSION }}
@@ -174,14 +174,14 @@ jobs:
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}
 
-    - name: Upload NuGet package api-backoffice-abstractions
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: nuget-api-backoffice-abstractions
-        path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.*.nupkg
-      env:
-        SEMVER: ${{ env.RELEASE_VERSION }}
+#    - name: Upload NuGet package api-backoffice-abstractions
+#      if: env.RELEASE_VERSION != 'none'
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: nuget-api-backoffice-abstractions
+#        path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.*.nupkg
+#      env:
+#        SEMVER: ${{ env.RELEASE_VERSION }}
 
     #
     # Upload build artifacts
@@ -243,12 +243,12 @@ jobs:
         name: migrator-parcel
         path: ~/pr-migrator-parcel-image.tar
 
-    - name: Upload api-backoffice artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: api-backoffice
-        path: ~/pr-api-backoffice-image.tar
+#    - name: Upload api-backoffice artifact
+#      if: env.RELEASE_VERSION != 'none'
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: api-backoffice
+#        path: ~/pr-api-backoffice-image.tar
 
     - name: Package Lambda functions        
       if: env.RELEASE_VERSION != 'none'
@@ -449,12 +449,12 @@ jobs:
         name: nuget-projector
         path: ~/
 
-    - name: Download NuGet package api-backoffice-abstractions
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-api-backoffice-abstractions
-        path: ~/
+#    - name: Download NuGet package api-backoffice-abstractions
+#      if: env.RELEASE_VERSION != 'none'
+#      uses: actions/download-artifact@v3
+#      with:
+#        name: nuget-api-backoffice-abstractions
+#        path: ~/
 
 
     - name: Publish packages to NuGet
@@ -465,7 +465,7 @@ jobs:
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Projector.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        #dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       env:
         SEMVER: ${{ needs.build.outputs.version }}
         WORKSPACE: ${{ github.workspace }}
@@ -541,11 +541,11 @@ jobs:
           name: migrator-parcel
           path: ~/
 
-      - name: Download api-backoffice
-        uses: actions/download-artifact@v3
-        with:
-          name: api-backoffice
-          path: ~/
+#      - name: Download api-backoffice
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: api-backoffice
+#          path: ~/
 
       #
       # Load artifacts
@@ -562,7 +562,7 @@ jobs:
           docker image load -i ~/pr-projections-syndication-image.tar
           docker image load -i ~/pr-consumer-address-image.tar
           docker image load -i ~/pr-migrator-parcel-image.tar
-          docker image load -i ~/pr-api-backoffice-image.tar
+          #docker image load -i ~/pr-api-backoffice-image.tar
 
       - name: Push artifacts to ECR Test
         if: needs.build.outputs.version != 'none'
@@ -577,7 +577,7 @@ jobs:
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
+          #docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
           SEMVER: ${{ needs.build.outputs.version }}
@@ -653,11 +653,11 @@ jobs:
           name: migrator-parcel
           path: ~/
 
-      - name: Download api-backoffice
-        uses: actions/download-artifact@v3
-        with:
-          name: api-backoffice
-          path: ~/
+#      - name: Download api-backoffice
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: api-backoffice
+#          path: ~/
 
       #
       # Load artifacts
@@ -674,7 +674,7 @@ jobs:
           docker image load -i ~/pr-projections-syndication-image.tar
           docker image load -i ~/pr-consumer-address-image.tar
           docker image load -i ~/pr-migrator-parcel-image.tar
-          docker image load -i ~/pr-api-backoffice-image.tar
+          #docker image load -i ~/pr-api-backoffice-image.tar
 
       - name: Push artifacts to ECR Staging
         if: needs.build.outputs.version != 'none'
@@ -704,8 +704,8 @@ jobs:
           docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/migrator-parcel:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER
 
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
+          #docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
+          #docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
 
         env:
           BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
@@ -783,11 +783,11 @@ jobs:
           name: migrator-parcel
           path: ~/
 
-      - name: Download api-backoffice
-        uses: actions/download-artifact@v3
-        with:
-          name: api-backoffice
-          path: ~/
+#      - name: Download api-backoffice
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: api-backoffice
+#          path: ~/
 
       #
       # Load artifacts
@@ -804,7 +804,7 @@ jobs:
           docker image load -i ~/pr-projections-syndication-image.tar
           docker image load -i ~/pr-consumer-address-image.tar
           docker image load -i ~/pr-migrator-parcel-image.tar
-          docker image load -i ~/pr-api-backoffice-image.tar
+          #docker image load -i ~/pr-api-backoffice-image.tar
 
       - name: Push artifacts to ECR Production
         if: needs.build.outputs.version != 'none'
@@ -834,8 +834,8 @@ jobs:
           docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/migrator-parcel:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/migrator-parcel:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/migrator-parcel:$SEMVER
 
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-backoffice:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-backoffice:$SEMVER
+          #docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-backoffice:$SEMVER
+          #docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-backoffice:$SEMVER
 
         env:
           BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
@@ -872,7 +872,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: ['parcel-registry-api', 'parcel-registry-import-api', 'parcel-registry-backoffice-api', 'parcel-registry-projections']
+        services: ['parcel-registry-api', 'parcel-registry-import-api', 'parcel-registry-projections'] #'parcel-registry-backoffice-api', 'parcel-registry-projections']
 
     steps:
     - name: Deploy services
@@ -982,7 +982,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: ['parcel-registry-api', 'parcel-registry-projections', 'parcel-registry-consumer-address', 'parcel-registry-backoffice-api', 'parcel-registry-migrator-parcel']
+        services: ['parcel-registry-api', 'parcel-registry-projections', 'parcel-registry-consumer-address', 'parcel-registry-migrator-parcel'] #'parcel-registry-backoffice-api', 'parcel-registry-migrator-parcel']
 
     steps:
     - name: CD services
