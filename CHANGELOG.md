@@ -1,3 +1,10 @@
+## [4.4.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.0...v4.4.1) (2022-12-03)
+
+
+### Bug Fixes
+
+* remove api-backoffice ([9aebc47](https://github.com/informatievlaanderen/parcel-registry/commit/9aebc4775e0ab34346e4f5d96556babfc719c3c4))
+
 # [4.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.3.2...v4.4.0) (2022-12-02)
 
 
