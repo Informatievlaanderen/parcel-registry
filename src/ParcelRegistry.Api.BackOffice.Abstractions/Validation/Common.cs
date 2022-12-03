@@ -14,7 +14,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Validation
                 public static TicketError ToTicketError => new(Message, Code);
             }
 
-            public class ParcelNotFound
+            public static class ParcelNotFound
             {
                 public static string Code => "OnbestaandPerceel";
                 public static string Message => "Onbestaand perceel.";
@@ -22,14 +22,14 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Validation
                 public static TicketError ToTicketError => new(Message, Code);
             }
 
-            public class AddressNotFound
+            public static class AddressNotFound
             {
                 public static string Code => "AdresOngeldig";
                 public static string Message => "Ongeldig AdresId.";
                 public static TicketError ToTicketError => new(Message, Code);
             }
 
-            public class AddressRemoved
+            public static class AddressRemoved
             {
                 public static string Code => "VerwijderdAdres";
                 public static string Message => "Verwijderd adres.";
