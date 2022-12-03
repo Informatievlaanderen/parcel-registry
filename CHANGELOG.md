@@ -1,3 +1,10 @@
+## [4.4.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.1...v4.4.2) (2022-12-03)
+
+
+### Bug Fixes
+
+* make classes static ([2a0cbfb](https://github.com/informatievlaanderen/parcel-registry/commit/2a0cbfba2961fa085777fc19c58a5445e73fee60))
+
 ## [4.4.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.0...v4.4.1) (2022-12-03)
 
 
