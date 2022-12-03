@@ -1,3 +1,11 @@
+## [4.4.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.2...v4.4.3) (2022-12-03)
+
+
+### Bug Fixes
+
+* relax dependabot schedule ([9589705](https://github.com/informatievlaanderen/parcel-registry/commit/95897056ea1ed5734d75ea4c8c9bee1a657e692e))
+* remove lambda ([a0914ab](https://github.com/informatievlaanderen/parcel-registry/commit/a0914aba8db3ccd42451e8c360457209260ac375))
+
 ## [4.4.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.1...v4.4.2) (2022-12-03)
 
 
