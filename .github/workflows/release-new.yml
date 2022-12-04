@@ -112,6 +112,8 @@ jobs:
       if: env.RELEASE_VERSION != 'none'
       shell: bash
       run: |
+        echo docker images
+        docker images
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/projector:$SEMVER -o ~/pr-projector-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-legacy:$SEMVER -o ~/pr-api-legacy-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-oslo:$SEMVER -o ~/pr-api-oslo-image.tar
