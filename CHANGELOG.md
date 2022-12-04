@@ -1,3 +1,10 @@
+## [4.4.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.3...v4.4.4) (2022-12-04)
+
+
+### Bug Fixes
+
+* add docker images ([ffcd98e](https://github.com/informatievlaanderen/parcel-registry/commit/ffcd98e9b6305583a7cc888ded85edb4b0ef4ad7))
+
 ## [4.4.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.2...v4.4.3) (2022-12-03)
 
 
