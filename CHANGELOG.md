@@ -1,3 +1,10 @@
+## [4.4.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.4...v4.4.5) (2022-12-04)
+
+
+### Bug Fixes
+
+* remove debug docker images ([1410817](https://github.com/informatievlaanderen/parcel-registry/commit/14108173e2b34cb96e4f9ef86e8afb001ff68a63))
+
 ## [4.4.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.3...v4.4.4) (2022-12-04)
 
 
