@@ -37,7 +37,7 @@ namespace ParcelRegistry.Consumer.Address
         public Task<Result<KafkaJsonMessage>> Start(CancellationToken cancellationToken = default)
         {
             var messageCounter = 0;
-            var projector = new ConnectedProjector<ConsumerAddressContext>(Resolve.WhenEqualToHandlerMessageType(new AddressKafkaProjection().Handlers));
+            var projector = new ConnectedProjector<ConsumerAddressContext>(Resolve.WhenEqualToHandlerMessageType(new BackOfficeKafkaProjection().Handlers));
 
             var consumerGroupId = $"{nameof(ParcelRegistry)}.{nameof(Consumer)}.{_topic}{_consumerGroupSuffix}";
             return KafkaConsumer.Consume(

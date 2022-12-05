@@ -14,11 +14,11 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Provenance;
 
-    public class CommandHandlerProjections : ConnectedProjection<CommandHandler>
+    public class CommandHandlingKafkaProjection : ConnectedProjection<CommandHandler>
     {
         private readonly BackOfficeContext _backOfficeContext;
 
-        public CommandHandlerProjections(BackOfficeContext backOfficeContext)
+        public CommandHandlingKafkaProjection(BackOfficeContext backOfficeContext)
         {
             _backOfficeContext = backOfficeContext;
 
