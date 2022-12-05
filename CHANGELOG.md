@@ -1,3 +1,10 @@
+## [4.5.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.5.0...v4.5.1) (2022-12-05)
+
+
+### Bug Fixes
+
+* style to trigger build ([423c06e](https://github.com/informatievlaanderen/parcel-registry/commit/423c06e8116ac22b88e387d1efda30fc7b39a8b8))
+
 # [4.5.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.5...v4.5.0) (2022-12-05)
 
 
