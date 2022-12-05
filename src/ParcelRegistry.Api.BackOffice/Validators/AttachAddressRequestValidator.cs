@@ -14,7 +14,6 @@ namespace ParcelRegistry.Api.BackOffice.Validators
             RuleFor(x => x.AddressPersistentLocalId)
                 .Must(addressPersistentLocalId =>
                 {
-                   
                     var address = addressContext.GetOptional(new AddressPersistentLocalId(addressPersistentLocalId));
                     return address is not null && !address.Value.IsRemoved;
                 }).DependentRules(() =>
