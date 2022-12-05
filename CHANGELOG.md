@@ -1,3 +1,10 @@
+# [4.5.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.5...v4.5.0) (2022-12-05)
+
+
+### Features
+
+* detach address ([764aff8](https://github.com/informatievlaanderen/parcel-registry/commit/764aff8e71ae804359787c4346f33c33adbe5fef))
+
 ## [4.4.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.4.4...v4.4.5) (2022-12-04)
 
 
