@@ -18,7 +18,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
     using Convertors;
     using Microsoft.SyndicationFeed;
     using Microsoft.SyndicationFeed.Atom;
-    using Projections.Legacy.ParcelSyndication;
     using Query;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Syndication.Provenance;
 
@@ -88,6 +87,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
                     parcel.LastChangedOn.ToBelgianDateTimeOffset(),
                     parcel.Status.MapToPerceelStatusSyndication(),
                     parcel.AddressIds,
+                    parcel.XCoordinate,
+                    parcel.YCoordinate,
                     parcel.Organisation,
                     parcel.Reason);
 
@@ -137,12 +138,24 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
         /// De aan het perceel gelinkte adressen
         /// </summary>
         [DataMember(Name = "AdressenIds", Order = 4)]
-        public List<Guid> AddressIds { get; set; }
+        public List<string> AddressIds { get; set; }
+
+        /// <summary>
+        /// Het x-coordinaat van de centroïde van het perceel
+        /// </summary>
+        [DataMember(Name = "XCoordinaat", Order = 5)]
+        public decimal? XCoordinate { get; set; }
+
+        /// <summary>
+        /// Het y-coordinaat van de centroïde van het perceel
+        /// </summary>
+        [DataMember(Name = "YCoordinaat", Order = 6)]
+        public decimal? YCoordinate { get; set; }
 
         /// <summary>
         /// Creatie data ivm het item.
         /// </summary>
-        [DataMember(Name = "Creatie", Order = 6)]
+        [DataMember(Name = "Creatie", Order = 7)]
         public Provenance Provenance { get; set; }
 
         public ParcelSyndicationContent(
@@ -151,7 +164,9 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             string caPaKey,
             DateTimeOffset version,
             PerceelStatus? status,
-            IEnumerable<Guid> addressIds,
+            IEnumerable<string> addressIds,
+            decimal? xCoordinate,
+            decimal? yCoordinate,
             Organisation? organisation,
             string reason)
         {
@@ -159,6 +174,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Responses
             Identificator = new PerceelIdentificator(naamruimte, string.IsNullOrEmpty(caPaKey) ? string.Empty : caPaKey, version);
             Status = status;
             AddressIds = addressIds.ToList();
+            XCoordinate = xCoordinate;
+            YCoordinate = yCoordinate;
 
             Provenance = new Provenance(version, organisation, new Reason(reason));
         }
