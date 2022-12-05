@@ -913,8 +913,8 @@ jobs:
     - name: Prepare Lambda(s)
       shell: bash          
       run: |
-        echo aws s3 cp s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none       
-        aws s3 cp s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none       
+        echo aws s3 cp s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none       
+        aws s3 cp s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none       
       env:     
         VERSION: ${{ needs.build.outputs.version }}       
    
@@ -1023,8 +1023,8 @@ jobs:
     - name: Prepare Lambda(s)
       shell: bash
       run: |
-        echo aws s3 cp s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
-        aws s3 cp s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
+        echo aws s3 cp s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
+        aws s3 cp s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
       env:
         VERSION: ${{ needs.build.outputs.version }}
        
@@ -1133,8 +1133,8 @@ jobs:
 #    - name: Prepare Lambda(s)
 #      shell: bash
 #      run: |
-#        echo aws s3 cp s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
-#        aws s3 cp s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
+#        echo aws s3 cp s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
+#        aws s3 cp s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
 #      env:
 #        VERSION: ${{ needs.build.outputs.version }}
 #        
