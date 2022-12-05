@@ -26,13 +26,15 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         public Instant RecordCreatedAt { get; }
         public Instant LastChangedOn { get; }
         public ParcelStatus? Status { get; }
-        public IEnumerable<Guid> AddressIds { get; } = new List<Guid>();
+        public IEnumerable<string> AddressIds { get; } = new List<string>();
+        public decimal? XCoordinate { get; }
+        public decimal? YCoordinate { get; }
         public Organisation? Organisation { get; }
         public string Reason { get; }
         public string EventDataAsXml { get; }
 
         public ParcelSyndicationQueryResult(
-            Guid addressId,
+            Guid parcelId,
             long position,
             string caPaKey,
             string changeType,
@@ -44,7 +46,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             ContainsObject = false;
             ContainsEvent = false;
 
-            ParcelId = addressId;
+            ParcelId = parcelId;
             Position = position;
             CaPaKey = caPaKey;
             ChangeType = changeType;
@@ -55,7 +57,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         }
 
         public ParcelSyndicationQueryResult(
-            Guid addressId,
+            Guid parcelId,
             long position,
             string caPaKey,
             string changeType,
@@ -65,7 +67,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             string reason,
             string eventDataAsXml)
             : this(
-                addressId,
+                parcelId,
                 position,
                 caPaKey,
                 changeType,
@@ -80,7 +82,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
         }
 
         public ParcelSyndicationQueryResult(
-            Guid addressId,
+            Guid parcelId,
             long position,
             string caPaKey,
             string changeType,
@@ -88,10 +90,13 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             Instant lastChangedOn,
             ParcelStatus? status,
             IEnumerable<Guid> addressIds,
+            IEnumerable<int> addressPersistentLocalIds,
             Organisation? organisation,
+            decimal? xCoordinate,
+            decimal? yCoordinate,
             string reason)
             : this(
-                addressId,
+                parcelId,
                 position,
                 caPaKey,
                 changeType,
@@ -103,11 +108,13 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             ContainsObject = true;
 
             Status = status;
-            AddressIds = addressIds;
+            AddressIds = addressIds.Select(y => y.ToString()).Concat(addressPersistentLocalIds.Select(y => y.ToString())).ToList();
+            XCoordinate = xCoordinate;
+            YCoordinate = yCoordinate;
         }
 
         public ParcelSyndicationQueryResult(
-            Guid addressId,
+            Guid parcelId,
             long position,
             string caPaKey,
             string changeType,
@@ -115,11 +122,14 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
             Instant lastChangedOn,
             ParcelStatus? status,
             IEnumerable<Guid> addressIds,
+            IEnumerable<int> addressPersistentLocalIds,
             Organisation? organisation,
+            decimal? xCoordinate,
+            decimal? yCoordinate,
             string reason,
             string eventDataAsXml)
             : this(
-                addressId,
+                parcelId,
                 position,
                 caPaKey,
                 changeType,
@@ -127,7 +137,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                 lastChangedOn,
                 status,
                 addressIds,
+                addressPersistentLocalIds,
                 organisation,
+                xCoordinate,
+                yCoordinate,
                 reason)
         {
             ContainsEvent = true;
@@ -165,7 +178,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                         x.LastChangedOn,
                         x.Status,
                         x.AddressIds,
+                        x.AddressPersistentLocalIds,
                         x.Organisation,
+                        x.XCoordinate,
+                        x.YCoordinate,
                         x.Reason,
                         x.EventDataAsXml);
 
@@ -191,7 +207,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                         x.LastChangedOn,
                         x.Status,
                         x.AddressIds,
+                        x.AddressPersistentLocalIds,
                         x.Organisation,
+                        x.XCoordinate,
+                        x.YCoordinate,
                         x.Reason);
 
                 return x => new ParcelSyndicationQueryResult(

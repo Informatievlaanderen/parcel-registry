@@ -4,12 +4,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Convertors;
     using Infrastructure;
     using Infrastructure.Options;
     using MediatR;
@@ -19,7 +17,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
     using ParcelRegistry.Projections.Legacy;
     using Responses;
     using Requests;
-    using System.Configuration;
     using Microsoft.Extensions.Configuration;
     using Microsoft.SyndicationFeed.Atom;
     using Microsoft.SyndicationFeed;
