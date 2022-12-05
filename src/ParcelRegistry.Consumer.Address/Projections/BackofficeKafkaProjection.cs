@@ -7,7 +7,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
 
-    public class AddressKafkaProjection : ConnectedProjection<ConsumerAddressContext>
+    public class BackOfficeKafkaProjection : ConnectedProjection<ConsumerAddressContext>
     {
         private async Task CatchDbUpdateException(Func<Task> func, ConsumerAddressContext context)
         {
@@ -35,10 +35,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
             }
         }
 
-        // 
-
-        // AddressKafkaProjection -> BackofficeKafkaProjection 
-        public AddressKafkaProjection()
+        public BackOfficeKafkaProjection()
         {
             When<AddressWasMigratedToStreetName>(async (context, message, ct) =>
             {

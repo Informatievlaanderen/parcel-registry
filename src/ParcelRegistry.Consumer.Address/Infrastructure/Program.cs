@@ -110,9 +110,9 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
 
                                 Log.Information("The kafka consumer was started");
 
-                                // ADD CommandKafkaProjection
+                                // TODO: ADD CommandKafkaProjection
 
-                                await Task.WhenAny(consumerTask, );
+                                await Task.WhenAny(consumerTask);
 
                                 CancellationTokenSource.Cancel();
 
