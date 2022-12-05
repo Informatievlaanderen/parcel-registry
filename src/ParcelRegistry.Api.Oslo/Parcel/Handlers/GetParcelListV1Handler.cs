@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Api.Oslo.Parcel.Handlers
+namespace ParcelRegistry.Api.Oslo.Parcel.Handlers
 {
     using System.Linq;
     using System.Threading;
@@ -15,6 +15,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Projections.Legacy;
+    using Projections.Syndication;
     using Query;
     using Requests;
     using Responses;
@@ -22,13 +23,16 @@
     public class GetParcelListV1Handler : IRequestHandler<GetParcelListRequest, ParcelListOsloResponse>
     {
         private readonly LegacyContext _context;
+        private readonly SyndicationContext _syndicationContext;
         private readonly IOptions<ResponseOptions> _responseOptions;
 
         public GetParcelListV1Handler(
             LegacyContext context,
+            SyndicationContext syndicationContext,
             IOptions<ResponseOptions> responseOptions)
         {
             _context = context;
+            _syndicationContext = syndicationContext;
             _responseOptions = responseOptions;
         }
 
@@ -38,7 +42,7 @@
             var sorting = request.HttpRequest.ExtractSortingRequest();
             var pagination = request.HttpRequest.ExtractPaginationRequest();
 
-            var pagedParcels = new ParcelListOsloQuery(_context)
+            var pagedParcels = new ParcelListOsloQuery(_context, _syndicationContext)
                 .Fetch(filtering, sorting, pagination);
 
             request.HttpResponse.AddPagedQueryResultHeaders(pagedParcels);

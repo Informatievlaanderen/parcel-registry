@@ -29,6 +29,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             b.ToTable(TableName, Schema.Legacy)
                 .HasKey(p => new { p.ParcelId, p.AddressPersistentLocalId })
                 .IsClustered();
+
+            b.HasIndex(x => x.AddressPersistentLocalId);
         }
     }
 }

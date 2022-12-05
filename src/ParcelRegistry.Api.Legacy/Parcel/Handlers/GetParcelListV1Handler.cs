@@ -16,19 +16,23 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
     using Microsoft.Extensions.Options;
     using Query;
     using ParcelRegistry.Projections.Legacy;
+    using Projections.Syndication;
     using Responses;
     using Requests;
 
     public class GetParcelListV1Handler : IRequestHandler<GetParcelListRequest, ParcelListResponse?>
     {
         private readonly LegacyContext _context;
+        private readonly SyndicationContext _syndicationContext;
         private readonly IOptions<ResponseOptions> _responseOptions;
 
         public GetParcelListV1Handler(
             LegacyContext context,
+            SyndicationContext syndicationContext,
             IOptions<ResponseOptions> responseOptions)
         {
             _context = context;
+            _syndicationContext = syndicationContext;
             _responseOptions = responseOptions;
         }
         public async Task<ParcelListResponse?> Handle(GetParcelListRequest request, CancellationToken cancellationToken)
@@ -37,7 +41,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
             var sorting = request.HttpRequest.ExtractSortingRequest();
             var pagination = request.HttpRequest.ExtractPaginationRequest();
 
-            var pagedParcels = new ParcelListQuery(_context)
+            var pagedParcels = new ParcelListQuery(_context, _syndicationContext)
                 .Fetch(filtering, sorting, pagination);
 
             request.HttpResponse.AddPagedQueryResultHeaders(pagedParcels);

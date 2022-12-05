@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
+namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
 {
     using System;
     using System.Linq;
@@ -11,16 +11,19 @@
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy;
+    using Projections.Syndication;
     using Query;
     using Requests;
 
     public class GetCountV1Handler : IRequestHandler<GetCountRequest, TotaalAantalResponse>
     {
         private readonly LegacyContext _context;
+        private readonly SyndicationContext _syndicationContext;
 
-        public GetCountV1Handler(LegacyContext context)
+        public GetCountV1Handler(LegacyContext context, SyndicationContext syndicationContext)
         {
             _context = context;
+            _syndicationContext = syndicationContext;
         }
 
         public async Task<TotaalAantalResponse> Handle(GetCountRequest request, CancellationToken cancellationToken)
@@ -32,7 +35,7 @@
             return new TotaalAantalResponse
             {
                 Aantal = filtering.ShouldFilter
-                    ? await new ParcelListQuery(_context)
+                    ? await new ParcelListQuery(_context, _syndicationContext)
                         .Fetch(filtering, sorting, pagination)
                         .Items
                         .CountAsync(cancellationToken)
