@@ -17,7 +17,6 @@ namespace ParcelRegistry.Api.Oslo.Parcel
     [AdvertiseApiVersions("2.0")]
     [ApiRoute("percelen")]
     [ApiExplorerSettings(GroupName = "Percelen")]
-
     public class ParcelController : ApiController
     {
         private readonly IMediator _mediator;
