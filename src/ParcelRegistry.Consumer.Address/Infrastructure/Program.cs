@@ -94,6 +94,8 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                             var topic = $"{configuration["AddressTopic"]}" ??
                                         throw new ArgumentException("Configuration has no AddressTopic.");
                             var consumerGroupSuffix = configuration["AddressConsumerGroupSuffix"];
+                            // backoffice consumer suffix
+                            // command suffix
 
                             var actualContainer = container.GetRequiredService<ILifetimeScope>();
 
@@ -101,13 +103,16 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
 
                             await using (var consumerContext = actualContainer.Resolve<ConsumerAddressContext>())
                             {
+                                // BackOfficeConsumer
                                 var consumer = new Consumer(consumerContext, loggerFactory, kafkaOptions, topic,
                                     consumerGroupSuffix, kafkaOffset);
                                 var consumerTask = consumer.Start(cancellationToken);
 
                                 Log.Information("The kafka consumer was started");
 
-                                await Task.WhenAny(consumerTask);
+                                // ADD CommandKafkaProjection
+
+                                await Task.WhenAny(consumerTask, );
 
                                 CancellationTokenSource.Cancel();
 
