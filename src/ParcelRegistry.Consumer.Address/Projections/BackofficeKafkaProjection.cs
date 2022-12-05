@@ -35,6 +35,9 @@ namespace ParcelRegistry.Consumer.Address.Projections
             }
         }
 
+        // 
+
+        // AddressKafkaProjection -> BackofficeKafkaProjection 
         public AddressKafkaProjection()
         {
             When<AddressWasMigratedToStreetName>(async (context, message, ct) =>

@@ -40,6 +40,11 @@ namespace ParcelRegistry.Parcel
             Register<ParcelAddressWasAttachedV2>(When);
             Register<ParcelAddressWasDetachedV2>(When);
             Register<ParcelSnapshotV2>(When);
+
+            // Address Events
+            Register<ParcelAddressWasDetachedBecauseAddressWasRemoved>(When);
+            Register<ParcelAddressWasDetachedBecauseAddressWasRejected>(When);
+            Register<ParcelAddressWasDetachedBecauseAddressWasRetired>(When);
         }
 
         private void When(ParcelWasMigrated @event)
@@ -73,6 +78,27 @@ namespace ParcelRegistry.Parcel
         }
 
         private void When(ParcelAddressWasDetachedV2 @event)
+        {
+            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelAddressWasDetachedBecauseAddressWasRemoved @event)
+        {
+            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelAddressWasDetachedBecauseAddressWasRejected @event)
+        {
+            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelAddressWasDetachedBecauseAddressWasRetired @event)
         {
             _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
 

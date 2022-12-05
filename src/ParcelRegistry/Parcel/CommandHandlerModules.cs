@@ -17,6 +17,11 @@ namespace ParcelRegistry.Parcel
                 .RegisterType<ParcelCommandHandlerModule>()
                 .Named<CommandHandlerModule>(typeof(ParcelCommandHandlerModule).FullName)
                 .As<CommandHandlerModule>();
+
+            containerBuilder
+                .RegisterType<AddressCommandHandlerModule>()
+                .Named<CommandHandlerModule>(typeof(AddressCommandHandlerModule).FullName)
+                .As<CommandHandlerModule>();
         }
     }
 }
