@@ -6,15 +6,15 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using Parcel;
     using Parcel.Commands;
 
-    public sealed record AttachAddressLambdaRequest : SqsLambdaRequest, IHasParcelId
+    public sealed record DetachAddressLambdaRequest : SqsLambdaRequest, IHasParcelId
     {
-        public AttachAddressRequest Request { get; }
+        public DetachAddressRequest Request { get; }
 
         public Guid ParcelId { get; }
 
-        public AttachAddressLambdaRequest(
+        public DetachAddressLambdaRequest(
             string messageGroupId,
-            AttachAddressSqsRequest sqsRequest)
+            DetachAddressSqsRequest sqsRequest)
             : base(
                 messageGroupId,
                 sqsRequest.TicketId,
@@ -27,12 +27,12 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
         }
 
         /// <summary>
-        /// Map to AttachAddress command
+        /// Map to DetachAddress command
         /// </summary>
-        /// <returns>AttachAddress.</returns>
-        public AttachAddress ToCommand()
+        /// <returns>DetachAddress.</returns>
+        public DetachAddress ToCommand()
         {
-            return new AttachAddress(new ParcelId(ParcelId), new AddressPersistentLocalId(Request.AddressPersistentLocalId), Provenance);
+            return new DetachAddress(new ParcelId(ParcelId), new AddressPersistentLocalId(Request.AddressPersistentLocalId), Provenance);
         }
     }
 }

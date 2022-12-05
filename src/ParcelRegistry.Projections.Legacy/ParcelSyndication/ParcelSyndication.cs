@@ -95,6 +95,13 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             AddressPersistentLocalIds = addressPersistentLocalIds;
         }
 
+        public void RemoveAddressPersistentLocalId(int addressPersistentLocalId)
+        {
+            var addressPersistentLocalIds = GetDeserializedAddressPersistentLocalIds();
+            addressPersistentLocalIds.Remove(addressPersistentLocalId);
+            AddressPersistentLocalIds = addressPersistentLocalIds;
+        }
+
         public void RemoveAddressId(Guid addressId)
         {
             var addresses = GetDeserializedAddressIds();

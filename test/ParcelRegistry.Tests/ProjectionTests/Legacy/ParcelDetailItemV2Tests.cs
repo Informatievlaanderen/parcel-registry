@@ -83,6 +83,34 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenParcelAddressWasDetachedV2()
+        {
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() }
+            };
+
+            var addressWasDetached = _fixture.Create<ParcelAddressWasDetachedV2>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasDetached.GetHash() }
+            };
+
+            await Sut
+                .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
+                    new Envelope<ParcelAddressWasDetachedV2>(new Envelope(addressWasDetached, metadata2)))
+                .Then(async ct =>
+                {
+                    var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(parcelWasMigrated.ParcelId);
+                    parcelDetailV2.Should().NotBeNull();
+                    parcelDetailV2.Addresses.Select(x => x.AddressPersistentLocalId).Should().NotContain(addressWasDetached.AddressPersistentLocalId);
+                    parcelDetailV2.VersionTimestamp.Should().Be(addressWasDetached.Provenance.Timestamp);
+                    parcelDetailV2.LastEventHash.Should().Be(addressWasDetached.GetHash());
+                });
+        }
+
         protected override ParcelDetailV2Projections CreateProjection()
             => new ParcelDetailV2Projections();
     }

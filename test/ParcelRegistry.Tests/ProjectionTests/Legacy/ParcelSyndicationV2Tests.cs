@@ -91,6 +91,41 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenParcelAddressWasDetachedV2()
+        {
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() },
+                { Envelope.PositionMetadataKey, 1L },
+                { Envelope.EventNameMetadataKey, nameof(ParcelWasMigrated) },
+            };
+
+            const long position = 2L;
+            var addressWasDetached = _fixture.Create<ParcelAddressWasDetachedV2>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasDetached.GetHash() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelAddressWasDetachedV2) },
+            };
+
+            await Sut
+                .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
+                        new Envelope<ParcelAddressWasDetachedV2>(new Envelope(addressWasDetached, metadata2)))
+                .Then(async ct =>
+                {
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
+                    parcelSyndicationItem.Should().NotBeNull();
+                    parcelSyndicationItem.AddressPersistentLocalIds.Should().NotContain(addressWasDetached.AddressPersistentLocalId);
+                    parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelAddressWasDetachedV2));
+                    parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
+                    parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);
+                    parcelSyndicationItem.LastChangedOn.Should().Be(addressWasDetached.Provenance.Timestamp);
+                });
+        }
+
         protected override ParcelSyndicationProjections CreateProjection()
             => new ParcelSyndicationProjections();
     }

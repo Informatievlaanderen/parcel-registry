@@ -18,9 +18,9 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenAttachAddressBackOfficeRequest : ParcelRegistryTest
+    public class GivenDetachAddressBackOfficeRequest : ParcelRegistryTest
     {
-        public GivenAttachAddressBackOfficeRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenDetachAddressBackOfficeRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedParcelId());
         }
@@ -39,15 +39,15 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
 
             var sqsQueue = new Mock<ISqsQueue>();
 
-            var sut = new AttachAddressHandler(
+            var sut = new DetachAddressHandler(
                 sqsQueue.Object,
                 ticketingMock.Object,
                 ticketingUrl);
 
-            var sqsRequest = new AttachAddressSqsRequest()
+            var sqsRequest = new DetachAddressSqsRequest()
             {
                 ParcelId = Fixture.Create<ParcelId>(),
-                Request = new AttachAddressRequest()
+                Request = new DetachAddressRequest()
                 {
                     AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
                 }
@@ -62,7 +62,7 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
             ticketingMock.Verify(x => x.CreateTicket(new Dictionary<string, string>
             {
                 {AttachAddressHandler.RegistryKey, nameof(ParcelRegistry)},
-                { AttachAddressHandler.ActionKey, "AttachAddress" },
+                { AttachAddressHandler.ActionKey, "DetachAddress" },
                 { AttachAddressHandler.AggregateIdKey, sqsRequest.ParcelId },
                 { AttachAddressHandler.ObjectIdKey, sqsRequest.VbrCaPaKey }
             }, CancellationToken.None));
@@ -72,8 +72,6 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
                 It.Is<SqsQueueOptions>(y => y.MessageGroupId == Fixture.Create<ParcelId>().ToString()),
                 CancellationToken.None));
             result.Location.Should().Be(ticketingUrl.For(ticketId));
-
-
         }
     }
 }

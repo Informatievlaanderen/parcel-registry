@@ -6,19 +6,19 @@ namespace ParcelRegistry.Api.BackOffice.Handlers
     using Be.Vlaanderen.Basisregisters.Sqs.Handlers;
     using TicketingService.Abstractions;
 
-    public class AttachAddressHandler : SqsHandler<AttachAddressSqsRequest>
+    public class DetachAddressHandler : SqsHandler<DetachAddressSqsRequest>
     {
-        public const string Action = "AttachAddress";
+        public const string Action = "DetachAddress";
 
-        public AttachAddressHandler(ISqsQueue sqsQueue, ITicketing ticketing, ITicketingUrl ticketingUrl) : base(sqsQueue, ticketing, ticketingUrl)
+        public DetachAddressHandler(ISqsQueue sqsQueue, ITicketing ticketing, ITicketingUrl ticketingUrl) : base(sqsQueue, ticketing, ticketingUrl)
         { }
 
-        protected override string? WithAggregateId(AttachAddressSqsRequest request)
+        protected override string? WithAggregateId(DetachAddressSqsRequest request)
         {
             return request.ParcelId.ToString();
         }
 
-        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, AttachAddressSqsRequest sqsRequest)
+        protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, DetachAddressSqsRequest sqsRequest)
         {
             return new Dictionary<string, string>
             {

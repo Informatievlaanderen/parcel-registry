@@ -20,7 +20,7 @@ namespace ParcelRegistry.Api.BackOffice
     public partial class ParcelController
     {
         /// <summary>
-        /// Koppel adres aan perceel.
+        /// Ontkoppel adres van perceel.
         /// </summary>
         /// <param name="validator"></param>
         /// <param name="parcelExistsValidator"></param>
@@ -30,7 +30,7 @@ namespace ParcelRegistry.Api.BackOffice
         /// <param name="ifMatchHeaderValue"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpPost("{caPaKey}/acties/adreskoppelen")]
+        [HttpPost("{caPaKey}/acties/adresontkoppelen")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status412PreconditionFailed)]
@@ -38,12 +38,12 @@ namespace ParcelRegistry.Api.BackOffice
         [SwaggerResponseHeader(StatusCodes.Status202Accepted, "location", "string", "De URL van het aangemaakte ticket.")]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-        public async Task<IActionResult> AttachAddress(
-            [FromServices] IValidator<AttachAddressRequest> validator,
+        public async Task<IActionResult> DetachAddress(
+            [FromServices] IValidator<DetachAddressRequest> validator,
             [FromServices] ParcelExistsValidator parcelExistsValidator,
             [FromServices] IIfMatchHeaderValidator ifMatchHeaderValidator,
             [FromRoute] string caPaKey,
-            [FromBody] AttachAddressRequest request,
+            [FromBody] DetachAddressRequest request,
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
@@ -64,11 +64,11 @@ namespace ParcelRegistry.Api.BackOffice
                     return new PreconditionFailedResult();
                 }
 
-                var sqsRequest = new AttachAddressSqsRequest
+                var sqsRequest = new DetachAddressSqsRequest
                 {
                     ParcelId = parcelId,
-                    Request = request,
                     VbrCaPaKey = vbrCaPaKey,
+                    Request = request,
                     IfMatchHeaderValue = ifMatchHeaderValue,
                     Metadata = GetMetadata(),
                     ProvenanceData = new ProvenanceData(CreateFakeProvenance())
