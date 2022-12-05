@@ -278,8 +278,8 @@ jobs:
       run: |
          echo Push Lambda functions to S3 Test
          pushd /home/runner/work/parcel-registry/parcel-registry/dist/ParcelRegistry.Api.BackOffice.Handlers.Lambda/linux
-         echo aws s3 cp lambda.zip s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-         aws s3 cp lambda.zip s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
+         echo aws s3 cp lambda.zip s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
+         aws s3 cp lambda.zip s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
          popd
       env:
          SEMVER: ${{ env.RELEASE_VERSION }}
@@ -302,8 +302,8 @@ jobs:
       run: |
         echo Push Lambda functions to S3 Staging
         pushd /home/runner/work/parcel-registry/parcel-registry/dist/ParcelRegistry.Api.BackOffice.Handlers.Lambda/linux
-        echo aws s3 cp lambda.zip s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-        aws s3 cp lambda.zip s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
+        echo aws s3 cp lambda.zip s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
+        aws s3 cp lambda.zip s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
         popd
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}
@@ -326,8 +326,8 @@ jobs:
       run: |
         echo Push Lambda functions to S3 Production
         pushd /home/runner/work/parcel-registry/parcel-registry/dist/ParcelRegistry.Api.BackOffice.Handlers.Lambda/linux
-        echo aws s3 cp lambda.zip s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-        aws s3 cp lambda.zip s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
+        echo aws s3 cp lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
+        aws s3 cp lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
         popd
       env:
        SEMVER: ${{ env.RELEASE_VERSION }}
