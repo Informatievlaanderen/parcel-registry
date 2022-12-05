@@ -29,7 +29,21 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Query
                 .Where(x => !x.Removed);
 
             if (!filtering.ShouldFilter)
+            {
                 return parcels;
+            }
+
+            if (!string.IsNullOrEmpty(filtering.Filter.AddressId))
+            {
+                if (int.TryParse(filtering.Filter.AddressId, out var addressId))
+                {
+                    parcels = parcels.Where(x => x.Addresses.Any(parcelDetailAddress => parcelDetailAddress.AddressPersistentLocalId == addressId));
+                }
+                else
+                {
+                    return new List<ParcelDetailV2>().AsQueryable();
+                }
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.Status))
             {
@@ -63,5 +77,6 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Query
     public class ParcelFilterV2
     {
         public string Status { get; set; }
+        public string AddressId { get; set; }
     }
 }

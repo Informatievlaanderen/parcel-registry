@@ -32,6 +32,7 @@ namespace ParcelRegistry.Projections.Syndication.Address
             builder.Property(x => x.IsComplete);
             builder.Property(x => x.IsRemoved);
 
+            builder.HasIndex(x => x.PersistentLocalId);
             builder.HasIndex(x => new { x.IsComplete, x.IsRemoved });
         }
     }

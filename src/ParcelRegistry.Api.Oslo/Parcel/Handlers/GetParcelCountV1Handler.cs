@@ -12,15 +12,18 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Handlers
     using Microsoft.EntityFrameworkCore;
     using Query;
     using ParcelRegistry.Projections.Legacy;
+    using Projections.Syndication;
     using Requests;
 
     public class GetParcelCountV1Handler : IRequestHandler<GetParcelCountRequest, TotaalAantalResponse>
     {
         private readonly LegacyContext _context;
+        private readonly SyndicationContext _syndicationContext;
 
-        public GetParcelCountV1Handler(LegacyContext context)
+        public GetParcelCountV1Handler(LegacyContext context, SyndicationContext syndicationContext)
         {
             _context = context;
+            _syndicationContext = syndicationContext;
         }
 
         public async Task<TotaalAantalResponse> Handle(GetParcelCountRequest request, CancellationToken cancellationToken)
@@ -32,7 +35,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Handlers
             return new TotaalAantalResponse
             {
                 Aantal = filtering.ShouldFilter
-                        ? await new ParcelListOsloQuery(_context)
+                        ? await new ParcelListOsloQuery(_context, _syndicationContext)
                             .Fetch(filtering, sorting, pagination)
                             .Items
                             .CountAsync(cancellationToken)

@@ -11,14 +11,20 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
     using Convertors;
+    using Projections.Syndication;
 
     public class ParcelListQuery : Query<ParcelDetail, ParcelFilter>
     {
         private readonly LegacyContext _context;
+        private readonly SyndicationContext _syndicationContext;
 
         protected override ISorting Sorting => new ParcelSorting();
 
-        public ParcelListQuery(LegacyContext context) => _context = context;
+        public ParcelListQuery(LegacyContext context, SyndicationContext syndicationContext)
+        {
+            _context = context;
+            _syndicationContext = syndicationContext;
+        }
 
         protected override IQueryable<ParcelDetail> Filter(FilteringHeader<ParcelFilter> filtering)
         {
@@ -29,7 +35,22 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                 .Where(x => !x.Removed);
 
             if (!filtering.ShouldFilter)
+            {
                 return parcels;
+            }
+
+            if (!string.IsNullOrEmpty(filtering.Filter.AddressId))
+            {
+                var address = _syndicationContext.AddressPersistentLocalIds.SingleOrDefault(x => x.PersistentLocalId == filtering.Filter.AddressId);
+                if (address is not null)
+                {
+                    parcels = parcels.Where(x => x.Addresses.Any(parcelDetailAddress => parcelDetailAddress.AddressId == address.AddressId));
+                }
+                else
+                {
+                    return new List<ParcelDetail>().AsQueryable();
+                }
+            }
 
             if (!string.IsNullOrEmpty(filtering.Filter.Status))
             {
@@ -39,9 +60,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
                     parcels = parcels.Where(m => m.Status.HasValue && m.Status.Value == parcelStatus.Status);
                 }
                 else
+                {
                     //have to filter on EF cannot return new List<>().AsQueryable() cause non-EF provider does not support .CountAsync()
                     parcels = parcels.Where(m => m.Status == "-1");
-
+                }
             }
 
             return parcels;
@@ -61,5 +83,6 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Query
     public class ParcelFilter
     {
         public string Status { get; set; }
+        public string AddressId { get; set; }
     }
 }
