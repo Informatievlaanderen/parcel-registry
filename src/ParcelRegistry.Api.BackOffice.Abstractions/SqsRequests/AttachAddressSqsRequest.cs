@@ -7,6 +7,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.SqsRequests
     public class AttachAddressSqsRequest : SqsRequest
     {
         public ParcelId ParcelId { get; set; }
+        public VbrCaPaKey VbrCaPaKey { get; set; }
         public AttachAddressRequest Request { get; set; }
     }
 }

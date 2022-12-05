@@ -47,7 +47,8 @@ namespace ParcelRegistry.Api.BackOffice
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            var parcelId = ParcelId.CreateFor(new VbrCaPaKey(caPaKey));
+            var vbrCaPaKey = new VbrCaPaKey(caPaKey);
+            var parcelId = ParcelId.CreateFor(vbrCaPaKey);
 
             await validator.ValidateAndThrowAsync(request, cancellationToken);
 
@@ -66,6 +67,7 @@ namespace ParcelRegistry.Api.BackOffice
                 var sqsRequest = new DetachAddressSqsRequest
                 {
                     ParcelId = parcelId,
+                    VbrCaPaKey = vbrCaPaKey,
                     Request = request,
                     IfMatchHeaderValue = ifMatchHeaderValue,
                     Metadata = GetMetadata(),

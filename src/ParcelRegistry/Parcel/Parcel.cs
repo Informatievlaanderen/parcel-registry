@@ -76,18 +76,6 @@ namespace ParcelRegistry.Parcel
         {
             GuardParcelNotRemoved();
 
-            var address = _addresses.GetOptional(addressPersistentLocalId);
-
-            if (address is null)
-            {
-                throw new AddressNotFoundException();
-            }
-
-            if (address.Value.IsRemoved)
-            {
-                throw new AddressIsRemovedException();
-            }
-
             if (!AddressPersistentLocalIds.Contains(addressPersistentLocalId))
             {
                 return;

@@ -47,7 +47,8 @@ namespace ParcelRegistry.Api.BackOffice
             [FromHeader(Name = "If-Match")] string? ifMatchHeaderValue,
             CancellationToken cancellationToken = default)
         {
-            var parcelId = ParcelId.CreateFor(new VbrCaPaKey(caPaKey));
+            var vbrCaPaKey = new VbrCaPaKey(caPaKey);
+            var parcelId = ParcelId.CreateFor(vbrCaPaKey);
 
             await validator.ValidateAndThrowAsync(request, cancellationToken);
 
@@ -67,6 +68,7 @@ namespace ParcelRegistry.Api.BackOffice
                 {
                     ParcelId = parcelId,
                     Request = request,
+                    VbrCaPaKey = vbrCaPaKey,
                     IfMatchHeaderValue = ifMatchHeaderValue,
                     Metadata = GetMetadata(),
                     ProvenanceData = new ProvenanceData(CreateFakeProvenance())

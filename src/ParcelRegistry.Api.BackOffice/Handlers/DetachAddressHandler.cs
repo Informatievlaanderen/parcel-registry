@@ -25,7 +25,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers
                 { RegistryKey, nameof(ParcelRegistry) },
                 { ActionKey, Action },
                 { AggregateIdKey, aggregateId },
-                { ObjectIdKey, aggregateId }
+                { ObjectIdKey, sqsRequest.VbrCaPaKey }
             };
         }
     }

@@ -39,6 +39,12 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
                         cancellationToken);
                     break;
 
+                case DetachAddressSqsRequest request:
+                    await mediator.Send(
+                        new DetachAddressLambdaRequest(messageMetadata.MessageGroupId!, request),
+                        cancellationToken);
+                    break;
+
                 default:
                     throw new NotImplementedException(
                         $"{sqsRequest.GetType().Name} has no corresponding SqsLambdaRequest defined.");

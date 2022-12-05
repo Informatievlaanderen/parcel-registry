@@ -58,11 +58,22 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
 
             // Assert
             sqsRequest.TicketId.Should().Be(ticketId);
+
+            ticketingMock.Verify(x => x.CreateTicket(new Dictionary<string, string>
+            {
+                {AttachAddressHandler.RegistryKey, nameof(ParcelRegistry)},
+                { AttachAddressHandler.ActionKey, "AttachAddress" },
+                { AttachAddressHandler.AggregateIdKey, sqsRequest.ParcelId },
+                { AttachAddressHandler.ObjectIdKey, sqsRequest.VbrCaPaKey }
+            }, CancellationToken.None));
+
             sqsQueue.Verify(x => x.Copy(
                 sqsRequest,
                 It.Is<SqsQueueOptions>(y => y.MessageGroupId == Fixture.Create<ParcelId>().ToString()),
                 CancellationToken.None));
             result.Location.Should().Be(ticketingUrl.For(ticketId));
+
+
         }
     }
 }
