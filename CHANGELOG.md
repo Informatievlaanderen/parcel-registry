@@ -1,3 +1,14 @@
+## [4.5.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.5.1...v4.5.2) (2022-12-05)
+
+
+### Bug Fixes
+
+* ci release token ([24196df](https://github.com/informatievlaanderen/parcel-registry/commit/24196df06ba69bb7bb01ea2d2230540ae49622b9))
+* correct ci checkout action ([bb7aa6e](https://github.com/informatievlaanderen/parcel-registry/commit/bb7aa6e527ee69d1be067da8352a62fb25fe37e8))
+* extend syndication response ([673fde8](https://github.com/informatievlaanderen/parcel-registry/commit/673fde8a7859a0eeb987a6b985f8317aa259463d))
+* remove old workflows ([c832549](https://github.com/informatievlaanderen/parcel-registry/commit/c832549100b71c53a52a768c567a8e307e7b3080))
+* style to trigger release ([6142e05](https://github.com/informatievlaanderen/parcel-registry/commit/6142e05c852eca9e0e46e22824e573e2576e3fb6))
+
 ## [4.5.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.5.0...v4.5.1) (2022-12-05)
 
 
