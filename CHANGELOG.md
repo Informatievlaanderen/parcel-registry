@@ -1,3 +1,10 @@
+# [4.6.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.5.2...v4.6.0) (2022-12-06)
+
+
+### Features
+
+* add addressId filter on legacy/oslo list ([881f5f4](https://github.com/informatievlaanderen/parcel-registry/commit/881f5f4c9bef2e17b30aefb817a3d438ef90e3bc))
+
 ## [4.5.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.5.1...v4.5.2) (2022-12-05)
 
 
