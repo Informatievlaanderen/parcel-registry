@@ -179,8 +179,6 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure
                     }
                 });
 
-            app.UseIdempotencyDatabaseMigrations();
-
             MigrationsHelper.Run(
                 _configuration.GetConnectionString("BackOffice"),
                 serviceProvider.GetService<ILoggerFactory>());
