@@ -8,6 +8,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
+    using Microsoft.EntityFrameworkCore;
     using NodaTime.Text;
     using Parcel;
     using Parcel.Commands;
@@ -25,6 +26,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
             When<AddressWasRemovedV2>(async (commandHandler, message, ct) =>
             {
                 var relations = backOfficeContext.ParcelAddressRelations
+                    .AsNoTracking()
                     .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(message.AddressPersistentLocalId))
                     .ToList();
 
@@ -109,6 +111,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
             CancellationToken ct)
         {
             var relations = _backOfficeContext.ParcelAddressRelations
+                .AsNoTracking()
                 .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
                 .ToList();
 
@@ -129,6 +132,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
             CancellationToken ct)
         {
             var relations = _backOfficeContext.ParcelAddressRelations
+                .AsNoTracking()
                 .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
                 .ToList();
 
@@ -145,10 +149,10 @@ namespace ParcelRegistry.Consumer.Address.Projections
         private static Provenance FromProvenance(Contracts.Provenance provenance) =>
             new Provenance(
                 InstantPattern.General.Parse(provenance.Timestamp).GetValueOrThrow(),
-                Enum.Parse<Application>(provenance.Application),
+                Enum.Parse<Application>(Application.AddressRegistry.ToString()),
                 new Reason(provenance.Reason),
                 new Operator(string.Empty),
-                Enum.Parse<Modification>(provenance.Modification),
-                Enum.Parse<Organisation>(provenance.Organisation));
+                Enum.Parse<Modification>(Modification.Update.ToString()),
+                Enum.Parse<Organisation>(Organisation.DigitaalVlaanderen.ToString()));
     }
 }
