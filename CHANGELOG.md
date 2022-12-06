@@ -1,3 +1,11 @@
+## [4.6.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.6.0...v4.6.1) (2022-12-06)
+
+
+### Bug Fixes
+
+* backoffice registration ([13566a2](https://github.com/informatievlaanderen/parcel-registry/commit/13566a2e1327374a1563dfb0d5e05c1f9c9d4e0b))
+* remove comment for publish abstractions nuget ([80fdc39](https://github.com/informatievlaanderen/parcel-registry/commit/80fdc39f2863cac7a9d755062246d934207cc8fe))
+
 # [4.6.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.5.2...v4.6.0) (2022-12-06)
 
 
