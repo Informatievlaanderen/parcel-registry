@@ -8,6 +8,7 @@ namespace ParcelRegistry.Consumer.Address
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Parcel;
     using ParcelRegistry.Infrastructure;
 
     public class ConsumerAddressModule : Module
@@ -30,6 +31,8 @@ namespace ParcelRegistry.Consumer.Address
             {
                 RunInMemoryDb(services, loggerFactory, logger);
             }
+
+            services.AddScoped<IAddresses, ConsumerAddressContext>();
         }
 
         private static void RunOnSqlServer(
