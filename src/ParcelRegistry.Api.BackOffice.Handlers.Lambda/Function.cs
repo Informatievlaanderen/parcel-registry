@@ -83,6 +83,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
                 .RegisterModule(new DataDogModule(configuration))
                 .RegisterModule(new EditModule(configuration))
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
+                .RegisterModule(new ConsumerAddressModule(configuration, services, loggerFactory))
                 .RegisterModule(new IdempotencyModule(
                     services,
                     configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
@@ -97,10 +98,6 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
                 .As<IIdempotentCommandHandler>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
-
-            builder
-                .RegisterType<ConsumerAddressContext>()
-                .As<IAddresses>();
 
             builder.Populate(services);
 
