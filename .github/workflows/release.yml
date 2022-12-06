@@ -466,7 +466,7 @@ jobs:
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Projector.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        #dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       env:
         SEMVER: ${{ needs.build.outputs.version }}
         WORKSPACE: ${{ github.workspace }}
