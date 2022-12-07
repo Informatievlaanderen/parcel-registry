@@ -23,6 +23,26 @@ namespace ParcelRegistry.Consumer.Address.Projections
         {
             _backOfficeContext = backOfficeContext;
 
+            When<AddressWasMigratedToStreetName>(async (commandHandler, message, ct) =>
+            {
+                if (message.IsRemoved)
+                {
+                    var relations = backOfficeContext.ParcelAddressRelations
+                        .AsNoTracking()
+                        .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(message.AddressPersistentLocalId))
+                        .ToList();
+
+                    foreach (var relation in relations)
+                    {
+                        var command = new DetachAddressBecauseAddressWasRemoved(
+                            new ParcelId(relation.ParcelId),
+                            new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                            FromProvenance(message.Provenance));
+                        await commandHandler.Handle(command, ct);
+                    }
+                }
+            });
+
             When<AddressWasRemovedV2>(async (commandHandler, message, ct) =>
             {
                 var relations = backOfficeContext.ParcelAddressRelations

@@ -49,7 +49,7 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
                 ParcelId = Fixture.Create<ParcelId>(),
                 Request = new AttachAddressRequest()
                 {
-                    AdresId = Fixture.Create<AddressPersistentLocalId>()
+                    AdresId = PuriCreator.CreateAdresId(123)
                 }
             };
 
@@ -72,8 +72,6 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
                 It.Is<SqsQueueOptions>(y => y.MessageGroupId == Fixture.Create<ParcelId>().ToString()),
                 CancellationToken.None));
             result.Location.Should().Be(ticketingUrl.For(ticketId));
-
-
         }
     }
 }

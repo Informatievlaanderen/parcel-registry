@@ -107,33 +107,34 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                                 loggerFactory,
                                 kafkaOptions,
                                 topic,
-                                consumerGroupSuffix: configuration["BackOfficeConsumerGroupSuffix"],
+                                configuration["BackOfficeConsumerGroupSuffix"],
                                 backOfficeConsumerOffset);
                             var backOfficeConsumerTask = backOfficeConsumer.Start(cancellationToken);
 
                             var consumerTasks = new List<Task> {backOfficeConsumerTask};
 
-                            Log.Information("The kafka BackOfficeConsumer");
+                            Log.Information("The kafka BackOfficeConsumer has started");
 
-                            // toggle this consumer
-                            var commandHandlingConsumer = new CommandHandlingConsumer(
-                                lifetimeScope,
-                                loggerFactory,
-                                kafkaOptions,
-                                topic,
-                                consumerGroupSuffix: configuration["CommandHandlingConsumerGroupSuffix"]);
-                            var commandHandlingConsumerTask = commandHandlingConsumer.Start(cancellationToken);
-                            consumerTasks.Add(commandHandlingConsumerTask);
-
-                            Log.Information("The kafka CommandHandlingConsumer were started");
+                            var enableCommandHandlingConsumer = configuration["FeatureToggles:EnableCommandHandlingConsumer"];
+                            if (enableCommandHandlingConsumer != null && bool.Parse(enableCommandHandlingConsumer))
+                            {
+                                var commandHandlingConsumer = new CommandHandlingConsumer(
+                                    lifetimeScope,
+                                    loggerFactory,
+                                    kafkaOptions,
+                                    topic,
+                                    configuration["CommandHandlingConsumerGroupSuffix"]);
+                                var commandHandlingConsumerTask = commandHandlingConsumer.Start(cancellationToken);
+                                consumerTasks.Add(commandHandlingConsumerTask);
+                                
+                                Log.Information("The kafka CommandHandlingConsumer has started");
+                            }
 
                             await Task.WhenAny(consumerTasks);
 
                             CancellationTokenSource.Cancel();
 
-                            Log.Error($"BackOfficeConsumer stopped with status: {backOfficeConsumerTask.Status}");
-                            Log.Error($"CommandHandlingConsumer stopped with status: {commandHandlingConsumerTask.Status}");
-                            Log.Error("The consumers were terminated");
+                            Log.Error("The Address Consumers were terminated");
                         }
                         catch (Exception e)
                         {
