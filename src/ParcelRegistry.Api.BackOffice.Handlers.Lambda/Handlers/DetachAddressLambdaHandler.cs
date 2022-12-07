@@ -64,7 +64,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers
         {
             return exception switch
             {
-                AddressNotFoundException => ValidationErrors.Common.AddressNotFound.ToTicketError,
+                AddressNotFoundException => ValidationErrors.Common.AdresIdInvalid.ToTicketError,
                 AddressIsRemovedException => ValidationErrors.Common.AddressRemoved.ToTicketError,
                 _ => null
             };

@@ -49,7 +49,7 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
                 ParcelId = Fixture.Create<ParcelId>(),
                 Request = new AttachAddressRequest()
                 {
-                    AddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>()
+                    AdresId = Fixture.Create<AddressPersistentLocalId>()
                 }
             };
 

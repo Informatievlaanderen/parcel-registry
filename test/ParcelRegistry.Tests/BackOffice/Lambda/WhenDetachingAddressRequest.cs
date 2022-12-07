@@ -88,7 +88,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             await handler.Handle(
                 new DetachAddressLambdaRequestBuilder(Fixture)
                     .WithParcelId(parcelId)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
+                    .WithAdresId(addressPersistentLocalId)
                     .WithTicketId(ticketId)
                     .Build(),
                 CancellationToken.None);
@@ -140,7 +140,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketId = Guid.NewGuid();
             await handler.Handle(
                 new DetachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
+                    .WithAdresId(addressPersistentLocalId)
                     .WithParcelId(parcelId)
                     .WithTicketId(ticketId)
                     .Build(),
@@ -175,7 +175,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Act
             await handler.Handle(
                 new DetachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
+                    .WithAdresId(addressPersistentLocalId)
                     .Build(),
                 CancellationToken.None);
 
