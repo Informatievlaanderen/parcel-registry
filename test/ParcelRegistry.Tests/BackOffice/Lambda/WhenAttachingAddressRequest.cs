@@ -81,7 +81,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             await handler.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
                     .WithParcelId(parcelId)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
+                    .WithAdresId(addressPersistentLocalId)
                     .WithTicketId(ticketId)
                     .Build(),
                 CancellationToken.None);
@@ -147,7 +147,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             var handler = new AttachAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -160,7 +159,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Act
             await handler.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .Build(),
                 CancellationToken.None);
 
@@ -179,7 +177,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             var handler = new AttachAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -192,7 +189,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Act
             await handler.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .Build(),
                 CancellationToken.None);
 
@@ -211,7 +207,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             var handler = new AttachAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -224,7 +219,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Act
             await handler.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .Build(),
                 CancellationToken.None);
 
@@ -243,7 +237,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             var handler = new AttachAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -256,7 +249,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Act
             await handler.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .Build(),
                 CancellationToken.None);
 
@@ -275,7 +267,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             var handler = new AttachAddressLambdaHandler(
                 Container.Resolve<IConfiguration>(),
@@ -288,7 +279,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Act
             await handler.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .Build(),
                 CancellationToken.None);
 

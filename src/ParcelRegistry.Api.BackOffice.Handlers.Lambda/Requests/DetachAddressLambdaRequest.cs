@@ -5,6 +5,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using Parcel;
     using Parcel.Commands;
+    using ParcelRegistry.Api.BackOffice.Abstractions.Extensions;
 
     public sealed record DetachAddressLambdaRequest : SqsLambdaRequest, IHasParcelId
     {
@@ -32,7 +33,12 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
         /// <returns>DetachAddress.</returns>
         public DetachAddress ToCommand()
         {
-            return new DetachAddress(new ParcelId(ParcelId), new AddressPersistentLocalId(Request.AddressPersistentLocalId), Provenance);
+            var addressPersistentLocalId = OsloPuriValidatorExtensions.ParsePersistentLocalId(Request.AdresId);
+
+            return new DetachAddress(
+                new ParcelId(ParcelId),
+                new AddressPersistentLocalId(addressPersistentLocalId),
+                Provenance);
         }
     }
 }
