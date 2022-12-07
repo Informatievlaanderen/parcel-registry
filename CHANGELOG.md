@@ -1,3 +1,10 @@
+## [4.6.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.6.1...v4.6.2) (2022-12-07)
+
+
+### Bug Fixes
+
+* documentation request examples ([0922b52](https://github.com/informatievlaanderen/parcel-registry/commit/0922b52a316a68a00439bab133970dc199fb70f2))
+
 ## [4.6.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.6.0...v4.6.1) (2022-12-06)
 
 
