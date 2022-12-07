@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Consumer.Address
+namespace ParcelRegistry.Consumer.Address.Infrastructure.Modules
 {
     using System;
     using Autofac;
@@ -9,7 +9,10 @@ namespace ParcelRegistry.Consumer.Address
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Parcel;
+    using Address;
+    using Microsoft.Extensions.Options;
     using ParcelRegistry.Infrastructure;
+    using System.Configuration;
 
     public class ConsumerAddressModule : Module
     {
@@ -31,6 +34,10 @@ namespace ParcelRegistry.Consumer.Address
             {
                 RunInMemoryDb(services, loggerFactory, logger);
             }
+            services
+                .Configure<FeatureToggleOptions>(configuration.GetSection(FeatureToggleOptions.ConfigurationKey))
+                .AddSingleton(c =>
+                    new EnableCommandHandlingConsumerToggle(c.GetRequiredService<IOptions<FeatureToggleOptions>>().Value.EnableCommandHandlingConsumer));
 
             services.AddScoped<IAddresses, ConsumerAddressContext>();
         }

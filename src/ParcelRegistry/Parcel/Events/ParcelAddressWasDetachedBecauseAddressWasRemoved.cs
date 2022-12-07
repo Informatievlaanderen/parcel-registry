@@ -8,9 +8,9 @@ namespace ParcelRegistry.Parcel.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
-    [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
+    [EventTags(EventTag.For.Sync, Tag.Address)]
     [EventName(EventName)]
-    [EventDescription("Er werd een adres ontkoppeld van het perceel.")]
+    [EventDescription("Er werd een adres ontkoppeld van het perceel door de verwijdering van het adres.")]
     public sealed class ParcelAddressWasDetachedBecauseAddressWasRemoved : IParcelEvent
     {
         public const string EventName = "ParcelAddressWasDetachedBecauseAddressWasRemoved"; // BE CAREFUL CHANGING THIS!!
