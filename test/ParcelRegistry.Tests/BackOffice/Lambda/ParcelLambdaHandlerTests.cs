@@ -34,7 +34,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             var lambdaRequest =
                 new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
                     .Build();
 
             var sut = new FakeParcelLambdaHandler(
@@ -58,7 +57,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketing = new Mock<ITicketing>();
 
             var lambdaRequest = new AttachAddressLambdaRequestBuilder(Fixture)
-                .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
                 .Build();
 
             var sut = new FakeParcelLambdaHandler(
@@ -85,7 +83,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         {
             // Arrange
             var ticketing = new Mock<ITicketing>();
-            var addressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
 
             var mockParcels = new Mock<IParcels>();
             mockParcels
@@ -102,7 +99,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             // Act
             await sut.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(addressPersistentLocalId)
                     .WithIfMatchHeaderValue("OutdatedHash")
                     .Build(),
                 CancellationToken.None);
@@ -130,7 +126,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             await sut.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithAddressPersistentLocalId(new AddressPersistentLocalId(1))
                     .Build(),
                 CancellationToken.None);
 

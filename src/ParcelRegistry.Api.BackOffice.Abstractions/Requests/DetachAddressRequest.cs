@@ -8,11 +8,11 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Requests
     public class DetachAddressRequest
     {
         /// <summary>
-        /// De unieke en persistente identificator van het adres.
+        /// Adres welke dient ontkoppeld te worden van het perceel.
         /// </summary>
-        [DataMember(Name = "AddressPersistentLocalId", Order = 0)]
+        [DataMember(Name = "AdresId", Order = 0)]
         [JsonProperty(Required = Required.Always)]
-        public int AddressPersistentLocalId { get; set; }
+        public string AdresId { get; set; }
     }
 
     public class DetachAddressRequestExamples : IExamplesProvider<DetachAddressRequest>
@@ -21,7 +21,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Requests
         {
             return new DetachAddressRequest
             {
-                AddressPersistentLocalId = 1011
+                AdresId = "https://data.vlaanderen.be/id/adressen/6447380"
             };
         }
     }

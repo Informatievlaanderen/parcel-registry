@@ -22,7 +22,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Validation
                 public static TicketError ToTicketError => new(Message, Code);
             }
 
-            public static class AddressNotFound
+            public static class AdresIdInvalid
             {
                 public static string Code => "AdresOngeldig";
                 public static string Message => "Ongeldig AdresId.";

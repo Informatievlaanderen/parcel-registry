@@ -9,24 +9,43 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
     using ParcelRegistry.Api.BackOffice.Validators;
     using Xunit;
 
-    public class AttachAddressRequestValidatorTest
+    public class AttachAddressRequestValidatorTests
     {
         private readonly AttachAddressRequestValidator _sut;
         private readonly FakeConsumerAddressContext _addressContext;
 
-        public AttachAddressRequestValidatorTest()
+        public AttachAddressRequestValidatorTests()
         {
             _addressContext = new FakeConsumerAddressContextFactory().CreateDbContext(Array.Empty<string>());
             _sut = new AttachAddressRequestValidator(_addressContext);
         }
 
         [Fact]
-        public void WhenAddresConsumerItemIsNotFound_ThenValidationException()
+        public void WhenAdresIdPuriInvalid_ThenValidationException()
         {
-            var result = _sut.TestValidate(new AttachAddressRequest());
+            var result = _sut.TestValidate(
+                new AttachAddressRequest()
+                {
+                    AdresId = "Invalid Puri"
+                });
 
             result.Errors.Count.Should().Be(1);
-            result.ShouldHaveValidationErrorFor(nameof(AttachAddressRequest.AddressPersistentLocalId))
+            result.ShouldHaveValidationErrorFor(nameof(AttachAddressRequest.AdresId))
+                .WithErrorCode("AdresOngeldig")
+                .WithErrorMessage("Ongeldig AdresId.");
+        }
+
+        [Fact]
+        public void WhenAddresConsumerItemIsNotFound_ThenValidationException()
+        {
+            var result = _sut.TestValidate(
+                new AttachAddressRequest()
+                {
+                    AdresId = PuriCreator.CreateAdresId(123)
+                });
+
+            result.Errors.Count.Should().Be(1);
+            result.ShouldHaveValidationErrorFor(nameof(AttachAddressRequest.AdresId))
                 .WithErrorCode("AdresOngeldig")
                 .WithErrorMessage("Ongeldig AdresId.");
         }
@@ -38,10 +57,10 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
 
             _addressContext.AddAddress(addressPersistentLocalId, AddressStatus.Current, isRemoved: true);
 
-            var result = _sut.TestValidate(new AttachAddressRequest{AddressPersistentLocalId = addressPersistentLocalId });
+            var result = _sut.TestValidate(new AttachAddressRequest{AdresId = addressPersistentLocalId });
 
             result.Errors.Count.Should().Be(1);
-            result.ShouldHaveValidationErrorFor(nameof(AttachAddressRequest.AddressPersistentLocalId))
+            result.ShouldHaveValidationErrorFor(nameof(AttachAddressRequest.AdresId))
                 .WithErrorCode("AdresOngeldig")
                 .WithErrorMessage("Ongeldig AdresId.");
         }
@@ -52,13 +71,14 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
         public void WhenAddresConsumerItemHasInvalidStatus_ThenValidationException(string addressStatus)
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(1);
+            var adresId = PuriCreator.CreateAdresId(addressPersistentLocalId);
 
             _addressContext.AddAddress(addressPersistentLocalId, AddressStatus.Parse(addressStatus));
 
-            var result = _sut.TestValidate(new AttachAddressRequest { AddressPersistentLocalId = addressPersistentLocalId });
+            var result = _sut.TestValidate(new AttachAddressRequest { AdresId = adresId });
 
             result.Errors.Count.Should().Be(1);
-            result.ShouldHaveValidationErrorFor(nameof(AttachAddressRequest.AddressPersistentLocalId))
+            result.ShouldHaveValidationErrorFor(nameof(AttachAddressRequest.AdresId))
                 .WithErrorCode("AdresAfgekeurdGehistoreerd")
                 .WithErrorMessage("Enkel een voorgesteld of adres in gebruik kan gekoppeld worden.");
         }

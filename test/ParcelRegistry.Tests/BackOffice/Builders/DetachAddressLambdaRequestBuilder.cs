@@ -14,7 +14,7 @@ namespace ParcelRegistry.Tests.BackOffice.Builders
         private readonly Fixture _fixture;
 
         private ParcelId? _parcelId;
-        private AddressPersistentLocalId? _addressPersistentLocalId;
+        private string? _adresId;
         private Guid? _ticketId;
         private string? _ifMatchHeaderValue;
 
@@ -29,10 +29,9 @@ namespace ParcelRegistry.Tests.BackOffice.Builders
             return this;
         }
 
-        public DetachAddressLambdaRequestBuilder WithAddressPersistentLocalId(
-            AddressPersistentLocalId addressPersistentLocalId)
+        public DetachAddressLambdaRequestBuilder WithAdresId(int addressPersistentLocalId)
         {
-            _addressPersistentLocalId = addressPersistentLocalId;
+            _adresId = PuriCreator.CreateAdresId(addressPersistentLocalId);
             return this;
         }
 
@@ -53,7 +52,7 @@ namespace ParcelRegistry.Tests.BackOffice.Builders
         public DetachAddressLambdaRequest Build()
         {
             var parcelId = _parcelId ?? _fixture.Create<ParcelId>();
-            var addressPersistentLocalId = _addressPersistentLocalId ?? _fixture.Create<AddressPersistentLocalId>();
+            var adresId = _adresId ?? PuriCreator.CreateAdresId(123);
             var ticketId = _ticketId ?? _fixture.Create<Guid>();
 
             return new DetachAddressLambdaRequest(
@@ -61,7 +60,7 @@ namespace ParcelRegistry.Tests.BackOffice.Builders
                 new DetachAddressSqsRequest
                 {
                     ParcelId = parcelId,
-                    Request = new DetachAddressRequest { AddressPersistentLocalId = addressPersistentLocalId },
+                    Request = new DetachAddressRequest { AdresId = adresId },
                     TicketId = ticketId,
                     IfMatchHeaderValue = _ifMatchHeaderValue,
                     Metadata = new Dictionary<string, object?>(),

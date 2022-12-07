@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
 {
+    using Abstractions.Extensions;
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
@@ -32,7 +33,12 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
         /// <returns>AttachAddress.</returns>
         public AttachAddress ToCommand()
         {
-            return new AttachAddress(new ParcelId(ParcelId), new AddressPersistentLocalId(Request.AddressPersistentLocalId), Provenance);
+            var addressPersistentLocalId = OsloPuriValidatorExtensions.ParsePersistentLocalId(Request.AdresId);
+
+            return new AttachAddress(
+                new ParcelId(ParcelId),
+                new AddressPersistentLocalId(addressPersistentLocalId),
+                Provenance);
         }
     }
 }
