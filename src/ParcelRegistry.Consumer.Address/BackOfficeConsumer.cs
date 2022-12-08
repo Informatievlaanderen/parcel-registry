@@ -10,7 +10,7 @@ namespace ParcelRegistry.Consumer.Address
     using Microsoft.Extensions.Logging;
     using Projections;
 
-    public class BackOfficeConsumer : IDisposable
+    public sealed class BackOfficeConsumer : IDisposable
     {
         private readonly ConsumerAddressContext _consumerAddressContext;
         private readonly KafkaOptions _options;

@@ -21,7 +21,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
     using Serilog;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-    public class Program
+    public sealed class Program
     {
         private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
         private static readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();

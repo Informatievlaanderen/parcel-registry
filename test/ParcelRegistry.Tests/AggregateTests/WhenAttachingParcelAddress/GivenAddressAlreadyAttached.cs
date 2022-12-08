@@ -1,7 +1,6 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
 {
     using System.Collections.Generic;
-    using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -9,8 +8,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
     using Parcel;
     using Parcel.Commands;
     using Parcel.Events;
-    using Parcel.Exceptions;
-    using BackOffice;
     using Xunit;
     using Xunit.Abstractions;
 

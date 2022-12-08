@@ -10,7 +10,7 @@ namespace ParcelRegistry.Parcel.Events
 
     [EventTags(EventTag.For.Sync, Tag.Address)]
     [EventName(EventName)]
-    [EventDescription("Er werd een adres ontkoppeld van het perceel door de verwijdering van het adres.")]
+    [EventDescription("Het adres werd ontkoppeld van het perceel door verwijdering adres.")]
     public sealed class ParcelAddressWasDetachedBecauseAddressWasRemoved : IParcelEvent
     {
         public const string EventName = "ParcelAddressWasDetachedBecauseAddressWasRemoved"; // BE CAREFUL CHANGING THIS!!

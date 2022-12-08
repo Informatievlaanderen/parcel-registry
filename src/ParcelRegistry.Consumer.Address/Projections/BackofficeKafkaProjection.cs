@@ -7,7 +7,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
 
-    public class BackOfficeKafkaProjection : ConnectedProjection<ConsumerAddressContext>
+    public sealed class BackOfficeKafkaProjection : ConnectedProjection<ConsumerAddressContext>
     {
         private async Task CatchDbUpdateException(Func<Task> func, ConsumerAddressContext context)
         {

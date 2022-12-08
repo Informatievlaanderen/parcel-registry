@@ -2,7 +2,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
 {
     using FeatureToggle;
 
-    public class EnableCommandHandlingConsumerToggle : IFeatureToggle
+    public sealed class EnableCommandHandlingConsumerToggle : IFeatureToggle
     {
         public bool FeatureEnabled { get; }
 
@@ -12,7 +12,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
         }
     }
 
-    public class FeatureToggleOptions
+    public sealed class FeatureToggleOptions
     {
         public const string ConfigurationKey = "FeatureToggles";
         public bool EnableCommandHandlingConsumer { get; set; }

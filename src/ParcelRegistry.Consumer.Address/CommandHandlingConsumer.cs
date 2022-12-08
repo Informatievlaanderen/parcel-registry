@@ -9,7 +9,7 @@ namespace ParcelRegistry.Consumer.Address
     using Microsoft.Extensions.Logging;
     using Projections;
 
-    public class CommandHandlingConsumer
+    public sealed class CommandHandlingConsumer
     {
         private readonly ILifetimeScope _lifetimeScope;
         private readonly ILoggerFactory _loggerFactory;

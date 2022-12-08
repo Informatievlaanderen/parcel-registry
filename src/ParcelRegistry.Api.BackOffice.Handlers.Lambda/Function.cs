@@ -14,22 +14,23 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
-    using Consumer.Address;
+    using Consumer.Address.Infrastructure.Modules;
+    using Infrastructure;
+    using Infrastructure.Modules;
     using MediatR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
-    using Infrastructure;
-    using Infrastructure.Modules;
-    using Parcel;
     using TicketingService.Proxy.HttpProxy;
 
     public class Function : FunctionBase
     {
         public Function()
-            : base(new List<Assembly>{ typeof(AttachAddressRequest).Assembly })
-        { }
+            : base(new List<Assembly> {typeof(AttachAddressRequest).Assembly})
+        {
+            ServiceProvider.MigrateIdempotencyDatabase();
+        }
 
         protected override IServiceProvider ConfigureServices(IServiceCollection services)
         {

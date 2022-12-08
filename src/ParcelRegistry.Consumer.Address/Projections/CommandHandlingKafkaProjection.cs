@@ -15,7 +15,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Provenance;
 
-    public class CommandHandlingKafkaProjection : ConnectedProjection<CommandHandler>
+    public sealed class CommandHandlingKafkaProjection : ConnectedProjection<CommandHandler>
     {
         private readonly BackOfficeContext _backOfficeContext;
 
@@ -27,37 +27,37 @@ namespace ParcelRegistry.Consumer.Address.Projections
             {
                 if (message.IsRemoved)
                 {
-                    var relations = backOfficeContext.ParcelAddressRelations
-                        .AsNoTracking()
-                        .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(message.AddressPersistentLocalId))
-                        .ToList();
-
-                    foreach (var relation in relations)
-                    {
-                        var command = new DetachAddressBecauseAddressWasRemoved(
-                            new ParcelId(relation.ParcelId),
-                            new AddressPersistentLocalId(message.AddressPersistentLocalId),
-                            FromProvenance(message.Provenance));
-                        await commandHandler.Handle(command, ct);
-                    }
+                    await DetachBecauseRemoved(
+                        commandHandler,
+                        new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                        message.Provenance,
+                        ct);
+                }
+                else if (message.Status == AddressStatus.Retired)
+                {
+                    await DetachBecauseRetired(
+                        commandHandler,
+                        new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                        message.Provenance,
+                        ct);
+                }
+                else if(message.Status == AddressStatus.Rejected)
+                {
+                    await DetachBecauseRejected(
+                        commandHandler,
+                        new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                        message.Provenance,
+                        ct);
                 }
             });
 
             When<AddressWasRemovedV2>(async (commandHandler, message, ct) =>
             {
-                var relations = backOfficeContext.ParcelAddressRelations
-                    .AsNoTracking()
-                    .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(message.AddressPersistentLocalId))
-                    .ToList();
-
-                foreach (var relation in relations)
-                {
-                    var command = new DetachAddressBecauseAddressWasRemoved(
-                        new ParcelId(relation.ParcelId),
-                        new AddressPersistentLocalId(message.AddressPersistentLocalId),
-                        FromProvenance(message.Provenance));
-                    await commandHandler.Handle(command, ct);
-                }
+                await DetachBecauseRemoved(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
             });
 
             When<AddressWasRetiredV2>(async (commandHandler, message, ct) =>
@@ -122,6 +122,27 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     message.Provenance,
                     ct);
             });
+        }
+
+        private async Task DetachBecauseRemoved(
+            CommandHandler commandHandler,
+            AddressPersistentLocalId addressPersistentLocalId,
+            Contracts.Provenance provenance,
+            CancellationToken ct)
+        {
+            var relations = _backOfficeContext.ParcelAddressRelations
+                .AsNoTracking()
+                .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
+                .ToList();
+
+            foreach (var relation in relations)
+            {
+                var command = new DetachAddressBecauseAddressWasRemoved(
+                    new ParcelId(relation.ParcelId),
+                    new AddressPersistentLocalId(relation.AddressPersistentLocalId),
+                    FromProvenance(provenance));
+                await commandHandler.Handle(command, ct);
+            }
         }
 
         private async Task DetachBecauseRetired(
