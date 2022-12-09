@@ -1,3 +1,10 @@
+# [4.7.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.6.2...v4.7.0) (2022-12-09)
+
+
+### Features
+
+* add commandhandling projections for address ([d4fc844](https://github.com/informatievlaanderen/parcel-registry/commit/d4fc844e816e500e25feed8ceb333553e9015966))
+
 ## [4.6.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.6.1...v4.6.2) (2022-12-07)
 
 
