@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Consumer.Address.Infrastructure
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -16,10 +17,11 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Modules;
+    using ParcelRegistry.Api.BackOffice.Abstractions;
     using Serilog;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-    public class Program
+    public sealed class Program
     {
         private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
         private static readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
@@ -62,9 +64,12 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                     {
                         try
                         {
-                            async Task<Offset?> GetOffset(IServiceProvider serviceProvider, ILogger logger, string topic)
+                            var loggerFactory = container.GetRequiredService<ILoggerFactory>();
+                            var logger = loggerFactory.CreateLogger<Program>();
+
+                            async Task<Offset?> GetBackOfficeConsumerOffset(IServiceProvider serviceProvider, string topic)
                             {
-                                if (long.TryParse(configuration["AddressTopicOffset"], out var offset))
+                                if (long.TryParse(configuration["BackOfficeConsumerTopicOffset"], out var offset))
                                 {
                                     var context = serviceProvider.GetRequiredService<ConsumerAddressContext>();
                                     if (await context.AddressConsumerItems.AnyAsync(cancellationToken))
@@ -73,48 +78,63 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                                             "Cannot start consumer from offset, because consumer context already has data. Remove offset or clear data to continue.");
                                     }
 
-                                    logger.LogInformation($"Starting {topic} from offset {offset}.");
+                                    logger.LogInformation($"BackOfficeConsumer starting {topic} from offset {offset}.");
                                     return new Offset(offset);
                                 }
 
-                                logger.LogInformation($"Continuing {topic} from last offset.");
+                                logger.LogInformation($"BackOfficeConsumer continuing {topic} from last offset.");
                                 return null;
                             }
-
-                            var loggerFactory = container.GetRequiredService<ILoggerFactory>();
 
                             await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerAddressAdmin"),
                                 loggerFactory, cancellationToken);
 
                             var bootstrapServers = configuration["Kafka:BootstrapServers"];
-                            var kafkaOptions = new KafkaOptions(bootstrapServers, configuration["Kafka:SaslUserName"],
+                            var kafkaOptions = new KafkaOptions(
+                                bootstrapServers,
+                                configuration["Kafka:SaslUserName"],
                                 configuration["Kafka:SaslPassword"],
                                 EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
-                            var topic = $"{configuration["AddressTopic"]}" ??
-                                        throw new ArgumentException("Configuration has no AddressTopic.");
-                            var consumerGroupSuffix = configuration["AddressConsumerGroupSuffix"];
+                            var topic = $"{configuration["AddressTopic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
 
-                            var actualContainer = container.GetRequiredService<ILifetimeScope>();
+                            var lifetimeScope = container.GetRequiredService<ILifetimeScope>();
+                            
+                            var backOfficeConsumerOffset = await GetBackOfficeConsumerOffset(container, topic);
 
-                            var kafkaOffset = await GetOffset(container, loggerFactory.CreateLogger<Program>(), topic);
+                            var backOfficeConsumer = new BackOfficeConsumer(
+                                lifetimeScope,
+                                loggerFactory,
+                                kafkaOptions,
+                                topic,
+                                configuration["BackOfficeConsumerGroupSuffix"],
+                                backOfficeConsumerOffset);
+                            var backOfficeConsumerTask = backOfficeConsumer.Start(cancellationToken);
 
-                            await using (var consumerContext = actualContainer.Resolve<ConsumerAddressContext>())
+                            var consumerTasks = new List<Task> {backOfficeConsumerTask};
+
+                            Log.Information("The kafka BackOfficeConsumer has started");
+
+                            var enableCommandHandlingConsumer = configuration["FeatureToggles:EnableCommandHandlingConsumer"];
+                            if (enableCommandHandlingConsumer != null && bool.Parse(enableCommandHandlingConsumer))
                             {
-                                var consumer = new Consumer(consumerContext, loggerFactory, kafkaOptions, topic,
-                                    consumerGroupSuffix, kafkaOffset);
-                                var consumerTask = consumer.Start(cancellationToken);
-
-                                Log.Information("The kafka consumer was started");
-
-                                await Task.WhenAny(consumerTask);
-
-                                CancellationTokenSource.Cancel();
-
-                                Log.Error($"Consumer task stopped with status: {consumerTask.Status}");
+                                var commandHandlingConsumer = new CommandHandlingConsumer(
+                                    lifetimeScope,
+                                    loggerFactory,
+                                    kafkaOptions,
+                                    topic,
+                                    configuration["CommandHandlingConsumerGroupSuffix"]);
+                                var commandHandlingConsumerTask = commandHandlingConsumer.Start(cancellationToken);
+                                consumerTasks.Add(commandHandlingConsumerTask);
+                                
+                                Log.Information("The kafka CommandHandlingConsumer has started");
                             }
 
-                            Log.Error("The consumer was terminated");
+                            await Task.WhenAny(consumerTasks);
+
+                            CancellationTokenSource.Cancel();
+
+                            Log.Error("The Address Consumers were terminated");
                         }
                         catch (Exception e)
                         {
@@ -149,8 +169,10 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
             var tempProvider = services.BuildServiceProvider();
             var loggerFactory = tempProvider.GetRequiredService<ILoggerFactory>();
 
-            builder.RegisterModule(new DataDogModule(configuration));
-            builder.RegisterModule(new ConsumerAddressModule(configuration, services, loggerFactory, ServiceLifetime.Transient));
+            builder
+                .RegisterModule(new DataDogModule(configuration))
+                .RegisterModule(new ConsumerAddressModule(configuration, services, loggerFactory, ServiceLifetime.Transient))
+                .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory));
 
             builder.Populate(services);
 

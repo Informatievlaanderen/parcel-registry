@@ -1,19 +1,19 @@
-namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
+namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddressWasRejected
 {
     using System.Collections.Generic;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Fixtures;
     using Parcel;
     using Parcel.Commands;
     using Parcel.Events;
+    using Fixtures;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenAddressAlreadyAttached : ParcelRegistryTest
+    public class GivenAddressAlreadyDetached : ParcelRegistryTest
     {
-        public GivenAddressAlreadyAttached(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public GivenAddressAlreadyDetached(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithFixedParcelId());
             Fixture.Customize(new WithParcelStatus());
@@ -25,7 +25,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var command = new AttachAddress(
+            var command = new DetachAddressBecauseAddressWasRejected(
                 Fixture.Create<ParcelId>(),
                 addressPersistentLocalId,
                 Fixture.Create<Provenance>());
@@ -38,14 +38,13 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
                 isRemoved: false,
                 new List<AddressPersistentLocalId>
                 {
-                    addressPersistentLocalId,
                     new AddressPersistentLocalId(456),
                     new AddressPersistentLocalId(789),
                 },
                 Fixture.Create<Coordinate>(),
                 Fixture.Create<Coordinate>());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
-
+            
             Assert(new Scenario()
                 .Given(
                     new ParcelStreamId(command.ParcelId),

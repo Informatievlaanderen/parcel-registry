@@ -84,6 +84,36 @@ namespace ParcelRegistry.Parcel
             ApplyChange(new ParcelAddressWasDetachedV2(ParcelId, addressPersistentLocalId));
         }
 
+        public void DetachAddressBecauseAddressWasRemoved(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            if (!AddressPersistentLocalIds.Contains(addressPersistentLocalId))
+            {
+                return;
+            }
+
+            ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRemoved(ParcelId, addressPersistentLocalId));
+        }
+
+        public void DetachAddressBecauseAddressWasRejected(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            if (!AddressPersistentLocalIds.Contains(addressPersistentLocalId))
+            {
+                return;
+            }
+
+            ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRejected(ParcelId, addressPersistentLocalId));
+        }
+
+        public void DetachAddressBecauseAddressWasRetired(AddressPersistentLocalId addressPersistentLocalId)
+        {
+            if (!AddressPersistentLocalIds.Contains(addressPersistentLocalId))
+            {
+                return;
+            }
+
+            ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRetired(ParcelId, addressPersistentLocalId));
+        }
+
         private void GuardParcelNotRemoved()
         {
             if (IsRemoved)

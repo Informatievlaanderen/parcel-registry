@@ -9,7 +9,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
     using ParcelRegistry.Infrastructure;
     using Polly;
 
-    public class MigrationsLogger { }
+    public sealed class MigrationsLogger { }
 
     public static class MigrationsHelper
     {

@@ -1,6 +1,7 @@
-namespace ParcelRegistry.Consumer.Address
+namespace ParcelRegistry.Consumer.Address.Infrastructure.Modules
 {
     using System;
+    using Address;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Microsoft.Data.SqlClient;
@@ -8,10 +9,11 @@ namespace ParcelRegistry.Consumer.Address
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Parcel;
     using ParcelRegistry.Infrastructure;
 
-    public class ConsumerAddressModule : Module
+    public sealed class ConsumerAddressModule : Module
     {
         public ConsumerAddressModule(
             IConfiguration configuration,
@@ -31,6 +33,10 @@ namespace ParcelRegistry.Consumer.Address
             {
                 RunInMemoryDb(services, loggerFactory, logger);
             }
+            services
+                .Configure<FeatureToggleOptions>(configuration.GetSection(FeatureToggleOptions.ConfigurationKey))
+                .AddSingleton(c =>
+                    new EnableCommandHandlingConsumerToggle(c.GetRequiredService<IOptions<FeatureToggleOptions>>().Value.EnableCommandHandlingConsumer));
 
             services.AddScoped<IAddresses, ConsumerAddressContext>();
         }

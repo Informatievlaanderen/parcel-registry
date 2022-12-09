@@ -60,7 +60,7 @@ namespace ParcelRegistry.Consumer.Address
         }
     }
 
-    public class ConsumerContextFactory : RunnerDbContextMigrationFactory<ConsumerAddressContext>
+    public sealed class ConsumerContextFactory : RunnerDbContextMigrationFactory<ConsumerAddressContext>
     {
         public ConsumerContextFactory()
             : this("ConsumerAddressAdmin")

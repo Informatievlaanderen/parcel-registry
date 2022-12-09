@@ -14,7 +14,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ConsumerAddressKafkaProjectionTests : KafkaProjectionTest<ConsumerAddressContext, AddressKafkaProjection>
+    public sealed class ConsumerAddressKafkaProjectionTests : KafkaProjectionTest<ConsumerAddressContext, BackOfficeKafkaProjection>
     {
         public ConsumerAddressKafkaProjectionTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
@@ -466,6 +466,6 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             return new ConsumerAddressContext(options);
         }
 
-        protected override AddressKafkaProjection CreateProjection() => new AddressKafkaProjection();
+        protected override BackOfficeKafkaProjection CreateProjection() => new BackOfficeKafkaProjection();
     }
 }

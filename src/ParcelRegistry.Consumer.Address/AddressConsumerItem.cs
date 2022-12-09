@@ -5,7 +5,7 @@ namespace ParcelRegistry.Consumer.Address
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using ParcelRegistry.Infrastructure;
 
-    public class AddressConsumerItem
+    public sealed class AddressConsumerItem
     {
         public int AddressPersistentLocalId { get; set; }
         public Guid? AddressId { get; set; }
@@ -64,7 +64,7 @@ namespace ParcelRegistry.Consumer.Address
         public static implicit operator string(AddressStatus status) => status.Status;
     }
 
-    public class AddressConsumerItemConfiguration : IEntityTypeConfiguration<AddressConsumerItem>
+    public sealed class AddressConsumerItemConfiguration : IEntityTypeConfiguration<AddressConsumerItem>
     {
         private const string TableName = "Addresses";
 
