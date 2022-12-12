@@ -22,8 +22,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     
     public sealed class CommandHandlingKafkaProjectionTests : KafkaProjectionTest<CommandHandler, CommandHandlingKafkaProjection>
     {
-        private FakeBackOfficeContext _fakeBackOfficeContext;
-        private Mock<FakeCommandHandler> _mockCommandHandler;
+        private readonly FakeBackOfficeContext _fakeBackOfficeContext;
+        private readonly Mock<FakeCommandHandler> _mockCommandHandler;
 
         public CommandHandlingKafkaProjectionTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -410,7 +410,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         }
 
         protected override CommandHandlingKafkaProjection CreateProjection()
-            => new CommandHandlingKafkaProjection(_fakeBackOfficeContext);
+            => new CommandHandlingKafkaProjection(() => _fakeBackOfficeContext);
     }
 
     public class FakeCommandHandler : CommandHandler

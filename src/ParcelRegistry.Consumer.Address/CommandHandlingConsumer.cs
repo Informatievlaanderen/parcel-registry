@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Consumer.Address
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
@@ -36,11 +37,9 @@ namespace ParcelRegistry.Consumer.Address
 
         public Task<Result<KafkaJsonMessage>> Start(CancellationToken cancellationToken = default)
         {
-            using var backofficeContext = _lifetimeScope.Resolve<BackOfficeContext>();
-
             var projector = new ConnectedProjector<CommandHandler>(
                 Resolve.WhenEqualToHandlerMessageType(
-                    new CommandHandlingKafkaProjection(backofficeContext).Handlers));
+                    new CommandHandlingKafkaProjection(_lifetimeScope.Resolve<Func<BackOfficeContext>>()).Handlers));
 
             var commandHandler = new CommandHandler(_lifetimeScope, _loggerFactory);
 

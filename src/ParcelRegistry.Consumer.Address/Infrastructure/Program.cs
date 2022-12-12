@@ -19,7 +19,6 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
     using Modules;
     using ParcelRegistry.Api.BackOffice.Abstractions;
     using Serilog;
-    using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     public sealed class Program
     {
@@ -103,7 +102,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                             var backOfficeConsumerOffset = await GetBackOfficeConsumerOffset(container, topic);
 
                             var backOfficeConsumer = new BackOfficeConsumer(
-                                lifetimeScope,
+                                lifetimeScope.Resolve<Func<ConsumerAddressContext>>(),
                                 loggerFactory,
                                 kafkaOptions,
                                 topic,

@@ -17,11 +17,11 @@ namespace ParcelRegistry.Consumer.Address.Projections
 
     public sealed class CommandHandlingKafkaProjection : ConnectedProjection<CommandHandler>
     {
-        private readonly BackOfficeContext _backOfficeContext;
+        private readonly Func<BackOfficeContext> _backOfficeContextFactory;
 
-        public CommandHandlingKafkaProjection(BackOfficeContext backOfficeContext)
+        public CommandHandlingKafkaProjection(Func<BackOfficeContext> backOfficeContextFactory)
         {
-            _backOfficeContext = backOfficeContext;
+            _backOfficeContextFactory = backOfficeContextFactory;
 
             When<AddressWasMigratedToStreetName>(async (commandHandler, message, ct) =>
             {
@@ -130,7 +130,8 @@ namespace ParcelRegistry.Consumer.Address.Projections
             Contracts.Provenance provenance,
             CancellationToken ct)
         {
-            var relations = _backOfficeContext.ParcelAddressRelations
+            await using var backOfficeContext = _backOfficeContextFactory();
+            var relations = backOfficeContext.ParcelAddressRelations
                 .AsNoTracking()
                 .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
                 .ToList();
@@ -151,7 +152,8 @@ namespace ParcelRegistry.Consumer.Address.Projections
             Contracts.Provenance provenance,
             CancellationToken ct)
         {
-            var relations = _backOfficeContext.ParcelAddressRelations
+            await using var backOfficeContext = _backOfficeContextFactory();
+            var relations = backOfficeContext.ParcelAddressRelations
                 .AsNoTracking()
                 .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
                 .ToList();
@@ -172,7 +174,8 @@ namespace ParcelRegistry.Consumer.Address.Projections
             Contracts.Provenance provenance,
             CancellationToken ct)
         {
-            var relations = _backOfficeContext.ParcelAddressRelations
+            await using var backOfficeContext = _backOfficeContextFactory();
+            var relations = backOfficeContext.ParcelAddressRelations
                 .AsNoTracking()
                 .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
                 .ToList();
