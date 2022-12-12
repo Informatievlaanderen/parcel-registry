@@ -3,16 +3,15 @@ namespace ParcelRegistry.Consumer.Address
     using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Autofac;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Confluent.Kafka;
     using Microsoft.Extensions.Logging;
     using Projections;
 
-    public sealed class BackOfficeConsumer : IDisposable
+    public sealed class BackOfficeConsumer
     {
-        private readonly ConsumerAddressContext _consumerAddressContext;
+        private readonly Func<ConsumerAddressContext> _dbContextFactory;
         private readonly KafkaOptions _options;
         private readonly string _topic;
         private readonly string _consumerGroupSuffix;
@@ -20,14 +19,14 @@ namespace ParcelRegistry.Consumer.Address
         private readonly ILogger<BackOfficeConsumer> _logger;
 
         public BackOfficeConsumer(
-            ILifetimeScope lifetimeScope,
+            Func<ConsumerAddressContext> dbContextFactory,
             ILoggerFactory loggerFactory,
             KafkaOptions options,
             string topic,
             string consumerGroupSuffix,
             Offset? offset)
         {
-            _consumerAddressContext = lifetimeScope.Resolve<ConsumerAddressContext>();
+            _dbContextFactory = dbContextFactory;
             _options = options;
             _topic = topic;
             _consumerGroupSuffix = consumerGroupSuffix;
@@ -43,6 +42,7 @@ namespace ParcelRegistry.Consumer.Address
             var projector =
                 new ConnectedProjector<ConsumerAddressContext>(
                     Resolve.WhenEqualToHandlerMessageType(new BackOfficeKafkaProjection().Handlers));
+            var consumerAddressContext = _dbContextFactory();
 
             var consumerGroupId =
                 $"{nameof(ParcelRegistry)}.{nameof(BackOfficeConsumer)}.{_topic}{_consumerGroupSuffix}";
@@ -57,23 +57,22 @@ namespace ParcelRegistry.Consumer.Address
                     {
                         _logger.LogInformation("Handling next message");
                         //CancellationToken.None to prevent halfway consumption
-                        await projector.ProjectAsync(_consumerAddressContext, message, CancellationToken.None);
-                        await _consumerAddressContext.SaveChangesAsync(CancellationToken.None);
+                        await projector.ProjectAsync(consumerAddressContext, message, CancellationToken.None);
+
                         messageCounter++;
+
                         if (messageCounter % 1000 == 0)
                         {
-                            _consumerAddressContext.ChangeTracker.Clear();
+                            await consumerAddressContext.DisposeAsync();
+                            consumerAddressContext = _dbContextFactory();
+
+                            messageCounter = 0;
                         }
                     },
                     noMessageFoundDelay: 300,
                     _offset,
                     _options.JsonSerializerSettings),
                 cancellationToken);
-        }
-
-        public void Dispose()
-        {
-            _consumerAddressContext.Dispose();
         }
     }
 }
