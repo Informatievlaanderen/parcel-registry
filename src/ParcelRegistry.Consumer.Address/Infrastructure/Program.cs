@@ -110,7 +110,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                                 backOfficeConsumerOffset);
                             var backOfficeConsumerTask = backOfficeConsumer.Start(cancellationToken);
 
-                            var consumerTasks = new List<Task> {backOfficeConsumerTask};
+                            var consumerTasks = new List<Task<Result<KafkaJsonMessage>>> {backOfficeConsumerTask};
 
                             Log.Information("The kafka BackOfficeConsumer has started");
 
@@ -130,6 +130,16 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                             }
 
                             await Task.WhenAny(consumerTasks);
+
+                            foreach (var consumerTask in consumerTasks)
+                            {
+                                var consumeResult = consumerTask.GetAwaiter().GetResult();
+                                if (!consumeResult.IsSuccess)
+                                {
+                                    Log.Error(consumeResult.Error);
+                                    Log.Error(consumeResult.ErrorReason);
+                                }
+                            }
 
                             CancellationTokenSource.Cancel();
 
