@@ -167,7 +167,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Enkel een gerealiseerd perceel kan gekoppeld worden.",
+                        "Deze actie is enkel toegestaan op percelen met status 'gerealiseerd'.",
                         "PerceelGehistoreerd"),
                     CancellationToken.None));
         }
@@ -227,8 +227,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Ongeldig AdresId.",
-                        "AdresOngeldig"),
+                        "Ongeldig adresId.",
+                        "PerceelAdresOngeldig"),
                     CancellationToken.None));
         }
 
@@ -287,8 +287,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 x.Error(
                     It.IsAny<Guid>(),
                     new TicketError(
-                        "Enkel een voorgesteld of adres in gebruik kan gekoppeld worden.",
-                        "AdresAfgekeurdGehistoreerd"),
+                        "Het adres is afgekeurd of gehistoreerd.",
+                        "PerceelAdresAfgekeurdOfGehistoreerd"),
                     CancellationToken.None));
         }
     }

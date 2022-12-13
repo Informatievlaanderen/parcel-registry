@@ -8,7 +8,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers
 
     public class AttachAddressHandler : SqsHandler<AttachAddressSqsRequest>
     {
-        public const string Action = "AttachAddress";
+        public const string Action = "AttachAddressParcel";
 
         public AttachAddressHandler(ISqsQueue sqsQueue, ITicketing ticketing, ITicketingUrl ticketingUrl) : base(sqsQueue, ticketing, ticketingUrl)
         { }

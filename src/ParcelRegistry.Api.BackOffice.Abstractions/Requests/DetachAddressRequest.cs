@@ -21,7 +21,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions.Requests
         {
             return new DetachAddressRequest
             {
-                AdresId = "https://data.vlaanderen.be/id/adressen/6447380"
+                AdresId = "https://data.vlaanderen.be/id/adres/6447380"
             };
         }
     }
