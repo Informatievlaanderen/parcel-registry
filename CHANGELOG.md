@@ -1,3 +1,11 @@
+## [4.7.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.7.1...v4.7.2) (2022-12-13)
+
+
+### Bug Fixes
+
+* add error logging for consumers ([6d2c590](https://github.com/informatievlaanderen/parcel-registry/commit/6d2c5900af28f0871e89d6ce3c31e132d7fe6c05))
+* errorcodes & documentation ([8a9f66a](https://github.com/informatievlaanderen/parcel-registry/commit/8a9f66a76398e48c396dce8909758aafd351a406))
+
 ## [4.7.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.7.0...v4.7.1) (2022-12-12)
 
 # [4.7.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.6.2...v4.7.0) (2022-12-09)
