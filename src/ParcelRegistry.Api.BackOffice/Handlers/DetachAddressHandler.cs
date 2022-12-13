@@ -8,7 +8,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers
 
     public class DetachAddressHandler : SqsHandler<DetachAddressSqsRequest>
     {
-        public const string Action = "DetachAddress";
+        public const string Action = "DetachAddressParcel";
 
         public DetachAddressHandler(ISqsQueue sqsQueue, ITicketing ticketing, ITicketingUrl ticketingUrl) : base(sqsQueue, ticketing, ticketingUrl)
         { }
