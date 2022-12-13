@@ -2,6 +2,8 @@ namespace ParcelRegistry.Consumer.Address
 {
     using System;
     using System.Reflection;
+    using System.Security.Cryptography;
+    using System.Text;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
     using Microsoft.EntityFrameworkCore;
 
@@ -63,6 +65,16 @@ namespace ParcelRegistry.Consumer.Address
         {
             IdempotenceKey = idempotenceKey;
             DateProcessed = dateProcessed;
+        }
+    }
+
+    public static class Crypto
+    {
+        public static string Sha512(string input)
+        {
+            using var sha512 = SHA512.Create();
+            var hash = sha512.ComputeHash(Encoding.UTF8.GetBytes(input));
+            return BitConverter.ToString(hash).Replace("-", "");
         }
     }
 }

@@ -42,9 +42,10 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure.Modules
             builder
                 .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new EditModule(_configuration))
-                .RegisterModule(new ConsumerAddressModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory))
                 .RegisterEventStreamModule(_configuration);
+
+            _services.ConfigureConsumerAddress(_configuration, _loggerFactory);
 
             builder.Populate(_services);
         }

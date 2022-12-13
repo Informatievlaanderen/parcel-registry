@@ -41,7 +41,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
                         message.Provenance,
                         ct);
                 }
-                else if(message.Status == AddressStatus.Rejected)
+                else if (message.Status == AddressStatus.Rejected)
                 {
                     await DetachBecauseRejected(
                         commandHandler,
@@ -154,9 +154,9 @@ namespace ParcelRegistry.Consumer.Address.Projections
         {
             await using var backOfficeContext = _backOfficeContextFactory();
             var relations = backOfficeContext.ParcelAddressRelations
-                .AsNoTracking()
-                .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
-                .ToList();
+                    .AsNoTracking()
+                    .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
+                    .ToList();
 
             foreach (var relation in relations)
             {

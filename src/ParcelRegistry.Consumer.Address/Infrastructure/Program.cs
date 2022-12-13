@@ -1,10 +1,10 @@
 namespace ParcelRegistry.Consumer.Address.Infrastructure
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.BackOffice.Abstractions;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -12,29 +12,24 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
     using Confluent.Kafka;
+    using Destructurama;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Modules;
-    using ParcelRegistry.Api.BackOffice.Abstractions;
     using Serilog;
+    using Serilog.Debugging;
+    using Serilog.Extensions.Logging;
 
     public sealed class Program
     {
-        private static readonly AutoResetEvent Closing = new AutoResetEvent(false);
-        private static readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
-
         protected Program()
         { }
 
         public static async Task Main(string[] args)
         {
-            var cancellationToken = CancellationTokenSource.Token;
-
-            cancellationToken.Register(() => Closing.Set());
-            Console.CancelKeyPress += (sender, eventArgs) => CancellationTokenSource.Cancel();
-
             AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
                 Log.Debug(
                     eventArgs.Exception,
@@ -44,148 +39,140 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
                 Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
 
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
-                .AddEnvironmentVariables()
-                .AddCommandLine(args)
+            Log.Information("Starting ParcelRegistry.Consumer.Address");
+
+            var host = new HostBuilder()
+                .ConfigureAppConfiguration((hostContext, builder) =>
+               {
+                   builder
+                       .SetBasePath(Directory.GetCurrentDirectory())
+                       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                       .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
+                       .AddEnvironmentVariables()
+                       .AddCommandLine(args);
+               })
+                .ConfigureLogging((hostContext, builder) =>
+                {
+                    SelfLog.Enable(Console.WriteLine);
+
+                    Log.Logger = new LoggerConfiguration()
+                        .ReadFrom.Configuration(hostContext.Configuration)
+                        .Enrich.FromLogContext()
+                        .Enrich.WithMachineName()
+                        .Enrich.WithThreadId()
+                        .Enrich.WithEnvironmentUserName()
+                        .Destructure.JsonNetTypes()
+                        .CreateLogger();
+
+                    builder.ClearProviders();
+                    builder.AddSerilog(Log.Logger);
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    var loggerFactory = new SerilogLoggerFactory(Log.Logger);
+
+                    services.ConfigureConsumerAddress(hostContext.Configuration, loggerFactory, ServiceLifetime.Transient);
+                })
+                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>
+                {
+                    var services = new ServiceCollection();
+                    var loggerFactory = new SerilogLoggerFactory(Log.Logger);
+
+                    builder.Register(_ =>
+                    {
+                        var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
+                        var topic = $"{hostContext.Configuration["AddressTopic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
+                        var suffix = hostContext.Configuration["GroupSuffix"];
+                        var consumerGroupId = $"{nameof(ParcelRegistry)}.{nameof(BackOfficeConsumer)}.{topic}{suffix}";
+
+                        Offset? offset = null;
+                        var offsetString = hostContext.Configuration["TopicOffset"];
+                        if (!string.IsNullOrEmpty(offsetString))
+                        {
+                            if (!long.TryParse(offsetString, out var offsetAsLong))
+                            {
+                                throw new ArgumentException("Configuration TopicOffset is not a valid value.");
+                            }
+
+                            offset = new Offset(offsetAsLong);
+                        }
+                        
+                        return new IdempotentKafkaConsumerOptions(
+                            bootstrapServers,
+                            hostContext.Configuration["Kafka:SaslUserName"],
+                            hostContext.Configuration["Kafka:SaslPassword"],
+                            consumerGroupId,
+                            topic,
+                            noMessageFoundDelay: 300,
+                            offset,
+                            EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
+                    });
+
+                    builder
+                        .RegisterType<KafkaIdompotencyConsumer<ConsumerAddressContext>>()
+                        .As<IKafkaIdompotencyConsumer<ConsumerAddressContext>>()
+                        .SingleInstance();
+
+                    builder
+                        .RegisterModule(new DataDogModule(hostContext.Configuration))
+                        .RegisterModule(new BackOfficeModule(hostContext.Configuration, services, loggerFactory, ServiceLifetime.Transient));
+                    
+                    services.AddHostedService(c => new BackOfficeConsumer(
+                        c.GetRequiredService<ILifetimeScope>(),
+                        c.GetRequiredService<IHostApplicationLifetime>(),
+                        c.GetRequiredService<Func<ConsumerAddressContext>>(),
+                        c.GetRequiredService<Func<BackOfficeContext>>(),
+                        c.GetRequiredService<ILoggerFactory>(),
+                        c.GetRequiredService<IKafkaIdompotencyConsumer<ConsumerAddressContext>>()));
+
+                    builder.Populate(services);
+                })
+                .UseConsoleLifetime()
                 .Build();
 
-            var container = ConfigureServices(configuration);
-
             Log.Information("Starting ParcelRegistry.Consumer.Address");
+
+            var logger = host.Services.GetRequiredService<ILogger<Program>>();
+            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+            var configuration = host.Services.GetRequiredService<IConfiguration>();
 
             try
             {
                 await DistributedLock<Program>.RunAsync(
                     async () =>
                     {
-                        try
-                        {
-                            var loggerFactory = container.GetRequiredService<ILoggerFactory>();
-                            var logger = loggerFactory.CreateLogger<Program>();
+                        await MigrationsHelper.RunAsync(
+                            configuration.GetConnectionString("ConsumerAddressAdmin"),
+                            loggerFactory,
+                            CancellationToken.None);
 
-                            async Task<Offset?> GetBackOfficeConsumerOffset(IServiceProvider serviceProvider, string topic)
-                            {
-                                if (long.TryParse(configuration["BackOfficeConsumerTopicOffset"], out var offset))
-                                {
-                                    var context = serviceProvider.GetRequiredService<ConsumerAddressContext>();
-                                    if (await context.AddressConsumerItems.AnyAsync(cancellationToken))
-                                    {
-                                        throw new InvalidOperationException(
-                                            "Cannot start consumer from offset, because consumer context already has data. Remove offset or clear data to continue.");
-                                    }
-
-                                    logger.LogInformation($"BackOfficeConsumer starting {topic} from offset {offset}.");
-                                    return new Offset(offset);
-                                }
-
-                                logger.LogInformation($"BackOfficeConsumer continuing {topic} from last offset.");
-                                return null;
-                            }
-
-                            await MigrationsHelper.RunAsync(configuration.GetConnectionString("ConsumerAddressAdmin"),
-                                loggerFactory, cancellationToken);
-
-                            var bootstrapServers = configuration["Kafka:BootstrapServers"];
-                            var kafkaOptions = new KafkaOptions(
-                                bootstrapServers,
-                                configuration["Kafka:SaslUserName"],
-                                configuration["Kafka:SaslPassword"],
-                                EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
-
-                            var topic = $"{configuration["AddressTopic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
-
-                            var lifetimeScope = container.GetRequiredService<ILifetimeScope>();
-                            
-                            var backOfficeConsumerOffset = await GetBackOfficeConsumerOffset(container, topic);
-
-                            var backOfficeConsumer = new BackOfficeConsumer(
-                                lifetimeScope.Resolve<Func<ConsumerAddressContext>>(),
-                                loggerFactory,
-                                kafkaOptions,
-                                topic,
-                                configuration["BackOfficeConsumerGroupSuffix"],
-                                backOfficeConsumerOffset);
-                            var backOfficeConsumerTask = backOfficeConsumer.Start(cancellationToken);
-
-                            var consumerTasks = new List<Task<Result<KafkaJsonMessage>>> {backOfficeConsumerTask};
-
-                            Log.Information("The kafka BackOfficeConsumer has started");
-
-                            var enableCommandHandlingConsumer = configuration["FeatureToggles:EnableCommandHandlingConsumer"];
-                            if (enableCommandHandlingConsumer != null && bool.Parse(enableCommandHandlingConsumer))
-                            {
-                                var commandHandlingConsumer = new CommandHandlingConsumer(
-                                    lifetimeScope,
-                                    loggerFactory,
-                                    kafkaOptions,
-                                    topic,
-                                    configuration["CommandHandlingConsumerGroupSuffix"]);
-                                var commandHandlingConsumerTask = commandHandlingConsumer.Start(cancellationToken);
-                                consumerTasks.Add(commandHandlingConsumerTask);
-                                
-                                Log.Information("The kafka CommandHandlingConsumer has started");
-                            }
-
-                            await Task.WhenAny(consumerTasks);
-
-                            foreach (var consumerTask in consumerTasks)
-                            {
-                                var consumeResult = consumerTask.GetAwaiter().GetResult();
-                                if (!consumeResult.IsSuccess)
-                                {
-                                    Log.Error(consumeResult.Error);
-                                    Log.Error(consumeResult.ErrorReason);
-                                }
-                            }
-
-                            CancellationTokenSource.Cancel();
-
-                            Log.Error("The Address Consumers were terminated");
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Fatal(e, "Encountered a fatal exception, exiting program.");
-                            throw;
-                        }
+                        await host.RunAsync().ConfigureAwait(false);
                     },
                     DistributedLockOptions.LoadFromConfiguration(configuration),
-                    container.GetService<ILogger<Program>>()!);
+                    logger)
+                    .ConfigureAwait(false);
+            }
+            catch (AggregateException aggregateException)
+            {
+                foreach (var innerException in aggregateException.InnerExceptions)
+                {
+                    logger.LogCritical(innerException, "Encountered a fatal exception, exiting program.");
+                }
             }
             catch (Exception e)
             {
-                Log.Fatal(e, "Encountered a fatal exception, exiting program.");
+                logger.LogCritical(e, "Encountered a fatal exception, exiting program.");
                 Log.CloseAndFlush();
 
                 // Allow some time for flushing before shutdown.
-                await Task.Delay(1000, default);
+                await Task.Delay(500, default);
                 throw;
             }
-
-            Log.Information("Stopping...");
-            Closing.Close();
-        }
-
-        private static IServiceProvider ConfigureServices(IConfiguration configuration)
-        {
-            var services = new ServiceCollection();
-            var builder = new ContainerBuilder();
-
-            builder.RegisterModule(new LoggingModule(configuration, services));
-
-            var tempProvider = services.BuildServiceProvider();
-            var loggerFactory = tempProvider.GetRequiredService<ILoggerFactory>();
-
-            builder
-                .RegisterModule(new DataDogModule(configuration))
-                .RegisterModule(new ConsumerAddressModule(configuration, services, loggerFactory, ServiceLifetime.Transient))
-                .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory));
-
-            builder.Populate(services);
-
-            return new AutofacServiceProvider(builder.Build());
+            finally
+            {
+                logger.LogInformation("Stopping...");
+            }
         }
     }
 }

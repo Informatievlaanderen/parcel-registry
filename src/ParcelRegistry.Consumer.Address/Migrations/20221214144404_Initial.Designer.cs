@@ -12,7 +12,7 @@ using ParcelRegistry.Consumer.Address;
 namespace ParcelRegistry.Consumer.Address.Migrations
 {
     [DbContext(typeof(ConsumerAddressContext))]
-    [Migration("20221213105759_Initial")]
+    [Migration("20221214144404_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
