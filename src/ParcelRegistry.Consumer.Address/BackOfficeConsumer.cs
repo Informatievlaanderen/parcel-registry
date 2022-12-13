@@ -57,13 +57,13 @@ namespace ParcelRegistry.Consumer.Address
                     {
                         _logger.LogInformation("Handling next message");
                         //CancellationToken.None to prevent halfway consumption
-                        await projector.ProjectAsync(consumerAddressContext, message, CancellationToken.None);
+                        await projector.ProjectAsync(consumerAddressContext, message, CancellationToken.None).ConfigureAwait(false);
 
                         messageCounter++;
 
                         if (messageCounter % 1000 == 0)
                         {
-                            await consumerAddressContext.DisposeAsync();
+                            await consumerAddressContext.DisposeAsync().ConfigureAwait(false);
                             consumerAddressContext = _dbContextFactory();
 
                             messageCounter = 0;

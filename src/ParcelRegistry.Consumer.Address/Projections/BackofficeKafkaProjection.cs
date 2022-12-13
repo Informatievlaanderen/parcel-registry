@@ -18,7 +18,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
                                 AddressStatus.Parse(message.Status),
                                 message.IsRemoved)
                             , ct);
-                    await context.SaveChangesAsync(ct);
+                await context.SaveChangesAsync(ct);
             });
 
             When<AddressWasProposedV2>(async (context, message, ct) =>
