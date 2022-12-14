@@ -1,3 +1,10 @@
+## [4.7.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.7.3...v4.7.4) (2022-12-14)
+
+
+### Bug Fixes
+
+* documentation events ([33fc64d](https://github.com/informatievlaanderen/parcel-registry/commit/33fc64dda4a8bb08ff86abc776c8d0da4e8c539a))
+
 ## [4.7.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.7.2...v4.7.3) (2022-12-14)
 
 
