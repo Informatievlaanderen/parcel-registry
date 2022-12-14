@@ -10,7 +10,7 @@ namespace ParcelRegistry.Parcel.Events
 
     [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
-    [EventDescription("Er werd een adres gekoppeld aan het perceel.")]
+    [EventDescription("Het adres werd gekoppeld aan het perceel.")]
     public sealed class ParcelAddressWasAttachedV2 : IParcelEvent
     {
         public const string EventName = "ParcelAddressWasAttachedV2"; // BE CAREFUL CHANGING THIS!!
@@ -18,7 +18,7 @@ namespace ParcelRegistry.Parcel.Events
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }
 
-        [EventPropertyDescription("Objectidentificator van het adres dat gekoppeld is aan de perceeleenheid.")]
+        [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]

@@ -31,8 +31,8 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
 
             result.Errors.Count.Should().Be(1);
             result.ShouldHaveValidationErrorFor(nameof(DetachAddressRequest.AdresId))
-                .WithErrorCode("AdresOngeldig")
-                .WithErrorMessage("Ongeldig AdresId.");
+                .WithErrorCode("PerceelAdresOngeldig")
+                .WithErrorMessage("Ongeldig adresId.");
         }
 
         [Fact]
@@ -46,8 +46,8 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
             
             result.Errors.Count.Should().Be(1);
             result.ShouldHaveValidationErrorFor(nameof(DetachAddressRequest.AdresId))
-                .WithErrorCode("AdresOngeldig")
-                .WithErrorMessage("Ongeldig AdresId.");
+                .WithErrorCode("PerceelAdresOngeldig")
+                .WithErrorMessage("Ongeldig adresId.");
         }
 
         [Fact]
@@ -61,8 +61,8 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
 
             result.Errors.Count.Should().Be(1);
             result.ShouldHaveValidationErrorFor(nameof(DetachAddressRequest.AdresId))
-                .WithErrorCode("AdresOngeldig")
-                .WithErrorMessage("Ongeldig AdresId.");
+                .WithErrorCode("PerceelAdresOngeldig")
+                .WithErrorMessage("Ongeldig adresId.");
         }
     }
 }

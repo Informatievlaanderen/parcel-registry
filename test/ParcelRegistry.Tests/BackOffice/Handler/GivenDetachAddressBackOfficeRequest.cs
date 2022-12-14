@@ -62,7 +62,7 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
             ticketingMock.Verify(x => x.CreateTicket(new Dictionary<string, string>
             {
                 {AttachAddressHandler.RegistryKey, nameof(ParcelRegistry)},
-                { AttachAddressHandler.ActionKey, "DetachAddress" },
+                { AttachAddressHandler.ActionKey, "DetachAddressParcel" },
                 { AttachAddressHandler.AggregateIdKey, sqsRequest.ParcelId },
                 { AttachAddressHandler.ObjectIdKey, sqsRequest.VbrCaPaKey }
             }, CancellationToken.None));
