@@ -1,3 +1,10 @@
+## [4.7.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.7.2...v4.7.3) (2022-12-14)
+
+
+### Bug Fixes
+
+* address id documentation ([c34078c](https://github.com/informatievlaanderen/parcel-registry/commit/c34078c3272df8523c65e2f532082b740014a943))
+
 ## [4.7.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.7.1...v4.7.2) (2022-12-13)
 
 
