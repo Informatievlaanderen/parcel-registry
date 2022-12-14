@@ -55,8 +55,9 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
                 .RegisterModule(new MediatRModule())
                 .RegisterModule(new SqsHandlersModule(_configuration[SqsQueueUrlConfigKey]))
                 .RegisterModule(new TicketingModule(_configuration, _services))
-                .RegisterModule(new ConsumerAddressModule(_configuration, _services, _loggerFactory))
                 .RegisterSnapshotModule(_configuration);
+
+            _services.ConfigureConsumerAddress(_configuration, _loggerFactory);
 
             builder.Populate(_services);
         }

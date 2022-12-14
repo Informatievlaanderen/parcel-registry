@@ -2,7 +2,6 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure.Modules
 {
     using System;
     using Address;
-    using Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
@@ -13,15 +12,15 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure.Modules
     using Parcel;
     using ParcelRegistry.Infrastructure;
 
-    public sealed class ConsumerAddressModule : Module
+    public static class ConsumerAddressModule
     {
-        public ConsumerAddressModule(
+        public static IServiceCollection ConfigureConsumerAddress(
+            this IServiceCollection services,
             IConfiguration configuration,
-            IServiceCollection services,
             ILoggerFactory loggerFactory,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
-            var logger = loggerFactory.CreateLogger<ConsumerAddressModule>();
+            var logger = loggerFactory.CreateLogger("ConsumerAddress");
             var connectionString = configuration.GetConnectionString("ConsumerAddress");
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
@@ -33,12 +32,9 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure.Modules
             {
                 RunInMemoryDb(services, loggerFactory, logger);
             }
-            services
-                .Configure<FeatureToggleOptions>(configuration.GetSection(FeatureToggleOptions.ConfigurationKey))
-                .AddSingleton(c =>
-                    new EnableCommandHandlingConsumerToggle(c.GetRequiredService<IOptions<FeatureToggleOptions>>().Value.EnableCommandHandlingConsumer));
 
             services.AddScoped<IAddresses, ConsumerAddressContext>();
+            return services;
         }
 
         private static void RunOnSqlServer(

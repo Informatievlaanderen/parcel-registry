@@ -1,15 +1,20 @@
 namespace ParcelRegistry.Consumer.Address
 {
     using System;
+    using System.IO;
     using System.Linq;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Design;
+    using Microsoft.Extensions.Configuration;
     using Parcel;
     using Parcel.DataStructures;
     using ParcelRegistry.Infrastructure;
 
-    public class ConsumerAddressContext : RunnerDbContext<ConsumerAddressContext>, IAddresses
+    public class ConsumerAddressContext : ConsumerDbContext<ConsumerAddressContext>, IAddresses
     {
+        public override string ProcessedMessagesSchema => Schema.ConsumerAddress;
+
         public DbSet<AddressConsumerItem> AddressConsumerItems { get; set; }
 
         // This needs to be here to please EF
@@ -20,8 +25,6 @@ namespace ParcelRegistry.Consumer.Address
         public ConsumerAddressContext(DbContextOptions<ConsumerAddressContext> options)
             : base(options)
         { }
-
-        public override string ProjectionStateSchema => Schema.ConsumerAddress;
 
         public AddressData? GetOptional(AddressPersistentLocalId addressPersistentLocalId)
         {
@@ -60,22 +63,34 @@ namespace ParcelRegistry.Consumer.Address
         }
     }
 
-    public sealed class ConsumerContextFactory : RunnerDbContextMigrationFactory<ConsumerAddressContext>
+    public sealed class ConsumerContextFactory : IDesignTimeDbContextFactory<ConsumerAddressContext>
     {
-        public ConsumerContextFactory()
-            : this("ConsumerAddressAdmin")
-        { }
+        public ConsumerAddressContext CreateDbContext(string[] args)
+        {
+            const string migrationConnectionStringName = "ConsumerAddressAdmin";
 
-        public ConsumerContextFactory(string connectionStringName)
-            : base(connectionStringName, new MigrationHistoryConfiguration
-            {
-                Schema = Schema.ConsumerAddress,
-                Table = MigrationTables.ConsumerAddress
-            })
-        { }
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables()
+                .Build();
 
-        protected override ConsumerAddressContext CreateContext(DbContextOptions<ConsumerAddressContext> migrationContextOptions) => new ConsumerAddressContext(migrationContextOptions);
+            var builder = new DbContextOptionsBuilder<ConsumerAddressContext>();
 
-        public ConsumerAddressContext Create(DbContextOptions<ConsumerAddressContext> options) => CreateContext(options);
+            var connectionString = configuration.GetConnectionString(migrationConnectionStringName);
+            if (string.IsNullOrEmpty(connectionString))
+                throw new InvalidOperationException($"Could not find a connection string with name '{migrationConnectionStringName}'");
+
+            builder
+                .UseSqlServer(connectionString, sqlServerOptions =>
+                {
+                    sqlServerOptions.EnableRetryOnFailure();
+                    sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerAddress, Schema.ConsumerAddress);
+                })
+                .UseExtendedSqlServerMigrations();
+
+            return new ConsumerAddressContext(builder.Options);
+        }
     }
 }

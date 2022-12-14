@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -29,19 +29,16 @@ namespace ParcelRegistry.Consumer.Address.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectionStates",
+                name: "ProcessedMessages",
                 schema: "ParcelRegistryConsumerAddress",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Position = table.Column<long>(type: "bigint", nullable: false),
-                    DesiredState = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DesiredStateChangedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    IdempotenceKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    DateProcessed = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectionStates", x => x.Name)
+                    table.PrimaryKey("PK_ProcessedMessages", x => x.IdempotenceKey)
                         .Annotation("SqlServer:Clustered", true);
                 });
 
@@ -65,7 +62,7 @@ namespace ParcelRegistry.Consumer.Address.Migrations
                 schema: "ParcelRegistryConsumerAddress");
 
             migrationBuilder.DropTable(
-                name: "ProjectionStates",
+                name: "ProcessedMessages",
                 schema: "ParcelRegistryConsumerAddress");
         }
     }

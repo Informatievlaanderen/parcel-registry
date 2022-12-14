@@ -80,11 +80,12 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
 
             JsonConvert.DefaultSettings = () => eventSerializerSettings;
 
+            services.ConfigureConsumerAddress(configuration, loggerFactory);
+
             builder
                 .RegisterModule(new DataDogModule(configuration))
                 .RegisterModule(new EditModule(configuration))
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
-                .RegisterModule(new ConsumerAddressModule(configuration, services, loggerFactory))
                 .RegisterModule(new IdempotencyModule(
                     services,
                     configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
