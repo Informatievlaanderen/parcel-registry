@@ -1,3 +1,10 @@
+# [4.8.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.7.4...v4.8.0) (2022-12-14)
+
+
+### Features
+
+* introduce idempotency in consumer ([7eb3954](https://github.com/informatievlaanderen/parcel-registry/commit/7eb39548cc3b309011e3bffd4c540c2ad408c62d))
+
 ## [4.7.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.7.3...v4.7.4) (2022-12-14)
 
 
