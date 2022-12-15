@@ -9,16 +9,20 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
     using Confluent.Kafka;
     using Destructurama;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Modules;
+    using ParcelRegistry.Infrastructure;
+    using ParcelRegistry.Parcel;
     using Serilog;
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
@@ -72,6 +76,31 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     services.ConfigureConsumerAddress(hostContext.Configuration, loggerFactory, ServiceLifetime.Transient);
+
+                    services
+                        .AddScoped(s => new TraceDbConnection<BackOfficeContext>(
+                            new SqlConnection(hostContext.Configuration.GetConnectionString("BackOffice")),
+                            hostContext.Configuration["DataDog:ServiceName"]))
+                        .AddDbContextFactory<BackOfficeContext>((provider, options) => options
+                            .UseLoggerFactory(loggerFactory)
+                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BackOfficeContext>>(), sqlServerOptions => sqlServerOptions
+                                .EnableRetryOnFailure()
+                                .MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice)
+                            ));
+
+                    services
+                        .AddScoped(s => new TraceDbConnection<ConsumerAddressContext>(
+                            new SqlConnection(hostContext.Configuration.GetConnectionString("ConsumerAddress")),
+                            hostContext.Configuration["DataDog:ServiceName"]))
+                        .AddDbContextFactory<ConsumerAddressContext>((provider, options) => options
+                            .UseLoggerFactory(loggerFactory)
+                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ConsumerAddressContext>>(), sqlServerOptions =>
+                            {
+                                sqlServerOptions.EnableRetryOnFailure();
+                                sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerAddress, Schema.ConsumerAddress);
+                            }));
+
+
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>
@@ -117,14 +146,13 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                     builder
                         .RegisterModule(new DataDogModule(hostContext.Configuration))
                         .RegisterModule(new BackOfficeModule(hostContext.Configuration, services, loggerFactory, ServiceLifetime.Transient));
-                    
-                    services.AddHostedService(c => new BackOfficeConsumer(
-                        c.GetRequiredService<ILifetimeScope>(),
-                        c.GetRequiredService<IHostApplicationLifetime>(),
-                        c.GetRequiredService<Func<ConsumerAddressContext>>(),
-                        c.GetRequiredService<Func<BackOfficeContext>>(),
-                        c.GetRequiredService<ILoggerFactory>(),
-                        c.GetRequiredService<IKafkaIdompotencyConsumer<ConsumerAddressContext>>()));
+
+
+
+                    builder
+                        .RegisterType<BackOfficeConsumer>()
+                        .As<IHostedService>()
+                        .SingleInstance();
 
                     builder.Populate(services);
                 })

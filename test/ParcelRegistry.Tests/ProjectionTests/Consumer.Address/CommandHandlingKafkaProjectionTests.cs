@@ -9,6 +9,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Fixtures;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using NodaTime;
@@ -410,7 +411,13 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         }
 
         protected override CommandHandlingKafkaProjection CreateProjection()
-            => new CommandHandlingKafkaProjection(() => _fakeBackOfficeContext);
+        {
+            var factoryMock = new Mock<IDbContextFactory<BackOfficeContext>>();
+            factoryMock
+                .Setup(x => x.CreateDbContextAsync(CancellationToken.None))
+                .Returns(Task.FromResult<BackOfficeContext>(_fakeBackOfficeContext));
+            return new CommandHandlingKafkaProjection(factoryMock.Object);
+        }
     }
 
     public class FakeCommandHandler : CommandHandler
