@@ -16,8 +16,8 @@ namespace ParcelRegistry.Consumer.Address
     {
         private readonly ILifetimeScope _lifetimeScope;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
-        private readonly Func<ConsumerAddressContext> _dbContextFactory;
-        private readonly Func<BackOfficeContext> _backOfficeContextFactory;
+        private readonly IDbContextFactory<ConsumerAddressContext> _dbContextFactory;
+        private readonly IDbContextFactory<BackOfficeContext> _backOfficeContextFactory;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IKafkaIdompotencyConsumer<ConsumerAddressContext> _kafkaIdemIdompotencyConsumer;
         private readonly ILogger<BackOfficeConsumer> _logger;
@@ -25,8 +25,8 @@ namespace ParcelRegistry.Consumer.Address
         public BackOfficeConsumer(
             ILifetimeScope lifetimeScope,
             IHostApplicationLifetime hostApplicationLifetime,
-            Func<ConsumerAddressContext> dbContextFactory,
-            Func<BackOfficeContext> backOfficeContextFactory,
+            IDbContextFactory<ConsumerAddressContext> dbContextFactory,
+            IDbContextFactory<BackOfficeContext> backOfficeContextFactory,
             ILoggerFactory loggerFactory,
             IKafkaIdompotencyConsumer<ConsumerAddressContext> kafkaIdemIdompotencyConsumer)
         {
@@ -60,8 +60,7 @@ namespace ParcelRegistry.Consumer.Address
                 {
                     _logger.LogInformation("Handling next message");
 
-                    await commandHandlingProjector.ProjectAsync(commandHandler, message, stoppingToken)
-                        .ConfigureAwait(false);
+                    await commandHandlingProjector.ProjectAsync(commandHandler, message, stoppingToken).ConfigureAwait(false);
                     await backOfficeProjector.ProjectAsync(context, message, stoppingToken).ConfigureAwait(false);
 
                     //CancellationToken.None to prevent halfway consumption
@@ -80,7 +79,7 @@ namespace ParcelRegistry.Consumer.Address
         {
             if (_kafkaIdemIdompotencyConsumer.ConsumerOptions.Offset is not null)
             {
-                await using (var context = _dbContextFactory())
+                await using (var context = await _dbContextFactory.CreateDbContextAsync(cancellationToken))
                 {
                     if (await context.AddressConsumerItems.AnyAsync(cancellationToken))
                     {

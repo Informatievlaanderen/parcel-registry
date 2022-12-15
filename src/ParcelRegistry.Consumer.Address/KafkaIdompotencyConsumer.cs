@@ -21,7 +21,7 @@ namespace Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple
     public sealed class KafkaIdompotencyConsumer<TConsumerContext> : IKafkaIdompotencyConsumer<TConsumerContext>
         where TConsumerContext: ConsumerDbContext<TConsumerContext>
     {
-        private readonly Func<TConsumerContext> _dbContextFactory;
+        private readonly IDbContextFactory<TConsumerContext> _dbContextFactory;
         private readonly ILogger _logger;
         private readonly ConsumerConfig _config;
         private readonly JsonSerializer _serializer;
@@ -30,7 +30,7 @@ namespace Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple
 
         public KafkaIdompotencyConsumer(
             IdempotentKafkaConsumerOptions consumerOptions,
-            Func<TConsumerContext> dbContextFactory,
+            IDbContextFactory<TConsumerContext> dbContextFactory,
             ILoggerFactory loggerFactory)
         {
             ConsumerOptions = consumerOptions;
@@ -82,9 +82,10 @@ namespace Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple
 
                     var hash = Crypto.Sha512(consumeResult.Message.Value);
 
-                    await using var dbContext = _dbContextFactory();
+                    await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
                     var messageAlreadyProcessed = await dbContext.ProcessedMessages
+                        .AsNoTracking()
                         .AnyAsync(x => x.IdempotenceKey == hash, cancellationToken)
                         .ConfigureAwait(false);
 
