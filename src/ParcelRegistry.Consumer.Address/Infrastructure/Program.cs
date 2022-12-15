@@ -22,6 +22,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
     using Microsoft.Extensions.Logging;
     using Modules;
     using ParcelRegistry.Infrastructure;
+    using ParcelRegistry.Infrastructure.Modules;
     using ParcelRegistry.Parcel;
     using Serilog;
     using Serilog.Debugging;
@@ -75,8 +76,6 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                 {
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
-                    services.ConfigureConsumerAddress(hostContext.Configuration, loggerFactory, ServiceLifetime.Transient);
-
                     services
                         .AddScoped(s => new TraceDbConnection<BackOfficeContext>(
                             new SqlConnection(hostContext.Configuration.GetConnectionString("BackOffice")),
@@ -100,7 +99,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                                 sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerAddress, Schema.ConsumerAddress);
                             }));
 
-
+                    services.AddScoped<IAddresses, ConsumerAddressContext>();
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>
@@ -145,9 +144,8 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
 
                     builder
                         .RegisterModule(new DataDogModule(hostContext.Configuration))
+                        .RegisterModule(new EditModule(hostContext.Configuration))
                         .RegisterModule(new BackOfficeModule(hostContext.Configuration, services, loggerFactory, ServiceLifetime.Transient));
-
-
 
                     builder
                         .RegisterType<BackOfficeConsumer>()
