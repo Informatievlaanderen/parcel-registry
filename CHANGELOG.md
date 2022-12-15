@@ -1,3 +1,10 @@
+## [4.8.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.1...v4.8.2) (2022-12-15)
+
+
+### Bug Fixes
+
+* register edit module in address consumer ([f7e6c29](https://github.com/informatievlaanderen/parcel-registry/commit/f7e6c2941090b1b1b0d503b6acb7a5a006c5e0e4))
+
 ## [4.8.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.0...v4.8.1) (2022-12-15)
 
 
