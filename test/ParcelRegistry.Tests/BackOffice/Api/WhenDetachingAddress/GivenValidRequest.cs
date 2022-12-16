@@ -5,6 +5,7 @@ namespace ParcelRegistry.Tests.BackOffice.Api.WhenDetachingAddress
     using System.Threading.Tasks;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
+    using Fixtures;
     using FluentAssertions;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
@@ -24,6 +25,8 @@ namespace ParcelRegistry.Tests.BackOffice.Api.WhenDetachingAddress
 
         public GivenRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
+            Fixture.Customize(new WithValidVbrCaPaKey());
+
             _streamStore = new Mock<IStreamStore>();
             _controller = CreateParcelControllerWithUser();
         }
@@ -31,14 +34,13 @@ namespace ParcelRegistry.Tests.BackOffice.Api.WhenDetachingAddress
         [Fact]
         public async Task ThenTicketLocationIsReturned()
         {
-            var caPaKey = Guid.NewGuid().ToString("D");
-            var parcelId = ParcelId.CreateFor(new VbrCaPaKey(caPaKey));
+            var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
 
             var ticketId = Fixture.Create<Guid>();
             var expectedLocationResult = new LocationResult(CreateTicketUri(ticketId));
 
             MockMediator
-                .Setup(x => x.Send(It.Is<DetachAddressSqsRequest>(request => request.ParcelId == parcelId), CancellationToken.None))
+                .Setup(x => x.Send(It.Is<DetachAddressSqsRequest>(request => request.VbrCaPaKey == vbrCaPaKey), CancellationToken.None))
                 .Returns(Task.FromResult(expectedLocationResult));
 
             _streamStore.SetStreamFound();
@@ -47,7 +49,7 @@ namespace ParcelRegistry.Tests.BackOffice.Api.WhenDetachingAddress
                 MockValidRequestValidator<DetachAddressRequest>(),
                 new ParcelExistsValidator(_streamStore.Object),
                 MockIfMatchValidator(true),
-                caPaKey,
+                vbrCaPaKey,
                 Fixture.Create<DetachAddressRequest>(),
                 ifMatchHeaderValue: null);
 

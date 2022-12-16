@@ -22,7 +22,7 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
     {
         public GivenDetachAddressBackOfficeRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            Fixture.Customize(new WithFixedParcelId());
+            Fixture.Customize(new WithValidVbrCaPaKey());
         }
 
         [Fact]
@@ -44,10 +44,10 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
                 ticketingMock.Object,
                 ticketingUrl);
 
-            var sqsRequest = new DetachAddressSqsRequest()
+            var sqsRequest = new DetachAddressSqsRequest
             {
-                ParcelId = Fixture.Create<ParcelId>(),
-                Request = new DetachAddressRequest()
+                VbrCaPaKey = Fixture.Create<VbrCaPaKey>(),
+                Request = new DetachAddressRequest
                 {
                     AdresId = PuriCreator.CreateAdresId(123)
                 }
@@ -61,15 +61,15 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
 
             ticketingMock.Verify(x => x.CreateTicket(new Dictionary<string, string>
             {
-                {AttachAddressHandler.RegistryKey, nameof(ParcelRegistry)},
+                { AttachAddressHandler.RegistryKey, nameof(ParcelRegistry) },
                 { AttachAddressHandler.ActionKey, "DetachAddressParcel" },
-                { AttachAddressHandler.AggregateIdKey, sqsRequest.ParcelId },
+                { AttachAddressHandler.AggregateIdKey, ParcelId.CreateFor(new VbrCaPaKey(sqsRequest.VbrCaPaKey)) },
                 { AttachAddressHandler.ObjectIdKey, sqsRequest.VbrCaPaKey }
             }, CancellationToken.None));
 
             sqsQueue.Verify(x => x.Copy(
                 sqsRequest,
-                It.Is<SqsQueueOptions>(y => y.MessageGroupId == Fixture.Create<ParcelId>().ToString()),
+                It.Is<SqsQueueOptions>(y => y.MessageGroupId == ParcelId.CreateFor(new VbrCaPaKey(sqsRequest.VbrCaPaKey)).ToString()),
                 CancellationToken.None));
             result.Location.Should().Be(ticketingUrl.For(ticketId));
         }

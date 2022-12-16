@@ -11,7 +11,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
     {
         public AttachAddressRequest Request { get; }
 
-        public Guid ParcelId { get; }
+        public Guid ParcelId => ParcelRegistry.Parcel.ParcelId.CreateFor(new VbrCaPaKey(VbrCaPaKey));
         public string VbrCaPaKey { get; }
 
         public AttachAddressLambdaRequest(
@@ -24,7 +24,6 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 sqsRequest.ProvenanceData.ToProvenance(),
                 sqsRequest.Metadata)
         {
-            ParcelId = sqsRequest.ParcelId;
             VbrCaPaKey = sqsRequest.VbrCaPaKey;
             Request = sqsRequest.Request;
         }
