@@ -1,3 +1,11 @@
+## [4.8.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.2...v4.8.3) (2022-12-16)
+
+
+### Bug Fixes
+
+* bump grar-common packages ([4f512ef](https://github.com/informatievlaanderen/parcel-registry/commit/4f512ef65f36e0011fb89232c0705e98e0e0c0ee))
+* detail url should contain capakey instead of parcelid ([#520](https://github.com/informatievlaanderen/parcel-registry/issues/520)) ([e149da0](https://github.com/informatievlaanderen/parcel-registry/commit/e149da04631af705fcde496f361435046243de13))
+
 ## [4.8.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.1...v4.8.2) (2022-12-15)
 
 
