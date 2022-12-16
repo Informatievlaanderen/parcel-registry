@@ -63,11 +63,12 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                     {
                         context.Entry(entity).Collection(x => x.Addresses).Load();
 
-                        if (!entity.Addresses.Any(parcelAddress =>
-                                parcelAddress.AddressPersistentLocalId == message.Message.AddressPersistentLocalId
-                                && parcelAddress.ParcelId == message.Message.ParcelId))
+                        var addressToRemove = entity.Addresses.SingleOrDefault(parcelAddress =>
+                            parcelAddress.AddressPersistentLocalId == message.Message.AddressPersistentLocalId
+                            && parcelAddress.ParcelId == message.Message.ParcelId);
+                        if (addressToRemove is not null)
                         {
-                            entity.Addresses.Remove(new ParcelDetailAddressV2(message.Message.ParcelId, message.Message.AddressPersistentLocalId));
+                            entity.Addresses.Remove(addressToRemove);
                         }
 
                         UpdateHash(entity, message);

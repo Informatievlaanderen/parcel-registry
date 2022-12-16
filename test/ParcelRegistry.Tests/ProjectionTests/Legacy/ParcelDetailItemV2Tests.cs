@@ -6,6 +6,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using Parcel.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using FluentAssertions;
     using Fixtures;
@@ -46,7 +47,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelDetailV2.Status.Should().Be(ParcelStatus.Parse(parcelWasMigrated.ParcelStatus));
                     parcelDetailV2.Removed.Should().Be(parcelWasMigrated.IsRemoved);
                     parcelDetailV2.Addresses.Should().BeEquivalentTo(
-                        parcelWasMigrated.AddressPersistentLocalIds.Select(x => new ParcelDetailAddressV2(parcelWasMigrated.ParcelId, x)));
+                        parcelWasMigrated.AddressPersistentLocalIds.Select(x =>
+                            new ParcelDetailAddressV2(parcelWasMigrated.ParcelId, x)));
                     parcelDetailV2.VersionTimestamp.Should().Be(parcelWasMigrated.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(parcelWasMigrated.GetHash());
                 });
@@ -68,15 +70,16 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
             };
 
             await Sut
-                .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
-                        new Envelope<ParcelAddressWasAttachedV2>(new Envelope(addressWasAttached, metadata2)))
+                .Given(
+                    new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
+                    new Envelope<ParcelAddressWasAttachedV2>(new Envelope(addressWasAttached, metadata2)))
                 .Then(async ct =>
                 {
                     var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(parcelWasMigrated.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
-                    parcelDetailV2.Addresses.Should().BeEquivalentTo(
+                    parcelDetailV2!.Addresses.Should().BeEquivalentTo(
                         parcelWasMigrated.AddressPersistentLocalIds
-                            .Concat(new []{addressWasAttached.AddressPersistentLocalId})
+                            .Concat(new[] { addressWasAttached.AddressPersistentLocalId })
                             .Select(x => new ParcelDetailAddressV2(addressWasAttached.ParcelId, x)));
                     parcelDetailV2.VersionTimestamp.Should().Be(addressWasAttached.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(addressWasAttached.GetHash());
@@ -92,20 +95,24 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() }
             };
 
-            var addressWasDetached = _fixture.Create<ParcelAddressWasDetachedV2>();
+            var addressWasDetached = new ParcelAddressWasDetachedV2(
+                new ParcelId(parcelWasMigrated.ParcelId),
+                new AddressPersistentLocalId(parcelWasMigrated.AddressPersistentLocalIds.First()));
+            ((ISetProvenance)addressWasDetached).SetProvenance(_fixture.Create<Provenance>());
             var metadata2 = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasDetached.GetHash() }
             };
 
             await Sut
-                .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
+                .Given(
+                    new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
                     new Envelope<ParcelAddressWasDetachedV2>(new Envelope(addressWasDetached, metadata2)))
                 .Then(async ct =>
                 {
                     var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(parcelWasMigrated.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
-                    parcelDetailV2.Addresses.Select(x => x.AddressPersistentLocalId).Should().NotContain(addressWasDetached.AddressPersistentLocalId);
+                    parcelDetailV2!.Addresses.Select(x => x.AddressPersistentLocalId).Should().NotContain(addressWasDetached.AddressPersistentLocalId);
                     parcelDetailV2.VersionTimestamp.Should().Be(addressWasDetached.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(addressWasDetached.GetHash());
                 });
