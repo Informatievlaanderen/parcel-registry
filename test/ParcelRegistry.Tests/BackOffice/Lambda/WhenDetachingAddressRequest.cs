@@ -23,10 +23,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Parcel.Commands;
     using Parcel.Exceptions;
     using ParcelRegistry.Api.BackOffice.Abstractions;
-    using ParcelRegistry.Api.BackOffice.Abstractions.Requests;
-    using ParcelRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
-    using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
@@ -38,7 +35,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
         public WhenDetachingAddressRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            Fixture.Customize(new WithFixedParcelId());
+            Fixture.Customize(new WithValidVbrCaPaKey());
             Fixture.Customize(new Legacy.AutoFixture.WithFixedParcelId());
             Fixture.Customize(new Legacy.AutoFixture.WithParcelStatus());
 
@@ -53,9 +50,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             string etag = string.Empty;
             var ticketing = MockTicketing(response => { etag = response.ETag; });
 
-            var capakey = new VbrCaPaKey("capakey");
-            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(capakey);
-            var parcelId = ParcelId.CreateFor(capakey);
+            var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
+            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(vbrCaPaKey);
+            var parcelId = ParcelId.CreateFor(vbrCaPaKey);
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
@@ -67,10 +64,10 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             DispatchArrangeCommand(new MigrateParcel(
                 legacyParcelId,
-                capakey,
+                vbrCaPaKey,
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 isRemoved: false,
-                new List<AddressPersistentLocalId>(){ addressPersistentLocalId, new AddressPersistentLocalId(456) },
+                new List<AddressPersistentLocalId> { addressPersistentLocalId, new AddressPersistentLocalId(456) },
                 Fixture.Create<Coordinate>(),
                 Fixture.Create<Coordinate>(),
                 Fixture.Create<Provenance>()));
@@ -87,7 +84,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketId = Guid.NewGuid();
             await handler.Handle(
                 new DetachAddressLambdaRequestBuilder(Fixture)
-                    .WithParcelId(parcelId)
+                    .WithVbrCaPaKey(vbrCaPaKey)
                     .WithAdresId(addressPersistentLocalId)
                     .WithTicketId(ticketId)
                     .Build(),
@@ -99,13 +96,12 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                     ticketId,
                     new TicketResult(
                         new ETagResponse(
-                            string.Format(ConfigDetailUrl, parcelId),
+                            string.Format(ConfigDetailUrl, vbrCaPaKey),
                             etag)),
                     CancellationToken.None));
 
             var addressParcelRelation = _backOfficeContext.ParcelAddressRelations
-                .FirstOrDefault(x => x.ParcelId == (Guid)parcelId
-                                     && x.AddressPersistentLocalId == (int)addressPersistentLocalId);
+                .FirstOrDefault(x => x.ParcelId == (Guid)parcelId && x.AddressPersistentLocalId == (int)addressPersistentLocalId);
             addressParcelRelation.Should().BeNull();
         }
 
@@ -117,7 +113,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var parcels = new Mock<IParcels>();
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var parcelId =  Fixture.Create<ParcelId>();
+            var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
+            var parcelId =  ParcelId.CreateFor(vbrCaPaKey);
             const string expectedEventHash = "lastEventHash";
 
             parcels
@@ -140,8 +137,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketId = Guid.NewGuid();
             await handler.Handle(
                 new DetachAddressLambdaRequestBuilder(Fixture)
+                    .WithVbrCaPaKey(vbrCaPaKey)
                     .WithAdresId(addressPersistentLocalId)
-                    .WithParcelId(parcelId)
                     .WithTicketId(ticketId)
                     .Build(),
                 CancellationToken.None);
@@ -152,7 +149,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                     ticketId,
                     new TicketResult(
                         new ETagResponse(
-                            string.Format(ConfigDetailUrl, parcelId),
+                            string.Format(ConfigDetailUrl, vbrCaPaKey),
                             expectedEventHash)),
                     CancellationToken.None));
         }

@@ -13,7 +13,7 @@ namespace ParcelRegistry.Tests.BackOffice.Builders
     {
         private readonly Fixture _fixture;
 
-        private ParcelId? _parcelId;
+        private VbrCaPaKey? _vbrCaPaKey;
         private string? _adresId;
         private Guid? _ticketId;
         private string? _ifMatchHeaderValue;
@@ -23,9 +23,9 @@ namespace ParcelRegistry.Tests.BackOffice.Builders
             _fixture = fixture;
         }
 
-        public AttachAddressLambdaRequestBuilder WithParcelId(ParcelId parcelId)
+        public AttachAddressLambdaRequestBuilder WithVbrCaPaKey(VbrCaPaKey vbrCaPaKey)
         {
-            _parcelId = parcelId;
+            _vbrCaPaKey = vbrCaPaKey;
             return this;
         }
 
@@ -51,16 +51,16 @@ namespace ParcelRegistry.Tests.BackOffice.Builders
 
         public AttachAddressLambdaRequest Build()
         {
-            var parcelId = _parcelId ?? _fixture.Create<ParcelId>();
+            var vbrCaPaKey = _vbrCaPaKey ?? _fixture.Create<VbrCaPaKey>();
             var ticketId = _ticketId ?? _fixture.Create<Guid>();
             var adresId = _adresId ?? PuriCreator.CreateAdresId(123);
 
             return new AttachAddressLambdaRequest(
-                messageGroupId: parcelId,
+                messageGroupId: ParcelId.CreateFor(vbrCaPaKey),
                 new AttachAddressSqsRequest
                 {
-                    ParcelId = parcelId,
                     Request = new AttachAddressRequest { AdresId = adresId },
+                    VbrCaPaKey = vbrCaPaKey,
                     TicketId = ticketId,
                     IfMatchHeaderValue = _ifMatchHeaderValue,
                     Metadata = new Dictionary<string, object?>(),

@@ -10,6 +10,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using FluentAssertions;
     using MediatR;
     using Moq;
+    using Parcel;
     using ParcelRegistry.Api.BackOffice.Abstractions.SqsRequests;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests;
@@ -46,8 +47,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 .Verify(x => x.Send(It.Is<AttachAddressLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId &&
                     request.MessageGroupId == messageMetadata.MessageGroupId &&
-                    request.ParcelId == messageData.ParcelId &&
                     request.Request == messageData.Request &&
+                    request.VbrCaPaKey == messageData.VbrCaPaKey &&
+                    request.ParcelId == ParcelId.CreateFor(new VbrCaPaKey(messageData.VbrCaPaKey)) &&
                     request.IfMatchHeaderValue == messageData.IfMatchHeaderValue &&
                     request.Provenance == messageData.ProvenanceData.ToProvenance() &&
                     request.Metadata == messageData.Metadata
@@ -79,8 +81,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 .Verify(x => x.Send(It.Is<DetachAddressLambdaRequest>(request =>
                     request.TicketId == messageData.TicketId &&
                     request.MessageGroupId == messageMetadata.MessageGroupId &&
-                    request.ParcelId == messageData.ParcelId &&
                     request.Request == messageData.Request &&
+                    request.VbrCaPaKey == messageData.VbrCaPaKey &&
+                    request.ParcelId == ParcelId.CreateFor(new VbrCaPaKey(messageData.VbrCaPaKey)) &&
                     request.IfMatchHeaderValue == messageData.IfMatchHeaderValue &&
                     request.Provenance == messageData.ProvenanceData.ToProvenance() &&
                     request.Metadata == messageData.Metadata

@@ -66,7 +66,6 @@ namespace ParcelRegistry.Api.BackOffice
 
                 var sqsRequest = new DetachAddressSqsRequest
                 {
-                    ParcelId = parcelId,
                     VbrCaPaKey = vbrCaPaKey,
                     Request = request,
                     IfMatchHeaderValue = ifMatchHeaderValue,

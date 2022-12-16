@@ -4,6 +4,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers
     using Abstractions.SqsRequests;
     using Be.Vlaanderen.Basisregisters.Sqs;
     using Be.Vlaanderen.Basisregisters.Sqs.Handlers;
+    using Parcel;
     using TicketingService.Abstractions;
 
     public class AttachAddressHandler : SqsHandler<AttachAddressSqsRequest>
@@ -15,7 +16,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers
 
         protected override string? WithAggregateId(AttachAddressSqsRequest request)
         {
-            return request.ParcelId.ToString();
+            return ParcelId.CreateFor(new VbrCaPaKey(request.VbrCaPaKey));
         }
 
         protected override IDictionary<string, string> WithTicketMetadata(string aggregateId, AttachAddressSqsRequest sqsRequest)

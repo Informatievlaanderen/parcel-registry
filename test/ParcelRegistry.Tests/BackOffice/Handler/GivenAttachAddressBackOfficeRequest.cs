@@ -22,7 +22,7 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
     {
         public GivenAttachAddressBackOfficeRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            Fixture.Customize(new WithFixedParcelId());
+            Fixture.Customize(new WithValidVbrCaPaKey());
         }
 
         [Fact]
@@ -44,10 +44,10 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
                 ticketingMock.Object,
                 ticketingUrl);
 
-            var sqsRequest = new AttachAddressSqsRequest()
+            var sqsRequest = new AttachAddressSqsRequest
             {
-                ParcelId = Fixture.Create<ParcelId>(),
-                Request = new AttachAddressRequest()
+                VbrCaPaKey = Fixture.Create<VbrCaPaKey>(),
+                Request = new AttachAddressRequest
                 {
                     AdresId = PuriCreator.CreateAdresId(123)
                 }
@@ -63,13 +63,13 @@ namespace ParcelRegistry.Tests.BackOffice.Handler
             {
                 {AttachAddressHandler.RegistryKey, nameof(ParcelRegistry)},
                 { AttachAddressHandler.ActionKey, "AttachAddressParcel" },
-                { AttachAddressHandler.AggregateIdKey, sqsRequest.ParcelId },
+                { AttachAddressHandler.AggregateIdKey, ParcelId.CreateFor(new VbrCaPaKey(sqsRequest.VbrCaPaKey)) },
                 { AttachAddressHandler.ObjectIdKey, sqsRequest.VbrCaPaKey }
             }, CancellationToken.None));
 
             sqsQueue.Verify(x => x.Copy(
                 sqsRequest,
-                It.Is<SqsQueueOptions>(y => y.MessageGroupId == Fixture.Create<ParcelId>().ToString()),
+                It.Is<SqsQueueOptions>(y => y.MessageGroupId == ParcelId.CreateFor(new VbrCaPaKey(sqsRequest.VbrCaPaKey)).ToString()),
                 CancellationToken.None));
             result.Location.Should().Be(ticketingUrl.For(ticketId));
         }

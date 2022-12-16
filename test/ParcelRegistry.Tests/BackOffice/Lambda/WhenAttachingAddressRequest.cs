@@ -34,7 +34,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
         public WhenAttachingAddressRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            Fixture.Customize(new WithFixedParcelId());
+            Fixture.Customize(new WithValidVbrCaPaKey());
             Fixture.Customize(new Legacy.AutoFixture.WithFixedParcelId());
             Fixture.Customize(new Legacy.AutoFixture.WithParcelStatus());
 
@@ -49,9 +49,9 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             string etag = string.Empty;
             var ticketing = MockTicketing(response => { etag = response.ETag; });
 
-            var capakey = new VbrCaPaKey("capakey");
-            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(capakey);
-            var parcelId = ParcelId.CreateFor(capakey);
+            var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
+            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(vbrCaPaKey);
+            var parcelId = ParcelId.CreateFor(vbrCaPaKey);
 
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
@@ -60,10 +60,10 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             DispatchArrangeCommand(new MigrateParcel(
                 legacyParcelId,
-                capakey,
+                vbrCaPaKey,
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 isRemoved: false,
-                new List<AddressPersistentLocalId>(){ new AddressPersistentLocalId(456), new AddressPersistentLocalId(789) },
+                new List<AddressPersistentLocalId> { new AddressPersistentLocalId(456), new AddressPersistentLocalId(789) },
                 Fixture.Create<Coordinate>(),
                 Fixture.Create<Coordinate>(),
                 Fixture.Create<Provenance>()));
@@ -80,7 +80,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketId = Guid.NewGuid();
             await handler.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithParcelId(parcelId)
+                    .WithVbrCaPaKey(vbrCaPaKey)
                     .WithAdresId(addressPersistentLocalId)
                     .WithTicketId(ticketId)
                     .Build(),
@@ -92,11 +92,11 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                     ticketId,
                     new TicketResult(
                         new ETagResponse(
-                            string.Format(ConfigDetailUrl, parcelId),
+                            string.Format(ConfigDetailUrl, vbrCaPaKey),
                             etag)),
                     CancellationToken.None));
 
-            var addressParcelRelation = _backOfficeContext.ParcelAddressRelations.Find((Guid)parcelId, (int)addressPersistentLocalId);
+            var addressParcelRelation = await _backOfficeContext.ParcelAddressRelations.FindAsync((Guid)parcelId, (int)addressPersistentLocalId);
             addressParcelRelation.Should().NotBeNull();
         }
 
@@ -107,7 +107,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketing = new Mock<ITicketing>();
             var parcels = new Mock<IParcels>();
 
-            var parcelId =  Fixture.Create<ParcelId>();
+            var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
+            var parcelId =  ParcelId.CreateFor(vbrCaPaKey);
             const string expectedEventHash = "lastEventHash";
 
             parcels
@@ -126,7 +127,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketId = Guid.NewGuid();
             await handler.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
-                    .WithParcelId(parcelId)
+                    .WithVbrCaPaKey(vbrCaPaKey)
                     .WithTicketId(ticketId)
                     .Build(),
                 CancellationToken.None);
@@ -137,7 +138,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                     ticketId,
                     new TicketResult(
                         new ETagResponse(
-                            string.Format(ConfigDetailUrl, parcelId),
+                            string.Format(ConfigDetailUrl, vbrCaPaKey),
                             expectedEventHash)),
                     CancellationToken.None));
         }
@@ -157,10 +158,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 _backOfficeContext);
 
             // Act
-            await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
-                    .Build(),
-                CancellationToken.None);
+            await handler.Handle(new AttachAddressLambdaRequestBuilder(Fixture).Build(), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -187,10 +185,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 _backOfficeContext);
 
             // Act
-            await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
-                    .Build(),
-                CancellationToken.None);
+            await handler.Handle(new AttachAddressLambdaRequestBuilder(Fixture).Build(), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -217,10 +212,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 _backOfficeContext);
 
             // Act
-            await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
-                    .Build(),
-                CancellationToken.None);
+            await handler.Handle(new AttachAddressLambdaRequestBuilder(Fixture).Build(), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -247,10 +239,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 _backOfficeContext);
 
             // Act
-            await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
-                    .Build(),
-                CancellationToken.None);
+            await handler.Handle(new AttachAddressLambdaRequestBuilder(Fixture).Build(), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>
@@ -277,10 +266,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 _backOfficeContext);
 
             // Act
-            await handler.Handle(
-                new AttachAddressLambdaRequestBuilder(Fixture)
-                    .Build(),
-                CancellationToken.None);
+            await handler.Handle(new AttachAddressLambdaRequestBuilder(Fixture).Build(), CancellationToken.None);
 
             //Assert
             ticketing.Verify(x =>

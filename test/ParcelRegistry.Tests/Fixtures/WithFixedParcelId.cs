@@ -9,11 +9,7 @@ namespace ParcelRegistry.Tests.Fixtures
     {
         public void Customize(IFixture fixture)
         {
-            var capakey =
-                new SpecimenContext(fixture).Resolve(
-                    new RegularExpressionRequest("^[0-9]{5}_[A-Z]_[0-9]{4}_[A-Z_0]_[0-9]{3}_[0-9]{2}$"));
-
-            fixture.Customize<VbrCaPaKey>(c => c.FromFactory(() => new VbrCaPaKey(capakey.ToString())));
+            fixture.Customize(new WithValidVbrCaPaKey());
 
             var vbrCaPaKey = fixture.Create<VbrCaPaKey>();
             fixture.Customize<ParcelId>(c => c.FromFactory(() => ParcelId.CreateFor(vbrCaPaKey)));
