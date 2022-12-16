@@ -57,7 +57,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             await _backOfficeContext.SaveChangesAsync(cancellationToken);
 
             var lastHash = await Parcels.GetHash(new ParcelId(request.ParcelId), cancellationToken);
-            return new ETagResponse(string.Format(DetailUrlFormat, request.ParcelId), lastHash);
+            return new ETagResponse(string.Format(DetailUrlFormat, request.VbrCaPaKey), lastHash);
         }
 
         protected override TicketError? InnerMapDomainException(DomainException exception, AttachAddressLambdaRequest request)

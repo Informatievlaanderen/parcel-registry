@@ -5,13 +5,14 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using Parcel;
     using Parcel.Commands;
-    using ParcelRegistry.Api.BackOffice.Abstractions.Extensions;
+    using Abstractions.Extensions;
 
     public sealed record DetachAddressLambdaRequest : SqsLambdaRequest, IHasParcelId
     {
         public DetachAddressRequest Request { get; }
 
         public Guid ParcelId { get; }
+        public string VbrCaPaKey { get; }
 
         public DetachAddressLambdaRequest(
             string messageGroupId,
@@ -24,6 +25,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 sqsRequest.Metadata)
         {
             ParcelId = sqsRequest.ParcelId;
+            VbrCaPaKey = sqsRequest.VbrCaPaKey;
             Request = sqsRequest.Request;
         }
 

@@ -12,6 +12,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
         public AttachAddressRequest Request { get; }
 
         public Guid ParcelId { get; }
+        public string VbrCaPaKey { get; }
 
         public AttachAddressLambdaRequest(
             string messageGroupId,
@@ -24,6 +25,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
                 sqsRequest.Metadata)
         {
             ParcelId = sqsRequest.ParcelId;
+            VbrCaPaKey = sqsRequest.VbrCaPaKey;
             Request = sqsRequest.Request;
         }
 
