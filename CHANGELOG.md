@@ -1,3 +1,10 @@
+## [4.8.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.3...v4.8.4) (2022-12-19)
+
+
+### Bug Fixes
+
+* detach address in detail projection ([d34deb2](https://github.com/informatievlaanderen/parcel-registry/commit/d34deb23fec2e3846d33b6f149224a4df3c2b825))
+
 ## [4.8.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.2...v4.8.3) (2022-12-16)
 
 
