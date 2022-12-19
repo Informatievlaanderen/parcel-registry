@@ -2,10 +2,13 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
 {
     using System;
     using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
+    using Parcel;
 
     public class BackOfficeContext : DbContext
     {
@@ -15,6 +18,19 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
             : base(options) { }
 
         public DbSet<ParcelAddressRelation> ParcelAddressRelations { get; set; }
+
+        public async Task<ParcelAddressRelation> AddIdempotentParcelAddressRelation(ParcelId parcelId, AddressPersistentLocalId addressPersistentLocalId, CancellationToken cancellationToken)
+        {
+            var relation = await ParcelAddressRelations.FindAsync(new object?[] { (Guid)parcelId, (int) addressPersistentLocalId }, cancellationToken: cancellationToken);
+            if (relation is null)
+            {
+                relation = new ParcelAddressRelation(parcelId, addressPersistentLocalId);
+                await ParcelAddressRelations.AddAsync(relation, cancellationToken);
+                await SaveChangesAsync(cancellationToken);
+            }
+
+            return relation;
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
