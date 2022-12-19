@@ -42,7 +42,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
                 throw new ApiException("Perceel werd verwijderd.", StatusCodes.Status410Gone);
             }
 
-            if (parcel == null)
+            if (parcel is null)
             {
                 throw new ApiException("Onbestaand perceel.", StatusCodes.Status404NotFound);
             }
