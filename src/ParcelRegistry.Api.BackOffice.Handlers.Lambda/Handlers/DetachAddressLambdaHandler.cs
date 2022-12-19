@@ -53,8 +53,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                 // Idempotent: Do Nothing return last etag
             }
 
-            _backOfficeContext.ParcelAddressRelations.Remove(new ParcelAddressRelation(cmd.ParcelId, cmd.AddressPersistentLocalId));
-            await _backOfficeContext.SaveChangesAsync(cancellationToken);
+            await _backOfficeContext.RemoveIdempotentParcelAddressRelation(cmd.ParcelId, cmd.AddressPersistentLocalId, cancellationToken);
 
             var lastHash = await Parcels.GetHash(new ParcelId(request.ParcelId), cancellationToken);
             return new ETagResponse(string.Format(DetailUrlFormat, request.VbrCaPaKey), lastHash);
