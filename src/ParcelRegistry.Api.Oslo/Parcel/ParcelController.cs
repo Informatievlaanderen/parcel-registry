@@ -3,6 +3,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using MediatR;
@@ -49,7 +50,11 @@ namespace ParcelRegistry.Api.Oslo.Parcel
             [FromRoute] string caPaKey,
             CancellationToken cancellationToken = default)
         {
-            return Ok(await _mediator.Send(new GetParcelRequest(caPaKey), cancellationToken));
+            var response = await _mediator.Send(new GetParcelRequest(caPaKey), cancellationToken);
+
+            return string.IsNullOrWhiteSpace(response.LastEventHash)
+                ? Ok(response.ParcelResponse)
+                : new OkWithLastObservedPositionAsETagResult(response.ParcelResponse, response.LastEventHash);
         }
 
         /// <summary>
