@@ -15,7 +15,7 @@
     using Requests;
     using Responses;
 
-    public class GetParcelV2Handler : IRequestHandler<GetParcelRequest, ParcelOsloResponse>
+    public class GetParcelV2Handler : IRequestHandler<GetParcelRequest, ParcelOsloResponseWithEtag>
     {
         private readonly LegacyContext _context;
         private readonly IOptions<ResponseOptions> _responseOptions;
@@ -28,7 +28,7 @@
             _responseOptions = responseOptions;
         }
 
-        public async Task<ParcelOsloResponse> Handle(GetParcelRequest request, CancellationToken cancellationToken)
+        public async Task<ParcelOsloResponseWithEtag> Handle(GetParcelRequest request, CancellationToken cancellationToken)
         {
             var parcel =
                 await _context
@@ -43,7 +43,7 @@
             if (parcel is null)
                 throw new ApiException("Onbestaand perceel.", StatusCodes.Status404NotFound);
 
-            return new ParcelOsloResponse(
+            var response = new ParcelOsloResponse(
                 _responseOptions.Value.Naamruimte,
                 _responseOptions.Value.ContextUrlDetail,
                 parcel.Status.MapToPerceelStatus(),
@@ -54,6 +54,8 @@
                     .OrderBy(x => x)
                     .ToList(),
                 _responseOptions.Value.AdresDetailUrl);
+
+            return new ParcelOsloResponseWithEtag(response, parcel.LastEventHash);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
     using Projections.Legacy;
     using Responses;
 
-    public class GetParcelV2Handler : IRequestHandler<GetParcelRequest, ParcelResponse>
+    public class GetParcelV2Handler : IRequestHandler<GetParcelRequest, ParcelResponseWithEtag>
     {
         private readonly LegacyContext _context;
         private readonly IOptions<ResponseOptions> _responseOptions;
@@ -28,7 +28,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
             _responseOptions = responseOptions;
         }
 
-        public async Task<ParcelResponse> Handle(GetParcelRequest request, CancellationToken cancellationToken)
+        public async Task<ParcelResponseWithEtag> Handle(GetParcelRequest request, CancellationToken cancellationToken)
         {
             var parcel =
                 await _context
@@ -37,26 +37,28 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
                     .AsNoTracking()
                     .SingleOrDefaultAsync(item => item.CaPaKey == request.CaPaKey, cancellationToken);
 
-            if (parcel is {Removed: true})
-            {
-                throw new ApiException("Perceel werd verwijderd.", StatusCodes.Status410Gone);
-            }
-
             if (parcel is null)
             {
                 throw new ApiException("Onbestaand perceel.", StatusCodes.Status404NotFound);
             }
 
-            return new ParcelResponse(
-                    _responseOptions.Value.Naamruimte,
-                    parcel.Status.MapToPerceelStatus(),
-                    parcel.CaPaKey,
-                    parcel.VersionTimestamp.ToBelgianDateTimeOffset(),
-                    parcel.Addresses
-                        .Select(x => x.AddressPersistentLocalId.ToString())
-                        .OrderBy(x => x)
-                        .ToList(),
-                    _responseOptions.Value.AdresDetailUrl);
+            if (parcel is {Removed: true})
+            {
+                throw new ApiException("Perceel werd verwijderd.", StatusCodes.Status410Gone);
+            }
+
+            var response = new ParcelResponse(
+                _responseOptions.Value.Naamruimte,
+                parcel.Status.MapToPerceelStatus(),
+                parcel.CaPaKey,
+                parcel.VersionTimestamp.ToBelgianDateTimeOffset(),
+                parcel.Addresses
+                    .Select(x => x.AddressPersistentLocalId.ToString())
+                    .OrderBy(x => x)
+                    .ToList(),
+                _responseOptions.Value.AdresDetailUrl);
+
+            return new ParcelResponseWithEtag(response, parcel.LastEventHash);
         }
     }
 }

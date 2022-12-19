@@ -5,5 +5,5 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Requests
     using Responses;
 
     public record GetParcelRequest(
-        string CaPaKey) : IRequest<ParcelOsloResponse>;
+        string CaPaKey) : IRequest<ParcelOsloResponseWithEtag>;
 }

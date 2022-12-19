@@ -16,7 +16,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
     using Projections.Syndication;
     using Responses;
 
-    public class GetParcelV1Handler : IRequestHandler<GetParcelRequest, ParcelResponse>
+    public class GetParcelV1Handler : IRequestHandler<GetParcelRequest, ParcelResponseWithEtag>
     {
         private readonly LegacyContext _context;
         private readonly SyndicationContext _syndicationContext;
@@ -32,7 +32,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
             _responseOptions = responseOptions;
         }
 
-        public async Task<ParcelResponse> Handle(GetParcelRequest request, CancellationToken cancellationToken)
+        public async Task<ParcelResponseWithEtag> Handle(GetParcelRequest request, CancellationToken cancellationToken)
         {
             var parcel =
                 await _context
@@ -61,13 +61,13 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Handlers
                 .OrderBy(x => x) //sorts on string! other order as a number!
                 .ToListAsync(cancellationToken);
 
-            return new ParcelResponse(
+            return new ParcelResponseWithEtag(new ParcelResponse(
                 _responseOptions.Value.Naamruimte,
                 parcel.Status.MapToPerceelStatus(),
                 parcel.PersistentLocalId,
                 parcel.VersionTimestamp.ToBelgianDateTimeOffset(),
                 addressPersistentLocalIds.ToList(),
-                _responseOptions.Value.AdresDetailUrl);
+                _responseOptions.Value.AdresDetailUrl));
         }
     }
 }

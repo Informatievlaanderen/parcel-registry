@@ -16,7 +16,7 @@
     using Requests;
     using Responses;
 
-    public class GetParcelV1Handler : IRequestHandler<GetParcelRequest, ParcelOsloResponse>
+    public class GetParcelV1Handler : IRequestHandler<GetParcelRequest, ParcelOsloResponseWithEtag>
     {
         private readonly LegacyContext _context;
         private readonly SyndicationContext _syndicationContext;
@@ -32,7 +32,7 @@
             _responseOptions = responseOptions;
         }
 
-        public async Task<ParcelOsloResponse> Handle(GetParcelRequest request, CancellationToken cancellationToken)
+        public async Task<ParcelOsloResponseWithEtag> Handle(GetParcelRequest request, CancellationToken cancellationToken)
         {
             var parcel =
                 await _context
@@ -57,14 +57,14 @@
                 .OrderBy(x => x) //sorts on string! other order as a number!
                 .ToListAsync(cancellationToken);
 
-            return new ParcelOsloResponse(
+            return new ParcelOsloResponseWithEtag(new ParcelOsloResponse(
                 _responseOptions.Value.Naamruimte,
                 _responseOptions.Value.ContextUrlDetail,
                 parcel.Status.MapToPerceelStatus(),
                 parcel.PersistentLocalId,
                 parcel.VersionTimestamp.ToBelgianDateTimeOffset(),
                 addressPersistentLocalIds.ToList(),
-                _responseOptions.Value.AdresDetailUrl);
+                _responseOptions.Value.AdresDetailUrl));
         }
     }
 }
