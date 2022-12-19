@@ -16,6 +16,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Consumer.Address;
     using Fixtures;
     using FluentAssertions;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using Parcel;
@@ -46,13 +47,12 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         public async Task ThenTicketingCompleteIsExpected()
         {
             // Arrange
-            string etag = string.Empty;
+            var etag = string.Empty;
             var ticketing = MockTicketing(response => { etag = response.ETag; });
 
             var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
             var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(vbrCaPaKey);
             var parcelId = ParcelId.CreateFor(vbrCaPaKey);
-
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
@@ -109,6 +109,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
             var parcelId =  ParcelId.CreateFor(vbrCaPaKey);
+            var addressPersistentLocalId = new AddressPersistentLocalId(123);
+
             const string expectedEventHash = "lastEventHash";
 
             parcels
@@ -128,6 +130,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             await handler.Handle(
                 new AttachAddressLambdaRequestBuilder(Fixture)
                     .WithVbrCaPaKey(vbrCaPaKey)
+                    .WithAdresId(addressPersistentLocalId)
                     .WithTicketId(ticketId)
                     .Build(),
                 CancellationToken.None);
@@ -141,6 +144,70 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                             string.Format(ConfigDetailUrl, vbrCaPaKey),
                             expectedEventHash)),
                     CancellationToken.None));
+
+            var addressParcelRelation = await _backOfficeContext.ParcelAddressRelations.FindAsync((Guid)parcelId, (int)addressPersistentLocalId);
+            addressParcelRelation.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task WhenAddressIsAlreadyAttachedButNoIdempotencyExceptionIsThrown_ThenTicketingCompleteIsExpectedButNoAdditionalBackOfficeRelationIsAdded()
+        {
+            // Arrange
+            var etag = string.Empty;
+            var ticketing = MockTicketing(response => { etag = response.ETag; });
+
+            var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
+            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(vbrCaPaKey);
+            var parcelId = ParcelId.CreateFor(vbrCaPaKey);
+            var addressPersistentLocalId = new AddressPersistentLocalId(123);
+
+            var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
+            consumerAddress.AddAddress(addressPersistentLocalId, AddressStatus.Current);
+
+            _backOfficeContext.ParcelAddressRelations.Add(new ParcelAddressRelation(parcelId, addressPersistentLocalId));
+            await _backOfficeContext.SaveChangesAsync();
+
+            DispatchArrangeCommand(new MigrateParcel(
+                legacyParcelId,
+                vbrCaPaKey,
+                ParcelRegistry.Legacy.ParcelStatus.Realized,
+                isRemoved: false,
+                new List<AddressPersistentLocalId> { addressPersistentLocalId },
+                Fixture.Create<Coordinate>(),
+                Fixture.Create<Coordinate>(),
+                Fixture.Create<Provenance>()));
+
+            var handler = new AttachAddressLambdaHandler(
+                Container.Resolve<IConfiguration>(),
+                new FakeRetryPolicy(),
+                ticketing.Object,
+                new IdempotentCommandHandler(Container.Resolve<ICommandHandlerResolver>(), _idempotencyContext),
+                Container.Resolve<IParcels>(),
+                _backOfficeContext);
+
+            // Act
+            var ticketId = Guid.NewGuid();
+            await handler.Handle(
+                new AttachAddressLambdaRequestBuilder(Fixture)
+                    .WithVbrCaPaKey(vbrCaPaKey)
+                    .WithAdresId(addressPersistentLocalId)
+                    .WithTicketId(ticketId)
+                    .Build(),
+                CancellationToken.None);
+
+            //Assert
+            ticketing.Verify(x =>
+                x.Complete(
+                    ticketId,
+                    new TicketResult(
+                        new ETagResponse(
+                            string.Format(ConfigDetailUrl, vbrCaPaKey),
+                            etag)),
+                    CancellationToken.None));
+
+            var addressParcelRelation = await _backOfficeContext.ParcelAddressRelations.SingleOrDefaultAsync(x
+                => x.ParcelId == parcelId && x.AddressPersistentLocalId == addressPersistentLocalId);
+            addressParcelRelation.Should().NotBeNull();
         }
 
         [Fact]

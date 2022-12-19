@@ -47,14 +47,13 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers
                     cmd,
                     request.Metadata,
                     cancellationToken);
+
+                await _backOfficeContext.AddIdempotentParcelAddressRelation(cmd.ParcelId, cmd.AddressPersistentLocalId, cancellationToken);
             }
             catch (IdempotencyException)
             {
                 // Idempotent: Do Nothing return last etag
             }
-
-            _backOfficeContext.ParcelAddressRelations.Add(new ParcelAddressRelation(cmd.ParcelId, cmd.AddressPersistentLocalId));
-            await _backOfficeContext.SaveChangesAsync(cancellationToken);
 
             var lastHash = await Parcels.GetHash(new ParcelId(request.ParcelId), cancellationToken);
             return new ETagResponse(string.Format(DetailUrlFormat, request.VbrCaPaKey), lastHash);
