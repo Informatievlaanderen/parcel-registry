@@ -1,3 +1,13 @@
+## [4.8.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.4...v4.8.5) (2022-12-19)
+
+
+### Bug Fixes
+
+* idempotent remove of ParcelAddressRelation ([fb1c835](https://github.com/informatievlaanderen/parcel-registry/commit/fb1c835d687fb9cd06add88f0c048c83383aff6c))
+* prevent duplicate back office ParcelAddressRelations ([b037b1c](https://github.com/informatievlaanderen/parcel-registry/commit/b037b1c6c6a2760dbe2f95a1a6a54b37b93b5b8f))
+* return etag in detail and oslo V2 responses ([556774d](https://github.com/informatievlaanderen/parcel-registry/commit/556774d78d935892ca43d85b669d9999e44af9f1))
+* sonarbug null check ([4ca134e](https://github.com/informatievlaanderen/parcel-registry/commit/4ca134e211db65ba9c97b119f8c4c66e7f2222a1))
+
 ## [4.8.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.3...v4.8.4) (2022-12-19)
 
 
