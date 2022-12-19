@@ -19,9 +19,12 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
 
         public DbSet<ParcelAddressRelation> ParcelAddressRelations { get; set; }
 
-        public async Task<ParcelAddressRelation> AddIdempotentParcelAddressRelation(ParcelId parcelId, AddressPersistentLocalId addressPersistentLocalId, CancellationToken cancellationToken)
+        public async Task<ParcelAddressRelation> AddIdempotentParcelAddressRelation(
+            ParcelId parcelId,
+            AddressPersistentLocalId addressPersistentLocalId,
+            CancellationToken cancellationToken)
         {
-            var relation = await ParcelAddressRelations.FindAsync(new object?[] { (Guid)parcelId, (int) addressPersistentLocalId }, cancellationToken: cancellationToken);
+            var relation = await FindParcelAddressRelation(parcelId, addressPersistentLocalId, cancellationToken);
             if (relation is null)
             {
                 relation = new ParcelAddressRelation(parcelId, addressPersistentLocalId);
@@ -30,6 +33,27 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
             }
 
             return relation;
+        }
+
+        public async Task RemoveIdempotentParcelAddressRelation(
+            ParcelId parcelId,
+            AddressPersistentLocalId addressPersistentLocalId,
+            CancellationToken cancellationToken)
+        {
+            var relation = await FindParcelAddressRelation(parcelId, addressPersistentLocalId, cancellationToken);
+            if (relation is not null)
+            {
+                ParcelAddressRelations.Remove(relation);
+                await SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        private async Task<ParcelAddressRelation?> FindParcelAddressRelation(
+            ParcelId parcelId,
+            AddressPersistentLocalId addressPersistentLocalId,
+            CancellationToken cancellationToken)
+        {
+            return await ParcelAddressRelations.FindAsync(new object?[] { (Guid)parcelId, (int) addressPersistentLocalId }, cancellationToken: cancellationToken);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
