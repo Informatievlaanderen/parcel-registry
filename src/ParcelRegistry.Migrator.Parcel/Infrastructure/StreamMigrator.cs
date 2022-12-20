@@ -11,13 +11,13 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using ParcelRegistry.Parcel;
     using Consumer.Address;
     using Legacy.Commands;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using ParcelRegistry.Parcel;
     using Polly;
     using Serilog;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -30,7 +30,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
         private readonly SqlStreamsTable _sqlStreamTable;
         private Dictionary<Guid, int> _consumedAddressItems;
 
-        private bool _skipNotFoundAddress;
+        private readonly bool _skipNotFoundAddress;
 
         private List<(int processedId, bool isPageCompleted)> _processedIds;
         private readonly Stopwatch _stopwatch = new Stopwatch();
@@ -54,7 +54,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             var consumerAddressContext = _lifetimeScope.Resolve<ConsumerAddressContext>();
             _consumedAddressItems = await consumerAddressContext
                 .AddressConsumerItems
-                .Where(x => x.AddressId != null)
+                .Where(x => x.AddressId != null && !x.IsRemoved && (x.Status == AddressStatus.Current || x.Status == AddressStatus.Proposed))
                 .Select(x => new { AddressId = x.AddressId!.Value, x.AddressPersistentLocalId })
                 .ToDictionaryAsync(x => x.AddressId, y => y.AddressPersistentLocalId, ct);
 
