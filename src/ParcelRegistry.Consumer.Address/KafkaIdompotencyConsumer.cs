@@ -2,6 +2,7 @@ namespace Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple
 {
     using System;
     using System.Linq;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Confluent.Kafka;
@@ -19,7 +20,7 @@ namespace Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple
     }
 
     public sealed class KafkaIdompotencyConsumer<TConsumerContext> : IKafkaIdompotencyConsumer<TConsumerContext>
-        where TConsumerContext: ConsumerDbContext<TConsumerContext>
+        where TConsumerContext : ConsumerDbContext<TConsumerContext>
     {
         private readonly IDbContextFactory<TConsumerContext> _dbContextFactory;
         private readonly ILogger _logger;
@@ -65,7 +66,7 @@ namespace Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple
             try
             {
                 consumer.Subscribe(ConsumerOptions.Topic);
-                
+
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var consumeResult = consumer.Consume(TimeSpan.FromSeconds(3));
@@ -80,23 +81,25 @@ namespace Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple
                     var messageData = kafkaJsonMessage.Map()
                                       ?? throw new ArgumentException("Kafka message data is null.");
 
-                    var hash = Crypto.Sha512(consumeResult.Message.Value);
+                    var idempotenceKey = consumeResult.Message.Headers.TryGetLastBytes(MessageHeader.IdempotenceKey, out var idempotenceHeaderAsBytes)
+                        ? Encoding.UTF8.GetString(idempotenceHeaderAsBytes)
+                        : Crypto.Sha512(consumeResult.Message.Value);
 
                     await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
                     var messageAlreadyProcessed = await dbContext.ProcessedMessages
                         .AsNoTracking()
-                        .AnyAsync(x => x.IdempotenceKey == hash, cancellationToken)
+                        .AnyAsync(x => x.IdempotenceKey == idempotenceKey, cancellationToken)
                         .ConfigureAwait(false);
 
                     if (messageAlreadyProcessed)
                     {
                         _logger.LogWarning(
-                            $"Skipping already processed message at offset '{consumeResult.Offset.Value}' with hash '{hash}'.");
+                            $"Skipping already processed message at offset '{consumeResult.Offset.Value}' with idempotenceKey '{idempotenceKey}'.");
                         continue;
                     }
 
-                    var processedMessage = new ProcessedMessage(hash, DateTimeOffset.Now);
+                    var processedMessage = new ProcessedMessage(idempotenceKey, DateTimeOffset.Now);
 
                     try
                     {
