@@ -5,8 +5,10 @@ Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore
 Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration
 Be.Vlaanderen.Basisregisters.GrAr.Contracts
-Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple
+
 Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer
+Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer
+
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector 
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac

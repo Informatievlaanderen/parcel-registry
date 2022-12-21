@@ -3,6 +3,9 @@ namespace ParcelRegistry.Consumer.Address
     using System;
     using System.IO;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
+    using System.Reflection;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
@@ -11,7 +14,7 @@ namespace ParcelRegistry.Consumer.Address
     using Parcel.DataStructures;
     using ParcelRegistry.Infrastructure;
 
-    public class ConsumerAddressContext : ConsumerDbContext<ConsumerAddressContext>, IAddresses
+    public class ConsumerAddressContext : SqlServerConsumerDbContext<ConsumerAddressContext>, IAddresses
     {
         public override string ProcessedMessagesSchema => Schema.ConsumerAddress;
 
@@ -60,6 +63,13 @@ namespace ParcelRegistry.Consumer.Address
             }
 
             throw new NotImplementedException($"Cannot parse {status} to AddressStatus");
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(ConsumerAddressContext).GetTypeInfo().Assembly);
         }
     }
 

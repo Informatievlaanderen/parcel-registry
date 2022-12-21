@@ -22,10 +22,10 @@ dependencies
     Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore >= LOCKEDVERSION
     Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration >= LOCKEDVERSION    
     Be.Vlaanderen.Basisregisters.GrAr.Contracts >= LOCKEDVERSION
-    Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple >= LOCKEDVERSION
     Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector >= LOCKEDVERSION
     Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner >= LOCKEDVERSION
-    Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac >= LOCKEDVERSION    
+    Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac >= LOCKEDVERSION
+    Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer >= LOCKEDVERSION
 
 files
   ParcelRegistry.Consumer.Address.dll => lib\net6.0

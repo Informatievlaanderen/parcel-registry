@@ -44,8 +44,60 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                     }, ct);
             });
 
-            When<Envelope<ParcelAddressWasAttachedV2>>(async (_, _, _) => await DoNothing());
-            When<Envelope<ParcelAddressWasDetachedV2>>(async (_, _, _) => await DoNothing());
+            When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelExtract(
+                    message.Message.ParcelId,
+                    parcel =>
+                    {
+                        UpdateVersie(parcel, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelExtract(
+                    message.Message.ParcelId,
+                    parcel =>
+                    {
+                        UpdateVersie(parcel, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRemoved>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelExtract(
+                    message.Message.ParcelId,
+                    parcel =>
+                    {
+                        UpdateVersie(parcel, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRejected>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelExtract(
+                    message.Message.ParcelId,
+                    parcel =>
+                    {
+                        UpdateVersie(parcel, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRetired>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelExtract(
+                    message.Message.ParcelId,
+                    parcel =>
+                    {
+                        UpdateVersie(parcel, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
         }
 
         private void SetDelete(ParcelExtractItem parcel)

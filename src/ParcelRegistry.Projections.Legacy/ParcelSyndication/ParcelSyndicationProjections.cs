@@ -169,6 +169,33 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     x => x.RemoveAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     ct);
             });
+
+            When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRemoved>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.RemoveAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    ct);
+            });
+
+            When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRejected>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.RemoveAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    ct);
+            });
+
+            When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRetired>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x => x.RemoveAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    ct);
+            });
         }
 
         private static async Task DoNothing()
