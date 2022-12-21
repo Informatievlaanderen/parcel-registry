@@ -143,6 +143,8 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     new AddressPersistentLocalId(relation.AddressPersistentLocalId),
                     FromProvenance(provenance));
                 await commandHandler.Handle(command, ct);
+
+                await backOfficeContext.RemoveIdempotentParcelAddressRelation(command.ParcelId, command.AddressPersistentLocalId, ct);
             }
         }
 
@@ -165,6 +167,8 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     new AddressPersistentLocalId(relation.AddressPersistentLocalId),
                     FromProvenance(provenance));
                 await commandHandler.Handle(command, ct);
+
+                await backOfficeContext.RemoveIdempotentParcelAddressRelation(command.ParcelId, command.AddressPersistentLocalId, ct);
             }
         }
 
@@ -187,6 +191,8 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     new AddressPersistentLocalId(relation.AddressPersistentLocalId),
                     FromProvenance(provenance));
                 await commandHandler.Handle(command, ct);
+
+                await backOfficeContext.RemoveIdempotentParcelAddressRelation(command.ParcelId, command.AddressPersistentLocalId, ct);
             }
         }
 

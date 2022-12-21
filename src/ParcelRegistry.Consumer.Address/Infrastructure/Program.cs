@@ -11,8 +11,8 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
-    using Confluent.Kafka;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Destructurama;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,6 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Modules;
     using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Infrastructure.Modules;
     using ParcelRegistry.Parcel;
@@ -112,34 +111,24 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                         var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                         var topic = $"{hostContext.Configuration["AddressTopic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
                         var suffix = hostContext.Configuration["GroupSuffix"];
-                        var consumerGroupId = $"{nameof(ParcelRegistry)}.{nameof(BackOfficeConsumer)}.{topic}{suffix}";
+                        var consumerGroupId = $"{nameof(ParcelRegistry)}.BackOfficeConsumer.{topic}{suffix}";
 
-                        Offset? offset = null;
-                        var offsetString = hostContext.Configuration["TopicOffset"];
-                        if (!string.IsNullOrEmpty(offsetString))
-                        {
-                            if (!long.TryParse(offsetString, out var offsetAsLong))
-                            {
-                                throw new ArgumentException("Configuration TopicOffset is not a valid value.");
-                            }
-
-                            offset = new Offset(offsetAsLong);
-                        }
-                        
-                        return new IdempotentKafkaConsumerOptions(
-                            bootstrapServers,
-                            hostContext.Configuration["Kafka:SaslUserName"],
-                            hostContext.Configuration["Kafka:SaslPassword"],
-                            consumerGroupId,
-                            topic,
-                            noMessageFoundDelay: 300,
-                            offset,
+                        var consumerOptions = new ConsumerOptions(
+                            new BootstrapServers(bootstrapServers),
+                            new Topic(topic),
+                            new ConsumerGroupId(consumerGroupId),
                             EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
+
+                        consumerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
+                            hostContext.Configuration["Kafka:SaslUserName"],
+                            hostContext.Configuration["Kafka:SaslPassword"]));
+
+                        return consumerOptions;
                     });
 
                     builder
-                        .RegisterType<KafkaIdompotencyConsumer<ConsumerAddressContext>>()
-                        .As<IKafkaIdompotencyConsumer<ConsumerAddressContext>>()
+                        .RegisterType<IdempotentConsumer<ConsumerAddressContext>>()
+                        .As<IIdempotentConsumer<ConsumerAddressContext>>()
                         .SingleInstance();
 
                     builder

@@ -5,7 +5,7 @@ namespace ParcelRegistry.Consumer.Address
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
     using Autofac;
-    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
@@ -16,23 +16,20 @@ namespace ParcelRegistry.Consumer.Address
     {
         private readonly ILifetimeScope _lifetimeScope;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
-        private readonly IDbContextFactory<ConsumerAddressContext> _dbContextFactory;
         private readonly IDbContextFactory<BackOfficeContext> _backOfficeContextFactory;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly IKafkaIdompotencyConsumer<ConsumerAddressContext> _kafkaIdemIdompotencyConsumer;
+        private readonly IIdempotentConsumer<ConsumerAddressContext> _kafkaIdemIdompotencyConsumer;
         private readonly ILogger<BackOfficeConsumer> _logger;
 
         public BackOfficeConsumer(
             ILifetimeScope lifetimeScope,
             IHostApplicationLifetime hostApplicationLifetime,
-            IDbContextFactory<ConsumerAddressContext> dbContextFactory,
             IDbContextFactory<BackOfficeContext> backOfficeContextFactory,
             ILoggerFactory loggerFactory,
-            IKafkaIdompotencyConsumer<ConsumerAddressContext> kafkaIdemIdompotencyConsumer)
+            IIdempotentConsumer<ConsumerAddressContext> kafkaIdemIdompotencyConsumer)
         {
             _lifetimeScope = lifetimeScope;
             _hostApplicationLifetime = hostApplicationLifetime;
-            _dbContextFactory = dbContextFactory;
             _backOfficeContextFactory = backOfficeContextFactory;
             _loggerFactory = loggerFactory;
             _kafkaIdemIdompotencyConsumer = kafkaIdemIdompotencyConsumer;
@@ -42,8 +39,6 @@ namespace ParcelRegistry.Consumer.Address
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await ValidateBackOfficeConsumerOffset(stoppingToken);
-
             var backOfficeProjector =
                 new ConnectedProjector<ConsumerAddressContext>(
                     Resolve.WhenEqualToHandlerMessageType(new BackOfficeKafkaProjection().Handlers));
@@ -73,25 +68,6 @@ namespace ParcelRegistry.Consumer.Address
                 _hostApplicationLifetime.StopApplication();
                 throw;
             }
-        }
-
-        private async Task ValidateBackOfficeConsumerOffset(CancellationToken cancellationToken)
-        {
-            if (_kafkaIdemIdompotencyConsumer.ConsumerOptions.Offset is not null)
-            {
-                await using (var context = await _dbContextFactory.CreateDbContextAsync(cancellationToken))
-                {
-                    if (await context.AddressConsumerItems.AnyAsync(cancellationToken))
-                    {
-                        throw new InvalidOperationException(
-                            "Cannot start consumer from offset, because consumer context already has data. Remove offset or clear data to continue.");
-                    }
-                }
-
-                _logger.LogInformation($"{nameof(BackOfficeConsumer)} starting {_kafkaIdemIdompotencyConsumer.ConsumerOptions.Topic} from offset {_kafkaIdemIdompotencyConsumer.ConsumerOptions.Offset.Value}.");
-            }
-
-            _logger.LogInformation($"{nameof(BackOfficeConsumer)} continuing {_kafkaIdemIdompotencyConsumer.ConsumerOptions.Topic} from last offset.");
         }
     }
 }
