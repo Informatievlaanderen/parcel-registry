@@ -1,3 +1,11 @@
+## [4.8.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.5...v4.8.6) (2022-12-21)
+
+
+### Bug Fixes
+
+* consumer address commandhandling to remove relation from backoffice ([a78b016](https://github.com/informatievlaanderen/parcel-registry/commit/a78b016923d6afe76e2cd7d8c98e236905486652))
+* skip addresses removed / invalid status ([73dcd0f](https://github.com/informatievlaanderen/parcel-registry/commit/73dcd0ffae8fe868bba6fa1f0a751b842a2f04cd))
+
 ## [4.8.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.4...v4.8.5) (2022-12-19)
 
 
