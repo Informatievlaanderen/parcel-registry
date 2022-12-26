@@ -11,6 +11,7 @@ namespace ParcelRegistry.Infrastructure
         public const string ConsumerAddress = "ParcelRegistryConsumerAddress";
         public const string BackOffice = "ParcelRegistryBackOffice";
         public const string MigrateParcel = "ParcelRegistryMigration";
+        public const string Producer = "ParcelRegistryProducer";
     }
 
     public static class MigrationTables
@@ -21,5 +22,6 @@ namespace ParcelRegistry.Infrastructure
         public const string Syndication = "__EFMigrationsHistorySyndication";
         public const string ConsumerAddress = "__EFMigrationsHistoryConsumerAddress";
         public const string BackOffice = "__EFMigrationsHistoryBackOffice";
+        public const string Producer = "__EFMigrationsHistoryProducer";
     }
 }
