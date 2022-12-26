@@ -56,6 +56,7 @@ Target.create "Publish_Solution" (fun _ ->
     "ParcelRegistry.Projections.Syndication"
     "ParcelRegistry.Consumer.Address"
     "ParcelRegistry.Migrator.Parcel"
+    "ParcelRegistry.Producer"
     "ParcelRegistry.Api.BackOffice"
     "ParcelRegistry.Api.BackOffice.Abstractions"
     "ParcelRegistry.Api.BackOffice.Handlers.Lambda"
@@ -70,6 +71,7 @@ Target.create "Pack_Solution" (fun _ ->
     "ParcelRegistry.Api.CrabImport"
     "ParcelRegistry.Migrator.Parcel"
     "ParcelRegistry.Api.BackOffice.Abstractions"
+    "ParcelRegistry.Producer"
   ] |> List.iter pack)
 
 Target.create "Containerize_Projector" (fun _ -> containerize "ParcelRegistry.Projector" "projector")
@@ -98,6 +100,9 @@ Target.create "PushContainer_MigratorParcel" (fun _ -> push "migrator-parcel")
 
 Target.create "Containerize_BackOffice" (fun _ -> containerize "ParcelRegistry.Api.BackOffice" "api-backoffice")
 Target.create "PushContainer_BackOffice" (fun _ -> push "api-backoffice")
+
+Target.create "Containerize_Producer" (fun _ -> containerize "ParcelRegistry.Producer" "producer")
+Target.create "PushContainer_Producer" (fun _ -> push "producer")
 
 // --------------------------------------------------------------------------------
 
@@ -136,6 +141,7 @@ Target.create "Push" ignore
   ==> "Containerize_ProjectionsSyndication"
   ==> "Containerize_ConsumerAddress"
   ==> "Containerize_MigratorParcel"
+  ==> "Containerize_Producer"
   ==> "Containerize_BackOffice"
   ==> "Containerize"
 // Possibly add more projects to containerize here
@@ -150,6 +156,7 @@ Target.create "Push" ignore
   ==> "PushContainer_ProjectionsSyndication"
   ==> "PushContainer_ConsumerAddress"
   ==> "PushContainer_MigratorParcel"
+  ==> "PushContainer_Producer"
   ==> "PushContainer_BackOffice"
   ==> "Push"
 // Possibly add more projects to push here
