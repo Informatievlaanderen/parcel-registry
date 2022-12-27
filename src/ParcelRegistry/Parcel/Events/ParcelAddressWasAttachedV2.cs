@@ -18,6 +18,9 @@ namespace ParcelRegistry.Parcel.Events
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }
 
+        [EventPropertyDescription("CaPaKey (= objectidentificator) van het perceel, waarbij forward slashes vervangen zijn door koppeltekens i.f.v. gebruik in URI's.")]
+        public string CaPaKey { get; }
+
         [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
@@ -26,19 +29,23 @@ namespace ParcelRegistry.Parcel.Events
 
         public ParcelAddressWasAttachedV2(
             ParcelId parcelId,
+            VbrCaPaKey vbrCaPaKey,
             AddressPersistentLocalId addressPersistentLocalId)
         {
             ParcelId = parcelId;
             AddressPersistentLocalId = addressPersistentLocalId;
+            CaPaKey = vbrCaPaKey;
         }
 
         [JsonConstructor]
         private ParcelAddressWasAttachedV2(
             Guid parcelId,
+            string caPaKey,
             int addressPersistentLocalId,
             ProvenanceData provenance)
             : this(
                 new ParcelId(parcelId),
+                new VbrCaPaKey(caPaKey),
                 new AddressPersistentLocalId(addressPersistentLocalId))
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
@@ -48,6 +55,7 @@ namespace ParcelRegistry.Parcel.Events
         {
             var fields = Provenance.GetHashFields().ToList();
             fields.Add(ParcelId.ToString("D"));
+            fields.Add(CaPaKey);
             fields.Add(AddressPersistentLocalId.ToString());
             return fields;
         }

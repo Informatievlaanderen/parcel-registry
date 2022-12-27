@@ -122,7 +122,8 @@ jobs:
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER -o ~/pr-projections-syndication-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER -o ~/pr-consumer-address-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER -o ~/pr-migrator-parcel-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER -o ~/ar-producer-image.tar
+        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER -o ~/pr-producer-image.tar
+        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/producer-snapshot-oslo:$SEMVER -o ~/pr-producer-snapshot-oslo-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER -o ~/pr-api-backoffice-image.tar
       env:
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
@@ -251,7 +252,14 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: producer
-        path: ~/ar-producer-image.tar
+        path: ~/pr-producer-image.tar
+
+    - name: Upload producer-snapshot-oslo artifact
+      if: env.RELEASE_VERSION != 'none'
+      uses: actions/upload-artifact@v3
+      with:
+        name: producer-snapshot-oslo
+        path: ~/pr-producer-snapshot-oslo-image.tar
 
     - name: Upload api-backoffice artifact
       if: env.RELEASE_VERSION != 'none'
@@ -556,6 +564,12 @@ jobs:
           name: producer
           path: ~/
 
+      - name: Download producer-snapshot-oslo
+        uses: actions/download-artifact@v3
+        with:
+          name: producer-snapshot-oslo
+          path: ~/
+
       - name: Download api-backoffice
         uses: actions/download-artifact@v3
         with:
@@ -577,7 +591,8 @@ jobs:
           docker image load -i ~/pr-projections-syndication-image.tar
           docker image load -i ~/pr-consumer-address-image.tar
           docker image load -i ~/pr-migrator-parcel-image.tar
-          docker image load -i ~/ar-producer-image.tar
+          docker image load -i ~/pr-producer-image.tar
+          docker image load -i ~/pr-producer-snapshot-oslo-image.tar
           docker image load -i ~/pr-api-backoffice-image.tar
 
       - name: Push artifacts to ECR Test
@@ -594,6 +609,7 @@ jobs:
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/producer-snapshot-oslo:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
@@ -676,6 +692,12 @@ jobs:
           name: producer
           path: ~/
 
+      - name: Download producer-snapshot-oslo
+        uses: actions/download-artifact@v3
+        with:
+          name: producer-snapshot-oslo
+          path: ~/
+
       - name: Download api-backoffice
         uses: actions/download-artifact@v3
         with:
@@ -697,7 +719,8 @@ jobs:
           docker image load -i ~/pr-projections-syndication-image.tar
           docker image load -i ~/pr-consumer-address-image.tar
           docker image load -i ~/pr-migrator-parcel-image.tar
-          docker image load -i ~/ar-producer-image.tar
+          docker image load -i ~/pr-producer-image.tar
+          docker image load -i ~/pr-producer-snapshot-oslo-image.tar
           docker image load -i ~/pr-api-backoffice-image.tar
 
       - name: Push artifacts to ECR Staging
@@ -730,6 +753,9 @@ jobs:
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/producer:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER
+
+          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/producer-snapshot-oslo:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/producer-snapshot-oslo:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/producer-snapshot-oslo:$SEMVER
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
@@ -816,6 +842,12 @@ jobs:
           name: producer
           path: ~/
 
+      - name: Download producer-snapshot-oslo
+        uses: actions/download-artifact@v3
+        with:
+          name: producer-snapshot-oslo
+          path: ~/
+
       - name: Download api-backoffice
         uses: actions/download-artifact@v3
         with:
@@ -837,7 +869,8 @@ jobs:
           docker image load -i ~/pr-projections-syndication-image.tar
           docker image load -i ~/pr-consumer-address-image.tar
           docker image load -i ~/pr-migrator-parcel-image.tar
-          docker image load -i ~/ar-producer-image.tar
+          docker image load -i ~/pr-producer-image.tar
+          docker image load -i ~/pr-producer-snapshot-oslo-image.tar
           docker image load -i ~/pr-api-backoffice-image.tar
 
       - name: Push artifacts to ECR Production
@@ -870,6 +903,9 @@ jobs:
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/producer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/producer:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/producer:$SEMVER
+
+          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/producer-snapshot-oslo:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/producer-snapshot-oslo:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/producer-snapshot-oslo:$SEMVER
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-backoffice:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-backoffice:$SEMVER
@@ -909,7 +945,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: [ 'parcel-registry-api', 'parcel-registry-import-api', 'parcel-registry-projections'] #'parcel-registry-producer' 'parcel-registry-backoffice-api', 'parcel-registry-projections']
+        services: [ 'parcel-registry-api', 'parcel-registry-import-api', 'parcel-registry-projections', 'parcel-registry-backoffice-api', 'parcel-registry-producer', 'parcel-registry-producer-snapshot-oslo']
 
     steps:
     - name: Deploy services
@@ -1019,7 +1055,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: ['parcel-registry-api', 'parcel-registry-projections', 'parcel-registry-consumer-address', 'parcel-registry-migrator-parcel', 'parcel-registry-backoffice-api'] #'parcel-registry-producer'
+        services: ['parcel-registry-api', 'parcel-registry-projections', 'parcel-registry-consumer-address', 'parcel-registry-migrator-parcel', 'parcel-registry-backoffice-api', 'parcel-registry-producer', 'parcel-registry-producer-snapshot-oslo']
 
     steps:
     - name: CD services

@@ -60,7 +60,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
                     parcelWasMigrated)
                 .When(command)
                 .Then(new Fact(new ParcelStreamId(command.ParcelId),
-                    new ParcelAddressWasAttachedV2(command.ParcelId, command.AddressPersistentLocalId))));
+                    new ParcelAddressWasAttachedV2(command.ParcelId, new VbrCaPaKey(parcelWasMigrated.CaPaKey), command.AddressPersistentLocalId))));
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var addressPersistentLocalId = new AddressPersistentLocalId(111);
-            var parcelAddressWasAttachedV2 = new ParcelAddressWasAttachedV2(Fixture.Create<ParcelId>(), addressPersistentLocalId);
+            var parcelAddressWasAttachedV2 = new ParcelAddressWasAttachedV2(Fixture.Create<ParcelId>(), new VbrCaPaKey(parcelWasMigrated.CaPaKey), addressPersistentLocalId);
             ((ISetProvenance)parcelAddressWasAttachedV2).SetProvenance(Fixture.Create<Provenance>());
 
             // Act

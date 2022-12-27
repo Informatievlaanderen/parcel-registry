@@ -97,6 +97,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
 
             var addressWasDetached = new ParcelAddressWasDetachedV2(
                 new ParcelId(parcelWasMigrated.ParcelId),
+                new VbrCaPaKey(parcelWasMigrated.CaPaKey),
                 new AddressPersistentLocalId(parcelWasMigrated.AddressPersistentLocalIds.First()));
             ((ISetProvenance)addressWasDetached).SetProvenance(_fixture.Create<Provenance>());
             var metadata2 = new Dictionary<string, object>

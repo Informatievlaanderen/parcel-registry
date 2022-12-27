@@ -42,19 +42,19 @@ namespace ParcelRegistry.Producer.Extensions
         #endregion
 
         public static Contracts.ParcelAddressWasAttachedV2 ToContract(this ParcelAggregate.ParcelAddressWasAttachedV2 message) =>
-            new Contracts.ParcelAddressWasAttachedV2(message.ParcelId.ToString("D"), message.AddressPersistentLocalId, message.Provenance.ToContract());
+            new Contracts.ParcelAddressWasAttachedV2(message.ParcelId.ToString("D"), message.CaPaKey, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
         public static Contracts.ParcelAddressWasDetachedV2 ToContract(this ParcelAggregate.ParcelAddressWasDetachedV2 message) =>
-            new Contracts.ParcelAddressWasDetachedV2(message.ParcelId.ToString("D"), message.AddressPersistentLocalId, message.Provenance.ToContract());
+            new Contracts.ParcelAddressWasDetachedV2(message.ParcelId.ToString("D"), message.CaPaKey, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
         public static Contracts.ParcelAddressWasDetachedBecauseAddressWasRejected ToContract(this ParcelAggregate.ParcelAddressWasDetachedBecauseAddressWasRejected message) =>
-            new Contracts.ParcelAddressWasDetachedBecauseAddressWasRejected(message.ParcelId.ToString("D"), message.AddressPersistentLocalId, message.Provenance.ToContract());
+            new Contracts.ParcelAddressWasDetachedBecauseAddressWasRejected(message.ParcelId.ToString("D"), message.CaPaKey, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
         public static Contracts.ParcelAddressWasDetachedBecauseAddressWasRetired ToContract(this ParcelAggregate.ParcelAddressWasDetachedBecauseAddressWasRetired message) =>
-            new Contracts.ParcelAddressWasDetachedBecauseAddressWasRetired(message.ParcelId.ToString("D"), message.AddressPersistentLocalId, message.Provenance.ToContract());
+            new Contracts.ParcelAddressWasDetachedBecauseAddressWasRetired(message.ParcelId.ToString("D"), message.CaPaKey, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
         public static Contracts.ParcelAddressWasDetachedBecauseAddressWasRemoved ToContract(this ParcelAggregate.ParcelAddressWasDetachedBecauseAddressWasRemoved message) =>
-            new Contracts.ParcelAddressWasDetachedBecauseAddressWasRemoved(message.ParcelId.ToString("D"), message.AddressPersistentLocalId, message.Provenance.ToContract());
+            new Contracts.ParcelAddressWasDetachedBecauseAddressWasRemoved(message.ParcelId.ToString("D"), message.CaPaKey, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
         public static Contracts.ParcelWasMigrated ToContract(this ParcelAggregate.ParcelWasMigrated message) =>
             new Contracts.ParcelWasMigrated(message.OldParcelId.ToString("D"), message.ParcelId.ToString("D"), message.CaPaKey, message.ParcelStatus, message.IsRemoved, message.AddressPersistentLocalIds, message.XCoordinate, message.YCoordinate, message.Provenance.ToContract());

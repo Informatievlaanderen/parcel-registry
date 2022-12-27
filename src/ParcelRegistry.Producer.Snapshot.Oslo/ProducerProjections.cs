@@ -38,7 +38,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
             {
                 await FindAndProduce(async () =>
                         await snapshotManager.FindMatchingSnapshot(
-                            message.Message.ParcelId.ToString(),
+                            message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
@@ -50,7 +50,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
             {
                 await FindAndProduce(async () =>
                         await snapshotManager.FindMatchingSnapshot(
-                            message.Message.ParcelId.ToString(),
+                            message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
@@ -62,7 +62,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
             {
                 await FindAndProduce(async () =>
                         await snapshotManager.FindMatchingSnapshot(
-                            message.Message.ParcelId.ToString(),
+                            message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
@@ -74,7 +74,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
             {
                 await FindAndProduce(async () =>
                         await snapshotManager.FindMatchingSnapshot(
-                            message.Message.ParcelId.ToString(),
+                            message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
@@ -86,7 +86,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
             {
                 await FindAndProduce(async () =>
                         await snapshotManager.FindMatchingSnapshot(
-                            message.Message.ParcelId.ToString(),
+                            message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
                             throwStaleWhenGone: false,
                             ct),
