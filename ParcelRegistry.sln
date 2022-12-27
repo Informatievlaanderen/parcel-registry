@@ -70,6 +70,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Api.BackOffi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Producer", "src\ParcelRegistry.Producer\ParcelRegistry.Producer.csproj", "{9377B76E-D9E2-4490-954E-AED4BE4D45D4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Producer.Snapshot.Oslo", "src\ParcelRegistry.Producer.Snapshot.Oslo\ParcelRegistry.Producer.Snapshot.Oslo.csproj", "{04548886-8BC7-432C-AF0F-36B69E74AFB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,6 +162,10 @@ Global
 		{9377B76E-D9E2-4490-954E-AED4BE4D45D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9377B76E-D9E2-4490-954E-AED4BE4D45D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9377B76E-D9E2-4490-954E-AED4BE4D45D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04548886-8BC7-432C-AF0F-36B69E74AFB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04548886-8BC7-432C-AF0F-36B69E74AFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04548886-8BC7-432C-AF0F-36B69E74AFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04548886-8BC7-432C-AF0F-36B69E74AFB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -186,6 +192,7 @@ Global
 		{1685ADB9-33AB-4127-A0AB-8A80438069DE} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{7A532536-462B-4511-B275-D6C45EA5B10A} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{9377B76E-D9E2-4490-954E-AED4BE4D45D4} = {B483712F-241C-411F-8CC7-D46B3530DF65}
+		{04548886-8BC7-432C-AF0F-36B69E74AFB1} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF9223F3-B20E-4F63-A894-F1B3F66280AD}
