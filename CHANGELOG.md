@@ -1,3 +1,10 @@
+## [4.9.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.9.0...v4.9.1) (2023-01-03)
+
+
+### Bug Fixes
+
+* package updates ([c2857d8](https://github.com/informatievlaanderen/parcel-registry/commit/c2857d81a353b197d01792e8155d3c7b79f66d32))
+
 # [4.9.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.6...v4.9.0) (2023-01-03)
 
 
