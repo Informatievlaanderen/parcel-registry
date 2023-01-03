@@ -1,3 +1,5 @@
+Microsoft.Extensions.DependencyInjection
+
 Be.Vlaanderen.Basisregisters.AggregateSource
 Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore
 Be.Vlaanderen.Basisregisters.Api
@@ -9,8 +11,6 @@ Be.Vlaanderen.BasisRegisters.MessageHandling.Kafka.Producer
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 Be.Vlaanderen.Basisregisters.Projector
-
-Microsoft.Extensions.DependencyInjection
 
 AspNetCore.HealthChecks.SqlServer
 
