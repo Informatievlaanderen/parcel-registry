@@ -60,7 +60,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingParcelAddress
                     parcelWasMigrated)
                 .When(command)
                 .Then(new Fact(new ParcelStreamId(command.ParcelId),
-                    new ParcelAddressWasDetachedV2(command.ParcelId, command.AddressPersistentLocalId))));
+                    new ParcelAddressWasDetachedV2(command.ParcelId, new VbrCaPaKey(parcelWasMigrated.CaPaKey), command.AddressPersistentLocalId))));
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingParcelAddress
                 Fixture.Create<Coordinate>());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
-            var parcelAddressWasDetachedV2 = new ParcelAddressWasDetachedV2(Fixture.Create<ParcelId>(), addressPersistentLocalId);
+            var parcelAddressWasDetachedV2 = new ParcelAddressWasDetachedV2(Fixture.Create<ParcelId>(), new VbrCaPaKey(parcelWasMigrated.CaPaKey), addressPersistentLocalId);
             ((ISetProvenance)parcelAddressWasDetachedV2).SetProvenance(Fixture.Create<Provenance>());
 
             // Act

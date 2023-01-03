@@ -69,7 +69,7 @@ namespace ParcelRegistry.Parcel
                 throw new AddressHasInvalidStatusException();
             }
 
-            ApplyChange(new ParcelAddressWasAttachedV2(ParcelId, addressPersistentLocalId));
+            ApplyChange(new ParcelAddressWasAttachedV2(ParcelId, CaPaKey, addressPersistentLocalId));
         }
 
         public void DetachAddress(AddressPersistentLocalId addressPersistentLocalId)
@@ -81,7 +81,7 @@ namespace ParcelRegistry.Parcel
                 return;
             }
 
-            ApplyChange(new ParcelAddressWasDetachedV2(ParcelId, addressPersistentLocalId));
+            ApplyChange(new ParcelAddressWasDetachedV2(ParcelId, CaPaKey, addressPersistentLocalId));
         }
 
         public void DetachAddressBecauseAddressWasRemoved(AddressPersistentLocalId addressPersistentLocalId)
@@ -91,7 +91,7 @@ namespace ParcelRegistry.Parcel
                 return;
             }
 
-            ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRemoved(ParcelId, addressPersistentLocalId));
+            ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRemoved(ParcelId, CaPaKey, addressPersistentLocalId));
         }
 
         public void DetachAddressBecauseAddressWasRejected(AddressPersistentLocalId addressPersistentLocalId)
@@ -101,7 +101,7 @@ namespace ParcelRegistry.Parcel
                 return;
             }
 
-            ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRejected(ParcelId, addressPersistentLocalId));
+            ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRejected(ParcelId, CaPaKey, addressPersistentLocalId));
         }
 
         public void DetachAddressBecauseAddressWasRetired(AddressPersistentLocalId addressPersistentLocalId)
@@ -111,7 +111,7 @@ namespace ParcelRegistry.Parcel
                 return;
             }
 
-            ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRetired(ParcelId, addressPersistentLocalId));
+            ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRetired(ParcelId, CaPaKey, addressPersistentLocalId));
         }
 
         private void GuardParcelNotRemoved()

@@ -12,6 +12,7 @@ namespace ParcelRegistry.Infrastructure
         public const string BackOffice = "ParcelRegistryBackOffice";
         public const string MigrateParcel = "ParcelRegistryMigration";
         public const string Producer = "ParcelRegistryProducer";
+        public const string ProducerSnapshotOslo = "ParcelRegistryProducerSnapshotOslo";
     }
 
     public static class MigrationTables
@@ -23,5 +24,6 @@ namespace ParcelRegistry.Infrastructure
         public const string ConsumerAddress = "__EFMigrationsHistoryConsumerAddress";
         public const string BackOffice = "__EFMigrationsHistoryBackOffice";
         public const string Producer = "__EFMigrationsHistoryProducer";
+        public const string ProducerSnapshotOslo = "__EFMigrationsHistoryProducerSnapshotOslo";
     }
 }
