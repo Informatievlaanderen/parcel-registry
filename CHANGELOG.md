@@ -1,3 +1,16 @@
+# [4.9.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.6...v4.9.0) (2023-01-03)
+
+
+### Bug Fixes
+
+* add paket.references to fix build ([8cd9ba4](https://github.com/informatievlaanderen/parcel-registry/commit/8cd9ba4e2e85685c05767734762ab68748e75429))
+
+
+### Features
+
+* add oslo snapshot producer ([aa7f4a7](https://github.com/informatievlaanderen/parcel-registry/commit/aa7f4a764f14582969b21ca18ee7967fc68a4169))
+* add producers ([687c79a](https://github.com/informatievlaanderen/parcel-registry/commit/687c79aa484ec2b3bb8c44ad5ced49a18637334b))
+
 ## [4.8.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.8.5...v4.8.6) (2022-12-21)
 
 
