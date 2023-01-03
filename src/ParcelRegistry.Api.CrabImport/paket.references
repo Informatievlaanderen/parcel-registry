@@ -6,6 +6,8 @@ Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.GrAr.Import
 
+Be.Vlaanderen.Basisregisters.DependencyInjection
+
 AsyncEnumerator
 
 SourceLink.Embed.AllSourceFiles
