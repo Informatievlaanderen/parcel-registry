@@ -58,7 +58,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
 
                 .RegisterModule<EnvelopeModule>()
 
-                .RegisterEventstreamModule(_configuration)
+                .RegisterEventStreamModule(_configuration)
 
                 .RegisterModule(new ProjectorModule(_configuration));
 
