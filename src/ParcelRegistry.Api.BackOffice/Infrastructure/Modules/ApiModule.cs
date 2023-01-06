@@ -9,7 +9,6 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Infrastructure.Modules;
     using Validators;
 
@@ -54,8 +53,7 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
                 .RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new MediatRModule())
                 .RegisterModule(new SqsHandlersModule(_configuration[SqsQueueUrlConfigKey]))
-                .RegisterModule(new TicketingModule(_configuration, _services))
-                .RegisterSnapshotModule(_configuration);
+                .RegisterModule(new TicketingModule(_configuration, _services));
 
             _services.ConfigureConsumerAddress(_configuration, _loggerFactory);
 

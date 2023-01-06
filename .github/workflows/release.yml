@@ -120,6 +120,7 @@ jobs:
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-extract:$SEMVER -o ~/pr-api-extract-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-crab-import:$SEMVER -o ~/pr-api-crab-import-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER -o ~/pr-projections-syndication-image.tar
+        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/projections-backoffice:$SEMVER -o ~/pr-projections-backoffice-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER -o ~/pr-consumer-address-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER -o ~/pr-migrator-parcel-image.tar
         docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER -o ~/pr-producer-image.tar
@@ -232,6 +233,13 @@ jobs:
       with:
         name: projections-syndication
         path: ~/pr-projections-syndication-image.tar
+
+    - name: Upload projections-backoffice artifact
+      if: env.RELEASE_VERSION != 'none'
+      uses: actions/upload-artifact@v3
+      with:
+        name: projections-backoffice
+        path: ~/pr-projections-backoffice-image.tar
 
     - name: Upload consumer-address artifact
       if: env.RELEASE_VERSION != 'none'
@@ -546,6 +554,12 @@ jobs:
           name: projections-syndication
           path: ~/
 
+      - name: Download projections-backoffice
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-backoffice
+          path: ~/
+
       - name: Download consumer-address
         uses: actions/download-artifact@v3
         with:
@@ -589,6 +603,7 @@ jobs:
           docker image load -i ~/pr-api-extract-image.tar
           docker image load -i ~/pr-api-crab-import-image.tar
           docker image load -i ~/pr-projections-syndication-image.tar
+          docker image load -i ~/pr-projections-backoffice-image.tar
           docker image load -i ~/pr-consumer-address-image.tar
           docker image load -i ~/pr-migrator-parcel-image.tar
           docker image load -i ~/pr-producer-image.tar
@@ -606,6 +621,7 @@ jobs:
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-extract:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-crab-import:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projections-backoffice:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER
@@ -674,6 +690,12 @@ jobs:
           name: projections-syndication
           path: ~/
 
+      - name: Download projections-backoffice
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-backoffice
+          path: ~/
+
       - name: Download consumer-address
         uses: actions/download-artifact@v3
         with:
@@ -717,6 +739,7 @@ jobs:
           docker image load -i ~/pr-api-extract-image.tar
           docker image load -i ~/pr-api-crab-import-image.tar
           docker image load -i ~/pr-projections-syndication-image.tar
+          docker image load -i ~/pr-projections-backoffice-image.tar
           docker image load -i ~/pr-consumer-address-image.tar
           docker image load -i ~/pr-migrator-parcel-image.tar
           docker image load -i ~/pr-producer-image.tar
@@ -744,6 +767,9 @@ jobs:
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER
+
+          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projections-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/projections-backoffice:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projections-backoffice:$SEMVER
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/consumer-address:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER
@@ -824,6 +850,12 @@ jobs:
           name: projections-syndication
           path: ~/
 
+      - name: Download projections-backoffice
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-backoffice
+          path: ~/
+
       - name: Download consumer-address
         uses: actions/download-artifact@v3
         with:
@@ -867,6 +899,7 @@ jobs:
           docker image load -i ~/pr-api-extract-image.tar
           docker image load -i ~/pr-api-crab-import-image.tar
           docker image load -i ~/pr-projections-syndication-image.tar
+          docker image load -i ~/pr-projections-backoffice-image.tar
           docker image load -i ~/pr-consumer-address-image.tar
           docker image load -i ~/pr-migrator-parcel-image.tar
           docker image load -i ~/pr-producer-image.tar
@@ -894,6 +927,9 @@ jobs:
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/projections-syndication:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/projections-syndication:$SEMVER
+
+          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projections-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/projections-backoffice:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/projections-backoffice:$SEMVER
 
           docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/consumer-address:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/consumer-address:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/consumer-address:$SEMVER

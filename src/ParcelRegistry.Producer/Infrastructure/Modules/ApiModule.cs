@@ -57,7 +57,7 @@ namespace ParcelRegistry.Producer.Infrastructure.Modules
                         typeof(DomainAssemblyMarker).Assembly,
                         EventsJsonSerializerSettingsProvider.CreateSerializerSettings()))
                 .RegisterModule<EnvelopeModule>()
-                .RegisterEventstreamModule(_configuration)
+                .RegisterEventStreamModule(_configuration)
                 .RegisterModule(new ProjectorModule(_configuration));
 
             RegisterProjections(builder);

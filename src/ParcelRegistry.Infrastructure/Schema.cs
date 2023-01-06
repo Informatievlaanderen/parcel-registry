@@ -10,6 +10,7 @@ namespace ParcelRegistry.Infrastructure
         public const string Syndication = "ParcelRegistrySyndication";
         public const string ConsumerAddress = "ParcelRegistryConsumerAddress";
         public const string BackOffice = "ParcelRegistryBackOffice";
+        public const string BackOfficeProjections = "ParcelRegistryBackOfficeProjections";
         public const string MigrateParcel = "ParcelRegistryMigration";
         public const string Producer = "ParcelRegistryProducer";
         public const string ProducerSnapshotOslo = "ParcelRegistryProducerSnapshotOslo";
@@ -23,6 +24,7 @@ namespace ParcelRegistry.Infrastructure
         public const string Syndication = "__EFMigrationsHistorySyndication";
         public const string ConsumerAddress = "__EFMigrationsHistoryConsumerAddress";
         public const string BackOffice = "__EFMigrationsHistoryBackOffice";
+        public const string BackOfficeProjections = "__EFMigrationsHistoryBackOfficeProjections";
         public const string Producer = "__EFMigrationsHistoryProducer";
         public const string ProducerSnapshotOslo = "__EFMigrationsHistoryProducerSnapshotOslo";
     }

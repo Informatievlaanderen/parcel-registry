@@ -9,7 +9,7 @@ namespace ParcelRegistry.Infrastructure
 
     public static class ContainerBuilderExtensions
     {
-        public static IModuleRegistrar RegisterEventStreamModule(this IModuleRegistrar builder, IConfiguration configuration)
+        public static ContainerBuilder RegisterEventStreamModule(this ContainerBuilder builder, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("Events");
 
@@ -25,22 +25,7 @@ namespace ParcelRegistry.Infrastructure
             return builder;
         }
 
-        public static void RegisterSnapshotModule(this IModuleRegistrar builder, IConfiguration configuration)
-        {
-            var connectionString = configuration.GetConnectionString("Snapshots");
-
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new InvalidOperationException("Missing 'Snapshots' connectionstring.");
-            }
-
-            builder
-                .RegisterModule(new SqlSnapshotStoreModule(connectionString, Schema.Default));
-        }
-
-        public static IModuleRegistrar RegisterEventstreamModule(
-            this IModuleRegistrar builder,
-            IConfiguration configuration)
+        public static IModuleRegistrar RegisterEventStreamModule(this IModuleRegistrar builder, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("Events");
 
@@ -52,6 +37,30 @@ namespace ParcelRegistry.Infrastructure
             return builder
                 .RegisterModule(new SqlStreamStoreModule(connectionString, Schema.Default))
                 .RegisterModule(new TraceSqlStreamStoreModule(configuration["DataDog:ServiceName"]));
+        }
+
+        public static void RegisterSnapshotModule(this IModuleRegistrar builder, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("Snapshots");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException("Missing 'Snapshots' connectionstring.");
+            }
+
+            builder.RegisterModule(new SqlSnapshotStoreModule(connectionString, Schema.Default));
+        }
+
+        public static void RegisterSnapshotModule(this ContainerBuilder builder, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("Snapshots");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException("Missing 'Snapshots' connectionstring.");
+            }
+
+            builder.RegisterModule(new SqlSnapshotStoreModule(connectionString, Schema.Default));
         }
     }
 }

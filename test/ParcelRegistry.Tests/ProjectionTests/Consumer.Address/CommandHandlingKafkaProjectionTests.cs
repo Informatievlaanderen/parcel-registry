@@ -5,7 +5,6 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
     using AutoFixture;
-    using BackOffice;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Fixtures;
@@ -17,10 +16,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     using Parcel.Commands;
     using ParcelRegistry.Consumer.Address;
     using ParcelRegistry.Consumer.Address.Projections;
+    using Tests.BackOffice;
     using Xunit;
     using Xunit.Abstractions;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance;
-    
+
     public sealed class CommandHandlingKafkaProjectionTests : KafkaProjectionTest<CommandHandler, CommandHandlingKafkaProjection>
     {
         private readonly FakeBackOfficeContext _fakeBackOfficeContext;
