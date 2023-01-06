@@ -21,7 +21,7 @@ namespace ParcelRegistry.Parcel.Events
         [EventPropertyDescription("CaPaKey (= objectidentificator) van het perceel, waarbij forward slashes vervangen zijn door koppeltekens i.f.v. gebruik in URI's.")]
         public string CaPaKey { get; }
 
-        [EventPropertyDescription("Objectidentificator van het adres dat ontkoppeld is van de perceeleenheid.")]
+        [EventPropertyDescription("Objectidentificator van het adres.")]
         public int AddressPersistentLocalId { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]
