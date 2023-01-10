@@ -1,3 +1,16 @@
+# [4.10.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.9.2...v4.10.0) (2023-01-10)
+
+
+### Bug Fixes
+
+* add edit tags to events ([df56f2b](https://github.com/informatievlaanderen/parcel-registry/commit/df56f2b0e9d1a9b665ef70487c92c357f0d3746c))
+* change eventpropertydescription for addresspersistentlocalid ([e734ae0](https://github.com/informatievlaanderen/parcel-registry/commit/e734ae0c7267f2865ddf78c35b473afe1055c3ef))
+
+
+### Features
+
+* projections backoffice ([2df1d4a](https://github.com/informatievlaanderen/parcel-registry/commit/2df1d4ac2b0c2ae5f97841dc3751c41cfb0ea0a7))
+
 ## [4.9.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.9.1...v4.9.2) (2023-01-03)
 
 
