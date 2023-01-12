@@ -4,7 +4,7 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure
     using System.Linq;
     using System.Reflection;
     using Be.Vlaanderen.Basisregisters.Api;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Configuration;

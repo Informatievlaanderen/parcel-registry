@@ -1,9 +1,10 @@
 namespace ParcelRegistry.Api.Extract.Infrastructure.Modules
 {
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.DependencyInjection;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -35,9 +36,10 @@ namespace ParcelRegistry.Api.Extract.Infrastructure.Modules
                 useProjectionsV2 = bool.Parse(useProjectionsV2ConfigValue);
             }
 
+            _services.RegisterModule(new DataDogModule(_configuration));
+
             builder
                 .RegisterModule(new MediatRModule(useProjectionsV2))
-                .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new ExtractModule(_configuration, _services, _loggerFactory, false));
 
             builder

@@ -7,8 +7,7 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Api;
-    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
