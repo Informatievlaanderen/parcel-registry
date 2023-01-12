@@ -1,3 +1,10 @@
+# [4.11.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.10.0...v4.11.0) (2023-01-12)
+
+
+### Features
+
+* update Be.Vlaanderen.Basisregisters.Api to 19.0.1 ([7999c9e](https://github.com/informatievlaanderen/parcel-registry/commit/7999c9e73804882fa179c542f1b5edb92081d9da))
+
 # [4.10.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.9.2...v4.10.0) (2023-01-10)
 
 
