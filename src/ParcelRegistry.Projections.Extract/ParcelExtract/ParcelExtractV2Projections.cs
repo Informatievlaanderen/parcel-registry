@@ -1,18 +1,17 @@
 namespace ParcelRegistry.Projections.Extract.ParcelExtract
 {
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
-    using Parcel.Events;
     using Microsoft.Extensions.Options;
     using NodaTime;
     using Parcel;
-    using Parcel.Commands;
+    using Parcel.Events;
 
     [ConnectedProjectionName("Extract percelen")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor het percelen extract voorziet.")]
@@ -100,7 +99,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
             });
         }
 
-        private void SetDelete(ParcelExtractItem parcel)
+        private void SetDelete(ParcelExtractItemV2 parcel)
             => UpdateRecord(parcel, record => record.IsDeleted = true);
 
         private static readonly IDictionary<ParcelStatus, string> StatusMapping = new Dictionary<ParcelStatus, string>
@@ -116,13 +115,13 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                 : throw new ArgumentOutOfRangeException(nameof(parcelStatus), parcelStatus, null);
         }
 
-        private void UpdateStatus(ParcelExtractItem parcel, string status)
+        private void UpdateStatus(ParcelExtractItemV2 parcel, string status)
             => UpdateRecord(parcel, record => record.status.Value = status);
 
-        private void UpdateVersie(ParcelExtractItem parcel, Instant version)
+        private void UpdateVersie(ParcelExtractItemV2 parcel, Instant version)
             => UpdateRecord(parcel, record => record.versieid.SetValue(version.ToBelgianDateTimeOffset()));
 
-        private void UpdateRecord(ParcelExtractItem parcel, Action<ParcelDbaseRecord> updateFunc)
+        private void UpdateRecord(ParcelExtractItemV2 parcel, Action<ParcelDbaseRecord> updateFunc)
         {
             if (parcel.DbaseRecord is not null)
             {
