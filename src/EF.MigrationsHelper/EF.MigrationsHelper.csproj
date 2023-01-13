@@ -32,6 +32,8 @@
     <ProjectReference Include="..\ParcelRegistry.Projections.Syndication\ParcelRegistry.Projections.Syndication.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.BackOffice\ParcelRegistry.Projections.BackOffice.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Consumer.Address\ParcelRegistry.Consumer.Address.csproj" />
+    <ProjectReference Include="..\ParcelRegistry.Producer\ParcelRegistry.Producer.csproj" />
+    <ProjectReference Include="..\ParcelRegistry.Producer.Snapshot.Oslo\ParcelRegistry.Producer.Snapshot.Oslo.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
