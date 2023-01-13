@@ -1,3 +1,10 @@
+## [4.11.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.11.0...v4.11.1) (2023-01-13)
+
+
+### Bug Fixes
+
+* extract parcel v2 ([11d4d6d](https://github.com/informatievlaanderen/parcel-registry/commit/11d4d6d578092eac9b71103a250c1a9e6d65a9d8))
+
 # [4.11.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.10.0...v4.11.0) (2023-01-12)
 
 
