@@ -981,7 +981,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: [ 'parcel-registry-api', 'parcel-registry-import-api', 'parcel-registry-projections', 'parcel-registry-backoffice-api', 'parcel-registry-producer', 'parcel-registry-producer-snapshot-oslo']
+        services: [ 'parcel-registry-api', 'parcel-registry-import-api', 'parcel-registry-projections', 'parcel-registry-backoffice-api', 'parcel-registry-producer', 'parcel-registry-producer-snapshot-oslo', 'parcel-registry-projections-backoffice']
 
     steps:
     - name: Deploy services
@@ -1091,7 +1091,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: ['parcel-registry-api', 'parcel-registry-projections', 'parcel-registry-consumer-address', 'parcel-registry-migrator-parcel', 'parcel-registry-backoffice-api', 'parcel-registry-producer', 'parcel-registry-producer-snapshot-oslo']
+        services: ['parcel-registry-api', 'parcel-registry-projections', 'parcel-registry-consumer-address', 'parcel-registry-migrator-parcel', 'parcel-registry-backoffice-api', 'parcel-registry-producer', 'parcel-registry-producer-snapshot-oslo', 'parcel-registry-projections-backoffice']
 
     steps:
     - name: CD services
