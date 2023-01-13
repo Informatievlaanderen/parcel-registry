@@ -1,3 +1,10 @@
+## [4.11.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.11.1...v4.11.2) (2023-01-13)
+
+
+### Bug Fixes
+
+* add backoffice projections to cd ([396fea0](https://github.com/informatievlaanderen/parcel-registry/commit/396fea03e1fbfbf329af0acb378e3d8324f633bb))
+
 ## [4.11.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.11.0...v4.11.1) (2023-01-13)
 
 
