@@ -3,6 +3,7 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
     using Abstractions;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.AcmIdm;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Be.Vlaanderen.Basisregisters.DependencyInjection;
@@ -56,6 +57,7 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
                 .RegisterModule(new TicketingModule(_configuration, _services));
 
             _services.ConfigureConsumerAddress(_configuration, _loggerFactory);
+            _services.AddAcmIdmAuthorizationHandlers();
 
             builder.Populate(_services);
         }
