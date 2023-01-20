@@ -71,12 +71,11 @@ Target.create "Publish_Solution" (fun _ ->
 
 Target.create "Pack_Solution" (fun _ ->
   [
-    "ParcelRegistry.Projector"
     "ParcelRegistry.Api.Legacy"
     "ParcelRegistry.Api.Oslo"
     "ParcelRegistry.Api.Extract"
     "ParcelRegistry.Api.CrabImport"
-    "ParcelRegistry.Migrator.Parcel"
+    "ParcelRegistry.Api.BackOffice"
     "ParcelRegistry.Api.BackOffice.Abstractions"
   ] |> List.iter pack)
 
