@@ -46,7 +46,11 @@ Target.create "Build_Solution" (fun _ ->
   buildSolution "ParcelRegistry"
 )
 
-Target.create "Test_Solution" (fun _ -> test "ParcelRegistry")
+Target.create "Test_Solution" (fun _ ->
+    [
+        "test" @@ "ParcelRegistry.Tests"
+    ] |> List.iter testWithDotNet
+)
 
 Target.create "Publish_Solution" (fun _ ->
   [
