@@ -74,6 +74,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Producer.Sna
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Projections.BackOffice", "src\ParcelRegistry.Projections.BackOffice\ParcelRegistry.Projections.BackOffice.csproj", "{83DCEF96-46FD-4033-BED8-06AA6C48A93C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Api.BackOffice.IntegrationTests", "test\ParcelRegistry.Api.BackOffice.IntegrationTests\ParcelRegistry.Api.BackOffice.IntegrationTests.csproj", "{4E485AEE-B32F-496E-93FC-C0487D8DEDD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -172,6 +174,10 @@ Global
 		{83DCEF96-46FD-4033-BED8-06AA6C48A93C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83DCEF96-46FD-4033-BED8-06AA6C48A93C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83DCEF96-46FD-4033-BED8-06AA6C48A93C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E485AEE-B32F-496E-93FC-C0487D8DEDD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E485AEE-B32F-496E-93FC-C0487D8DEDD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E485AEE-B32F-496E-93FC-C0487D8DEDD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E485AEE-B32F-496E-93FC-C0487D8DEDD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -200,6 +206,7 @@ Global
 		{9377B76E-D9E2-4490-954E-AED4BE4D45D4} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{04548886-8BC7-432C-AF0F-36B69E74AFB1} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{83DCEF96-46FD-4033-BED8-06AA6C48A93C} = {B483712F-241C-411F-8CC7-D46B3530DF65}
+		{4E485AEE-B32F-496E-93FC-C0487D8DEDD5} = {DF5FFD7D-3020-4F80-87EF-BE2D2CACD27E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF9223F3-B20E-4F63-A894-F1B3F66280AD}

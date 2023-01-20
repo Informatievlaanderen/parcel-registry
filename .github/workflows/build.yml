@@ -51,7 +51,7 @@ jobs:
         path: ~/sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
-        
+
     - name: Cache SonarCloud scanner
       id: cache-sonar-scanner
       uses: actions/cache@v1
@@ -59,12 +59,12 @@ jobs:
         path: ./.sonar/scanner
         key: ${{ runner.os }}-sonar-scanner
         restore-keys: ${{ runner.os }}-sonar-scanner
-        
+
     - name: Install DotCover
       shell: bash
       run: |
         dotnet tool install --global JetBrains.dotCover.GlobalTool
-        
+
     - name: Install SonarCloud scanner
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
       shell: bash
@@ -72,7 +72,7 @@ jobs:
         mkdir .sonar
         mkdir .sonar/scanner
         dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
-        
+
     - name: Sonar begin build & analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
@@ -88,8 +88,8 @@ jobs:
 
     - name: Test
       shell: bash
-      run: dotnet dotcover test --dcReportType=HTML --nologo --no-build ParcelRegistry.sln
-        
+      run: dotnet dotcover test --dcReportType=HTML --nologo --no-build --filter 'FullyQualifiedName!~IntegrationTests' ParcelRegistry.sln
+
     - name: Sonar end build & analyze
       if: env.RELEASE_VERSION != 'none'
       env:
