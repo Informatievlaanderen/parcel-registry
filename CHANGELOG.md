@@ -1,3 +1,16 @@
+# [4.12.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.11.2...v4.12.0) (2023-01-23)
+
+
+### Bug Fixes
+
+* change encoding docker file ([5ccc2d9](https://github.com/informatievlaanderen/parcel-registry/commit/5ccc2d9c81bf0dcc325754e8299bd7eda0f47294))
+
+
+### Features
+
+* add acm/idm ([d7e7208](https://github.com/informatievlaanderen/parcel-registry/commit/d7e720862556d9db163097250857b14c14f73359))
+* add acmidm  integrationtests ([dd8a358](https://github.com/informatievlaanderen/parcel-registry/commit/dd8a3581b98bc14bf5d711acc4c1171ba94303ab))
+
 ## [4.11.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.11.1...v4.11.2) (2023-01-13)
 
 
