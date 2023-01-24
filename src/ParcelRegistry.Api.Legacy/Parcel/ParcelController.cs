@@ -6,13 +6,18 @@ namespace ParcelRegistry.Api.Legacy.Parcel
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Count;
+    using List;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Requests;
-    using Responses;
+    using Detail;
     using Swashbuckle.AspNetCore.Filters;
+    using Sync;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("1.0")]
@@ -38,7 +43,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         /// <response code="410">Als het perceel verwijderd is.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
         [HttpGet("{caPaKey}")]
-        [ProducesResponseType(typeof(ParcelResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ParcelDetailResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status410Gone)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -50,7 +55,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
             [FromRoute] string caPaKey,
             CancellationToken cancellationToken = default)
         {
-            var response = await _mediator.Send(new GetParcelRequest(caPaKey), cancellationToken);
+            var response = await _mediator.Send(new ParcelDetailRequest(caPaKey), cancellationToken);
 
             return string.IsNullOrWhiteSpace(response.LastEventHash)
                 ? Ok(response.ParcelResponse)
@@ -71,7 +76,16 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         public async Task<IActionResult> List(
             CancellationToken cancellationToken = default)
         {
-            return Ok(await _mediator.Send(new GetParcelListRequest(Request, Response), cancellationToken));
+            var filtering = Request.ExtractFilteringRequest<ParcelFilter>();
+            var sorting = Request.ExtractSortingRequest();
+            var pagination = Request.ExtractPaginationRequest();
+
+            var result = await _mediator.Send(new ParcelListRequest(filtering, sorting, pagination), cancellationToken);
+
+            Response.AddPaginationResponse(result.Pagination);
+            Response.AddSortingResponse(result.Sorting);
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -87,7 +101,13 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         public async Task<IActionResult> Count(CancellationToken cancellationToken = default)
         {
-            return Ok(await _mediator.Send(new GetCountRequest(Request), cancellationToken));
+            var filtering = Request.ExtractFilteringRequest<ParcelFilter>();
+            var sorting = Request.ExtractSortingRequest();
+            var pagination = new NoPaginationRequest();
+
+            var result = await _mediator.Send(new ParcelCountRequest(filtering, sorting, pagination), cancellationToken);
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -107,7 +127,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel
         {
             return new ContentResult
             {
-                Content = await _mediator.Send(new GetSyncRequest(Request), cancellationToken),
+                Content = await _mediator.Send(new SyncRequest(Request), cancellationToken),
                 ContentType = MediaTypeNames.Text.Xml,
                 StatusCode = StatusCodes.Status200OK
             };

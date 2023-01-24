@@ -2,7 +2,10 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure.Modules
 {
     using Autofac;
     using MediatR;
-    using Parcel.Handlers;
+    using Parcel.Count;
+    using Parcel.List;
+    using Parcel.Sync;
+    using ParcelRegistry.Api.Legacy.Parcel.Detail;
     using Module = Autofac.Module;
 
     public class MediatRModule : Module
@@ -28,19 +31,19 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure.Modules
                 return type => ctx.Resolve(type);
             });
 
-            builder.RegisterType<GetSyncHandler>().AsImplementedInterfaces();
+            builder.RegisterType<SyncHandler>().AsImplementedInterfaces();
 
             if (_useProjectionsV2)
             {
-                builder.RegisterType<GetParcelV2Handler>().AsImplementedInterfaces();
-                builder.RegisterType<GetParcelListV2Handler>().AsImplementedInterfaces();
-                builder.RegisterType<GetCountV2Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelDetailV2Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelListV2Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelCountV2Handler>().AsImplementedInterfaces();
             }
             else
             {
-                builder.RegisterType<GetParcelV1Handler>().AsImplementedInterfaces();
-                builder.RegisterType<GetParcelListV1Handler>().AsImplementedInterfaces();
-                builder.RegisterType<GetCountV1Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelDetailV1Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelListV1Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelCountV1Handler>().AsImplementedInterfaces();
             }
         }
     }
