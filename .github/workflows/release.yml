@@ -169,13 +169,13 @@ jobs:
         path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport.*.nupkg
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}
-
-    - name: Upload NuGet package projector
+        
+    - name: Upload NuGet package api-backoffice
       if: env.RELEASE_VERSION != 'none'
       uses: actions/upload-artifact@v3
       with:
-        name: nuget-projector
-        path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Projector.*.nupkg
+        name: nuget-api-backoffice
+        path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.*.nupkg
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}
 
