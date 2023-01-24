@@ -1,3 +1,10 @@
+## [4.12.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.0...v4.12.1) (2023-01-24)
+
+
+### Bug Fixes
+
+* null reference exception at crabimport startup ([4ba33dd](https://github.com/informatievlaanderen/parcel-registry/commit/4ba33ddd3fe3ee08a3a5bf8d228f94cd91b4d888))
+
 # [4.12.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.11.2...v4.12.0) (2023-01-23)
 
 
