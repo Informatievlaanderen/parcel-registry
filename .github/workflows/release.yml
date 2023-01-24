@@ -468,11 +468,11 @@ jobs:
         name: nuget-api-crabimport
         path: ~/
 
-    - name: Download NuGet package projector
+    - name: Download NuGet package api-backoffice
       if: env.RELEASE_VERSION != 'none'
       uses: actions/download-artifact@v3
       with:
-        name: nuget-projector
+        name: nuget-api-backoffice
         path: ~/
 
     - name: Download NuGet package api-backoffice-abstractions
@@ -489,7 +489,7 @@ jobs:
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Projector.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       env:
         SEMVER: ${{ needs.build.outputs.version }}
