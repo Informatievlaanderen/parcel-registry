@@ -1,7 +1,5 @@
 namespace ParcelRegistry.Api.Oslo.Parcel
 {
-    using System.Threading;
-    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
@@ -9,10 +7,16 @@ namespace ParcelRegistry.Api.Oslo.Parcel
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Requests;
-    using Responses;
+    using Count;
+    using Detail;
+    using List;
     using Swashbuckle.AspNetCore.Filters;
+    using System.Threading;
+    using System.Threading.Tasks;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
 
     [ApiVersion("2.0")]
     [AdvertiseApiVersions("2.0")]
@@ -38,7 +42,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel
         /// <response code="500">Als er een interne fout is opgetreden.</response>
         [HttpGet("{caPaKey}")]
         [Produces(AcceptTypes.JsonLd)]
-        [ProducesResponseType(typeof(ParcelOsloResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ParcelDetailOsloResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status410Gone)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -50,7 +54,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel
             [FromRoute] string caPaKey,
             CancellationToken cancellationToken = default)
         {
-            var response = await _mediator.Send(new GetParcelRequest(caPaKey), cancellationToken);
+            var response = await _mediator.Send(new ParcelDetailOsloRequest(caPaKey), cancellationToken);
 
             return string.IsNullOrWhiteSpace(response.LastEventHash)
                 ? Ok(response.ParcelResponse)
@@ -72,7 +76,16 @@ namespace ParcelRegistry.Api.Oslo.Parcel
         public async Task<IActionResult> List(
             CancellationToken cancellationToken = default)
         {
-            return Ok(await _mediator.Send(new GetParcelListRequest(Request, Response), cancellationToken));
+            var filtering = Request.ExtractFilteringRequest<ParcelFilter>();
+            var sorting = Request.ExtractSortingRequest();
+            var pagination = Request.ExtractPaginationRequest();
+
+            var result = await _mediator.Send(new ParcelListOsloRequest(filtering, sorting, pagination), cancellationToken);
+
+            Response.AddPaginationResponse(result.Pagination);
+            Response.AddSortingResponse(result.Sorting);
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -90,7 +103,11 @@ namespace ParcelRegistry.Api.Oslo.Parcel
         public async Task<IActionResult> Count(
             CancellationToken cancellationToken = default)
         {
-            return Ok(await _mediator.Send(new GetParcelCountRequest(Request), cancellationToken));
+            var filtering = Request.ExtractFilteringRequest<ParcelFilter>();
+            var sorting = Request.ExtractSortingRequest();
+            var pagination = new NoPaginationRequest();
+
+            return Ok(await _mediator.Send(new ParcelCountOsloRequest(filtering, sorting, pagination), cancellationToken));
         }
     }
 }

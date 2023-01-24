@@ -2,7 +2,9 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure.Modules
 {
     using Autofac;
     using MediatR;
-    using Parcel.Handlers;
+    using Parcel.Count;
+    using Parcel.Detail;
+    using Parcel.List;
     using Module = Autofac.Module;
 
     public class MediatRModule : Module
@@ -31,15 +33,15 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure.Modules
 
             if (_useProjectionsV2)
             {
-                builder.RegisterType<GetParcelListV2Handler>().AsImplementedInterfaces();
-                builder.RegisterType<GetParcelV2Handler>().AsImplementedInterfaces();
-                builder.RegisterType<GetParcelCountV2Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelListOsloV2Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelDetailOsloV2Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelCountOsloV2Handler>().AsImplementedInterfaces();
             }
             else
             {
-                builder.RegisterType<GetParcelListV1Handler>().AsImplementedInterfaces();
-                builder.RegisterType<GetParcelV1Handler>().AsImplementedInterfaces();
-                builder.RegisterType<GetParcelCountV1Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelListOsloV1Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelDetailOsloV1Handler>().AsImplementedInterfaces();
+                builder.RegisterType<ParcelCountOsloV1Handler>().AsImplementedInterfaces();
             }
         }
     }
