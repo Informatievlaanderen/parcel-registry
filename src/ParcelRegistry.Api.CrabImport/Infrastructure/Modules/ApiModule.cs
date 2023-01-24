@@ -47,11 +47,12 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure.Modules
                     new IdempotencyTableInfo(Schema.Import),
                     _loggerFactory))
                 .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
-                .RegisterModule(new CommandHandlingModule(_configuration))
-                .RegisterModule(new CrabImportModule(
+                .RegisterModule(new CommandHandlingModule(_configuration));
+
+            _services.ConfigureCrabImport(
                     _configuration.GetConnectionString("CrabImport"),
                     Schema.Import,
-                    _loggerFactory));
+                    _loggerFactory);
 
             builder
                 .RegisterType<IdempotentCommandHandlerModule>()
