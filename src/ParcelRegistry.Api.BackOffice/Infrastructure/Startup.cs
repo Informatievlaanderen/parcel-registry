@@ -8,6 +8,7 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure
     using Be.Vlaanderen.Basisregisters.AcmIdm;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Configuration;
     using IdentityModel.AspNetCore.OAuth2Introspection;
@@ -189,6 +190,8 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure
                         AfterMiddleware = x => x.UseMiddleware<AddNoCacheHeadersMiddleware>(),
                     }
                 });
+
+            serviceProvider.MigrateIdempotencyDatabase();
 
             MigrationsHelper.Run(
                 _configuration.GetConnectionString("BackOffice"),

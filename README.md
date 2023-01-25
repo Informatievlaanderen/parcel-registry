@@ -21,7 +21,8 @@
 
 To fill up the database for the first time:
 
-* Run `ParcelRegistry.Api.CrabImport` (`ParcelRegistry.sln`)
+* Run `ParcelRegistry.Api.CrabImport` (`ParcelRegistry.sln`) (schema: Import / Idempotency / EventStore)
+* Run `ParcelRegistry.Api.BackOffice` (`ParcelRegistry.sln`) (schema: BackOffice / EventStore / Idempotency)
 * Run `ParcelRegistry.Importer` (`ParcelRegistryImporter.sln`) with `init -c -l Trace` as flags.
 
 #### Projections

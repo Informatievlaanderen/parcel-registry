@@ -28,9 +28,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
     {
         public Function()
             : base(new List<Assembly> {typeof(AttachAddressRequest).Assembly})
-        {
-            ServiceProvider.MigrateIdempotencyDatabase();
-        }
+        { }
 
         protected override IServiceProvider ConfigureServices(IServiceCollection services)
         {
@@ -93,7 +91,6 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
                     new IdempotencyMigrationsTableInfo(Schema.Import),
                     new IdempotencyTableInfo(Schema.Import),
                     loggerFactory))
-                .RegisterEventStreamModule(configuration)
                 .RegisterSnapshotModule(configuration);
 
             builder.RegisterType<IdempotentCommandHandler>()

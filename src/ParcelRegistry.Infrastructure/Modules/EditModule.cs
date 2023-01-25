@@ -17,10 +17,7 @@ namespace ParcelRegistry.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
-
             builder
-                .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
                 .RegisterModule(new CommandHandlingModule(_configuration))
                 .RegisterSnapshotModule(_configuration);
         }

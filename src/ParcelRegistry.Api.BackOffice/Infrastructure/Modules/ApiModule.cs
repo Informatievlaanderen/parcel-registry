@@ -5,12 +5,14 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.AcmIdm;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Be.Vlaanderen.Basisregisters.DependencyInjection;
     using Consumer.Address.Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Infrastructure.Modules;
     using Validators;
 
@@ -50,11 +52,19 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
                 .InstancePerLifetimeScope();
 
             builder
-                .RegisterModule(new EditModule(_configuration))
+                .RegisterModule(new AggregateSourceModule(_configuration))
                 .RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new MediatRModule())
                 .RegisterModule(new SqsHandlersModule(_configuration[SqsQueueUrlConfigKey]))
-                .RegisterModule(new TicketingModule(_configuration, _services));
+                .RegisterModule(new TicketingModule(_configuration, _services))
+                .RegisterModule(new IdempotencyModule(
+                    _services,
+                    _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
+                        .ConnectionString,
+                    new IdempotencyMigrationsTableInfo(Schema.Import),
+                    new IdempotencyTableInfo(Schema.Import),
+                    _loggerFactory))
+                .RegisterSnapshotModule(_configuration);
 
             _services.ConfigureConsumerAddress(_configuration, _loggerFactory);
             _services.AddAcmIdmAuthorizationHandlers();
