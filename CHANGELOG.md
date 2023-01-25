@@ -1,3 +1,11 @@
+## [4.12.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.1...v4.12.2) (2023-01-25)
+
+
+### Bug Fixes
+
+* cleanup paket.references ([76ca8b3](https://github.com/informatievlaanderen/parcel-registry/commit/76ca8b35e29133c3b1a6b44cfa98c0ba6293cb81))
+* review ioc registrations ([3e86224](https://github.com/informatievlaanderen/parcel-registry/commit/3e86224f609d2491b0fd7bee58376dd12783c19c))
+
 ## [4.12.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.0...v4.12.1) (2023-01-24)
 
 
