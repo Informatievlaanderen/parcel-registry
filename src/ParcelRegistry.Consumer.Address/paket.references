@@ -1,29 +1,26 @@
 Be.Vlaanderen.Basisregisters.AggregateSource
 Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac
-Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore
 Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration
 Be.Vlaanderen.Basisregisters.GrAr.Contracts
 
-Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer
 Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer
 
-Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector 
+Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner
-Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
 
 Serilog
-Serilog.Settings.Configuration
 Serilog.Extensions.Logging
-Serilog.Sinks.Console
-Serilog.Sinks.File
 Serilog.Enrichers.Thread
 Serilog.Enrichers.Environment
 Serilog.Formatting.Compact
+Serilog.Sinks.Console
+Serilog.Settings.Configuration
 
 Microsoft.EntityFrameworkCore.SqlServer
 Microsoft.EntityFrameworkCore.InMemory
+
 Microsoft.Extensions.Configuration
 Microsoft.Extensions.Configuration.CommandLine
 Microsoft.Extensions.Configuration.FileExtensions

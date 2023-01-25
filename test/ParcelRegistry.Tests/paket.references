@@ -6,8 +6,8 @@ AutoFixture
 FluentAssertions
 Moq
 
-Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling
 Be.Vlaanderen.Basisregisters.AggregateSource.Testing
+Be.Vlaanderen.Basisregisters.AggregateSource.Testing.CommandHandling
 Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac
 Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit
 

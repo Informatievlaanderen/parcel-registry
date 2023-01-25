@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ParcelRegistry.Infrastructure\ParcelRegistry.Infrastructure.csproj" />
-    <ProjectReference Include="..\ParcelRegistry\ParcelRegistry.csproj" />
   </ItemGroup>
 
   <ItemGroup>
