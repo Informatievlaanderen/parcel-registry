@@ -68,10 +68,7 @@ namespace ParcelRegistry.Tests
         }
 
         protected override void ConfigureEventHandling(ContainerBuilder builder)
-        {
-            var eventSerializerSettings = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
-            builder.RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings));
-        }
+        { }
 
         public string GetSnapshotIdentifier(string identifier) => $"{identifier}-snapshots";
     }

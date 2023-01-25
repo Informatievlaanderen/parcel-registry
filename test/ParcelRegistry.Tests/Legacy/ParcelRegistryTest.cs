@@ -57,9 +57,7 @@ namespace ParcelRegistry.Tests.Legacy
         }
 
         protected override void ConfigureEventHandling(ContainerBuilder builder)
-        {
-            builder.RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, EventSerializerSettings));
-        }
+        { }
 
         protected override IFactComparer CreateFactComparer()
         {

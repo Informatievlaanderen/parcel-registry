@@ -46,7 +46,6 @@ namespace ParcelRegistry.Api.CrabImport.Infrastructure.Modules
                     new IdempotencyMigrationsTableInfo(Schema.Import),
                     new IdempotencyTableInfo(Schema.Import),
                     _loggerFactory))
-                .RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, eventSerializerSettings))
                 .RegisterModule(new CommandHandlingModule(_configuration));
 
             _services.ConfigureCrabImport(
