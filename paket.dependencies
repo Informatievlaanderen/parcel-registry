@@ -8,6 +8,7 @@ nuget Microsoft.Extensions.Configuration.EnvironmentVariables 6.0.1
 nuget Microsoft.Extensions.Configuration.FileExtensions 6.0.0
 nuget Microsoft.Extensions.Configuration.Json 6.0.0
 nuget Microsoft.Extensions.DependencyInjection 6.0.0
+nuget Microsoft.Extensions.Logging.Abstractions 6.0.3
 nuget MediatR.Extensions.Microsoft.DependencyInjection 10.0.1
 
 nuget Microsoft.Extensions.Http.Polly 6.0.3
