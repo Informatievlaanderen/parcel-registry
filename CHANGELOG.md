@@ -1,3 +1,10 @@
+## [4.12.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.2...v4.12.3) (2023-01-26)
+
+
+### Bug Fixes
+
+* remove dockerfile init.sh ([19a21d0](https://github.com/informatievlaanderen/parcel-registry/commit/19a21d07b6793d9954d6f050f5bef0b83736a2aa))
+
 ## [4.12.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.1...v4.12.2) (2023-01-25)
 
 
