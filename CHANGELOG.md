@@ -1,3 +1,10 @@
+## [4.12.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.3...v4.12.4) (2023-01-26)
+
+
+### Bug Fixes
+
+* add uow registration with aggregatesource ([b3b83b1](https://github.com/informatievlaanderen/parcel-registry/commit/b3b83b13a2329afb4c4c080ef74185dee11b0a40))
+
 ## [4.12.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.2...v4.12.3) (2023-01-26)
 
 
