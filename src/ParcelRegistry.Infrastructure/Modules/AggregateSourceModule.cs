@@ -2,6 +2,7 @@
 {
     using System;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
@@ -41,6 +42,10 @@
             builder
                 .RegisterModule<RepositoriesModule>()
                 .RegisterEventStreamModule(_configuration);
+
+            builder
+                .RegisterType<ConcurrentUnitOfWork>()
+                .InstancePerLifetimeScope();
 
             builder.RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, EventsJsonSerializerSettingsProvider.CreateSerializerSettings()));
         }

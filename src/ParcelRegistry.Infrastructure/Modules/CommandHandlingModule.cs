@@ -17,10 +17,6 @@ namespace ParcelRegistry.Infrastructure.Modules
         {
             builder.RegisterModule(new AggregateSourceModule(_configuration));
 
-            builder
-                .RegisterType<ConcurrentUnitOfWork>()
-                .InstancePerLifetimeScope();
-
             Legacy.CommandHandlerModules.Register(builder);
             CommandHandlerModules.Register(builder);
 
