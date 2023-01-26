@@ -42,6 +42,10 @@
                 .RegisterModule<RepositoriesModule>()
                 .RegisterEventStreamModule(_configuration);
 
+            builder
+                .RegisterType<ConcurrentUnitOfWork>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterModule(new EventHandlingModule(typeof(DomainAssemblyMarker).Assembly, EventsJsonSerializerSettingsProvider.CreateSerializerSettings()));
         }
     }
