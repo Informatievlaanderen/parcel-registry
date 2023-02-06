@@ -1,0 +1,9 @@
+CREATE STREAM parcel_snapshot_oslo_stream_flatten_geolocation  
+   WITH (KAFKA_TOPIC='stg.parcel.snapshot.oslo.flatten.geolocation', PARTITIONS=6, VALUE_FORMAT='JSON_SR') 
+   AS SELECT identificator->id AS IDENTIFICATOR_ID, 
+             identificator->naamruimte AS IDENTIFICATOR_NAAMRUIMTE,
+             identificator->objectId AS IDENTIFICATOR_OBJECTID,
+             identificator->versieId AS IDENTIFICATOR_VERSIEID,
+             perceelStatus AS PERCEELSTATUS,
+             ARRAY_JOIN(TRANSFORM(adressen, (x) => (x->objectId)), ', ') AS ADRESSEN
+   FROM PARCEL_SNAPSHOT_OSLO_STREAM;
