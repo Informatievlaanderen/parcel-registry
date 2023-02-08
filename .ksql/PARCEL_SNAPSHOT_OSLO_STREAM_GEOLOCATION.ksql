@@ -1,9 +1,13 @@
 CREATE STREAM parcel_snapshot_oslo_stream_flatten_geolocation  
-   WITH (KAFKA_TOPIC='stg.parcel.snapshot.oslo.flatten.geolocation', PARTITIONS=6, VALUE_FORMAT='JSON_SR') 
-   AS SELECT identificator->id AS IDENTIFICATOR_ID, 
+   WITH (KAFKA_TOPIC='stg.parcel.snapshot.oslo.flatten.geolocation', PARTITIONS=1, VALUE_FORMAT='JSON_SR', KEY_FORMAT='JSON_SR') 
+   AS SELECT 
+             REDUCE(SPLIT(URL_EXTRACT_PATH(MESSAGEKEY), '/'), '', (s,x) => x) msgkey,
+             identificator->id AS IDENTIFICATOR_ID, 
              identificator->naamruimte AS IDENTIFICATOR_NAAMRUIMTE,
              identificator->objectId AS IDENTIFICATOR_OBJECTID,
              identificator->versieId AS IDENTIFICATOR_VERSIEID,
              perceelStatus AS PERCEELSTATUS,
-             ARRAY_JOIN(TRANSFORM(adressen, (x) => (x->objectId)), ', ') AS ADRESSEN
-   FROM PARCEL_SNAPSHOT_OSLO_STREAM;
+             ARRAY_JOIN(TRANSFORM(adressen, (x) => (x->objectId)), ', ') AS ADRESSEN,
+             CASE WHEN IDENTIFICATOR->ID is null THEN TRUE ELSE FALSE END REMOVED
+   FROM PARCEL_SNAPSHOT_OSLO_STREAM
+   PARTITION BY REDUCE(SPLIT(URL_EXTRACT_PATH(MESSAGEKEY), '/'), '', (s,x) => x);
