@@ -2,6 +2,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
@@ -24,6 +25,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Parcel.Exceptions;
     using ParcelRegistry.Api.BackOffice.Abstractions;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
+    using SqlStreamStore.Streams;
+    using SqlStreamStore;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
@@ -98,6 +101,12 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
 
             var addressParcelRelation = await _backOfficeContext.ParcelAddressRelations.FindAsync((Guid)parcelId, (int)addressPersistentLocalId);
             addressParcelRelation.Should().NotBeNull();
+
+            //Assert
+            var stream = await Container.Resolve<IStreamStore>().ReadStreamBackwards(new StreamId(new ParcelStreamId(parcelId)), 1, 2);
+            var message = stream.Messages.First();
+            message.JsonMetadata.Should().Contain(etag);
+            message.JsonMetadata.Should().Contain(Provenance.ProvenanceMetadataKey.ToLower());
         }
 
         [Fact]

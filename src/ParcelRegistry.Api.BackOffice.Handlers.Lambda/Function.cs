@@ -84,14 +84,14 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
                 .RegisterModule(new DataDogModule(configuration))
                 .RegisterModule(new EditModule(configuration))
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
-                .RegisterModule(new IdempotencyModule(
-                    services,
-                    configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
-                        .ConnectionString,
-                    new IdempotencyMigrationsTableInfo(Schema.Import),
-                    new IdempotencyTableInfo(Schema.Import),
-                    loggerFactory))
                 .RegisterSnapshotModule(configuration);
+
+            services.ConfigureIdempotency(
+                configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
+                    .ConnectionString,
+                new IdempotencyMigrationsTableInfo(Schema.Import),
+                new IdempotencyTableInfo(Schema.Import),
+                loggerFactory);
 
             builder.RegisterType<IdempotentCommandHandler>()
                 .As<IIdempotentCommandHandler>()
