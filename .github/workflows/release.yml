@@ -296,7 +296,7 @@ jobs:
 
     - name: Login to Amazon ECR (Test)
       if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1.5.2
+      uses: aws-actions/amazon-ecr-login@v1.5.3
 
     - name: Push Lambda functions to S3 Test
       if: env.RELEASE_VERSION != 'none'
@@ -320,7 +320,7 @@ jobs:
 
     - name: Login to Amazon ECR (Staging)
       if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1.5.2
+      uses: aws-actions/amazon-ecr-login@v1.5.3
 
     - name: Push Lambda functions to S3 Staging
       if: env.RELEASE_VERSION != 'none'
@@ -344,7 +344,7 @@ jobs:
 
     - name: Login to Amazon ECR (Production)
       if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1.5.2
+      uses: aws-actions/amazon-ecr-login@v1.5.3
 
     - name: Push Lambda functions to S3 Production
       if: env.RELEASE_VERSION != 'none'
@@ -512,7 +512,7 @@ jobs:
 
       - name: Login to Amazon ECR (Test)
         if: needs.build.outputs.version != 'none'
-        uses: aws-actions/amazon-ecr-login@v1.5.2
+        uses: aws-actions/amazon-ecr-login@v1.5.3
 
       #
       # Download artifacts
@@ -648,7 +648,7 @@ jobs:
 
       - name: Login to Amazon ECR (Staging)
         if: needs.build.outputs.version != 'none'
-        uses: aws-actions/amazon-ecr-login@v1.5.2
+        uses: aws-actions/amazon-ecr-login@v1.5.3
 
       #
       # Download artifacts
@@ -808,7 +808,7 @@ jobs:
 
       - name: Login to Amazon ECR (Production)
         if: needs.build.outputs.version != 'none'
-        uses: aws-actions/amazon-ecr-login@v1.5.2
+        uses: aws-actions/amazon-ecr-login@v1.5.3
 
       #
       # Download artifacts
