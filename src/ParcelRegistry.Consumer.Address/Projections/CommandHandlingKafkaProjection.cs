@@ -9,7 +9,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Microsoft.EntityFrameworkCore;
-    using NodaTime.Text;
+    using NodaTime;
     using Parcel;
     using Parcel.Commands;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
@@ -198,11 +198,11 @@ namespace ParcelRegistry.Consumer.Address.Projections
 
         private static Provenance FromProvenance(Contracts.Provenance provenance) =>
             new Provenance(
-                InstantPattern.General.Parse(provenance.Timestamp).GetValueOrThrow(),
+                SystemClock.Instance.GetCurrentInstant(),
                 Enum.Parse<Application>(Application.AddressRegistry.ToString()),
                 new Reason(provenance.Reason),
                 new Operator(string.Empty),
                 Enum.Parse<Modification>(Modification.Update.ToString()),
-                Enum.Parse<Organisation>(Organisation.DigitaalVlaanderen.ToString()));
+                Enum.Parse<Organisation>(provenance.Organisation));
     }
 }
