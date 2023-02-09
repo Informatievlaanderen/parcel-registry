@@ -57,14 +57,14 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
                 .RegisterModule(new MediatRModule())
                 .RegisterModule(new SqsHandlersModule(_configuration[SqsQueueUrlConfigKey]))
                 .RegisterModule(new TicketingModule(_configuration, _services))
-                .RegisterModule(new IdempotencyModule(
-                    _services,
-                    _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
-                        .ConnectionString,
-                    new IdempotencyMigrationsTableInfo(Schema.Import),
-                    new IdempotencyTableInfo(Schema.Import),
-                    _loggerFactory))
                 .RegisterSnapshotModule(_configuration);
+
+            _services.ConfigureIdempotency(
+                _configuration.GetSection(IdempotencyConfiguration.Section).Get<IdempotencyConfiguration>()
+                    .ConnectionString,
+                new IdempotencyMigrationsTableInfo(Schema.Import),
+                new IdempotencyTableInfo(Schema.Import),
+                _loggerFactory);
 
             _services.ConfigureConsumerAddress(_configuration, _loggerFactory);
             _services.AddAcmIdmAuthorizationHandlers();
