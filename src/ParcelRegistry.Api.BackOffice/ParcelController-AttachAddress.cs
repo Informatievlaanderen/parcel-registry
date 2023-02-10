@@ -74,7 +74,7 @@ namespace ParcelRegistry.Api.BackOffice
                     VbrCaPaKey = vbrCaPaKey,
                     IfMatchHeaderValue = ifMatchHeaderValue,
                     Metadata = GetMetadata(),
-                    ProvenanceData = new ProvenanceData(CreateFakeProvenance())
+                    ProvenanceData = new ProvenanceData(CreateProvenance(Modification.Update))
                 };
 
                 var sqsResult = await _mediator.Send(sqsRequest, cancellationToken);

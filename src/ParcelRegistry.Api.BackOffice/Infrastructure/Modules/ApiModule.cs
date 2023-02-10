@@ -8,7 +8,10 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Be.Vlaanderen.Basisregisters.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
     using Consumer.Address.Infrastructure.Modules;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -50,6 +53,11 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
                 .RegisterType<ParcelExistsValidator>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
+
+            builder.Register(c => new AcmIdmProvenanceFactory(Application.ParcelRegistry, c.Resolve<IActionContextAccessor>()))
+                .As<IProvenanceFactory>()
+                .InstancePerLifetimeScope()
+                .AsSelf();
 
             builder
                 .RegisterModule(new AggregateSourceModule(_configuration))
