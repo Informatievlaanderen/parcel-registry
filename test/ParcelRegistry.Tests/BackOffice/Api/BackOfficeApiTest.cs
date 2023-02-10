@@ -6,11 +6,15 @@
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
     using FluentAssertions;
     using FluentValidation;
     using FluentValidation.Results;
     using MediatR;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Options;
     using Moq;
     using Parcel;
@@ -26,6 +30,7 @@
 
         private IOptions<TicketingOptions> TicketingOptions { get; }
         protected Mock<IMediator> MockMediator { get; }
+        protected Mock<IActionContextAccessor> MockActionContext { get; set; }
 
         private const string Username = "John Doe";
 
@@ -36,6 +41,8 @@
             TicketingOptions.Value.InternalBaseUrl = InternalTicketUrl;
 
             MockMediator = new Mock<IMediator>();
+            MockActionContext = new Mock<IActionContextAccessor>();
+            MockActionContext.SetupProperty(x => x.ActionContext, new ActionContext{ HttpContext = new DefaultHttpContext()});
         }
 
         protected IIfMatchHeaderValidator MockIfMatchValidator(bool expectedResult)
@@ -74,7 +81,14 @@
 
         protected ParcelController CreateParcelControllerWithUser()
         {
-            if (Activator.CreateInstance(typeof(ParcelController), MockMediator.Object, TicketingOptions) is not ParcelController controller)
+            var controller = Activator.CreateInstance(
+                typeof(ParcelController),
+                MockMediator.Object,
+                TicketingOptions,
+                MockActionContext.Object,
+                new AcmIdmProvenanceFactory(Application.ParcelRegistry, MockActionContext.Object)) as ParcelController;
+
+            if (controller is null)
             {
                 throw new Exception("Could not find controller type");
             }

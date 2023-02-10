@@ -1,6 +1,8 @@
 namespace ParcelRegistry.Api.BackOffice
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -10,6 +12,7 @@ namespace ParcelRegistry.Api.BackOffice
     using Infrastructure.Options;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Options;
 
     [ApiVersion("2.0")]
@@ -20,10 +23,18 @@ namespace ParcelRegistry.Api.BackOffice
     {
         private readonly IMediator _mediator;
         private readonly TicketingOptions _ticketingOptions;
+        private readonly IActionContextAccessor _actionContextAccessor;
+        private readonly IProvenanceFactory _provenanceFactory;
 
-        public ParcelController(IMediator mediator, IOptions<TicketingOptions> ticketingOptions)
+        public ParcelController(
+            IMediator mediator,
+            IOptions<TicketingOptions> ticketingOptions,
+            IActionContextAccessor actionContextAccessor,
+            IProvenanceFactory provenanceFactory)
         {
             _mediator = mediator;
+            _actionContextAccessor = actionContextAccessor;
+            _provenanceFactory = provenanceFactory;
             _ticketingOptions = ticketingOptions.Value;
         }
 
@@ -50,26 +61,19 @@ namespace ParcelRegistry.Api.BackOffice
 
         private IDictionary<string, object?> GetMetadata()
         {
-            var userId = User.FindFirst("urn:be:vlaanderen:parcelregistry:acmid")?.Value;
-            var correlationId = User.FindFirst(AddCorrelationIdMiddleware.UrnBasisregistersVlaanderenCorrelationId)?.Value;
+            var correlationId = _actionContextAccessor
+                .ActionContext?
+                .HttpContext
+                .Request
+                .Headers["x-correlation-id"].FirstOrDefault() ?? Guid.NewGuid().ToString("D");
 
             return new Dictionary<string, object?>
             {
-                { "UserId", userId },
                 { "CorrelationId", correlationId }
             };
         }
 
-        private Provenance CreateFakeProvenance()
-        {
-            return new Provenance(
-                NodaTime.SystemClock.Instance.GetCurrentInstant(),
-                Application.ParcelRegistry,
-                new Reason(""), // TODO: TBD
-                new Operator(""), // TODO: from claims
-                Modification.Insert,
-                Organisation.DigitaalVlaanderen // TODO: from claims
-            );
-        }
+        protected Provenance CreateProvenance(Modification modification)
+            => _provenanceFactory.Create(new Reason(""), modification);
     }
 }

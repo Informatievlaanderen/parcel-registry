@@ -4,11 +4,13 @@ namespace ParcelRegistry.Tests.BackOffice.Api.WhenDetachingAddress
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using Fixtures;
     using FluentAssertions;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
+    using NodaTime;
     using Parcel;
     using ParcelRegistry.Api.BackOffice;
     using ParcelRegistry.Api.BackOffice.Abstractions.Requests;
@@ -45,16 +47,29 @@ namespace ParcelRegistry.Tests.BackOffice.Api.WhenDetachingAddress
 
             _streamStore.SetStreamFound();
 
+            var expectedIfMatchHeader = Fixture.Create<string>();
+            var request = Fixture.Create<DetachAddressRequest>();
             var result = (AcceptedResult)await _controller.DetachAddress(
                 MockValidRequestValidator<DetachAddressRequest>(),
                 new ParcelExistsValidator(_streamStore.Object),
                 MockIfMatchValidator(true),
                 vbrCaPaKey,
-                Fixture.Create<DetachAddressRequest>(),
-                ifMatchHeaderValue: null);
+                request,
+                ifMatchHeaderValue: expectedIfMatchHeader);
 
             result.Should().NotBeNull();
             AssertLocation(result.Location, ticketId);
+
+            MockMediator.Verify(x =>
+                x.Send(
+                    It.Is<DetachAddressSqsRequest>(sqsRequest =>
+                        sqsRequest.Request == request
+                        && sqsRequest.ProvenanceData.Timestamp != Instant.MinValue
+                        && sqsRequest.ProvenanceData.Application == Application.ParcelRegistry
+                        && sqsRequest.ProvenanceData.Modification == Modification.Update
+                        && sqsRequest.IfMatchHeaderValue == expectedIfMatchHeader
+                    ),
+                    CancellationToken.None));
         }
     }
 }
