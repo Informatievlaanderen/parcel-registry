@@ -1,3 +1,12 @@
+## [4.12.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.4...v4.12.5) (2023-02-13)
+
+
+### Bug Fixes
+
+* event jsondata should contain provenance ([7297e1e](https://github.com/informatievlaanderen/parcel-registry/commit/7297e1e54aabf43662f690ab586e5442fa5b3dee))
+* ksql msgkey to int ([b57287a](https://github.com/informatievlaanderen/parcel-registry/commit/b57287a2bd48095e792a86b7d01406ff71aa38db))
+* use correct date in provenance for consumer command handling ([81228e5](https://github.com/informatievlaanderen/parcel-registry/commit/81228e58eaf8d464db7304dd1676c67c85539a4a))
+
 ## [4.12.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.3...v4.12.4) (2023-01-26)
 
 
