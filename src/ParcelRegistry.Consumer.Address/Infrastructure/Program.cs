@@ -111,7 +111,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                         var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                         var topic = $"{hostContext.Configuration["AddressTopic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
                         var suffix = hostContext.Configuration["GroupSuffix"];
-                        var consumerGroupId = $"{nameof(ParcelRegistry)}.BackOfficeConsumer.{topic}{suffix}";
+                        var consumerGroupId = $"ParcelRegistry.BackOfficeConsumer.{topic}{suffix}";
 
                         var consumerOptions = new ConsumerOptions(
                             new BootstrapServers(bootstrapServers),
