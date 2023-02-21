@@ -256,6 +256,28 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         }
 
         [Fact]
+        public async Task AddressWasRejectedBecauseStreetNameWasRejected_UpdatesStatusAddress()
+        {
+            var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>();
+            var addressWasRejected = Fixture.Build<AddressWasRejectedBecauseStreetNameWasRejected>()
+                .FromFactory(() => new AddressWasRejectedBecauseStreetNameWasRejected(
+                    addressWasProposedV2.StreetNamePersistentLocalId, addressWasProposedV2.AddressPersistentLocalId, Fixture.Create<Provenance>()))
+                .Create();
+
+            Given(addressWasProposedV2, addressWasRejected);
+
+            await Then(async context =>
+            {
+                var address =
+                    await context.AddressConsumerItems.FindAsync(
+                        addressWasProposedV2.AddressPersistentLocalId);
+
+                address.Should().NotBeNull();
+                address!.Status.Should().Be(AddressStatus.Rejected);
+            });
+        }
+
+        [Fact]
         public async Task AddressWasRejectedBecauseStreetNameWasRetired_UpdatesStatusAddress()
         {
             var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>();
@@ -339,6 +361,32 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                 .Create();
             var addressWasRetired = Fixture.Build<AddressWasRetiredBecauseHouseNumberWasRetired>()
                 .FromFactory(() => new AddressWasRetiredBecauseHouseNumberWasRetired(
+                    addressWasProposedV2.StreetNamePersistentLocalId, addressWasProposedV2.AddressPersistentLocalId, Fixture.Create<Provenance>()))
+                .Create();
+
+            Given(addressWasProposedV2, addressWasApproved, addressWasRetired);
+
+            await Then(async context =>
+            {
+                var address =
+                    await context.AddressConsumerItems.FindAsync(
+                        addressWasProposedV2.AddressPersistentLocalId);
+
+                address.Should().NotBeNull();
+                address!.Status.Should().Be(AddressStatus.Retired);
+            });
+        }
+
+        [Fact]
+        public async Task AddressWasRetiredBecauseStreetNameWasRejected_UpdatesStatusAddress()
+        {
+            var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>();
+            var addressWasApproved = Fixture.Build<AddressWasApproved>()
+                .FromFactory(() => new AddressWasApproved(
+                    addressWasProposedV2.StreetNamePersistentLocalId, addressWasProposedV2.AddressPersistentLocalId, Fixture.Create<Provenance>()))
+                .Create();
+            var addressWasRetired = Fixture.Build<AddressWasRetiredBecauseStreetNameWasRejected>()
+                .FromFactory(() => new AddressWasRetiredBecauseStreetNameWasRejected(
                     addressWasProposedV2.StreetNamePersistentLocalId, addressWasProposedV2.AddressPersistentLocalId, Fixture.Create<Provenance>()))
                 .Create();
 
