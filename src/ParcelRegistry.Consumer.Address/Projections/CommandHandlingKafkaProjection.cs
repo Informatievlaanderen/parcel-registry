@@ -78,6 +78,15 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     ct);
             });
 
+            When<AddressWasRejectedBecauseStreetNameWasRejected>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRejected(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
+
             When<AddressWasRejectedBecauseStreetNameWasRetired>(async (commandHandler, message, ct) =>
             {
                 await DetachBecauseRejected(
@@ -97,6 +106,15 @@ namespace ParcelRegistry.Consumer.Address.Projections
             });
 
             When<AddressWasRetiredBecauseHouseNumberWasRetired>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRetired(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
+
+            When<AddressWasRetiredBecauseStreetNameWasRejected>(async (commandHandler, message, ct) =>
             {
                 await DetachBecauseRetired(
                     commandHandler,

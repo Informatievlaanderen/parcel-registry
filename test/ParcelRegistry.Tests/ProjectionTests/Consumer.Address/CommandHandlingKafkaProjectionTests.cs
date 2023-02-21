@@ -269,6 +269,31 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         }
 
         [Fact]
+        public async Task DetachAddressBecause_AddressWasRejectedBecauseHouseNumberWasRejected()
+        {
+            var addressIntId = 456;
+
+            var @event = new AddressWasRejectedBecauseHouseNumberWasRejected(
+                123,
+                addressIntId,
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            AddRelations(456, 456);
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
         public async Task DetachAddressBecause_AddressWasRejectedBecauseHouseNumberWasRetired()
         {
             var addressIntId = 456;
@@ -349,6 +374,31 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             var addressIntId = 456;
 
             var @event = new AddressWasRetiredBecauseHouseNumberWasRetired(
+                123,
+                addressIntId,
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            AddRelations(456, 456);
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public async Task DetachAddressBecauseStreetNameWasRejected()
+        {
+            var addressIntId = 456;
+
+            var @event = new AddressWasRetiredBecauseStreetNameWasRejected(
                 123,
                 addressIntId,
                 new Provenance(
