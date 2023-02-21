@@ -87,9 +87,6 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<ProducerProjections, ProducerContext>(c =>
                     {
-                        var osloNamespace = _configuration["OsloNamespace"];
-                        osloNamespace = osloNamespace.TrimEnd('/');
-
                         var bootstrapServers = _configuration["Kafka:BootstrapServers"];
                         var topic = $"{_configuration[ProducerProjections.TopicKey]}" ?? throw new ArgumentException($"Configuration has no value for {ProducerProjections.TopicKey}");
                         var producerOptions = new ProducerOptions(
@@ -113,8 +110,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
                                 c.Resolve<IOsloProxy>(),
                                 SnapshotManagerOptions.Create(
                                     _configuration["RetryPolicy:MaxRetryWaitIntervalSeconds"],
-                                    _configuration["RetryPolicy:RetryBackoffFactor"])),
-                            osloNamespace);
+                                    _configuration["RetryPolicy:RetryBackoffFactor"])));
                     },
                     connectedProjectionSettings);
         }
