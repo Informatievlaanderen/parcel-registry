@@ -51,42 +51,6 @@ namespace ParcelRegistry.Consumer.Address.Projections
                 }
             });
 
-            When<AddressWasRemovedV2>(async (commandHandler, message, ct) =>
-            {
-                await DetachBecauseRemoved(
-                    commandHandler,
-                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
-                    message.Provenance,
-                    ct);
-            });
-
-            When<AddressWasRetiredV2>(async (commandHandler, message, ct) =>
-            {
-                await DetachBecauseRetired(
-                    commandHandler,
-                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
-                    message.Provenance,
-                    ct);
-            });
-
-            When<AddressWasRetiredBecauseHouseNumberWasRetired>(async (commandHandler, message, ct) =>
-            {
-                await DetachBecauseRetired(
-                    commandHandler,
-                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
-                    message.Provenance,
-                    ct);
-            });
-
-            When<AddressWasRetiredBecauseStreetNameWasRetired>(async (commandHandler, message, ct) =>
-            {
-                await DetachBecauseRetired(
-                    commandHandler,
-                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
-                    message.Provenance,
-                    ct);
-            });
-
             When<AddressWasRejected>(async (commandHandler, message, ct) =>
             {
                 await DetachBecauseRejected(
@@ -114,9 +78,72 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     ct);
             });
 
+            When<AddressWasRejectedBecauseStreetNameWasRejected>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRejected(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
+
             When<AddressWasRejectedBecauseStreetNameWasRetired>(async (commandHandler, message, ct) =>
             {
                 await DetachBecauseRejected(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
+
+            When<AddressWasRetiredV2>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRetired(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
+
+            When<AddressWasRetiredBecauseHouseNumberWasRetired>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRetired(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
+
+            When<AddressWasRetiredBecauseStreetNameWasRejected>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRetired(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
+
+            When<AddressWasRetiredBecauseStreetNameWasRetired>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRetired(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
+
+            When<AddressWasRemovedV2>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRemoved(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
+
+            When<AddressWasRemovedBecauseHouseNumberWasRemoved>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRemoved(
                     commandHandler,
                     new AddressPersistentLocalId(message.AddressPersistentLocalId),
                     message.Provenance,

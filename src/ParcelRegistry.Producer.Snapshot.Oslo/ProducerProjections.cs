@@ -18,7 +18,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
 
         private readonly IProducer _producer;
 
-        public ProducerProjections(IProducer producer, ISnapshotManager snapshotManager, string osloNamespace)
+        public ProducerProjections(IProducer producer, ISnapshotManager snapshotManager)
         {
             _producer = producer;
 
@@ -28,6 +28,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Position,
                             throwStaleWhenGone: false,
                             ct),
                         message.Position,
@@ -40,6 +41,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Position,
                             throwStaleWhenGone: false,
                             ct),
                     message.Position,
@@ -52,6 +54,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Position,
                             throwStaleWhenGone: false,
                             ct),
                     message.Position,
@@ -64,6 +67,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Position,
                             throwStaleWhenGone: false,
                             ct),
                     message.Position,
@@ -76,6 +80,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Position,
                             throwStaleWhenGone: false,
                             ct),
                     message.Position,
@@ -88,6 +93,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Position,
                             throwStaleWhenGone: false,
                             ct),
                     message.Position,
