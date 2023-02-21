@@ -1,3 +1,17 @@
+# [4.13.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.5...v4.13.0) (2023-02-21)
+
+
+### Bug Fixes
+
+* consumer should commit if message is already processed ([e6143fd](https://github.com/informatievlaanderen/parcel-registry/commit/e6143fd2eb1b5c59b069e158d92653e6b3bdc1ef))
+* number ksql ([f72bd14](https://github.com/informatievlaanderen/parcel-registry/commit/f72bd1413adea9f2521ba3d48afb4f2f7df89f1a))
+* use merge queue ([53de53b](https://github.com/informatievlaanderen/parcel-registry/commit/53de53b7bb8f11e97a1b3dad5d3ad44cda33955c))
+
+
+### Features
+
+* consume address rejection by streetname events for backoffice projection ([fe62f0f](https://github.com/informatievlaanderen/parcel-registry/commit/fe62f0faedccbca30a9b0e0f1ad8032ec9b0a510))
+
 ## [4.12.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.4...v4.12.5) (2023-02-13)
 
 
