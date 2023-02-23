@@ -92,7 +92,7 @@ Target.create "Containerize_ProjectionsSyndication" (fun _ -> containerize "Parc
 Target.create "Containerize_ProjectionsBackOffice" (fun _ -> containerize "ParcelRegistry.Projections.BackOffice" "projections-backoffice")
 Target.create "Containerize_ConsumerAddress" (fun _ -> containerize "ParcelRegistry.Consumer.Address" "consumer-address")
 Target.create "Containerize_MigratorParcel" (fun _ -> containerize "ParcelRegistry.Migrator.Parcel" "migrator-parcel")
-Target.create "Containerize_BackOffice" (fun _ -> containerize "ParcelRegistry.Api.BackOffice" "api-backoffice")
+Target.create "Containerize_ApiBackOffice" (fun _ -> containerize "ParcelRegistry.Api.BackOffice" "api-backoffice")
 Target.create "Containerize_Producer" (fun _ -> containerize "ParcelRegistry.Producer" "producer")
 Target.create "Containerize_ProducerSnapshotOslo" (fun _ -> containerize "ParcelRegistry.Producer.Snapshot.Oslo" "producer-snapshot-oslo")
 
@@ -136,7 +136,7 @@ Target.create "Containerize" ignore
   // ==> "Containerize_MigratorParcel"
   // ==> "Containerize_Producer"
   // ==> "Containerize_ProducerSnapshotOslo"
-  // ==> "Containerize_BackOffice"
+  // ==> "Containerize_ApiBackOffice"
   ==> "Containerize"
 // Possibly add more projects to containerize here
 
