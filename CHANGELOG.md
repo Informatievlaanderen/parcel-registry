@@ -1,3 +1,10 @@
+## [4.13.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.13.0...v4.13.1) (2023-02-23)
+
+
+### Bug Fixes
+
+* use new ci flow ([4468342](https://github.com/informatievlaanderen/parcel-registry/commit/4468342f275e90bb271c1f527a74158f61958454))
+
 # [4.13.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.12.5...v4.13.0) (2023-02-21)
 
 
