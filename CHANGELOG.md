@@ -1,3 +1,10 @@
+## [4.13.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.13.1...v4.13.2) (2023-02-23)
+
+
+### Bug Fixes
+
+* correct lambda bucket name in CI ([c901143](https://github.com/informatievlaanderen/parcel-registry/commit/c901143539b64de38ef3d01c34ec95d91673014d))
+
 ## [4.13.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.13.0...v4.13.1) (2023-02-23)
 
 
