@@ -3,14 +3,346 @@ name: Release
 on:
   workflow_dispatch:
 
+concurrency: Release
+
 jobs:
-  build:
+  set-release-version:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: Release
+    name: Decide next version
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.set-version.outputs.version }}
 
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+          persist-credentials: false
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3.5.1
+
+    - name: Node version
+      shell: bash
+      run: node --version
+
+    - name: Install NPM dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Run Semantic Release Dry-Run
+      shell: bash
+      run: npx semantic-release --dry-run
+      env:
+        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+        GITHUB_TOKEN: ${{ secrets.VBR_GIT_RELEASE_TOKEN }}
+        GIT_COMMIT: ${{ github.sha }}
+        GIT_USERNAME: ${{ secrets.VBR_GIT_USER }}
+        GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
+        GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
+        GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+        GIT_AUTHOR_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+        GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+
+    - name: Set Release Version
+      id: set-version
+      run: |
+        [ ! -f semver ] && echo none > semver
+        echo $(cat semver)
+        echo ::set-output name=version::$(cat semver)
+        echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
+      shell: bash
+
+  build-api-backoffice:
+    name: Build Api BackOffice
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_ApiBackOffice
+      image-file: pr-api-backoffice-image.tar
+      image-name: api-backoffice
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.BackOffice
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-api-legacy:
+    name: Build Api Legacy
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_ApiLegacy
+      image-file: pr-api-legacy-image.tar
+      image-name: api-legacy
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.Legacy
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-api-oslo:
+    name: Build Api Oslo
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_ApiOslo
+      image-file: pr-api-oslo-image.tar
+      image-name: api-oslo
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.Oslo
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-api-crab-import:
+    name: Build Api CrabImport
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_ApiCrabImport
+      image-file: pr-api-crab-import-image.tar
+      image-name: api-crab-import
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.CrabImport
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-api-extract:
+    name: Build Api Extract
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_ApiExtract
+      image-file: pr-api-extract-image.tar
+      image-name: api-extract
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.Extract
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-projector:
+    name: Build Projector
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_Projector
+      image-file: pr-projector-image.tar
+      image-name: projector
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Projector
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-projections-backoffice:
+    name: Build Projections BackOffice
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_ProjectionsBackOffice
+      image-file: pr-projections-backoffice-image.tar
+      image-name: projections-backoffice
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Projections.BackOffice
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-projections-syndication:
+    name: Build Projections Syndication
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_ProjectionsSyndication
+      image-file: pr-projections-syndication-image.tar
+      image-name: projections-syndication
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Projections.Syndication
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-consumer-address:
+    name: Build Consumer
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_ConsumerAddress
+      image-file: pr-consumer-address-image.tar
+      image-name: consumer-address
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Consumer.Address
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-producer:
+    name: Build Producer
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_Producer
+      image-file: pr-producer-image.tar
+      image-name: producer
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Producer
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-producer-snapshot-oslo:
+    name: Build Producer Snapshot Oslo
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_ProducerSnapshotOslo
+      image-file: pr-producer-snapshot-oslo-image.tar
+      image-name: producer-snapshot-oslo
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Producer.Snapshot.Oslo
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-migrator-parcel:
+    name: Build Migrator Parcel
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_MigratorParcel
+      image-file: pr-migrator-parcel-image.tar
+      image-name: migrator-parcel
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Migrator.Parcel
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  pack-api-backoffice:
+    name: Pack Api BackOffice
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      pack-file: Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.BackOffice
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  pack-api-backoffice-abstractions:
+    name: Pack Api BackOffice Abstractions
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      pack-file: Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.BackOffice.Abstractions
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  pack-api-legacy:
+    name: Pack Api Legacy
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      pack-file: Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.Legacy
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  pack-api-oslo:
+    name: Pack Api Oslo
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      pack-file: Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.Oslo
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  pack-api-extract:
+    name: Pack Api Extract
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      pack-file: Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.Extract
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  pack-api-crab-import:
+    name: Pack Api CrabImport
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      pack-file: Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.CrabImport
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-lambda-backoffice:
+    name: Build Lambda
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      lambda-name: lambda-backoffice
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Api.BackOffice.Handlers.Lambda
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  release:
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    needs: [ set-release-version,
+      pack-api-backoffice,
+      pack-api-backoffice-abstractions,
+      pack-api-legacy,
+      pack-api-oslo,
+      pack-api-extract,
+      pack-api-crab-import,
+      build-api-backoffice,
+      build-api-legacy,
+      build-api-oslo,
+      build-api-extract,
+      build-api-crab-import,
+      build-projector,
+      build-projections-backoffice,
+      build-projections-syndication,
+      build-consumer-address,
+      build-producer,
+      build-producer-snapshot-oslo,
+      build-migrator-parcel,
+      build-lambda-backoffice ]
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -27,35 +359,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-build-${{ env.cache-name }}-
 
-    - name: Cache Paket
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-paket
-      with:
-        path: packages
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-
-    - name: Cache Python
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-pip
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-build-${{ env.cache-name }}
-
     - name: Parse repository name
       run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
       shell: bash
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3.5.1
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+      uses: actions/setup-node@v3
 
     - name: Setup Python
       uses: actions/setup-python@v3
@@ -76,13 +385,55 @@ jobs:
 
     - name: Install NPM dependencies
       shell: bash
-      run: npm ci
+      run: npm install --legacy-peer-deps
 
     - name: Install Python dependencies
       shell: bash
       run: |
         python -m pip install --upgrade pip
         pip install requests markdown argparse
+
+    - name: Download NuGet Api BackOffice
+      uses: actions/download-artifact@v3
+      continue-on-error: false
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice-${{ needs.set-release-version.outputs.version }}
+        path: dist/nuget/
+
+    - name: Download NuGet Api BackOffice Abstractions
+      uses: actions/download-artifact@v3
+      continue-on-error: false
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions-${{ needs.set-release-version.outputs.version }}
+        path: dist/nuget/
+
+    - name: Download NuGet Api Legacy
+      uses: actions/download-artifact@v3
+      continue-on-error: false
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy-${{ needs.set-release-version.outputs.version }}
+        path: dist/nuget/
+
+    - name: Download NuGet Api Oslo
+      uses: actions/download-artifact@v3
+      continue-on-error: false
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo-${{ needs.set-release-version.outputs.version }}
+        path: dist/nuget/
+
+    - name: Download NuGet Api Extract
+      uses: actions/download-artifact@v3
+      continue-on-error: false
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract-${{ needs.set-release-version.outputs.version }}
+        path: dist/nuget/
+
+    - name: Download NuGet Api CrabImport
+      uses: actions/download-artifact@v3
+      continue-on-error: false
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport-${{ needs.set-release-version.outputs.version }}
+        path: dist/nuget/
 
     - name: Run Semantic Release
       shell: bash
@@ -102,192 +453,25 @@ jobs:
       id: set-version
       run: |
         [ ! -f semver ] && echo none > semver
+        echo $(cat semver)
         echo ::set-output name=version::$(cat semver)
         echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
       shell: bash
 
-     #
-     # Save artifacts
-     #
-
-    - name: Save artifacts
-      if: env.RELEASE_VERSION != 'none'
-      shell: bash
-      run: |
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/projector:$SEMVER -o ~/pr-projector-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-legacy:$SEMVER -o ~/pr-api-legacy-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-oslo:$SEMVER -o ~/pr-api-oslo-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-extract:$SEMVER -o ~/pr-api-extract-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-crab-import:$SEMVER -o ~/pr-api-crab-import-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER -o ~/pr-projections-syndication-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/projections-backoffice:$SEMVER -o ~/pr-projections-backoffice-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER -o ~/pr-consumer-address-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER -o ~/pr-migrator-parcel-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER -o ~/pr-producer-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/producer-snapshot-oslo:$SEMVER -o ~/pr-producer-snapshot-oslo-image.tar
-        docker image save $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER -o ~/pr-api-backoffice-image.tar
-      env:
-        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
-        SEMVER: ${{ env.RELEASE_VERSION }}
-
-    #
-    # Upload NuGet packages
-    #
-
-    - name: Upload NuGet package api-extract
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
+  upload-lambda:
+    name: Upload Lambda
+    needs: [ release ]
+    runs-on: ubuntu-latest
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
+    steps:
+    - name: Download Lambda
+      uses: actions/download-artifact@v3
+      continue-on-error: false
       with:
-        name: nuget-api-extract
-        path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract.*.nupkg
-      env:
-        SEMVER: ${{ env.RELEASE_VERSION }}
-
-    - name: Upload NuGet package api-legacy
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: nuget-api-legacy
-        path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy.*.nupkg
-      env:
-        SEMVER: ${{ env.RELEASE_VERSION }}
-
-    - name: Upload NuGet package api-oslo
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: nuget-api-oslo
-        path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo.*.nupkg
-      env:
-        SEMVER: ${{ env.RELEASE_VERSION }}
-
-    - name: Upload NuGet package api-crabimport
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: nuget-api-crabimport
-        path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport.*.nupkg
-      env:
-        SEMVER: ${{ env.RELEASE_VERSION }}
-        
-    - name: Upload NuGet package api-backoffice
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: nuget-api-backoffice
-        path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.*.nupkg
-      env:
-        SEMVER: ${{ env.RELEASE_VERSION }}
-
-    - name: Upload NuGet package api-backoffice-abstractions
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: nuget-api-backoffice-abstractions
-        path: /home/runner/work/parcel-registry/parcel-registry/dist/nuget/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.*.nupkg
-      env:
-        SEMVER: ${{ env.RELEASE_VERSION }}
-
-    #
-    # Upload build artifacts
-    #
-
-    - name: Upload projector artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: projector
-        path: ~/pr-projector-image.tar
-
-    - name: Upload api-legacy artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: api-legacy
-        path: ~/pr-api-legacy-image.tar
-
-    - name: Upload api-oslo artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: api-oslo
-        path: ~/pr-api-oslo-image.tar
-
-    - name: Upload api-extract artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: api-extract
-        path: ~/pr-api-extract-image.tar
-
-    - name: Upload api-crab-import artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: api-crab-import
-        path: ~/pr-api-crab-import-image.tar
-
-    - name: Upload projections-syndication artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: projections-syndication
-        path: ~/pr-projections-syndication-image.tar
-
-    - name: Upload projections-backoffice artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: projections-backoffice
-        path: ~/pr-projections-backoffice-image.tar
-
-    - name: Upload consumer-address artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: consumer-address
-        path: ~/pr-consumer-address-image.tar
-
-    - name: Upload migrator-parcel artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: migrator-parcel
-        path: ~/pr-migrator-parcel-image.tar
-
-    - name: Upload producer artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: producer
-        path: ~/pr-producer-image.tar
-
-    - name: Upload producer-snapshot-oslo artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: producer-snapshot-oslo
-        path: ~/pr-producer-snapshot-oslo-image.tar
-
-    - name: Upload api-backoffice artifact
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/upload-artifact@v3
-      with:
-        name: api-backoffice
-        path: ~/pr-api-backoffice-image.tar
-
-    - name: Package Lambda functions        
-      if: env.RELEASE_VERSION != 'none'
-      shell: bash
-      run: |
-        echo Zip lambda functions
-        pushd /home/runner/work/parcel-registry/parcel-registry/dist/ParcelRegistry.Api.BackOffice.Handlers.Lambda/linux
-        echo zip -r lambda.zip .
-        zip -r lambda.zip .
-        popd
+        name: lambda-backoffice-${{ needs.release.outputs.version }}
+        path: ~/
 
     - name: Configure AWS credentials (Test)
-      if: env.RELEASE_VERSION != 'none'
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
@@ -295,23 +479,18 @@ jobs:
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Login to Amazon ECR (Test)
-      if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1.5.2
+      uses: aws-actions/amazon-ecr-login@v1.5.3
 
     - name: Push Lambda functions to S3 Test
-      if: env.RELEASE_VERSION != 'none'
       shell: bash
       run: |
-         echo Push Lambda functions to S3 Test
-         pushd /home/runner/work/parcel-registry/parcel-registry/dist/ParcelRegistry.Api.BackOffice.Handlers.Lambda/linux
-         echo aws s3 cp lambda.zip s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-         aws s3 cp lambda.zip s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-         popd
+        echo Push Lambda functions to S3 Test
+        echo aws s3 cp ~/lambda.zip s3://s3-vpr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
+        aws s3 cp ~/lambda.zip s3://s3-vpr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
       env:
-         SEMVER: ${{ env.RELEASE_VERSION }}
+        SEMVER: ${{ needs.release.outputs.version }}
 
     - name: Configure AWS credentials (Staging)
-      if: env.RELEASE_VERSION != 'none'
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
@@ -319,48 +498,108 @@ jobs:
         aws-region: ${{ secrets.VBR_AWS_REGION }}
 
     - name: Login to Amazon ECR (Staging)
-      if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1.5.2
+      uses: aws-actions/amazon-ecr-login@v1.5.3
 
     - name: Push Lambda functions to S3 Staging
-      if: env.RELEASE_VERSION != 'none'
       shell: bash
       run: |
         echo Push Lambda functions to S3 Staging
-        pushd /home/runner/work/parcel-registry/parcel-registry/dist/ParcelRegistry.Api.BackOffice.Handlers.Lambda/linux
-        echo aws s3 cp lambda.zip s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-        aws s3 cp lambda.zip s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-        popd
+        echo aws s3 cp ~/lambda.zip s3://s3-vpr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
+        aws s3 cp ~/lambda.zip s3://s3-vpr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
       env:
-        SEMVER: ${{ env.RELEASE_VERSION }}
+        SEMVER: ${{ needs.release.outputs.version }}
 
     - name: Configure AWS credentials (Production)
-      if: env.RELEASE_VERSION != 'none'
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
-       aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
-       aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
-       aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
+        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Login to Amazon ECR (Production)
-      if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1.5.2
+      uses: aws-actions/amazon-ecr-login@v1.5.3
 
     - name: Push Lambda functions to S3 Production
-      if: env.RELEASE_VERSION != 'none'
       shell: bash
       run: |
         echo Push Lambda functions to S3 Production
-        pushd /home/runner/work/parcel-registry/parcel-registry/dist/ParcelRegistry.Api.BackOffice.Handlers.Lambda/linux
-        echo aws s3 cp lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-        aws s3 cp lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-        popd
+        echo aws s3 cp ~/lambda.zip s3://s3-vpr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
+        aws s3 cp ~/lambda.zip s3://s3-vpr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
       env:
-       SEMVER: ${{ env.RELEASE_VERSION }}
+       SEMVER: ${{ needs.release.outputs.version }}
+
+  publish_to_nuget:
+    needs: [ release ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
+    name: Publish to NuGet
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+
+    - name: .NET version
+      shell: bash
+      run: dotnet --info
+
+    - name: Download NuGet package api-backoffice
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice-${{ needs.release.outputs.version }}
+        path: ~/
+
+    - name: Download NuGet package api-backoffice-abstractions
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions-${{ needs.release.outputs.version }}
+        path: ~/
+
+    - name: Download NuGet package api-legacy
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy-${{ needs.release.outputs.version }}
+        path: ~/
+
+    - name: Download NuGet package api-oslo
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo-${{ needs.release.outputs.version }}
+        path: ~/
+
+    - name: Download NuGet package api-extract
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract-${{ needs.release.outputs.version }}
+        path: ~/
+
+    - name: Download NuGet package api-crab-import
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport-${{ needs.release.outputs.version }}
+        path: ~/
+
+    - name: Publish packages to NuGet
+      shell: bash
+      run: |
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
+      env:
+        SEMVER: ${{  needs.release.outputs.version }}
+        WORKSPACE: ${{ github.workspace }}
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
   publish_to_atlassian:
-    if: needs.build.outputs.version != 'none'
-    needs: build
+    needs: [ release ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
     name: Publish to Atlassian
     runs-on: ubuntu-latest
     steps:
@@ -401,7 +640,6 @@ jobs:
           pip install requests markdown argparse
 
       - name: Publish to Confluence
-        if: needs.build.outputs.version != 'none'
         shell: bash
         run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
         env:
@@ -410,7 +648,6 @@ jobs:
           CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
 
       - name: Create Jira Release
-        if: env.RELEASE_VERSION != 'none'
         shell: bash
         run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
         env:
@@ -419,91 +656,30 @@ jobs:
           CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
           JIRA_PREFIX: Parcel
           JIRA_PROJECT: GAWR
-          JIRA_VERSION: ${{ needs.build.outputs.version }}
-
-  publish_to_nuget:
-    if: needs.build.outputs.version != 'none'
-    needs: build
-    name: Publish to NuGet
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
-
-    - name: .NET version
-      shell: bash
-      run: dotnet --info
-
-    - name: Download NuGet package api-extract
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-api-extract
-        path: ~/
-
-    - name: Download NuGet package api-legacy
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-api-legacy
-        path: ~/
-
-    - name: Download NuGet package api-oslo
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-api-oslo
-        path: ~/
-
-    - name: Download NuGet package api-crabimport
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-api-crabimport
-        path: ~/
-
-    - name: Download NuGet package api-backoffice
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-api-backoffice
-        path: ~/
-
-    - name: Download NuGet package api-backoffice-abstractions
-      if: env.RELEASE_VERSION != 'none'
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-api-backoffice-abstractions
-        path: ~/
-
-    - name: Publish packages to NuGet
-      shell: bash
-      run: |
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-      env:
-        SEMVER: ${{ needs.build.outputs.version }}
-        WORKSPACE: ${{ github.workspace }}
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          JIRA_VERSION: ${{ needs.release.outputs.version }}
 
   push_images_to_test:
-    if: needs.build.outputs.version != 'none'
-    needs: build
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
     name: Push images to Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'api-backoffice',
+          'api-legacy',
+          'api-oslo',
+          'api-crab-import',
+          'api-extract',
+          'projector',
+          'projections-syndication',
+          'projections-backoffice',
+          'consumer-address',
+          'producer',
+          'producer-snapshot-oslo',
+          'migrator-parcel' ]
     steps:
       - name: Configure AWS credentials (Test)
-        if: needs.build.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
@@ -511,135 +687,58 @@ jobs:
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR (Test)
-        if: needs.build.outputs.version != 'none'
-        uses: aws-actions/amazon-ecr-login@v1.5.2
+        uses: aws-actions/amazon-ecr-login@v1.5.3
 
-      #
-      # Download artifacts
-      #
-
-      - name: Download projector
+      # Download artifact
+      - name: Download artifact
         uses: actions/download-artifact@v3
+        continue-on-error: false
         with:
-          name: projector
+          name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
           path: ~/
 
-      - name: Download api-legacy
-        uses: actions/download-artifact@v3
-        with:
-          name: api-legacy
-          path: ~/
-
-      - name: Download api-oslo
-        uses: actions/download-artifact@v3
-        with:
-          name: api-oslo
-          path: ~/
-
-      - name: Download api-extract
-        uses: actions/download-artifact@v3
-        with:
-          name: api-extract
-          path: ~/
-
-      - name: Download api-crab-import
-        uses: actions/download-artifact@v3
-        with:
-          name: api-crab-import
-          path: ~/
-
-      - name: Download projections-syndication
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-syndication
-          path: ~/
-
-      - name: Download projections-backoffice
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-backoffice
-          path: ~/
-
-      - name: Download consumer-address
-        uses: actions/download-artifact@v3
-        with:
-          name: consumer-address
-          path: ~/
-
-      - name: Download migrator-parcel
-        uses: actions/download-artifact@v3
-        with:
-          name: migrator-parcel
-          path: ~/
-
-      - name: Download producer
-        uses: actions/download-artifact@v3
-        with:
-          name: producer
-          path: ~/
-
-      - name: Download producer-snapshot-oslo
-        uses: actions/download-artifact@v3
-        with:
-          name: producer-snapshot-oslo
-          path: ~/
-
-      - name: Download api-backoffice
-        uses: actions/download-artifact@v3
-        with:
-          name: api-backoffice
-          path: ~/
-
-      #
-      # Load artifacts
-      #
-
-      - name: Load artifacts
+      # Load artifact
+      - name: Load artifact
         shell: bash
         run: |
-          docker image load -i ~/pr-projector-image.tar
-          docker image load -i ~/pr-api-legacy-image.tar
-          docker image load -i ~/pr-api-oslo-image.tar
-          docker image load -i ~/pr-api-extract-image.tar
-          docker image load -i ~/pr-api-crab-import-image.tar
-          docker image load -i ~/pr-projections-syndication-image.tar
-          docker image load -i ~/pr-projections-backoffice-image.tar
-          docker image load -i ~/pr-consumer-address-image.tar
-          docker image load -i ~/pr-migrator-parcel-image.tar
-          docker image load -i ~/pr-producer-image.tar
-          docker image load -i ~/pr-producer-snapshot-oslo-image.tar
-          docker image load -i ~/pr-api-backoffice-image.tar
+          echo pr-$IMAGE-image.tar
+          docker image load -i ~/pr-$IMAGE-image.tar
+        env:
+          IMAGE: ${{ matrix.image }}
 
       - name: Push artifacts to ECR Test
-        if: needs.build.outputs.version != 'none'
         shell: bash
         run: |
-          echo $SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projector:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-legacy:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-oslo:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-extract:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-crab-import:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projections-backoffice:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/producer-snapshot-oslo:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
+          echo $IMAGE:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/$IMAGE:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
-          SEMVER: ${{ needs.build.outputs.version }}
+          IMAGE: ${{ matrix.image }}
+          SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
   push_images_to_staging:
-    if: needs.build.outputs.version != 'none'
-    needs: build
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
     name: Push images to Staging
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'api-backoffice',
+          'api-legacy',
+          'api-oslo',
+          'api-crab-import',
+          'api-extract',
+          'projector',
+          'projections-syndication',
+          'projections-backoffice',
+          'consumer-address',
+          'producer',
+          'producer-snapshot-oslo',
+          'migrator-parcel' ]
     steps:
       - name: Configure AWS credentials (Staging)
-        if: needs.build.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
@@ -647,159 +746,60 @@ jobs:
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR (Staging)
-        if: needs.build.outputs.version != 'none'
-        uses: aws-actions/amazon-ecr-login@v1.5.2
+        uses: aws-actions/amazon-ecr-login@v1.5.3
 
-      #
-      # Download artifacts
-      #
-
-      - name: Download projector
+      # Download artifact
+      - name: Download artifact
         uses: actions/download-artifact@v3
+        continue-on-error: false
         with:
-          name: projector
+          name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
           path: ~/
 
-      - name: Download api-legacy
-        uses: actions/download-artifact@v3
-        with:
-          name: api-legacy
-          path: ~/
-
-      - name: Download api-oslo
-        uses: actions/download-artifact@v3
-        with:
-          name: api-oslo
-          path: ~/
-
-      - name: Download api-extract
-        uses: actions/download-artifact@v3
-        with:
-          name: api-extract
-          path: ~/
-
-      - name: Download api-crab-import
-        uses: actions/download-artifact@v3
-        with:
-          name: api-crab-import
-          path: ~/
-
-      - name: Download projections-syndication
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-syndication
-          path: ~/
-
-      - name: Download projections-backoffice
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-backoffice
-          path: ~/
-
-      - name: Download consumer-address
-        uses: actions/download-artifact@v3
-        with:
-          name: consumer-address
-          path: ~/
-
-      - name: Download migrator-parcel
-        uses: actions/download-artifact@v3
-        with:
-          name: migrator-parcel
-          path: ~/
-
-      - name: Download producer
-        uses: actions/download-artifact@v3
-        with:
-          name: producer
-          path: ~/
-
-      - name: Download producer-snapshot-oslo
-        uses: actions/download-artifact@v3
-        with:
-          name: producer-snapshot-oslo
-          path: ~/
-
-      - name: Download api-backoffice
-        uses: actions/download-artifact@v3
-        with:
-          name: api-backoffice
-          path: ~/
-
-      #
-      # Load artifacts
-      #
-
-      - name: Load artifacts
+      # Load artifact
+      - name: Load artifact
         shell: bash
         run: |
-          docker image load -i ~/pr-projector-image.tar
-          docker image load -i ~/pr-api-legacy-image.tar
-          docker image load -i ~/pr-api-oslo-image.tar
-          docker image load -i ~/pr-api-extract-image.tar
-          docker image load -i ~/pr-api-crab-import-image.tar
-          docker image load -i ~/pr-projections-syndication-image.tar
-          docker image load -i ~/pr-projections-backoffice-image.tar
-          docker image load -i ~/pr-consumer-address-image.tar
-          docker image load -i ~/pr-migrator-parcel-image.tar
-          docker image load -i ~/pr-producer-image.tar
-          docker image load -i ~/pr-producer-snapshot-oslo-image.tar
-          docker image load -i ~/pr-api-backoffice-image.tar
+          echo pr-$IMAGE-image.tar
+          docker image load -i ~/pr-$IMAGE-image.tar
+        env:
+          IMAGE: ${{ matrix.image }}
 
       - name: Push artifacts to ECR Staging
-        if: needs.build.outputs.version != 'none'
         shell: bash
         run: |
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projector:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/projector:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projector:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-legacy:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/api-legacy:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-legacy:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-oslo:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/api-oslo:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-oslo:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/api-extract:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-extract:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-crab-import:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/api-crab-import:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-crab-import:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projections-syndication:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projections-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/projections-backoffice:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/projections-backoffice:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/consumer-address:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/consumer-address:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/migrator-parcel:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/migrator-parcel:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/producer:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/producer:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/producer-snapshot-oslo:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/producer-snapshot-oslo:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/producer-snapshot-oslo:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/api-backoffice:$SEMVER
-
+          echo $IMAGE:$SEMVER
+          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY/parcel-registry/$IMAGE:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/parcel-registry/$IMAGE:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-          SEMVER: ${{ needs.build.outputs.version }}
+          IMAGE: ${{ matrix.image }}
+          SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
   push_images_to_production:
-    if: needs.build.outputs.version != 'none'
-    needs: build
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
     name: Push images to Production
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'api-backoffice',
+          'api-legacy',
+          'api-oslo',
+          'api-crab-import',
+          'api-extract',
+          'projector',
+          'projections-syndication',
+          'projections-backoffice',
+          'consumer-address',
+          'producer',
+          'producer-snapshot-oslo',
+          'migrator-parcel' ]
     steps:
       - name: Configure AWS credentials (Production)
-        if: needs.build.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
@@ -807,154 +807,41 @@ jobs:
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR (Production)
-        if: needs.build.outputs.version != 'none'
-        uses: aws-actions/amazon-ecr-login@v1.5.2
+        uses: aws-actions/amazon-ecr-login@v1.5.3
 
-      #
-      # Download artifacts
-      #
-
-      - name: Download projector
+      # Download artifact
+      - name: Download artifact
         uses: actions/download-artifact@v3
+        continue-on-error: false
         with:
-          name: projector
+          name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
           path: ~/
 
-      - name: Download api-legacy
-        uses: actions/download-artifact@v3
-        with:
-          name: api-legacy
-          path: ~/
-
-      - name: Download api-oslo
-        uses: actions/download-artifact@v3
-        with:
-          name: api-oslo
-          path: ~/
-
-      - name: Download api-extract
-        uses: actions/download-artifact@v3
-        with:
-          name: api-extract
-          path: ~/
-
-      - name: Download api-crab-import
-        uses: actions/download-artifact@v3
-        with:
-          name: api-crab-import
-          path: ~/
-
-      - name: Download projections-syndication
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-syndication
-          path: ~/
-
-      - name: Download projections-backoffice
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-backoffice
-          path: ~/
-
-      - name: Download consumer-address
-        uses: actions/download-artifact@v3
-        with:
-          name: consumer-address
-          path: ~/
-
-      - name: Download migrator-parcel
-        uses: actions/download-artifact@v3
-        with:
-          name: migrator-parcel
-          path: ~/
-
-      - name: Download producer
-        uses: actions/download-artifact@v3
-        with:
-          name: producer
-          path: ~/
-
-      - name: Download producer-snapshot-oslo
-        uses: actions/download-artifact@v3
-        with:
-          name: producer-snapshot-oslo
-          path: ~/
-
-      - name: Download api-backoffice
-        uses: actions/download-artifact@v3
-        with:
-          name: api-backoffice
-          path: ~/
-
-      #
-      # Load artifacts
-      #
-
-      - name: Load artifacts
+      # Load artifact
+      - name: Load artifact
         shell: bash
         run: |
-          docker image load -i ~/pr-projector-image.tar
-          docker image load -i ~/pr-api-legacy-image.tar
-          docker image load -i ~/pr-api-oslo-image.tar
-          docker image load -i ~/pr-api-extract-image.tar
-          docker image load -i ~/pr-api-crab-import-image.tar
-          docker image load -i ~/pr-projections-syndication-image.tar
-          docker image load -i ~/pr-projections-backoffice-image.tar
-          docker image load -i ~/pr-consumer-address-image.tar
-          docker image load -i ~/pr-migrator-parcel-image.tar
-          docker image load -i ~/pr-producer-image.tar
-          docker image load -i ~/pr-producer-snapshot-oslo-image.tar
-          docker image load -i ~/pr-api-backoffice-image.tar
+          echo pr-$IMAGE-image.tar
+          docker image load -i ~/pr-$IMAGE-image.tar
+        env:
+          IMAGE: ${{ matrix.image }}
 
       - name: Push artifacts to ECR Production
-        if: needs.build.outputs.version != 'none'
         shell: bash
         run: |
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projector:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/projector:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/projector:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-legacy:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-legacy:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-legacy:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-oslo:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-oslo:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-oslo:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-extract:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-extract:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-extract:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-crab-import:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-crab-import:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-crab-import:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projections-syndication:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/projections-syndication:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/projections-syndication:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/projections-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/projections-backoffice:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/projections-backoffice:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/consumer-address:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/consumer-address:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/consumer-address:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/migrator-parcel:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/migrator-parcel:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/migrator-parcel:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/producer:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/producer:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/producer:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/producer-snapshot-oslo:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/producer-snapshot-oslo:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/producer-snapshot-oslo:$SEMVER
-
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/api-backoffice:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-backoffice:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/api-backoffice:$SEMVER
-
+          echo $IMAGE:$SEMVER
+          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/$IMAGE:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/$IMAGE:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
           BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
-          SEMVER: ${{ needs.build.outputs.version }}
+          IMAGE: ${{ matrix.image }}
+          SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
   deploy_to_test_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [push_images_to_test, build]
+    needs: [ push_images_to_test ]
     name: Deploy to test started
     environment: test
     runs-on: ubuntu-latest
@@ -976,12 +863,12 @@ jobs:
 
   deploy_to_test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [deploy_to_test_start_slack, build]
+    needs: [ push_images_to_test, release ]
     name: Deploy to test
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: [ 'parcel-registry-api', 'parcel-registry-import-api', 'parcel-registry-projections', 'parcel-registry-backoffice-api', 'parcel-registry-producer', 'parcel-registry-producer-snapshot-oslo', 'parcel-registry-projections-backoffice']
+        services: ['parcel-registry-api', 'parcel-registry-import-api', 'parcel-registry-projections', 'parcel-registry-producer', 'parcel-registry-producer-snapshot-oslo']
 
     steps:
     - name: Deploy services
@@ -991,7 +878,7 @@ jobs:
       uses: informatievlaanderen/awscurl-polling-action/polling-action@main
       with:
           environment: test
-          version: ${{ needs.build.outputs.version }}
+          version: ${{ needs.release.outputs.version }}
           status-url: $STATUS_URL
           deploy-url: $BUILD_URL
           access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
@@ -1008,10 +895,10 @@ jobs:
 
   deploy_lambda_to_test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [deploy_to_test, build]
+    needs: [ deploy_to_test, release ]
     name: Deploy lambda to test
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: CD Lambda(s) Configure credentials
       uses: aws-actions/configure-aws-credentials@v1-node16
@@ -1019,31 +906,31 @@ jobs:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-        
+
     - name: Prepare Lambda(s)
-      shell: bash          
+      shell: bash
       run: |
-        echo aws s3 cp s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none       
-        aws s3 cp s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none       
-      env:     
-        VERSION: ${{ needs.build.outputs.version }}       
-   
+        echo aws s3 cp s3://s3-vpr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vpr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
+        aws s3 cp s3://s3-vpr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vpr-test-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
+      env:
+        VERSION: ${{ needs.release.outputs.version }}
+
     - name: Promote Lambda(s)
-      shell: bash     
-      run: |     
-        echo pulling awscurl docker image       
+      shell: bash
+      run: |
+        echo pulling awscurl docker image
         docker pull ghcr.io/okigan/awscurl:latest
         echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "pr-sqsbackofficehandlerfunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/test
         docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "pr-sqsbackofficehandlerfunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/test
-      env:       
-       ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}       
-       SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
-       REGION: ${{ secrets.VBR_AWS_REGION_PRD }}       
-       PROMOTEURL: ${{ secrets.VBR_AWS_PROMOTE_LAMBDA_BASEURL }}       
+      env:
+        ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
+        SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
+        REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
+        PROMOTEURL: ${{ secrets.VBR_AWS_PROMOTE_LAMBDA_BASEURL }}
 
   deploy_to_test_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [deploy_lambda_to_test]
+    needs: [ deploy_lambda_to_test ]
     name: Deploy to test finished
     runs-on: ubuntu-latest
 
@@ -1064,7 +951,7 @@ jobs:
 
   deploy_to_staging_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [push_images_to_staging, deploy_to_test_finish_slack, build]
+    needs: [ push_images_to_staging, deploy_to_test_finish_slack ]
     name: Deploy to staging started
     environment: stg
     runs-on: ubuntu-latest
@@ -1086,13 +973,20 @@ jobs:
 
   deploy_to_staging:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [deploy_to_staging_start_slack, build]
+    needs: [ push_images_to_staging, deploy_to_test_finish_slack, release ]
     name: Deploy to staging
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: ['parcel-registry-api', 'parcel-registry-projections', 'parcel-registry-consumer-address', 'parcel-registry-migrator-parcel', 'parcel-registry-backoffice-api', 'parcel-registry-producer', 'parcel-registry-producer-snapshot-oslo', 'parcel-registry-projections-backoffice']
-
+        services: [
+          'parcel-registry-api',
+          'parcel-registry-backoffice-api',
+          'parcel-registry-consumer-address',
+          'parcel-registry-migrator-parcel',
+          'parcel-registry-producer',
+          'parcel-registry-producer-snapshot-oslo',
+          'parcel-registry-projections',
+          'parcel-registry-projections-backoffice' ]
     steps:
     - name: CD services
       env:
@@ -1101,14 +995,14 @@ jobs:
       uses: informatievlaanderen/awscurl-polling-action/polling-action@main
       with:
           environment: stg
-          version: ${{ needs.build.outputs.version }}
+          version: ${{ needs.release.outputs.version }}
           status-url: $STATUS_URL
           deploy-url: $BUILD_URL
           access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
           secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
           region: eu-west-1
           interval: 2
-          
+
     - name: output CD services
       shell: bash
       run: |
@@ -1118,7 +1012,7 @@ jobs:
 
   deploy_lambda_to_staging:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [deploy_to_staging, build]
+    needs: [ deploy_to_staging, release ]
     name: Deploy lambda to staging
     runs-on: ubuntu-latest
 
@@ -1129,15 +1023,15 @@ jobs:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-        
+
     - name: Prepare Lambda(s)
       shell: bash
       run: |
-        echo aws s3 cp s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
-        aws s3 cp s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
+        echo aws s3 cp s3://s3-vpr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vpr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
+        aws s3 cp s3://s3-vpr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vpr-stg-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
       env:
-        VERSION: ${{ needs.build.outputs.version }}
-       
+        VERSION: ${{ needs.release.outputs.version }}
+
     - name: Promote Lambda(s)
       shell: bash
       run: |
@@ -1153,7 +1047,7 @@ jobs:
 
   deploy_to_staging_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [deploy_lambda_to_staging]
+    needs: [ deploy_lambda_to_staging ]
     name: Deploy to staging finished
     runs-on: ubuntu-latest
 
@@ -1167,116 +1061,6 @@ jobs:
       with:
         channel-id: '#team-dinosaur-dev'
         slack-message: Deployment of parcel-registry to staging has finished
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
-        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
-        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
-
-  deploy_to_production_start_slack:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [push_images_to_production, deploy_to_staging_finish_slack, build]
-    name: Deploy to production started
-    environment: prd
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
-      shell: bash
-
-    - name: Notify deployment started
-      uses: slackapi/slack-github-action@v1.23.0
-      with:
-        channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of parcel-registry to production has started
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
-        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
-        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
-        
-  deploy_to_production:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [deploy_to_production_start_slack, build]
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: 
-        services: ['parcel-registry-api', 'parcel-registry-import-api', 'parcel-registry-projections']
-
-    steps:
-    - name: CD services
-      env:
-        BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
-        STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
-      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
-      with:
-          environment: prd
-          version: ${{ needs.build.outputs.version }}
-          status-url: $STATUS_URL
-          deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
-          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
-          region: eu-west-1
-          interval: 2
-
-    - name: output CD services
-      shell: bash
-      run: |
-        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
-        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
-        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
-
-  deploy_lambda_to_production:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [deploy_to_production, build]
-    name: Deploy lambda to production
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: CD Lambda(s) Configure credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
-      with:
-        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
-        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
-        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-        
-#    - name: Prepare Lambda(s)
-#      shell: bash
-#      run: |
-#        echo aws s3 cp s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
-#        aws s3 cp s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$VERSION/lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/lambda.zip --copy-props none
-#      env:
-#        VERSION: ${{ needs.build.outputs.version }}
-#        
-#    - name: Promote Lambda(s)
-#      shell: bash
-#      run: |
-#        echo pulling awscurl docker image
-#        docker pull ghcr.io/okigan/awscurl:latest
-#        echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "pr-sqsbackofficehandlerfunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/prd
-#        docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "pr-sqsbackofficehandlerfunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/prd
-#      env:
-#        ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
-#        SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
-#        REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
-#        PROMOTEURL: ${{ secrets.VBR_AWS_PROMOTE_LAMBDA_BASEURL }}
-
-  deploy_to_production_finish_slack:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [deploy_lambda_to_production]
-    name: Deploy to production finished
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
-      shell: bash
-
-    - name: Notify deployment finished
-      uses: slackapi/slack-github-action@v1.23.0
-      with:
-        channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of parcel-registry to production has finished
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
