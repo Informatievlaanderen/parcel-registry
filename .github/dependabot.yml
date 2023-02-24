@@ -6,38 +6,46 @@ updates:
   schedule:
     interval: weekly
   open-pull-requests-limit: 25
+  rebase-strategy: "disabled"
   
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
     interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: npm
   directory: "/"
   schedule:
     interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: docker
   directory: "/src/ParcelRegistry.Api.CrabImport"
   schedule:
     interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: docker
   directory: "/src/ParcelRegistry.Api.Extract"
   schedule:
     interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: docker
   directory: "/src/ParcelRegistry.Api.Legacy"
   schedule:
     interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: docker
   directory: "/src/ParcelRegistry.Projections.Syndication"
   schedule:
     interval: weekly
+  rebase-strategy: "disabled"
 
 - package-ecosystem: docker
   directory: "/src/ParcelRegistry.Projector"
   schedule:
     interval: weekly
+  rebase-strategy: "disabled"
