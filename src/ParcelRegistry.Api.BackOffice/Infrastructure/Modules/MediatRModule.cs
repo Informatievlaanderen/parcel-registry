@@ -15,13 +15,6 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
                 .As<IMediator>()
                 .InstancePerLifetimeScope();
 
-            // request & notification handlers
-            builder.Register<ServiceFactory>(context =>
-            {
-                var ctx = context.Resolve<IComponentContext>();
-                return type => ctx.Resolve(type);
-            });
-
             builder.RegisterAssemblyTypes(typeof(AttachAddressHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
         }
     }
