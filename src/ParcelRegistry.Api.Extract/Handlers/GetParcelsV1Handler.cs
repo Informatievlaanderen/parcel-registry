@@ -1,11 +1,13 @@
 namespace ParcelRegistry.Api.Extract.Handlers
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Extracts;
     using MediatR;
     using ParcelRegistry.Projections.Extract;
 
-    public class GetParcelsV1Handler : RequestHandler<GetParcelsRequest, IsolationExtractArchive>
+    public class GetParcelsV1Handler : IRequestHandler<GetParcelsRequest, IsolationExtractArchive>
     {
         private readonly ExtractContext _context;
 
@@ -14,12 +16,12 @@ namespace ParcelRegistry.Api.Extract.Handlers
             _context = context;
         }
 
-        protected override IsolationExtractArchive Handle(GetParcelsRequest request)
+        public Task<IsolationExtractArchive> Handle(GetParcelsRequest request, CancellationToken cancellationToken)
         {
-            return new IsolationExtractArchive(ExtractFileNames.FileName, _context)
+            return Task.FromResult(new IsolationExtractArchive(ExtractFileNames.FileName, _context)
             {
                 ParcelRegistryExtractBuilder.CreateParcelFiles(_context)
-            };
+            });
         }
     }
 }
