@@ -1,3 +1,11 @@
+## [4.13.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.13.2...v4.13.3) (2023-02-27)
+
+
+### Bug Fixes
+
+* bump grar common to 18.1.1 ([8ff025d](https://github.com/informatievlaanderen/parcel-registry/commit/8ff025d60c90efe33610eecfa19fc0157a972929))
+* bump mediatr ([1805818](https://github.com/informatievlaanderen/parcel-registry/commit/1805818c43161cf1ce1185d1f171b5fae24e05bb))
+
 ## [4.13.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.13.1...v4.13.2) (2023-02-23)
 
 
