@@ -1,3 +1,10 @@
+## [4.14.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.14.0...v4.14.1) (2023-03-01)
+
+
+### Bug Fixes
+
+* response examples ([5c37ae7](https://github.com/informatievlaanderen/parcel-registry/commit/5c37ae7cc32546eb74736d3880ee325cc3bf169f))
+
 # [4.14.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.13.3...v4.14.0) (2023-03-01)
 
 
