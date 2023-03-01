@@ -110,13 +110,16 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Detail
 
     public class ParcelGoneResponseExamples : IExamplesProvider<ProblemDetails>
     {
+        protected string ApiVersion { get; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ProblemDetailsHelper _problemDetailsHelper;
 
         public ParcelGoneResponseExamples(
             IHttpContextAccessor httpContextAccessor,
-            ProblemDetailsHelper problemDetailsHelper)
+            ProblemDetailsHelper problemDetailsHelper,
+            string apiVersion = "v1")
         {
+            ApiVersion = apiVersion;
             _httpContextAccessor = httpContextAccessor;
             _problemDetailsHelper = problemDetailsHelper;
         }
@@ -127,7 +130,15 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Detail
             HttpStatus = StatusCodes.Status410Gone,
             Title = ProblemDetails.DefaultTitle,
             Detail = "Verwijderd perceel.",
-            ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext)
+            ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext, ApiVersion)
         };
+    }
+
+    public class ParcelGoneResponseExamplesV2 : ParcelGoneResponseExamples
+    {
+        public ParcelGoneResponseExamplesV2(
+            IHttpContextAccessor httpContextAccessor,
+            ProblemDetailsHelper problemDetailsHelper) : base(httpContextAccessor, problemDetailsHelper, "v2")
+        { }
     }
 }
