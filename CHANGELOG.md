@@ -1,3 +1,15 @@
+# [4.14.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.13.3...v4.14.0) (2023-03-01)
+
+
+### Bug Fixes
+
+* no merge group for ksql ([208e149](https://github.com/informatievlaanderen/parcel-registry/commit/208e149607f8eb1eaefbd64c79ce85796349ec7e))
+
+
+### Features
+
+* add v2 example ([5c0fcd3](https://github.com/informatievlaanderen/parcel-registry/commit/5c0fcd30423f9c61593ea3dfaf2de734f153e173))
+
 ## [4.13.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.13.2...v4.13.3) (2023-02-27)
 
 
