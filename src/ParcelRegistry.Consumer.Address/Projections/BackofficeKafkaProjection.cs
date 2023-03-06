@@ -90,6 +90,12 @@ namespace ParcelRegistry.Consumer.Address.Projections
                 address.Status = AddressStatus.Retired;
             });
 
+            When<AddressWasRemovedBecauseStreetNameWasRemoved>(async (context, message, ct) =>
+            {
+                var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);
+                address.IsRemoved = true;
+            });
+
             When<AddressWasRemovedV2>(async (context, message, ct) =>
             {
                 var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);

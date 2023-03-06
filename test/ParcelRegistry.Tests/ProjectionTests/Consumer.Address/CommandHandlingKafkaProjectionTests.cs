@@ -468,6 +468,31 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             });
         }
 
+        [Fact]
+        public async Task DetachAddressFromBuildingUnitBecauseStreetNameWasRemoved()
+        {
+            var addressIntId = 456;
+
+            var @event = new AddressWasRemovedBecauseStreetNameWasRemoved(
+                123,
+                addressIntId,
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            AddRelations(addressIntId, addressIntId);
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Exactly(2));
+                await Task.CompletedTask;
+            });
+        }
+
         private void AddRelations(params int[] addressInts)
         {
             foreach (var addressInt in addressInts)
