@@ -149,6 +149,15 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     message.Provenance,
                     ct);
             });
+
+            When<AddressWasRemovedBecauseStreetNameWasRemoved>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRemoved(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
         }
 
         private async Task DetachBecauseRemoved(

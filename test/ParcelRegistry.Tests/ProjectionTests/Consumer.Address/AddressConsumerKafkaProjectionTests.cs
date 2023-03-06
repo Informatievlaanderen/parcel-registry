@@ -430,6 +430,28 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         }
 
         [Fact]
+        public async Task AddressWasRemovedBecauseStreetNameWasRemoved()
+        {
+            var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>();
+            var addressWasRemovedV2 = Fixture.Build<AddressWasRemovedBecauseStreetNameWasRemoved>()
+                .FromFactory(() => new AddressWasRemovedBecauseStreetNameWasRemoved(
+                    addressWasProposedV2.StreetNamePersistentLocalId, addressWasProposedV2.AddressPersistentLocalId, Fixture.Create<Provenance>()))
+                .Create();
+
+            Given(addressWasProposedV2, addressWasRemovedV2);
+
+            await Then(async context =>
+            {
+                var address =
+                    await context.AddressConsumerItems.FindAsync(
+                        addressWasProposedV2.AddressPersistentLocalId);
+
+                address.Should().NotBeNull();
+                address.IsRemoved.Should().BeTrue();
+            });
+        }
+
+        [Fact]
         public async Task AddressWasCorrectedFromRetiredToCurrent_UpdatesStatusAddress()
         {
             var addressWasProposedV2 = Fixture.Create<AddressWasProposedV2>();
