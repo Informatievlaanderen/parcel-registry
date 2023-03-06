@@ -1,3 +1,10 @@
+# [4.15.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.14.1...v4.15.0) (2023-03-06)
+
+
+### Features
+
+* detach address when address is removed because streetname was removed ([370c213](https://github.com/informatievlaanderen/parcel-registry/commit/370c213cb00c86a59ab2def13ce4f8c731e7b419))
+
 ## [4.14.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.14.0...v4.14.1) (2023-03-01)
 
 
