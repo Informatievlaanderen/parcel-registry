@@ -1,3 +1,10 @@
+## [4.15.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.15.0...v4.15.1) (2023-03-07)
+
+
+### Bug Fixes
+
+* make producer reliable ([c680d58](https://github.com/informatievlaanderen/parcel-registry/commit/c680d58db8c34666bfa35b8987510cba645cdd5d))
+
 # [4.15.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.14.1...v4.15.0) (2023-03-06)
 
 
