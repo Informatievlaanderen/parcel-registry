@@ -7,7 +7,7 @@ CREATE OR REPLACE STREAM IF NOT EXISTS parcel_snapshot_oslo_stream_flatten_geolo
              identificator->objectId AS IDENTIFICATOR_OBJECTID,
              identificator->versieId AS IDENTIFICATOR_VERSIEID,
              perceelStatus AS PERCEELSTATUS,
-             ARRAY_JOIN(TRANSFORM(adressen, (x) => (x->objectId)), ', ') AS ADRESSEN,
+             ARRAY_JOIN(TRANSFORM(adressen, (x) => (x->objectId)), ', ') AS ADRESSEN_OBJECTIDS,
              CASE WHEN IDENTIFICATOR->ID is null THEN TRUE ELSE FALSE END REMOVED
    FROM PARCEL_SNAPSHOT_OSLO_STREAM
    PARTITION BY REDUCE(SPLIT(URL_EXTRACT_PATH(MESSAGEKEY), '/'), '', (s,x) => x);
