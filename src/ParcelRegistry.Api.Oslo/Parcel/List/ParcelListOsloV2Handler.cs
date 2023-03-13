@@ -30,18 +30,20 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
             var pagedParcels = new ParcelListOsloV2Query(_context)
                 .Fetch(request.Filtering, request.Sorting, request.Pagination);
 
+            var parcelListItemOsloResponses = await pagedParcels.Items
+                .Select(m => new ParcelListItemOsloResponse(
+                    m.CaPaKey,
+                    _responseOptions.Value.Naamruimte,
+                    _responseOptions.Value.DetailUrl,
+                    m.Status.MapToPerceelStatus(),
+                    m.VersionTimestamp.ToBelgianDateTimeOffset()))
+                .ToListAsync(cancellationToken);
+
             return new ParcelListOsloResponse
             {
                 Context = _responseOptions.Value.ContextUrlList,
-                Percelen = await pagedParcels.Items
-                    .Select(m => new ParcelListItemOsloResponse(
-                        m.CaPaKey,
-                        _responseOptions.Value.Naamruimte,
-                        _responseOptions.Value.DetailUrl,
-                        m.Status.MapToPerceelStatus(),
-                        m.VersionTimestamp.ToBelgianDateTimeOffset()))
-                    .ToListAsync(cancellationToken),
-                Volgende = pagedParcels.PaginationInfo.BuildVolgendeUri(_responseOptions.Value.VolgendeUrl),
+                Percelen = parcelListItemOsloResponses,
+                Volgende = pagedParcels.PaginationInfo.BuildVolgendeUri(parcelListItemOsloResponses.Count, _responseOptions.Value.VolgendeUrl),
                 Sorting = pagedParcels.Sorting,
                 Pagination = pagedParcels.PaginationInfo
             };
