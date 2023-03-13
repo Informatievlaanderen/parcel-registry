@@ -29,17 +29,19 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
             var pagedParcels = new ParcelListV2Query(_context)
                 .Fetch(request.Filtering, request.Sorting, request.Pagination);
 
+            var parcelListItemResponses = await pagedParcels.Items
+                .Select(m => new ParcelListItemResponse(
+                    m.CaPaKey,
+                    _reponseOptions.Value.Naamruimte,
+                    _reponseOptions.Value.DetailUrl,
+                    m.Status.MapToPerceelStatus(),
+                    m.VersionTimestamp.ToBelgianDateTimeOffset()))
+                .ToListAsync(cancellationToken);
+
             return new ParcelListResponse
             {
-                Percelen = await pagedParcels.Items
-                    .Select(m => new ParcelListItemResponse(
-                        m.CaPaKey,
-                        _reponseOptions.Value.Naamruimte,
-                        _reponseOptions.Value.DetailUrl,
-                        m.Status.MapToPerceelStatus(),
-                        m.VersionTimestamp.ToBelgianDateTimeOffset()))
-                    .ToListAsync(cancellationToken),
-                Volgende = pagedParcels.PaginationInfo.BuildVolgendeUri(_reponseOptions.Value.VolgendeUrl),
+                Percelen = parcelListItemResponses,
+                Volgende = pagedParcels.PaginationInfo.BuildVolgendeUri(parcelListItemResponses.Count, _reponseOptions.Value.VolgendeUrl),
                 Sorting = pagedParcels.Sorting,
                 Pagination = pagedParcels.PaginationInfo
             };
