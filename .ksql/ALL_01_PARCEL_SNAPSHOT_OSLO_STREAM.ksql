@@ -5,4 +5,4 @@ CREATE OR REPLACE STREAM IF NOT EXISTS parcel_snapshot_oslo_stream (
   identificator STRUCT<id varchar, naamruimte varchar, objectId varchar, versieId varchar>,
   perceelStatus varchar,
   adressen array<STRUCT<objectId varchar, detail varchar>>)
-WITH (KAFKA_TOPIC='stg.parcel.snapshot.oslo', VALUE_FORMAT='JSON');
+WITH (KAFKA_TOPIC='parcel.snapshot.oslo', VALUE_FORMAT='JSON');
