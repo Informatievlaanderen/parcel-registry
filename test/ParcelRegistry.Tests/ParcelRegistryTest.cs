@@ -27,7 +27,7 @@ namespace ParcelRegistry.Tests
         {
             using var scope = Container.BeginLifetimeScope();
             var bus = scope.Resolve<ICommandHandlerResolver>();
-            bus.Dispatch(command.CreateCommandId(), command);
+            bus.Dispatch(command.CreateCommandId(), command).GetAwaiter().GetResult();
         }
 
         public ParcelRegistryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
