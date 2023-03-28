@@ -2,6 +2,7 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -12,13 +13,16 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
     using Xunit;
     using Xunit.Abstractions;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
+    using SqlStreamStore;
+    using SqlStreamStore.Streams;
 
-    public class RestoreParcelSnapshotV2Tests : ParcelRegistryTest
+    public class RestoreParcelFromSnapshotStoreV2Tests : ParcelRegistryTest
     {
         private readonly Parcel _sut;
         private readonly ParcelSnapshotV2 _parcelSnapshotV2;
 
-        public RestoreParcelSnapshotV2Tests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public RestoreParcelFromSnapshotStoreV2Tests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new InfrastructureCustomization());
 
@@ -34,7 +38,24 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
                 Fixture.Create<string>(),
                 Fixture.Create<ProvenanceData>());
 
-            _sut.Initialize(new List<object> { _parcelSnapshotV2 });
+            var eventSerializer = Container.Resolve<EventSerializer>();
+            var eventMapping = Container.Resolve<EventMapping>();
+            var streamId = new ParcelStreamId(Fixture.Create<ParcelId>());
+            Container.Resolve<ISnapshotStore>().SaveSnapshotAsync(streamId,
+                new SnapshotContainer
+                {
+                    Data = eventSerializer.SerializeObject(_parcelSnapshotV2),
+                    Info = new SnapshotInfo
+                    {
+                        StreamVersion = 1,
+                        Type = eventMapping.GetEventName(_parcelSnapshotV2.GetType()),
+                    }
+                },
+                CancellationToken.None);
+
+            Container.Resolve<IStreamStore>().AppendToStream(new StreamId(streamId), ExpectedVersion.NoStream, Fixture.Create<NewStreamMessage>());
+
+            _sut = Container.Resolve<IParcels>().GetAsync(streamId, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [Fact]
@@ -49,7 +70,7 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
             ((decimal?)_sut.XCoordinate!).Should().Be(_parcelSnapshotV2.XCoordinate);
             ((decimal?)_sut.YCoordinate!).Should().Be(_parcelSnapshotV2.YCoordinate);
             _sut.LastEventHash.Should().Be(_parcelSnapshotV2.LastEventHash);
-            _sut.LastProvenanceData.Should().Be(_parcelSnapshotV2.LastProvenanceData);
+            _sut.LastProvenanceData.Should().BeEquivalentTo(_parcelSnapshotV2.LastProvenanceData);
         }
     }
 }
