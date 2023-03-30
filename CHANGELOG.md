@@ -1,3 +1,10 @@
+## [4.15.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.15.2...v4.15.3) (2023-03-30)
+
+
+### Bug Fixes
+
+* use snapshotstore and add tests ([60c7499](https://github.com/informatievlaanderen/parcel-registry/commit/60c749902a4ca84634ee01fb8eb15ac55e5b6173))
+
 ## [4.15.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.15.1...v4.15.2) (2023-03-13)
 
 ## [4.15.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.15.0...v4.15.1) (2023-03-07)
