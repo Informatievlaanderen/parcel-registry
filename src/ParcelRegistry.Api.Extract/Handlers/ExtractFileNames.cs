@@ -4,7 +4,9 @@ namespace ParcelRegistry.Api.Extract.Handlers
 
     public static class ExtractFileNames
     {
-        public const string ZipName = "Perceel";
-        public static string FileName => $"{ZipName}-{DateTime.Now:yyyy-MM-dd}";
+        public const string ParcelExtractZipName = "Perceel";
+        public const string ParcelLinkExtractZipName = "Adreskoppelingen_1";
+        public static string ParcelExtractFileName => $"{ParcelExtractZipName}-{DateTime.Now:yyyy-MM-dd}";
+        public static string ParcelLinkExtractFileName => $"{ParcelLinkExtractZipName}-{DateTime.Now:yyyy-MM-dd}";
     }
 }

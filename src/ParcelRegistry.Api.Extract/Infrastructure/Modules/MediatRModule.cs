@@ -24,6 +24,7 @@ namespace ParcelRegistry.Api.Extract.Infrastructure.Modules
             if (_useProjectionsV2)
             {
                 builder.RegisterType<GetParcelsV2Handler>().AsImplementedInterfaces();
+                builder.RegisterType<GetParcelLinksHandler>().AsImplementedInterfaces();
             }
             else
             {

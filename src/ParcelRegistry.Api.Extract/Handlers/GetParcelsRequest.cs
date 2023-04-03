@@ -5,4 +5,7 @@ namespace ParcelRegistry.Api.Extract.Handlers
 
     public struct GetParcelsRequest : IRequest<IsolationExtractArchive>
     { }
+
+    public struct GetParcelLinksRequest : IRequest<IsolationExtractArchive>
+    { }
 }

@@ -133,10 +133,5 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                 parcel.DbaseRecord = record.ToBytes(_encoding);
             }
         }
-
-        private static async Task DoNothing()
-        {
-            await Task.Yield();
-        }
     }
 }

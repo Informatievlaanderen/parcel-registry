@@ -4,6 +4,7 @@ namespace ParcelRegistry.Projections.Extract
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using ParcelExtract;
+    using ParcelLinkExtract;
 
     public class ExtractContext : RunnerDbContext<ExtractContext>
     {
@@ -11,6 +12,7 @@ namespace ParcelRegistry.Projections.Extract
 
         public DbSet<ParcelExtractItem> ParcelExtract { get; set; }
         public DbSet<ParcelExtractItemV2> ParcelExtractV2 { get; set; }
+        public DbSet<ParcelLinkExtractItem> ParcelLinkExtract { get; set; }
 
         // This needs to be here to please EF
         public ExtractContext() { }

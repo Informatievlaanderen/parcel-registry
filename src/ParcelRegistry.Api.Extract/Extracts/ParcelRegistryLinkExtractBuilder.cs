@@ -1,39 +1,40 @@
-namespace ParcelRegistry.Api.Extract.Extracts
+﻿namespace ParcelRegistry.Api.Extract.Extracts
 {
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Api.Extract;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
-    using Microsoft.EntityFrameworkCore;
     using Handlers;
+    using Microsoft.EntityFrameworkCore;
     using Projections.Extract;
-    using Projections.Extract.ParcelExtract;
+    using Projections.Extract.ParcelLinkExtract;
 
-    public static class ParcelRegistryExtractBuilder
+    public class ParcelRegistryLinkExtractBuilder
     {
         public static IEnumerable<ExtractFile> CreateParcelFiles(ExtractContext context)
         {
             var extractItems = context
-                .ParcelExtract
+                .ParcelLinkExtract
                 .AsNoTracking();
 
             var parcelProjectionState = context
                 .ProjectionStates
                 .AsNoTracking()
-                .Single(m => m.Name == typeof(ParcelExtractProjections).FullName);
+                .Single(m => m.Name == typeof(ParcelLinkExtractProjections).FullName);
+
             var extractMetadata = new Dictionary<string,string>
             {
                 { ExtractMetadataKeys.LatestEventId, parcelProjectionState.Position.ToString()}
             };
 
-            yield return ExtractBuilder.CreateDbfFile<ParcelDbaseRecord>(
-                ExtractFileNames.ParcelExtractZipName,
-                new ParcelDbaseSchema(),
+            yield return ExtractBuilder.CreateDbfFile<ParcelLinkDbaseRecord>(
+                ExtractFileNames.ParcelLinkExtractZipName,
+                new ParcelLinkDbaseSchema(),
                 extractItems.OrderBy(m => m.CaPaKey).Select(org => org.DbaseRecord),
                 extractItems.Count);
 
             yield return ExtractBuilder.CreateMetadataDbfFile(
-                ExtractFileNames.ParcelExtractZipName,
+                ExtractFileNames.ParcelLinkExtractZipName,
                 extractMetadata);
         }
     }
