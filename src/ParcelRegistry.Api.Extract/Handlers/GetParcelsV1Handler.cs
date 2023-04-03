@@ -18,7 +18,7 @@ namespace ParcelRegistry.Api.Extract.Handlers
 
         public Task<IsolationExtractArchive> Handle(GetParcelsRequest request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(new IsolationExtractArchive(ExtractFileNames.FileName, _context)
+            return Task.FromResult(new IsolationExtractArchive(ExtractFileNames.ParcelExtractFileName, _context)
             {
                 ParcelRegistryExtractBuilder.CreateParcelFiles(_context)
             });

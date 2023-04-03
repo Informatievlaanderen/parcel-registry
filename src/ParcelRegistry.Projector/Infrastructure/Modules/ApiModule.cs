@@ -20,6 +20,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Projections.Extract;
     using ParcelRegistry.Projections.Extract.ParcelExtract;
+    using ParcelRegistry.Projections.Extract.ParcelLinkExtract;
     using ParcelRegistry.Projections.LastChangedList;
     using ParcelRegistry.Projections.Legacy;
     using ParcelRegistry.Projections.Legacy.ParcelDetail;
@@ -113,6 +114,11 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<ParcelExtractV2Projections, ExtractContext>(
                     context => new ParcelExtractV2Projections(
+                        context.Resolve<IOptions<ExtractConfig>>(),
+                        DbaseCodePage.Western_European_ANSI.ToEncoding()),
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<ParcelLinkExtractProjections, ExtractContext>(
+                    context => new ParcelLinkExtractProjections(
                         context.Resolve<IOptions<ExtractConfig>>(),
                         DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default);

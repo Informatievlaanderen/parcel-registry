@@ -7,6 +7,6 @@ namespace ParcelRegistry.Api.Extract.Extracts.Responses
     public class ParcelRegistryResponseExample : IExamplesProvider<object>
     {
         public object GetExamples()
-            => new { mimeType = "application/zip", fileName = $"{ExtractFileNames.ZipName}-{DateTime.Now:yyyy-MM-dd}.zip" };
+            => new { mimeType = "application/zip", fileName = $"{ExtractFileNames.ParcelExtractZipName}-{DateTime.Now:yyyy-MM-dd}.zip" };
     }
 }

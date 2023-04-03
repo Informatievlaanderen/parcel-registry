@@ -27,13 +27,13 @@ namespace ParcelRegistry.Api.Extract.Extracts
             };
 
             yield return ExtractBuilder.CreateDbfFile<ParcelDbaseRecord>(
-                ExtractFileNames.ZipName,
+                ExtractFileNames.ParcelExtractZipName,
                 new ParcelDbaseSchema(),
                 extractItems.OrderBy(m => m.CaPaKey).Select(org => org.DbaseRecord),
                 extractItems.Count);
 
             yield return ExtractBuilder.CreateMetadataDbfFile(
-                ExtractFileNames.ZipName,
+                ExtractFileNames.ParcelExtractZipName,
                 extractMetadata);
         }
     }
