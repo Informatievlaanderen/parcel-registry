@@ -1,3 +1,10 @@
+# [4.16.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.15.3...v4.16.0) (2023-04-03)
+
+
+### Features
+
+* add parcel-address links extract ([7e04076](https://github.com/informatievlaanderen/parcel-registry/commit/7e04076fb83cb7e2904639c30f3c4b2fa806fdf6))
+
 ## [4.15.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.15.2...v4.15.3) (2023-03-30)
 
 
