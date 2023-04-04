@@ -28,6 +28,11 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
 
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
+                if (message.Message.IsRemoved)
+                {
+                    return;
+                }
+
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
                 {
                     await context
