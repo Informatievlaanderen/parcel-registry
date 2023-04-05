@@ -55,6 +55,20 @@
                     new AddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     cancellationToken);
             });
+
+            When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (_, message, cancellationToken) =>
+            {
+                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
+                await backOfficeContext.RemoveIdempotentParcelAddressRelation(
+                    new ParcelId(message.Message.ParcelId),
+                    new AddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId),
+                    cancellationToken);
+
+                await backOfficeContext.AddIdempotentParcelAddressRelation(
+                    new ParcelId(message.Message.ParcelId),
+                    new AddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    cancellationToken);
+            });
         }
     }
 }

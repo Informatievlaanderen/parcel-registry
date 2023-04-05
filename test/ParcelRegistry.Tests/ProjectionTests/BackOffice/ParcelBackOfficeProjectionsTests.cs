@@ -222,5 +222,33 @@
                     result.Should().BeNull();
                 });
         }
+
+        [Fact]
+        public async Task GivenParcelAddressWasReplacedBecauseAddressWasReaddressed_ThenRelationIsReplaced()
+        {
+            var @event = _fixture.Create<ParcelAddressWasReplacedBecauseAddressWasReaddressed>();
+
+            await _fakeBackOfficeContext.AddIdempotentParcelAddressRelation(
+                new ParcelId(@event.ParcelId),
+                new AddressPersistentLocalId(@event.PreviousAddressPersistentLocalId),
+                CancellationToken.None);
+
+            await Sut
+                .Given(@event)
+                .Then(async _ =>
+                {
+                    var previous = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                        @event.ParcelId,
+                        @event.PreviousAddressPersistentLocalId);
+
+                    previous.Should().BeNull();
+
+                    var current = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                        @event.ParcelId,
+                        @event.AddressPersistentLocalId);
+
+                    current.Should().NotBeNull();
+                });
+        }
     }
 }

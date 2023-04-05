@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
@@ -489,6 +490,82 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Exactly(2));
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public async Task StreetNameWasReaddressed()
+        {
+            var sourceAddressPersistentLocalId = 1;
+            var sourceBoxNumberAddressPersistentLocalId = 2;
+            var destinationAddressPersistentLocalId = 3;
+            var destinationBoxNumberAddressPersistentLocalId = 4;
+
+            var @event = new AddressHouseNumberWasReaddressed(
+                1000000,
+                sourceAddressPersistentLocalId,
+                new ReaddressedAddressData(
+                    sourceAddressPersistentLocalId,
+                    destinationAddressPersistentLocalId,
+                    true,
+                    "Current",
+                    "120",
+                    null,
+                    "9000",
+                    "AppointedByAdministrator",
+                    "Entry",
+                    "ExtendedWkbGeometry",
+                    true),
+                new []
+                {
+                    new ReaddressedAddressData(
+                        sourceBoxNumberAddressPersistentLocalId,
+                        destinationBoxNumberAddressPersistentLocalId,
+                        true,
+                        "Current",
+                        "120",
+                        "A",
+                        "9000",
+                        "AppointedByAdministrator",
+                        "Entry",
+                        "ExtendedWkbGeometry",
+                        true),
+                },
+                new List<int>(),
+                new List<int>(),
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            AddRelations(sourceAddressPersistentLocalId);
+            AddRelations(sourceBoxNumberAddressPersistentLocalId);
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x =>
+                        x.Handle(It.IsAny<ReplaceAttachedAddressBecauseAddressWasReaddressed>(), CancellationToken.None),
+                    Times.Exactly(2));
+
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(
+                        It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
+                            y.AddressPersistentLocalId == destinationAddressPersistentLocalId
+                            && y.PreviousAddressPersistentLocalId == sourceAddressPersistentLocalId),
+                        CancellationToken.None),
+                    Times.Exactly(1));
+                _mockCommandHandler.Verify(x =>
+                        x.Handle(
+                            It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
+                                y.AddressPersistentLocalId == destinationBoxNumberAddressPersistentLocalId
+                                && y.PreviousAddressPersistentLocalId == sourceBoxNumberAddressPersistentLocalId),
+                            CancellationToken.None),
+                    Times.Exactly(1));
+
                 await Task.CompletedTask;
             });
         }

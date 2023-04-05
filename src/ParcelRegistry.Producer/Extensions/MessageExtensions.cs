@@ -56,6 +56,14 @@ namespace ParcelRegistry.Producer.Extensions
         public static Contracts.ParcelAddressWasDetachedBecauseAddressWasRemoved ToContract(this ParcelAggregate.ParcelAddressWasDetachedBecauseAddressWasRemoved message) =>
             new Contracts.ParcelAddressWasDetachedBecauseAddressWasRemoved(message.ParcelId.ToString("D"), message.CaPaKey, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
+        public static Contracts.ParcelAddressWasReplacedBecauseAddressWasReaddressed ToContract(this ParcelAggregate.ParcelAddressWasReplacedBecauseAddressWasReaddressed message) =>
+            new Contracts.ParcelAddressWasReplacedBecauseAddressWasReaddressed(
+                message.ParcelId.ToString("D"),
+                message.CaPaKey,
+                message.AddressPersistentLocalId,
+                message.PreviousAddressPersistentLocalId,
+                message.Provenance.ToContract());
+
         public static Contracts.ParcelWasMigrated ToContract(this ParcelAggregate.ParcelWasMigrated message) =>
             new Contracts.ParcelWasMigrated(message.OldParcelId.ToString("D"), message.ParcelId.ToString("D"), message.CaPaKey, message.ParcelStatus, message.IsRemoved, message.AddressPersistentLocalIds, message.XCoordinate, message.YCoordinate, message.Provenance.ToContract());
 

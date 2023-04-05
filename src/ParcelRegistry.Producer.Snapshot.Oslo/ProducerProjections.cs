@@ -100,6 +100,19 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                     ct);
             });
 
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.CaPaKey,
+                            message.Message.Provenance.Timestamp,
+                            message.Position,
+                            throwStaleWhenGone: false,
+                            ct),
+                    message.Position,
+                    ct);
+            });
+
             //When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<ParcelWasRemovedV2>>(async (_, message, ct) =>
             //{
             //    await Produce($"{osloNamespace}/{message.Message.ParcelPersistentLocalId}", "{}", message.Position, ct);

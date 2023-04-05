@@ -137,6 +137,20 @@ namespace ParcelRegistry.Consumer.Address.Projections
                 var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);
                 address.Status = AddressStatus.Current;
             });
+
+            When<AddressHouseNumberWasReaddressed>(async (context, message, ct) =>
+            {
+                var houseNumber =
+                    await context.AddressConsumerItems.FindAsync(message.ReaddressedHouseNumber.DestinationAddressPersistentLocalId, cancellationToken: ct);
+                houseNumber.Status = AddressStatus.Parse(message.ReaddressedHouseNumber.SourceStatus);
+
+                foreach (var readdressedBoxNumber in message.ReaddressedBoxNumbers)
+                {
+                    var boxNumber =
+                        await context.AddressConsumerItems.FindAsync(readdressedBoxNumber.DestinationAddressPersistentLocalId, cancellationToken: ct);
+                    boxNumber.Status = AddressStatus.Parse(readdressedBoxNumber.SourceStatus);
+                }
+            });
         }
     }
 }
