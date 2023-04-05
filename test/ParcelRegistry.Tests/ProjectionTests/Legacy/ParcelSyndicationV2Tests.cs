@@ -7,8 +7,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using EventExtensions;
     using FluentAssertions;
     using Fixtures;
+    using Parcel;
     using Projections.Legacy.ParcelSyndication;
     using Xunit;
 
@@ -123,6 +125,46 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
                     parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);
                     parcelSyndicationItem.LastChangedOn.Should().Be(addressWasDetached.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasReplacedBecauseAddressWasReaddressed()
+        {
+            var previousAddressPersistentLocalId = new AddressPersistentLocalId(1);
+
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>()
+                .WithClearedAddresses()
+                .WithAddress(previousAddressPersistentLocalId);
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() },
+                { Envelope.PositionMetadataKey, 1L },
+                { Envelope.EventNameMetadataKey, nameof(ParcelWasMigrated) },
+            };
+
+            const long position = 2L;
+            var @event = _fixture.Create<ParcelAddressWasReplacedBecauseAddressWasReaddressed>();
+            var metadata2 = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, @event.GetHash() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelAddressWasReplacedBecauseAddressWasReaddressed) },
+            };
+
+            await Sut
+                .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
+                        new Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(new Envelope(@event, metadata2)))
+                .Then(async ct =>
+                {
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
+                    parcelSyndicationItem.Should().NotBeNull();
+                    parcelSyndicationItem.AddressPersistentLocalIds.Should().NotContain(@event.PreviousAddressPersistentLocalId);
+                    parcelSyndicationItem.AddressPersistentLocalIds.Should().Contain(@event.AddressPersistentLocalId);
+                    parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelAddressWasReplacedBecauseAddressWasReaddressed));
+                    parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
+                    parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);
+                    parcelSyndicationItem.LastChangedOn.Should().Be(@event.Provenance.Timestamp);
                 });
         }
 

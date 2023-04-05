@@ -8,6 +8,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using NodaTime;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using ParcelRegistry.Legacy;
 
@@ -91,15 +92,21 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         public void AddAddressPersistentLocalId(int addressPersistentLocalId)
         {
             var addressPersistentLocalIds = GetDeserializedAddressPersistentLocalIds();
-            addressPersistentLocalIds.Add(addressPersistentLocalId);
-            AddressPersistentLocalIds = addressPersistentLocalIds;
+            if (!addressPersistentLocalIds.Contains(addressPersistentLocalId))
+            {
+                addressPersistentLocalIds.Add(addressPersistentLocalId);
+                AddressPersistentLocalIds = addressPersistentLocalIds;
+            }
         }
 
         public void RemoveAddressPersistentLocalId(int addressPersistentLocalId)
         {
             var addressPersistentLocalIds = GetDeserializedAddressPersistentLocalIds();
-            addressPersistentLocalIds.Remove(addressPersistentLocalId);
-            AddressPersistentLocalIds = addressPersistentLocalIds;
+            if (addressPersistentLocalIds.Contains(addressPersistentLocalId))
+            {
+                addressPersistentLocalIds.Remove(addressPersistentLocalId);
+                AddressPersistentLocalIds = addressPersistentLocalIds;
+            }
         }
 
         public void RemoveAddressId(Guid addressId)

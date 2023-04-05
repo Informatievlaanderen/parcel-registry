@@ -158,6 +158,57 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     message.Provenance,
                     ct);
             });
+
+            When<AddressHouseNumberWasReaddressed>(async (commandHandler, message, ct) =>
+            {
+                await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
+
+                await ReplaceBecauseOfReaddress(
+                    commandHandler,
+                    backOfficeContext,
+                    message.ReaddressedHouseNumber,
+                    message.Provenance,
+                    ct);
+
+                foreach (var readdressedBoxNumber in message.ReaddressedBoxNumbers)
+                {
+                    await ReplaceBecauseOfReaddress(
+                        commandHandler,
+                        backOfficeContext,
+                        readdressedBoxNumber,
+                        message.Provenance,
+                        ct);
+                }
+            });
+        }
+
+        private async Task ReplaceBecauseOfReaddress(
+            CommandHandler commandHandler,
+            BackOfficeContext backOfficeContext,
+            ReaddressedAddressData readdressedAddress,
+            Contracts.Provenance provenance,
+            CancellationToken ct)
+        {
+            var relations = backOfficeContext.ParcelAddressRelations
+                .AsNoTracking()
+                .Where(x =>
+                    x.AddressPersistentLocalId == new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId))
+                .ToList();
+
+            foreach (var relation in relations)
+            {
+                var command = new ReplaceAttachedAddressBecauseAddressWasReaddressed(
+                    new ParcelId(relation.ParcelId),
+                    addressPersistentLocalId: new AddressPersistentLocalId(readdressedAddress.DestinationAddressPersistentLocalId),
+                    previousAddressPersistentLocalId: new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId),
+                    FromProvenance(provenance));
+
+                await commandHandler.Handle(command, ct);
+                await backOfficeContext.RemoveIdempotentParcelAddressRelation(
+                    command.ParcelId, new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId), ct);
+                await backOfficeContext.AddIdempotentParcelAddressRelation(
+                    command.ParcelId, new AddressPersistentLocalId(readdressedAddress.DestinationAddressPersistentLocalId), ct);
+            }
         }
 
         private async Task DetachBecauseRemoved(

@@ -13,6 +13,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     using ParcelRegistry.Consumer.Address.Projections;
     using Xunit;
     using Xunit.Abstractions;
+    using EventExtensions;
 
     public sealed class ConsumerAddressKafkaProjectionTests : KafkaProjectionTest<ConsumerAddressContext, BackOfficeKafkaProjection>
     {
@@ -478,6 +479,67 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
 
                 address.Should().NotBeNull();
                 address!.Status.Should().Be(AddressStatus.Current);
+            });
+        }
+
+        [Fact]
+        public async Task AddressHouseNumberWasReaddressed_UpdatesStatusAddresses()
+        {
+            var houseNumberAddressWasProposedV2 = Fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(1);
+            var boxNumberAddressWasProposedV2 = Fixture.Create<AddressWasProposedV2>()
+                .WithAddressPersistentLocalId(2);
+
+            var readdressedHouseNumber = new ReaddressedAddressData(
+                sourceAddressPersistentLocalId: 101,
+                destinationAddressPersistentLocalId: houseNumberAddressWasProposedV2.AddressPersistentLocalId,
+                true,
+                AddressStatus.Current,
+                destinationHouseNumber: "3",
+                sourceBoxNumber: null,
+                sourcePostalCode: "9000",
+                "AppointedByAdministrator",
+                "Entry",
+                "GmlPointGeometry",
+                sourceIsOfficiallyAssigned: false);
+
+            var readdressedBoxNumber = new ReaddressedAddressData(
+                sourceAddressPersistentLocalId: 101,
+                destinationAddressPersistentLocalId: boxNumberAddressWasProposedV2.AddressPersistentLocalId,
+                true,
+                AddressStatus.Current,
+                destinationHouseNumber: "3",
+                sourceBoxNumber: "A",
+                sourcePostalCode: "9000",
+                "AppointedByAdministrator",
+                "Entry",
+                "GmlPointGeometry",
+                sourceIsOfficiallyAssigned: false);
+
+            var addressHouseNumberWasReaddressed = new AddressHouseNumberWasReaddressed(
+                1000000,
+                readdressedHouseNumber.DestinationAddressPersistentLocalId,
+                readdressedHouseNumber,
+                new [] { readdressedBoxNumber },
+                new List<int>(),
+                new List<int>(),
+                Fixture.Create<Provenance>());
+
+            Given(houseNumberAddressWasProposedV2, boxNumberAddressWasProposedV2, addressHouseNumberWasReaddressed);
+
+            await Then(async context =>
+            {
+                var houseNumberAddress =
+                    await context.AddressConsumerItems.FindAsync(houseNumberAddressWasProposedV2.AddressPersistentLocalId);
+
+                houseNumberAddress.Should().NotBeNull();
+                houseNumberAddress!.Status.Should().Be(AddressStatus.Current);
+
+                var boxNumberAddress =
+                    await context.AddressConsumerItems.FindAsync(boxNumberAddressWasProposedV2.AddressPersistentLocalId);
+
+                boxNumberAddress.Should().NotBeNull();
+                boxNumberAddress!.Status.Should().Be(AddressStatus.Current);
             });
         }
 
