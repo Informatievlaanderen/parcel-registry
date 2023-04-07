@@ -1,3 +1,16 @@
+# [4.17.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.16.0...v4.17.0) (2023-04-07)
+
+
+### Bug Fixes
+
+* don't extract removed parcels in addresslink extract ([9ac6549](https://github.com/informatievlaanderen/parcel-registry/commit/9ac6549d2cbde7afb010d3eff9e6aa10e6d92492))
+* run containers as non-root ([20c7fc8](https://github.com/informatievlaanderen/parcel-registry/commit/20c7fc880c5ea0bc999fbef8bb8514609507ba86))
+
+
+### Features
+
+* consume AddressHouseNumberWasReaddressed ([95a57fb](https://github.com/informatievlaanderen/parcel-registry/commit/95a57fbf477bab322405016d7aa10ef5bb06c78b))
+
 # [4.16.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.15.3...v4.16.0) (2023-04-03)
 
 
