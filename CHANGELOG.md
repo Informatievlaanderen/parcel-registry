@@ -1,3 +1,11 @@
+## [4.17.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.17.0...v4.17.1) (2023-04-11)
+
+
+### Bug Fixes
+
+* ParcelAddressWasReplacedBecauseAddressWasReaddressed ([e0150dc](https://github.com/informatievlaanderen/parcel-registry/commit/e0150dc648efe83399ca92f903e307c9a2fa3560))
+* ReplaceAttachedAddressBecauseAddressWasReaddressed ([1d61086](https://github.com/informatievlaanderen/parcel-registry/commit/1d6108679d8122f0c76b4324e4806c64b68e01b1))
+
 # [4.17.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.16.0...v4.17.0) (2023-04-07)
 
 
