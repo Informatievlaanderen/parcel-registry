@@ -160,10 +160,10 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                         }
 
                         if (!entity.Addresses.Any(parcelAddress =>
-                                parcelAddress.AddressPersistentLocalId == message.Message.AddressPersistentLocalId
+                                parcelAddress.AddressPersistentLocalId == message.Message.NewAddressPersistentLocalId
                                 && parcelAddress.ParcelId == message.Message.ParcelId))
                         {
-                            entity.Addresses.Add(new ParcelDetailAddressV2(message.Message.ParcelId, message.Message.AddressPersistentLocalId));
+                            entity.Addresses.Add(new ParcelDetailAddressV2(message.Message.ParcelId, message.Message.NewAddressPersistentLocalId));
                         }
 
                         UpdateHash(entity, message);

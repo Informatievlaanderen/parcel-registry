@@ -96,12 +96,12 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
                     {
                         ParcelId = message.Message.ParcelId,
                         CaPaKey = message.Message.CaPaKey,
-                        AddressPersistentLocalId = message.Message.AddressPersistentLocalId,
+                        AddressPersistentLocalId = message.Message.NewAddressPersistentLocalId,
                         DbaseRecord = new ParcelLinkDbaseRecord
                         {
                             objecttype = { Value = ParcelObjectType },
                             adresobjid = { Value = message.Message.CaPaKey },
-                            adresid = { Value = message.Message.AddressPersistentLocalId }
+                            adresid = { Value = message.Message.NewAddressPersistentLocalId }
                         }.ToBytes(_encoding)
                     }, ct);
             });

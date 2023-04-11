@@ -66,7 +66,7 @@
 
                 await backOfficeContext.AddIdempotentParcelAddressRelation(
                     new ParcelId(message.Message.ParcelId),
-                    new AddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    new AddressPersistentLocalId(message.Message.NewAddressPersistentLocalId),
                     cancellationToken);
             });
         }

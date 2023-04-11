@@ -245,7 +245,7 @@
 
                     var current = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
                         @event.ParcelId,
-                        @event.AddressPersistentLocalId);
+                        @event.NewAddressPersistentLocalId);
 
                     current.Should().NotBeNull();
                 });
