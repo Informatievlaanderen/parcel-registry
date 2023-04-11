@@ -554,14 +554,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                 _mockCommandHandler.Verify(x =>
                     x.Handle(
                         It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
-                            y.AddressPersistentLocalId == destinationAddressPersistentLocalId
+                            y.NewAddressPersistentLocalId == destinationAddressPersistentLocalId
                             && y.PreviousAddressPersistentLocalId == sourceAddressPersistentLocalId),
                         CancellationToken.None),
                     Times.Exactly(1));
                 _mockCommandHandler.Verify(x =>
                         x.Handle(
                             It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
-                                y.AddressPersistentLocalId == destinationBoxNumberAddressPersistentLocalId
+                                y.NewAddressPersistentLocalId == destinationBoxNumberAddressPersistentLocalId
                                 && y.PreviousAddressPersistentLocalId == sourceBoxNumberAddressPersistentLocalId),
                             CancellationToken.None),
                     Times.Exactly(1));

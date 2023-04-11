@@ -199,7 +199,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
             {
                 var command = new ReplaceAttachedAddressBecauseAddressWasReaddressed(
                     new ParcelId(relation.ParcelId),
-                    addressPersistentLocalId: new AddressPersistentLocalId(readdressedAddress.DestinationAddressPersistentLocalId),
+                    newAddressPersistentLocalId: new AddressPersistentLocalId(readdressedAddress.DestinationAddressPersistentLocalId),
                     previousAddressPersistentLocalId: new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId),
                     FromProvenance(provenance));
 

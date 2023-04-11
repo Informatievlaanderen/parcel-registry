@@ -12,19 +12,19 @@ namespace ParcelRegistry.Parcel.Commands
         private static readonly Guid Namespace = new Guid("35b8a5cf-df02-4350-b7f7-f9ebc506dfcb");
 
         public ParcelId ParcelId { get; }
-        public AddressPersistentLocalId AddressPersistentLocalId { get; }
+        public AddressPersistentLocalId NewAddressPersistentLocalId { get; }
         public AddressPersistentLocalId PreviousAddressPersistentLocalId { get; }
 
         public Provenance Provenance { get; }
 
         public ReplaceAttachedAddressBecauseAddressWasReaddressed(
             ParcelId parcelId,
-            AddressPersistentLocalId addressPersistentLocalId,
+            AddressPersistentLocalId newAddressPersistentLocalId,
             AddressPersistentLocalId previousAddressPersistentLocalId,
             Provenance provenance)
         {
             ParcelId = parcelId;
-            AddressPersistentLocalId = addressPersistentLocalId;
+            NewAddressPersistentLocalId = newAddressPersistentLocalId;
             PreviousAddressPersistentLocalId = previousAddressPersistentLocalId;
             Provenance = provenance;
         }
@@ -38,7 +38,7 @@ namespace ParcelRegistry.Parcel.Commands
         private IEnumerable<object> IdentityFields()
         {
             yield return ParcelId;
-            yield return AddressPersistentLocalId;
+            yield return NewAddressPersistentLocalId;
             yield return PreviousAddressPersistentLocalId;
 
             foreach (var field in Provenance.GetIdentityFields())

@@ -68,7 +68,7 @@ namespace ParcelRegistry.Parcel
                     var parcel = await parcelRepository().GetAsync(streamId, ct);
 
                     parcel.ReplaceAttachedAddressBecauseAddressWasReaddressed(
-                        message.Command.AddressPersistentLocalId,
+                        message.Command.NewAddressPersistentLocalId,
                         message.Command.PreviousAddressPersistentLocalId);
                 });
         }
