@@ -60,7 +60,7 @@ namespace ParcelRegistry.Producer.Extensions
             new Contracts.ParcelAddressWasReplacedBecauseAddressWasReaddressed(
                 message.ParcelId.ToString("D"),
                 message.CaPaKey,
-                message.AddressPersistentLocalId,
+                message.NewAddressPersistentLocalId,
                 message.PreviousAddressPersistentLocalId,
                 message.Provenance.ToContract());
 

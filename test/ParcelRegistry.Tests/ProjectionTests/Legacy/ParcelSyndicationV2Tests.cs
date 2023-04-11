@@ -160,7 +160,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
                     parcelSyndicationItem.Should().NotBeNull();
                     parcelSyndicationItem.AddressPersistentLocalIds.Should().NotContain(@event.PreviousAddressPersistentLocalId);
-                    parcelSyndicationItem.AddressPersistentLocalIds.Should().Contain(@event.AddressPersistentLocalId);
+                    parcelSyndicationItem.AddressPersistentLocalIds.Should().Contain(@event.NewAddressPersistentLocalId);
                     parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelAddressWasReplacedBecauseAddressWasReaddressed));
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
                     parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);

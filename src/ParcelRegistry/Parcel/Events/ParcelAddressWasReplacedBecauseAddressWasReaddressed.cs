@@ -20,9 +20,10 @@ namespace ParcelRegistry.Parcel.Events
 
         [EventPropertyDescription("CaPaKey (= objectidentificator) van het perceel, waarbij forward slashes vervangen zijn door koppeltekens i.f.v. gebruik in URI's.")]
         public string CaPaKey { get; }
-        [EventPropertyDescription("Objectidentificator van het adres.")]
 
-        public int AddressPersistentLocalId { get; }
+        [EventPropertyDescription("Objectidentificator van het adres.")]
+        public int NewAddressPersistentLocalId { get; }
+
         [EventPropertyDescription("Objectidentificator van het vorig gekoppelde adres.")]
         public int PreviousAddressPersistentLocalId { get; }
 
@@ -32,12 +33,12 @@ namespace ParcelRegistry.Parcel.Events
         public ParcelAddressWasReplacedBecauseAddressWasReaddressed(
             ParcelId parcelId,
             VbrCaPaKey vbrCaPaKey,
-            AddressPersistentLocalId addressPersistentLocalId,
+            AddressPersistentLocalId newAddressPersistentLocalId,
             AddressPersistentLocalId previousAddressPersistentLocalId)
         {
             ParcelId = parcelId;
             CaPaKey = vbrCaPaKey;
-            AddressPersistentLocalId = addressPersistentLocalId;
+            NewAddressPersistentLocalId = newAddressPersistentLocalId;
             PreviousAddressPersistentLocalId = previousAddressPersistentLocalId;
         }
 
@@ -45,13 +46,13 @@ namespace ParcelRegistry.Parcel.Events
         private ParcelAddressWasReplacedBecauseAddressWasReaddressed(
             Guid parcelId,
             string caPaKey,
-            int addressPersistentLocalId,
+            int newAddressPersistentLocalId,
             int previousAddressPersistentLocalId,
             ProvenanceData provenance)
             : this(
                 new ParcelId(parcelId),
                 new VbrCaPaKey(caPaKey),
-                new AddressPersistentLocalId(addressPersistentLocalId),
+                new AddressPersistentLocalId(newAddressPersistentLocalId),
                 new AddressPersistentLocalId(previousAddressPersistentLocalId))
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
@@ -62,7 +63,7 @@ namespace ParcelRegistry.Parcel.Events
             var fields = Provenance.GetHashFields().ToList();
             fields.Add(ParcelId.ToString("D"));
             fields.Add(CaPaKey);
-            fields.Add(AddressPersistentLocalId.ToString());
+            fields.Add(NewAddressPersistentLocalId.ToString());
             fields.Add(PreviousAddressPersistentLocalId.ToString());
             return fields;
         }

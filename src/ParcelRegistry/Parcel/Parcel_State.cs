@@ -114,7 +114,7 @@ namespace ParcelRegistry.Parcel
                 _addressPersistentLocalIds.Remove(previousAddressPersistentLocalId);
             }
 
-            var addressPersistentLocalId = new AddressPersistentLocalId(@event.AddressPersistentLocalId);
+            var addressPersistentLocalId = new AddressPersistentLocalId(@event.NewAddressPersistentLocalId);
             if (!_addressPersistentLocalIds.Contains(addressPersistentLocalId))
             {
                 _addressPersistentLocalIds.Add(addressPersistentLocalId);

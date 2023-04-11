@@ -156,7 +156,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelDetailV2!.Addresses
                         .Select(x => x.AddressPersistentLocalId).Should().NotContain(@event.PreviousAddressPersistentLocalId);
                     parcelDetailV2.Addresses
-                        .Select(x => x.AddressPersistentLocalId).Should().Contain(@event.AddressPersistentLocalId);
+                        .Select(x => x.AddressPersistentLocalId).Should().Contain(@event.NewAddressPersistentLocalId);
                     parcelDetailV2.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(@event.GetHash());
                 });

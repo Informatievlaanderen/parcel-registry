@@ -205,7 +205,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     x =>
                     {
                         x.RemoveAddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId);
-                        x.AddAddressPersistentLocalId(message.Message.AddressPersistentLocalId);
+                        x.AddAddressPersistentLocalId(message.Message.NewAddressPersistentLocalId);
                     },
                     ct);
             });
