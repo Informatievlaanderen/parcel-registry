@@ -22,12 +22,18 @@ namespace ParcelRegistry.Api.BackOffice.IntegrationTests
     {
         private string _clientId;
         private string _clientSecret;
+        private readonly IDictionary<string, AccessToken> _accessTokens = new Dictionary<string, AccessToken>();
 
         public TestServer TestServer { get; private set; }
         public SqlConnection SqlConnection { get; private set; }
 
         public async Task<string> GetAccessToken(string? requiredScopes = null)
         {
+            if (_accessTokens.ContainsKey(requiredScopes) && !_accessTokens[requiredScopes].IsExpired)
+            {
+                return _accessTokens[requiredScopes].Token;
+            }
+
             var tokenClient = new TokenClient(
                 () => new HttpClient(),
                 new TokenClientOptions
@@ -35,12 +41,14 @@ namespace ParcelRegistry.Api.BackOffice.IntegrationTests
                     Address = "https://authenticatie-ti.vlaanderen.be/op/v1/token",
                     ClientId = _clientId,
                     ClientSecret = _clientSecret,
-                    Parameters = new Parameters(new[] { new KeyValuePair<string, string>("scope", requiredScopes ?? string.Empty) })
+                    Parameters = new Parameters(new[] { new KeyValuePair<string, string>("scope", requiredScopes) })
                 });
 
             var response = await tokenClient.RequestTokenAsync(OidcConstants.GrantTypes.ClientCredentials);
 
-            return response.AccessToken;
+            _accessTokens[requiredScopes] = new AccessToken(response.AccessToken, response.ExpiresIn);
+
+            return _accessTokens[requiredScopes].Token;
         }
 
         public async Task InitializeAsync()
@@ -105,6 +113,22 @@ namespace ParcelRegistry.Api.BackOffice.IntegrationTests
         public async Task DisposeAsync()
         {
             await SqlConnection.DisposeAsync();
+        }
+    }
+
+    public class AccessToken
+    {
+        private readonly DateTime _expiresAt;
+
+        public string Token { get; }
+
+        // Let's regard it as expired 10 seconds before it actually expires.
+        public bool IsExpired => _expiresAt < DateTime.Now.Add(TimeSpan.FromSeconds(10));
+
+        public AccessToken(string token, int expiresIn)
+        {
+            _expiresAt = DateTime.Now.AddSeconds(expiresIn);
+            Token = token;
         }
     }
 }
