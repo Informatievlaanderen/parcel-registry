@@ -180,6 +180,25 @@ namespace ParcelRegistry.Consumer.Address.Projections
                         ct);
                 }
             });
+
+            When<AddressWasRejectedBecauseOfReaddress>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRejected(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
+
+
+            When<AddressWasRetiredBecauseOfReaddress>(async (commandHandler, message, ct) =>
+            {
+                await DetachBecauseRetired(
+                    commandHandler,
+                    new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                    message.Provenance,
+                    ct);
+            });
         }
 
         private async Task ReplaceBecauseOfReaddress(
