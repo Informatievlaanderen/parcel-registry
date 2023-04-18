@@ -1,3 +1,10 @@
+# [4.18.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.17.2...v4.18.0) (2023-04-18)
+
+
+### Features
+
+* consume new readdress events ([303927b](https://github.com/informatievlaanderen/parcel-registry/commit/303927b4877e747829a8fe3a2eff478b6413138a))
+
 ## [4.17.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.17.1...v4.17.2) (2023-04-13)
 
 ## [4.17.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.17.0...v4.17.1) (2023-04-11)
