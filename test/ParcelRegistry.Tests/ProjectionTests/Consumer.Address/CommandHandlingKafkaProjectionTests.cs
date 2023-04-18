@@ -532,8 +532,6 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                         "ExtendedWkbGeometry",
                         true),
                 },
-                new List<int>(),
-                new List<int>(),
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -566,6 +564,56 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                             CancellationToken.None),
                     Times.Exactly(1));
 
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public async Task DetachAddressBecauseAddressWasRejectedBecauseOfReaddress()
+        {
+            var addressIntId = 456;
+
+            var @event = new AddressWasRejectedBecauseOfReaddress(
+                123,
+                addressIntId,
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            AddRelations(456, 456);
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public async Task DetachAddressBecauseAddressWasRetiredBecauseOfReaddress()
+        {
+            var addressIntId = 456;
+
+            var @event = new AddressWasRetiredBecauseOfReaddress(
+                123,
+                addressIntId,
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            AddRelations(456, 456);
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }

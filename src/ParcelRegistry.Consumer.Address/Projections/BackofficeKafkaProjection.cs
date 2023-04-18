@@ -151,6 +151,28 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     boxNumber.Status = AddressStatus.Parse(readdressedBoxNumber.SourceStatus);
                 }
             });
+
+            When<AddressWasProposedBecauseOfReaddress>(async (context, message, ct) =>
+            {
+                await context
+                    .AddressConsumerItems
+                    .AddAsync(new AddressConsumerItem(
+                            message.AddressPersistentLocalId,
+                            AddressStatus.Proposed)
+                        , ct);
+            });
+
+            When<AddressWasRejectedBecauseOfReaddress>(async (context, message, ct) =>
+            {
+                var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);
+                address.Status = AddressStatus.Rejected;
+            });
+
+            When<AddressWasRetiredBecauseOfReaddress>(async (context, message, ct) =>
+            {
+                var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);
+                address.Status = AddressStatus.Retired;
+            });
         }
     }
 }
