@@ -10,7 +10,7 @@ namespace ParcelRegistry.Parcel.Events
 
     [EventTags(EventTag.For.Sync, EventTag.For.Edit, Tag.Address)]
     [EventName(EventName)]
-    [EventDescription("Het adres werd ontkoppeld van het perceel door heradressering straatnaam.")]
+    [EventDescription("Het adres werd ontkoppeld van het perceel door heradressering.")]
     public sealed class ParcelAddressWasReplacedBecauseAddressWasReaddressed : IParcelEvent
     {
         public const string EventName = "ParcelAddressWasReplacedBecauseAddressWasReaddressed"; // BE CAREFUL CHANGING THIS!!
@@ -21,10 +21,10 @@ namespace ParcelRegistry.Parcel.Events
         [EventPropertyDescription("CaPaKey (= objectidentificator) van het perceel, waarbij forward slashes vervangen zijn door koppeltekens i.f.v. gebruik in URI's.")]
         public string CaPaKey { get; }
 
-        [EventPropertyDescription("Objectidentificator van het adres.")]
+        [EventPropertyDescription("Objectidentificator van het nieuwe gekoppelde adres.")]
         public int NewAddressPersistentLocalId { get; }
 
-        [EventPropertyDescription("Objectidentificator van het vorig gekoppelde adres.")]
+        [EventPropertyDescription("Objectidentificator van het oude gekoppelde adres.")]
         public int PreviousAddressPersistentLocalId { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]
