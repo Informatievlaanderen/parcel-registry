@@ -1,3 +1,10 @@
+## [4.18.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.0...v4.18.1) (2023-05-04)
+
+
+### Bug Fixes
+
+* change docs event readdress ([15ec76b](https://github.com/informatievlaanderen/parcel-registry/commit/15ec76b9dd209da914d1702eee231ce33552bb0a))
+
 # [4.18.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.17.2...v4.18.0) (2023-04-18)
 
 
