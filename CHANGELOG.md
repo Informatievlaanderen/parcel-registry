@@ -1,3 +1,10 @@
+## [4.18.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.1...v4.18.2) (2023-05-10)
+
+
+### Bug Fixes
+
+* add snapshotmanager with etag comparison ([fb2b2cc](https://github.com/informatievlaanderen/parcel-registry/commit/fb2b2cc4d9a87e2914e005eb227e1fe5bc8ed237))
+
 ## [4.18.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.0...v4.18.1) (2023-05-04)
 
 
