@@ -28,6 +28,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -41,6 +42,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -54,6 +56,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -67,6 +70,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -80,6 +84,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -93,6 +98,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
@@ -106,6 +112,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                         await snapshotManager.FindMatchingSnapshot(
                             message.Message.CaPaKey,
                             message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
                             message.Position,
                             throwStaleWhenGone: false,
                             ct),
