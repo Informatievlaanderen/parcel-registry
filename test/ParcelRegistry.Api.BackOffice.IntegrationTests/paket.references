@@ -10,7 +10,7 @@ Be.Vlaanderen.Basisregisters.DockerUtilities
 
 AspNetCore.HealthChecks.SqlServer
 
-Be.Vlaanderen.Basisregisters.AcmIdm
+Be.Vlaanderen.Basisregisters.Auth.AcmIdm
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
