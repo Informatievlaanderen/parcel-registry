@@ -10,7 +10,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
     using Microsoft.Extensions.Options;
     using Parcel.Events;
 
-    [ConnectedProjectionName("Extract perceelkoppelingen")]
+    [ConnectedProjectionName("Extract perceelkoppelingen met adres")]
     [ConnectedProjectionDescription("Projectie die de perceel koppelingen data voor het adreskoppelingen extract voorziet.")]
     public sealed class ParcelLinkExtractProjections : ConnectedProjection<ExtractContext>
     {
