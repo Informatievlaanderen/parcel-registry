@@ -1,3 +1,10 @@
+## [4.18.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.2...v4.18.3) (2023-05-26)
+
+
+### Bug Fixes
+
+* change name status page parcel address projections ([09af1ca](https://github.com/informatievlaanderen/parcel-registry/commit/09af1ca7166abd9f6d74be7b0fb522f0542d0c4f))
+
 ## [4.18.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.1...v4.18.2) (2023-05-10)
 
 
