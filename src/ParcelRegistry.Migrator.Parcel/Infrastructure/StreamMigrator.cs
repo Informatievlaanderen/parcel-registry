@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Migrator.Parcel.Infrastructure
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
@@ -51,12 +52,15 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
         {
             await _processedIdsTable.CreateTableIfNotExists();
 
-            var consumerAddressContext = _lifetimeScope.Resolve<ConsumerAddressContext>();
-            _consumedAddressItems = await consumerAddressContext
-                .AddressConsumerItems
-                .Where(x => x.AddressId != null && !x.IsRemoved && (x.Status == AddressStatus.Current || x.Status == AddressStatus.Proposed))
-                .Select(x => new { AddressId = x.AddressId!.Value, x.AddressPersistentLocalId })
-                .ToDictionaryAsync(x => x.AddressId, y => y.AddressPersistentLocalId, ct);
+            await using (var consumerAddressContext = _lifetimeScope.Resolve<ConsumerAddressContext>())
+            {
+                _consumedAddressItems = await consumerAddressContext
+                    .AddressConsumerItems
+                    .Where(x => x.AddressId != null && !x.IsRemoved &&
+                                (x.Status == AddressStatus.Current || x.Status == AddressStatus.Proposed))
+                    .Select(x => new { AddressId = x.AddressId!.Value, x.AddressPersistentLocalId })
+                    .ToDictionaryAsync(x => x.AddressId, y => y.AddressPersistentLocalId, ct);
+            }
 
             var processedIdsList = await _processedIdsTable.GetProcessedIds();
             _processedIds = new List<(int, bool)>(processedIdsList);
@@ -71,13 +75,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
 
             var pageOfStreams = (await _sqlStreamTable.ReadNextParcelStreamPage(lastCursorPosition)).ToList();
 
-            while (pageOfStreams.Any())
+            while (pageOfStreams.Any() && !ct.IsCancellationRequested)
             {
-                if (ct.IsCancellationRequested)
-                {
-                    break;
-                }
-
                 try
                 {
                     var processedPageItems = await ProcessStreams(pageOfStreams, ct);
@@ -104,9 +103,9 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
 
         private async Task<List<int>> ProcessStreams(IEnumerable<(int, string)> streamsToProcess, CancellationToken ct)
         {
-            var processedItems = new List<int>();
+            var processedItems = new ConcurrentBag<int>();
 
-            foreach (var stream in streamsToProcess)
+            await Parallel.ForEachAsync(streamsToProcess, ct, async (stream, innerCt) =>
             {
                 try
                 {
@@ -118,7 +117,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                                 Log.Information($"SqlException occurred retrying after {timespan.Seconds} seconds."))
                         .ExecuteAsync(async () =>
                         {
-                            await ProcessStream(stream, processedItems, ct);
+                            await ProcessStream(stream, processedItems, innerCt);
                         });
                 }
                 catch (Exception ex)
@@ -127,14 +126,14 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                         $"Unexpected exception for migration stream '{stream.Item1}', aggregateId '{stream.Item2}' \n\n {ex.Message}");
                     throw;
                 }
-            }
+            });
 
-            return processedItems;
+            return processedItems.ToList();
         }
 
         private async Task ProcessStream(
             (int, string) stream,
-            List<int> processedItems,
+            ConcurrentBag<int> processedItems,
             CancellationToken ct)
         {
             var (internalId, aggregateId) = stream;
@@ -209,14 +208,12 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             CancellationToken ct)
         where TCommand : IHasCommandProvenance
         {
-            await using (var scope = _lifetimeScope.BeginLifetimeScope())
-            {
-                var cmdResolver = scope.Resolve<ICommandHandlerResolver>();
-                await cmdResolver.Dispatch(
-                    command.CreateCommandId(),
-                    command,
-                    cancellationToken: ct);
-            }
+            await using var scope = _lifetimeScope.BeginLifetimeScope();
+            var cmdResolver = scope.Resolve<ICommandHandlerResolver>();
+            await cmdResolver.Dispatch(
+                command.CreateCommandId(),
+                command,
+                cancellationToken: ct);
         }
     }
 }
