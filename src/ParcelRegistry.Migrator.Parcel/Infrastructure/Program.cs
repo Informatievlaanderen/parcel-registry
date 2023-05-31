@@ -1,15 +1,19 @@
 namespace ParcelRegistry.Migrator.Parcel.Infrastructure
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
+    using Consumer.Address;
     using Microsoft.Data.SqlClient;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -60,10 +64,22 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                     configuration.GetConnectionString("BackOffice"),
                     container.GetRequiredService<ILoggerFactory>());
 
+                var consumedAddressItems = new Dictionary<Guid, int>();
+                await using (var consumerAddressContext = container.GetRequiredService<ConsumerAddressContext>())
+                {
+                    consumedAddressItems = await consumerAddressContext
+                        .AddressConsumerItems
+                        .Where(x => x.AddressId != null && !x.IsRemoved &&
+                                    (x.Status == AddressStatus.Current || x.Status == AddressStatus.Proposed))
+                        .Select(x => new { AddressId = x.AddressId!.Value, x.AddressPersistentLocalId })
+                        .ToDictionaryAsync(x => x.AddressId, y => y.AddressPersistentLocalId, ct);
+                }
+
                 var migrator = new StreamMigrator(
                     container.GetRequiredService<ILoggerFactory>(),
                     configuration,
-                    container.GetRequiredService<ILifetimeScope>());
+                    container.GetRequiredService<ILifetimeScope>(),
+                    consumedAddressItems);
 
                 await DistributedLock<Program>.RunAsync(
                     async () =>
