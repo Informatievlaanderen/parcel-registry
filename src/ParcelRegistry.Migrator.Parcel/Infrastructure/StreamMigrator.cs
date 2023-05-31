@@ -29,14 +29,18 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
         private readonly ILogger _logger;
         private readonly ProcessedIdsTable _processedIdsTable;
         private readonly SqlStreamsTable _sqlStreamTable;
-        private Dictionary<Guid, int> _consumedAddressItems;
+        private readonly Dictionary<Guid, int> _consumedAddressItems;
 
         private readonly bool _skipNotFoundAddress;
 
         private List<(int processedId, bool isPageCompleted)> _processedIds;
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public StreamMigrator(ILoggerFactory loggerFactory, IConfiguration configuration, ILifetimeScope lifetimeScope)
+        public StreamMigrator(
+            ILoggerFactory loggerFactory,
+            IConfiguration configuration,
+            ILifetimeScope lifetimeScope,
+            Dictionary<Guid, int> consumedAddressItems)
         {
             _lifetimeScope = lifetimeScope;
             _logger = loggerFactory.CreateLogger("ParcelMigrator");
@@ -44,6 +48,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             var connectionString = configuration.GetConnectionString("events");
             _processedIdsTable = new ProcessedIdsTable(connectionString, loggerFactory);
             _sqlStreamTable = new SqlStreamsTable(connectionString);
+            _consumedAddressItems = consumedAddressItems;
 
             _skipNotFoundAddress = bool.Parse(configuration["SkipNotFoundAddress"]);
         }
@@ -51,16 +56,6 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
         public async Task ProcessAsync(CancellationToken ct)
         {
             await _processedIdsTable.CreateTableIfNotExists();
-
-            await using (var consumerAddressContext = _lifetimeScope.Resolve<ConsumerAddressContext>())
-            {
-                _consumedAddressItems = await consumerAddressContext
-                    .AddressConsumerItems
-                    .Where(x => x.AddressId != null && !x.IsRemoved &&
-                                (x.Status == AddressStatus.Current || x.Status == AddressStatus.Proposed))
-                    .Select(x => new { AddressId = x.AddressId!.Value, x.AddressPersistentLocalId })
-                    .ToDictionaryAsync(x => x.AddressId, y => y.AddressPersistentLocalId, ct);
-            }
 
             var processedIdsList = await _processedIdsTable.GetProcessedIds();
             _processedIds = new List<(int, bool)>(processedIdsList);
