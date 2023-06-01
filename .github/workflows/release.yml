@@ -922,7 +922,7 @@ jobs:
 
   deploy_to_test_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images_to_test, upload-lambda ]
+    needs: [ push_images_to_test, upload-lambda, release ]
     name: Deploy to test started
     environment: test
     runs-on: ubuntu-latest
@@ -944,7 +944,7 @@ jobs:
 
   deploy_to_test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images_to_test, release ]
+    needs: [ deploy_to_test_start_slack ]
     name: Deploy to test
     runs-on: ubuntu-latest
     strategy:
@@ -976,7 +976,7 @@ jobs:
 
   deploy_lambda_to_test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_test, release ]
+    needs: [ deploy_to_test ]
     name: Deploy lambda to test
     runs-on: ubuntu-latest
 
@@ -1032,7 +1032,7 @@ jobs:
 
   deploy_to_staging_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images_to_staging, deploy_to_test_finish_slack ]
+    needs: [ push_images_to_staging, deploy_to_test_finish_slack, release ]
     name: Deploy to staging started
     environment: stg
     runs-on: ubuntu-latest
@@ -1054,7 +1054,7 @@ jobs:
 
   deploy_to_staging:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images_to_staging, deploy_to_test_finish_slack, release ]
+    needs: [ deploy_to_staging_start_slack ]
     name: Deploy to staging
     runs-on: ubuntu-latest
     strategy:
@@ -1149,9 +1149,9 @@ jobs:
 
   deploy_to_newproduction_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images_to_newproduction, deploy_to_test_finish_slack ]
+    needs: [ push_images_to_newproduction, deploy_to_test_finish_slack, release ]
     name: Deploy to new production started
-    environment: stg
+    environment: newprd
     runs-on: ubuntu-latest
 
     steps:
@@ -1177,14 +1177,14 @@ jobs:
     strategy:
       matrix:
         services: [
-          'parcel-registry-api',
-          'parcel-registry-backoffice-api',
-          'parcel-registry-consumer-address',
-          'parcel-registry-migrator-parcel',
-          'parcel-registry-producer',
-          'parcel-registry-producer-snapshot-oslo',
-          'parcel-registry-projections',
-          'parcel-registry-projections-backoffice' ]
+          'parcel-api',
+          'parcel-backoffice-api',
+          'parcel-consumer-address',
+          'parcel-migrator-parcel',
+          'parcel-producer',
+          'parcel-producer-snapshot-oslo',
+          'parcel-projections',
+          'parcel-projections-backoffice' ]
     steps:
     - name: CD services
       env:
