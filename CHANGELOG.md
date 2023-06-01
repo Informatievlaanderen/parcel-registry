@@ -1,3 +1,16 @@
+## [4.18.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.3...v4.18.4) (2023-06-01)
+
+
+### Bug Fixes
+
+* get consumerItems before processing migrator ([d327c01](https://github.com/informatievlaanderen/parcel-registry/commit/d327c0192156b351fb15ce4baa870077c9f8ae81))
+* to trigger build add ci/cd new prd ([617b541](https://github.com/informatievlaanderen/parcel-registry/commit/617b541d42b94cafae024d2bf0a0d158f290ab49))
+
+
+### Performance Improvements
+
+* run migrator in parallel ([b73f64f](https://github.com/informatievlaanderen/parcel-registry/commit/b73f64fc40f7207f7973b76287d7dee109a327c1))
+
 ## [4.18.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.2...v4.18.3) (2023-05-26)
 
 
