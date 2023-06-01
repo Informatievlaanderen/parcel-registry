@@ -1,3 +1,10 @@
+## [4.18.7](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.6...v4.18.7) (2023-06-01)
+
+
+### Bug Fixes
+
+* to trigger build cd newprd ([038c747](https://github.com/informatievlaanderen/parcel-registry/commit/038c747b52eb92a5df2573bdb79f65dc86e23534))
+
 ## [4.18.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.5...v4.18.6) (2023-06-01)
 
 
