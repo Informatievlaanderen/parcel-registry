@@ -1177,14 +1177,14 @@ jobs:
     strategy:
       matrix:
         services: [
-          'parcel-api',
-          'parcel-backoffice-api',
-          'parcel-consumer-address',
-          'parcel-migrator-parcel',
-          'parcel-producer',
-          'parcel-producer-snapshot-oslo',
-          'parcel-projections',
-          'parcel-projections-backoffice' ]
+          'parcel-registry-api',
+          'parcel-registry-backoffice-api',
+          'parcel-registry-consumer-address',
+          'parcel-registry-migrator-parcel',
+          'parcel-registry-producer',
+          'parcel-registry-producer-snapshot-oslo',
+          'parcel-registry-projections',
+          'parcel-registry-projections-backoffice' ]
     steps:
     - name: CD services
       env:
