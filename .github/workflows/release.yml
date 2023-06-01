@@ -509,6 +509,25 @@ jobs:
       env:
         SEMVER: ${{ needs.release.outputs.version }}
 
+    # - name: Configure AWS credentials (New Production)
+    #   uses: aws-actions/configure-aws-credentials@v1-node16
+    #   with:
+    #     aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_NEWPRD }}
+    #     aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_NEWPRD }}
+    #     aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+    # - name: Login to Amazon ECR (New Production)
+    #   uses: aws-actions/amazon-ecr-login@v1.5.3
+
+    # - name: Push Lambda functions to S3 New Production
+    #   shell: bash
+    #   run: |
+    #     echo Push Lambda functions to S3 New Production
+    #     echo aws s3 cp ~/lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficefunction/$SEMVER/lambda.zip
+    #     aws s3 cp ~/lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficefunction/$SEMVER/lambda.zip
+    #   env:
+    #     SEMVER: ${{ needs.release.outputs.version }}
+
     - name: Configure AWS credentials (Production)
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
@@ -778,6 +797,68 @@ jobs:
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
+  push_images_to_newproduction:
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
+    name: Push images to New Production
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'api-backoffice',
+          'api-legacy',
+          'api-oslo',
+          'api-crab-import',
+          'api-extract',
+          'projector',
+          'projections-syndication',
+          'projections-backoffice',
+          'consumer-address',
+          'producer',
+          'producer-snapshot-oslo',
+          'migrator-parcel' ]
+    steps:
+      - name: Configure AWS credentials (New Production)
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_NEWPRD }}
+          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_NEWPRD }}
+          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+      - name: Login to Amazon ECR (New Production)
+        uses: aws-actions/amazon-ecr-login@v1.5.3
+
+      # Download artifact
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        continue-on-error: false
+        with:
+          name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
+          path: ~/
+
+      # Load artifact
+      - name: Load artifact
+        shell: bash
+        run: |
+          echo pr-$IMAGE-image.tar
+          docker image load -i ~/pr-$IMAGE-image.tar
+        env:
+          IMAGE: ${{ matrix.image }}
+
+      - name: Push artifacts to ECR New Production
+        shell: bash
+        run: |
+          echo $IMAGE:$SEMVER
+          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY_NEWPRD/parcel-registry/$IMAGE:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_NEWPRD/parcel-registry/$IMAGE:$SEMVER
+        env:
+          BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          BUILD_DOCKER_REGISTRY_NEWPRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_NEWPRD }}
+          IMAGE: ${{ matrix.image }}
+          SEMVER: ${{ needs.release.outputs.version }}
+          WORKSPACE: ${{ github.workspace }}
+
+
   push_images_to_production:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
@@ -841,7 +922,7 @@ jobs:
 
   deploy_to_test_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images_to_test ]
+    needs: [ push_images_to_test, upload-lambda ]
     name: Deploy to test started
     environment: test
     runs-on: ubuntu-latest
@@ -1061,6 +1142,123 @@ jobs:
       with:
         channel-id: '#team-dinosaur-dev'
         slack-message: Deployment of parcel-registry to staging has finished
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
+        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
+
+  deploy_to_newproduction_start_slack:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ push_images_to_newproduction, deploy_to_test_finish_slack ]
+    name: Deploy to new production started
+    environment: stg
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Parse repository name
+      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
+      shell: bash
+
+    - name: Notify deployment started
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: '#team-dinosaur-dev'
+        slack-message: Deployment of parcel-registry to new production has started
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
+        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
+
+  deploy_to_newproduction:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ deploy_to_newproduction_start_slack ]
+    name: Deploy to new production
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        services: [
+          'parcel-registry-api',
+          'parcel-registry-backoffice-api',
+          'parcel-registry-consumer-address',
+          'parcel-registry-migrator-parcel',
+          'parcel-registry-producer',
+          'parcel-registry-producer-snapshot-oslo',
+          'parcel-registry-projections',
+          'parcel-registry-projections-backoffice' ]
+    steps:
+    - name: CD services
+      env:
+        BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
+        STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
+      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
+      with:
+          environment: acc
+          version: ${{ needs.release.outputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
+          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
+          region: eu-west-1
+          interval: 2
+
+    - name: output CD services
+      shell: bash
+      run: |
+        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
+  # deploy_lambda_to_newproduction:
+  #   if: github.repository_owner == 'Informatievlaanderen'
+  #   needs: [ deploy_to_newproduction, release ]
+  #   name: Deploy lambda to staging
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - name: CD Lambda(s) Configure credentials
+  #     uses: aws-actions/configure-aws-credentials@v1-node16
+  #     with:
+  #       aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+  #   - name: Prepare Lambda(s)
+  #     shell: bash
+  #     run: |
+  #       echo aws s3 cp s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficefunction/lambda.zip --copy-props none
+  #       aws s3 cp s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficefunction/lambda.zip --copy-props none
+  #     env:
+  #       VERSION: ${{ needs.release.outputs.version }}
+
+  #   - name: Promote Lambda(s)
+  #     shell: bash
+  #     run: |
+  #       echo pulling awscurl docker image
+  #       docker pull ghcr.io/okigan/awscurl:latest
+  #       echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "pr-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/acc
+  #       docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "pr-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/acc
+  #     env:
+  #       ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
+  #       SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
+  #       REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
+  #       PROMOTEURL: ${{ secrets.VBR_AWS_PROMOTE_LAMBDA_BASEURL }}
+
+  deploy_to_newproduction_finish_slack:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [deploy_to_newproduction] #[ deploy_lambda_to_newproduction ]
+    name: Deploy to new production finished
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Parse repository name
+      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
+      shell: bash
+
+    - name: Notify deployment finished
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: '#team-dinosaur-dev'
+        slack-message: Deployment of parcel-registry to new production has finished
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
