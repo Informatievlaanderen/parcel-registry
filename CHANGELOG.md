@@ -1,3 +1,10 @@
+## [4.18.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.5...v4.18.6) (2023-06-01)
+
+
+### Bug Fixes
+
+* ci / cd newprd fixes ([7b7ac1d](https://github.com/informatievlaanderen/parcel-registry/commit/7b7ac1d6239a39896f5ab639ef763be01339db0f))
+
 ## [4.18.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.4...v4.18.5) (2023-06-01)
 
 
