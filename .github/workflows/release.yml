@@ -944,7 +944,7 @@ jobs:
 
   deploy_to_test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_test_start_slack ]
+    needs: [ deploy_to_test_start_slack, release ]
     name: Deploy to test
     runs-on: ubuntu-latest
     strategy:
@@ -976,7 +976,7 @@ jobs:
 
   deploy_lambda_to_test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_test ]
+    needs: [ deploy_to_test, release ]
     name: Deploy lambda to test
     runs-on: ubuntu-latest
 
@@ -1054,7 +1054,7 @@ jobs:
 
   deploy_to_staging:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_staging_start_slack ]
+    needs: [ deploy_to_staging_start_slack, release ]
     name: Deploy to staging
     runs-on: ubuntu-latest
     strategy:
@@ -1171,7 +1171,7 @@ jobs:
 
   deploy_to_newproduction:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_newproduction_start_slack ]
+    needs: [ deploy_to_newproduction_start_slack, release ]
     name: Deploy to new production
     runs-on: ubuntu-latest
     strategy:
