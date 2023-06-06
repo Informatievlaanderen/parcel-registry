@@ -16,11 +16,11 @@ namespace ParcelRegistry.Legacy.Commands.Fixes
         public FixGrar3581(
             ParcelId parcelId,
             ParcelStatus parcelStatus,
-            IEnumerable<AddressId> ids)
+            IEnumerable<AddressId> addressIds)
         {
             ParcelId = parcelId;
             ParcelStatus = parcelStatus;
-            AddressIds = ids;
+            AddressIds = addressIds;
         }
 
         public Guid CreateCommandId() => Deterministic.Create(Namespace, $"FixGrar3581-{ToString()}");
