@@ -12,16 +12,16 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Consumer.Address;
     using Legacy.Commands;
     using Microsoft.Data.SqlClient;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using ParcelRegistry.Parcel;
     using Polly;
     using Serilog;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
+    using IParcels = Legacy.IParcels;
+    using ParcelId = Legacy.ParcelId;
 
     internal class StreamMigrator
     {
@@ -30,17 +30,18 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
         private readonly ProcessedIdsTable _processedIdsTable;
         private readonly SqlStreamsTable _sqlStreamTable;
         private readonly Dictionary<Guid, int> _consumedAddressItems;
+        private readonly Dictionary<Guid, List<Guid>> _addressesByParcel;
 
         private readonly bool _skipNotFoundAddress;
 
         private List<(int processedId, bool isPageCompleted)> _processedIds;
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public StreamMigrator(
-            ILoggerFactory loggerFactory,
+        public StreamMigrator(ILoggerFactory loggerFactory,
             IConfiguration configuration,
             ILifetimeScope lifetimeScope,
-            Dictionary<Guid, int> consumedAddressItems)
+            Dictionary<Guid, int> consumedAddressItems,
+            Dictionary<Guid, List<Guid>> addressesByParcel)
         {
             _lifetimeScope = lifetimeScope;
             _logger = loggerFactory.CreateLogger("ParcelMigrator");
@@ -49,6 +50,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             _processedIdsTable = new ProcessedIdsTable(connectionString, loggerFactory);
             _sqlStreamTable = new SqlStreamsTable(connectionString);
             _consumedAddressItems = consumedAddressItems;
+            _addressesByParcel = addressesByParcel;
 
             _skipNotFoundAddress = bool.Parse(configuration["SkipNotFoundAddress"]);
         }
@@ -110,10 +112,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                             currentRetry => Math.Pow(currentRetry, 2) * TimeSpan.FromSeconds(30),
                             (_, timespan) =>
                                 Log.Information($"SqlException occurred retrying after {timespan.Seconds} seconds."))
-                        .ExecuteAsync(async () =>
-                        {
-                            await ProcessStream(stream, processedItems, innerCt);
-                        });
+                        .ExecuteAsync(async () => { await ProcessStream(stream, processedItems, innerCt); });
                 }
                 catch (Exception ex)
                 {
@@ -146,13 +145,14 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
 
             await using var streamLifetimeScope = _lifetimeScope.BeginLifetimeScope();
 
-            var legacyParcelsRepo = streamLifetimeScope.Resolve<Legacy.IParcels>();
-            var parcelId = new Legacy.ParcelId(Guid.Parse(aggregateId));
+            var legacyParcelsRepo = streamLifetimeScope.Resolve<IParcels>();
+            var parcelId = new ParcelId(Guid.Parse(aggregateId));
 
             _stopwatch.Start();
             var legacyParcelAggregate = await legacyParcelsRepo.GetAsync(parcelId, ct);
             _stopwatch.Stop();
-            _logger.LogInformation("Resolved aggregate in {timing}", _stopwatch.Elapsed.ToString("g", CultureInfo.InvariantCulture));
+            _logger.LogInformation("Resolved aggregate in {timing}",
+                _stopwatch.Elapsed.ToString("g", CultureInfo.InvariantCulture));
             _stopwatch.Reset();
 
             if (legacyParcelAggregate.IsRemoved)
@@ -161,20 +161,29 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                 return;
             }
 
-            var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(addressId =>
-            {
-                if (_consumedAddressItems.TryGetValue(addressId, out var addressPersistentLocalId))
-                {
-                    return (true, new AddressPersistentLocalId(addressPersistentLocalId));
-                }
+            var addressIds = _addressesByParcel.ContainsKey(parcelId)
+                ? _addressesByParcel[parcelId]
+                    .Select(addressId =>
+                    {
+                        if (_consumedAddressItems.TryGetValue(addressId, out var addressPersistentLocalId))
+                        {
+                            return (isSuccess: true, addressPersistentLocalId: new AddressPersistentLocalId(addressPersistentLocalId));
+                        }
 
-                if (_skipNotFoundAddress)
-                {
-                    return (false, new AddressPersistentLocalId(-1));
-                }
+                        if (_skipNotFoundAddress)
+                        {
+                            return (isSuccess: false, addressPersistentLocalId: new AddressPersistentLocalId(-1));
+                        }
 
-                throw new InvalidOperationException($"AddressConsumerItem for addressId '{addressId}' was not found in the ConsumerAddressContext.");
-            });
+                        throw new InvalidOperationException(
+                            $"AddressConsumerItem for addressId '{addressId}' was not found in the ConsumerAddressContext.");
+                    })
+                : Array.Empty<(bool, AddressPersistentLocalId)>();
+
+            var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(addressIds
+                .Where(x => x.isSuccess)
+                .Select(x => x.addressPersistentLocalId)
+                .ToList());
 
             var markMigrated = new MarkParcelAsMigrated(
                 migrateParcel.OldParcelId,
@@ -195,13 +204,14 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                             migrateParcel.NewParcelId,
                             addressPersistentLocalId), ct);
             }
+
             await backOfficeContext.SaveChangesAsync(ct);
         }
 
         private async Task DispatchCommand<TCommand>(
             TCommand command,
             CancellationToken ct)
-        where TCommand : IHasCommandProvenance
+            where TCommand : IHasCommandProvenance
         {
             await using var scope = _lifetimeScope.BeginLifetimeScope();
             var cmdResolver = scope.Resolve<ICommandHandlerResolver>();

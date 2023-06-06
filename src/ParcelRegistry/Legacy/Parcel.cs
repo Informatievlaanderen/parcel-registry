@@ -1,7 +1,6 @@
 namespace ParcelRegistry.Legacy
 {
     using System.Collections.Generic;
-    using System;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Crab;
@@ -15,7 +14,7 @@ namespace ParcelRegistry.Legacy
 
     public partial class Parcel : AggregateRootEntity, ISnapshotable
     {
-        public MigrateParcel CreateMigrateCommand(Func<AddressId, (bool success, AddressPersistentLocalId addressPersistentLocalId)> mapAddressPersistentLocalId)
+        public MigrateParcel CreateMigrateCommand(IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds)
         {
             return new MigrateParcel(
                 ParcelId,
@@ -24,7 +23,7 @@ namespace ParcelRegistry.Legacy
                     ? ParcelStatus.Realized
                     : ParcelStatus.Retired,
                 IsRemoved,
-                _addressCollection.AllAddressIds().Select(mapAddressPersistentLocalId).Where(x => x.success).Select(x => x.addressPersistentLocalId),
+                addressPersistentLocalIds,
                 XCoordinate is not null ? new Coordinate(XCoordinate) : null,
                 YCoordinate is not null ? new Coordinate(YCoordinate) : null,
                 new Provenance(

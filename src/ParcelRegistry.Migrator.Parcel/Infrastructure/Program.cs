@@ -75,11 +75,25 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                         .ToDictionaryAsync(x => x.AddressId, y => y.AddressPersistentLocalId, ct);
                 }
 
+                if (!consumedAddressItems.Any())
+                {
+                    throw new InvalidOperationException("Empty consumed addresses.");
+                }
+
+                var addressesByParcel = await new CrabAddresses(configuration.GetConnectionString("BackOffice"))
+                    .GetAddressesByParcel();
+
+                if (!addressesByParcel.Any())
+                {
+                    throw new InvalidOperationException("Empty addresses by parcel.");
+                }
+
                 var migrator = new StreamMigrator(
                     container.GetRequiredService<ILoggerFactory>(),
                     configuration,
                     container.GetRequiredService<ILifetimeScope>(),
-                    consumedAddressItems);
+                    consumedAddressItems,
+                    addressesByParcel);
 
                 await DistributedLock<Program>.RunAsync(
                     async () =>
