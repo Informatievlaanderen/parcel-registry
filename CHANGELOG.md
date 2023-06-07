@@ -1,3 +1,10 @@
+# [4.19.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.7...v4.19.0) (2023-06-07)
+
+
+### Features
+
+* get parcel adresses from crab export instead of legacy aggregate ([ef6e330](https://github.com/informatievlaanderen/parcel-registry/commit/ef6e330a255e242276d67adcbb104afb41090c4c))
+
 ## [4.18.7](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.6...v4.18.7) (2023-06-01)
 
 
