@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ParcelRegistry.Consumer.Address\ParcelRegistry.Consumer.Address.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Infrastructure\ParcelRegistry.Infrastructure.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.Extract\ParcelRegistry.Projections.Extract.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.LastChangedList\ParcelRegistry.Projections.LastChangedList.csproj" />
