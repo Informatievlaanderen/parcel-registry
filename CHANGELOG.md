@@ -1,3 +1,10 @@
+# [4.20.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.19.0...v4.20.0) (2023-06-12)
+
+
+### Features
+
+* add consumer controller ([b80208c](https://github.com/informatievlaanderen/parcel-registry/commit/b80208c3d6530b7a54ced2819fc3f0849bb0cce0))
+
 # [4.19.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.18.7...v4.19.0) (2023-06-07)
 
 
