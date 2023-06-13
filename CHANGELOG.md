@@ -1,3 +1,10 @@
+## [4.20.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.0...v4.20.1) (2023-06-13)
+
+
+### Bug Fixes
+
+* add idempotent address-parcel relation ([f9bd59c](https://github.com/informatievlaanderen/parcel-registry/commit/f9bd59c72d92c4d3898da35bdf3538bff6b911cd))
+
 # [4.20.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.19.0...v4.20.0) (2023-06-12)
 
 
