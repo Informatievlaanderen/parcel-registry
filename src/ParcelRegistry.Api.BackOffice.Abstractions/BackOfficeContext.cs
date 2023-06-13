@@ -5,6 +5,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
     using System.Threading;
     using System.Threading.Tasks;
     using Infrastructure;
+    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
@@ -25,11 +26,32 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
             CancellationToken cancellationToken)
         {
             var relation = await FindParcelAddressRelation(parcelId, addressPersistentLocalId, cancellationToken);
-            if (relation is null)
+            if (relation is not null)
+            {
+                return relation;
+            }
+
+            try
             {
                 relation = new ParcelAddressRelation(parcelId, addressPersistentLocalId);
                 await ParcelAddressRelations.AddAsync(relation, cancellationToken);
                 await SaveChangesAsync(cancellationToken);
+            }
+            catch(DbUpdateException exception)
+            {
+                // It can happen that the back office projections were faster adding the relation than the executor (or vice versa).
+                if (exception.InnerException is not SqlException { Number: 2627 })
+                {
+                    throw;
+                }
+
+                relation = await ParcelAddressRelations.FirstOrDefaultAsync(
+                    x => x.AddressPersistentLocalId == addressPersistentLocalId, cancellationToken);
+
+                if (relation is null)
+                {
+                    throw;
+                }
             }
 
             return relation;
