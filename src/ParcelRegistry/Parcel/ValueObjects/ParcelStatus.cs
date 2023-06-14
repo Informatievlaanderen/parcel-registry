@@ -20,5 +20,6 @@ namespace ParcelRegistry.Parcel
         }
 
         public static implicit operator string(ParcelStatus status) => status.Status;
+        public static implicit operator ParcelStatus(string status) => Parse(status);
     }
 }

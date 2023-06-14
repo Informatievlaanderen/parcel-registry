@@ -18,9 +18,14 @@ namespace ParcelRegistry.Api.Oslo.Convertors
                 ? PerceelStatus.Gehistoreerd
                 : PerceelStatus.Gerealiseerd;
 
-        public static Legacy.ParcelStatus MapToParcelStatus(this PerceelStatus perceelStatus)
+        public static Legacy.ParcelStatus MapToLegacyParcelStatus(this PerceelStatus perceelStatus)
             => perceelStatus == PerceelStatus.Gehistoreerd
                 ? Legacy.ParcelStatus.Retired
                 : Legacy.ParcelStatus.Realized;
+
+        public static ParcelStatus MapToParcelStatus(this PerceelStatus perceelStatus)
+            => perceelStatus == PerceelStatus.Gehistoreerd
+                ? ParcelStatus.Retired
+                : ParcelStatus.Realized;
     }
 }
