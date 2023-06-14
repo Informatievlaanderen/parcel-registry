@@ -1,3 +1,10 @@
+## [4.20.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.2...v4.20.3) (2023-06-14)
+
+
+### Bug Fixes
+
+* add StatusAsString to ParceDetailV2 to fix filtering + remake CaPaKey index ([1772d85](https://github.com/informatievlaanderen/parcel-registry/commit/1772d851b126d2f87b61245974730b491945457d))
+
 ## [4.20.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.1...v4.20.2) (2023-06-14)
 
 
