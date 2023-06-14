@@ -34,7 +34,13 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
 
         public Guid ParcelId { get; set; }
         public string CaPaKey { get; set; }
-        public ParcelStatus Status { get; set; }
+        public ParcelStatus Status
+        {
+            get => ParcelStatus.Parse(StatusAsString);
+            set => StatusAsString = value.Status;
+        }
+
+        public string StatusAsString { get; private set; }
 
         public virtual List<ParcelDetailAddressV2> Addresses { get; set; }
 
@@ -59,12 +65,10 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                 .HasKey(p => p.ParcelId)
                 .IsClustered(false);
 
+            builder.Ignore(x => x.Status);
+
             builder.Property(p => p.CaPaKey);
-            builder.Property(x => x.Status)
-                .HasConversion(
-                    value => value.Status,
-                    value => ParcelStatus.Parse(value))
-                .HasColumnName("Status");
+            builder.Property(x => x.StatusAsString).HasMaxLength(450).HasColumnName("Status");
 
             builder.Property(p => p.Removed);
             builder.Property(x => x.LastEventHash);
@@ -77,10 +81,11 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                 .HasForeignKey(x => x.ParcelId);
 
             builder.HasIndex(x => x.CaPaKey)
-                .IsUnique()
                 .IsClustered();
+            builder.HasAlternateKey(x => x.CaPaKey);
+
             builder.HasIndex(x => x.Removed);
-            builder.HasIndex(x => x.Status);
+            builder.HasIndex(x => x.StatusAsString);
         }
     }
 }

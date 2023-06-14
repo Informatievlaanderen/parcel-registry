@@ -56,7 +56,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
             {
                 if (Enum.TryParse(typeof(PerceelStatus), filtering.Filter.Status, true, out var status))
                 {
-                    var parcelStatus = ((PerceelStatus)status).MapToParcelStatus();
+                    var parcelStatus = ((PerceelStatus)status).MapToLegacyParcelStatus();
                     parcels = parcels.Where(m => m.Status.HasValue && m.Status.Value == parcelStatus.Status);
                 }
                 else
