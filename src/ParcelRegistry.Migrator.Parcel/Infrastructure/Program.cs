@@ -64,16 +64,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                     configuration.GetConnectionString("BackOffice"),
                     container.GetRequiredService<ILoggerFactory>());
 
-                var consumedAddressItems = new Dictionary<Guid, int>();
-                await using (var consumerAddressContext = container.GetRequiredService<ConsumerAddressContext>())
-                {
-                    consumedAddressItems = await consumerAddressContext
-                        .AddressConsumerItems
-                        .Where(x => x.AddressId != null && !x.IsRemoved &&
-                                    (x.Status == AddressStatus.Current || x.Status == AddressStatus.Proposed))
-                        .Select(x => new { AddressId = x.AddressId!.Value, x.AddressPersistentLocalId })
-                        .ToDictionaryAsync(x => x.AddressId, y => y.AddressPersistentLocalId, ct);
-                }
+                var consumedAddressItems = await new AddressDetails(configuration.GetConnectionString("AddressLegacy"))
+                    .GetActualAddresses();
 
                 if (!consumedAddressItems.Any())
                 {
