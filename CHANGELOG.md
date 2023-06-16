@@ -1,3 +1,15 @@
+## [4.20.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.3...v4.20.4) (2023-06-16)
+
+
+### Bug Fixes
+
+* also use StatusAsString in legacy api v2 query ([19c9039](https://github.com/informatievlaanderen/parcel-registry/commit/19c9039d6bc9de470706bdea05dda67b2f5e607c))
+
+
+### Performance Improvements
+
+* read addresses from legacy instead of consumer ([6e2b193](https://github.com/informatievlaanderen/parcel-registry/commit/6e2b1933542d3e157744293a34f6cb2ed28c94f4))
+
 ## [4.20.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.2...v4.20.3) (2023-06-14)
 
 
