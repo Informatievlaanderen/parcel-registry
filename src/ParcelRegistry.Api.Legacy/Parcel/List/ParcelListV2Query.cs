@@ -50,12 +50,11 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
                 if (Enum.TryParse(typeof(PerceelStatus), filtering.Filter.Status, true, out var status))
                 {
                     var parcelStatus = ((PerceelStatus)status).MapToParcelStatus();
-                    parcels = parcels.Where(m => m.Status == parcelStatus.Status);
+                    parcels = parcels.Where(m => m.StatusAsString == parcelStatus.Status);
                 }
                 else
-                    //have to filter on EF cannot return new List<>().AsQueryable() cause non-EF provider does not support .CountAsync()
                 {
-                    parcels = parcels.Where(m => m.Status == "-1");
+                    return new List<ParcelDetailV2>().AsQueryable();
                 }
             }
 
