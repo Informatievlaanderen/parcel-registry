@@ -1,3 +1,10 @@
+## [4.20.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.4...v4.20.5) (2023-06-21)
+
+
+### Bug Fixes
+
+* naming producers migration ([be28549](https://github.com/informatievlaanderen/parcel-registry/commit/be28549d9ed0cec65469eb6a55a523d8118c4697))
+
 ## [4.20.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.3...v4.20.4) (2023-06-16)
 
 
