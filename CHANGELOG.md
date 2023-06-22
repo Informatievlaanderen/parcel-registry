@@ -1,3 +1,10 @@
+## [4.20.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.5...v4.20.6) (2023-06-22)
+
+
+### Bug Fixes
+
+* bump projectionhandling ([a136e7c](https://github.com/informatievlaanderen/parcel-registry/commit/a136e7c264102b1e3208071c8f318bf0eefda15d))
+
 ## [4.20.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.4...v4.20.5) (2023-06-21)
 
 
