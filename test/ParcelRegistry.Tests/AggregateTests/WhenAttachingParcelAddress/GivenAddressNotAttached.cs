@@ -3,18 +3,22 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
     using System.Collections.Generic;
     using Autofac;
     using AutoFixture;
-    using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Fixtures;
-    using Parcel;
-    using Parcel.Commands;
-    using Parcel.Events;
     using BackOffice;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Consumer.Address;
+    using Fixtures;
     using FluentAssertions;
+    using NetTopologySuite.Geometries;
+    using Parcel;
+    using Parcel.Commands;
+    using Parcel.Events;
     using Xunit;
     using Xunit.Abstractions;
+    using Coordinate = Parcel.Coordinate;
 
     public class GivenAddressNotAttached : ParcelRegistryTest
     {
@@ -52,7 +56,12 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
-            consumerAddress.AddAddress(addressPersistentLocalId, Consumer.Address.AddressStatus.Current);
+            consumerAddress.AddAddress(
+                addressPersistentLocalId,
+                AddressStatus.Current,
+                "DerivedFromObject",
+                "Parcel",
+                (Point)_wkbReader.Read(Fixture.Create<ExtendedWkbGeometry>().ToString().ToByteArray()));
 
             Assert(new Scenario()
                 .Given(

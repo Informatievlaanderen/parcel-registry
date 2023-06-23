@@ -17,6 +17,7 @@ nuget Microsoft.Extensions.Http.Polly 6.0.3
 // For more healtchecks, look at https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks
 nuget AspNetCore.HealthChecks.SqlServer 6.0.2
 
+nuget Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite 6.0.3
 nuget NetTopologySuite 2.4.0
 nuget Dapper 2.0.123
 

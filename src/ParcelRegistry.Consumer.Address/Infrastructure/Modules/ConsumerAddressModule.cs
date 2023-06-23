@@ -1,14 +1,12 @@
 namespace ParcelRegistry.Consumer.Address.Infrastructure.Modules
 {
     using System;
-    using Address;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
     using Parcel;
     using ParcelRegistry.Infrastructure;
 
@@ -54,6 +52,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure.Modules
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerAddress, Schema.ConsumerAddress);
+                        sqlServerOptions.UseNetTopologySuite();
                     }), serviceLifetime);
         }
 

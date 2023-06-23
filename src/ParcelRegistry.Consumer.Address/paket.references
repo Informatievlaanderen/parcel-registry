@@ -18,8 +18,9 @@ Serilog.Formatting.Compact
 Serilog.Sinks.Console
 Serilog.Settings.Configuration
 
-Microsoft.EntityFrameworkCore.SqlServer
 Microsoft.EntityFrameworkCore.InMemory
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite
 
 Microsoft.Extensions.Configuration
 Microsoft.Extensions.Configuration.CommandLine

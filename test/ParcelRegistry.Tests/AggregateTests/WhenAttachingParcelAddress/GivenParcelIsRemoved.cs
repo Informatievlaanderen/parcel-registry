@@ -10,9 +10,16 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
     using Parcel.Events;
     using Parcel.Exceptions;
     using BackOffice;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Consumer.Address;
     using Fixtures;
+    using NetTopologySuite;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.Geometries.Implementation;
+    using NetTopologySuite.IO;
     using Xunit;
     using Xunit.Abstractions;
+    using Coordinate = Parcel.Coordinate;
 
     public class GivenParcelIsRemoved : ParcelRegistryTest
     {
@@ -49,7 +56,12 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
-            consumerAddress.AddAddress(addressPersistentLocalId, Consumer.Address.AddressStatus.Current);
+            consumerAddress.AddAddress(
+                addressPersistentLocalId,
+                AddressStatus.Current,
+                "DerivedFromObject",
+                "Parcel",
+                (Point)_wkbReader.Read(Fixture.Create<ExtendedWkbGeometry>().ToString().ToByteArray()));
 
             Assert(new Scenario()
                 .Given(

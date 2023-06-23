@@ -1,9 +1,15 @@
 namespace ParcelRegistry.Tests.BackOffice.Validators
 {
     using System;
+    using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Consumer.Address;
     using FluentAssertions;
     using FluentValidation.TestHelper;
+    using NetTopologySuite;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.Geometries.Implementation;
+    using NetTopologySuite.IO;
     using Parcel;
     using ParcelRegistry.Api.BackOffice.Abstractions.Requests;
     using ParcelRegistry.Api.BackOffice.Validators;
@@ -11,12 +17,23 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
 
     public class DetachAddressRequestValidatorTests
     {
-        private readonly DetachAddressRequestValidator _sut;
         private readonly FakeConsumerAddressContext _addressContext;
+        private readonly WKBReader _wkbReader;
+        private readonly Fixture _fixture;
+
+        private readonly DetachAddressRequestValidator _sut;
 
         public DetachAddressRequestValidatorTests()
         {
             _addressContext = new FakeConsumerAddressContextFactory().CreateDbContext(Array.Empty<string>());
+            _wkbReader = new WKBReader(
+                new NtsGeometryServices(
+                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
+                    new PrecisionModel(PrecisionModels.Floating),
+                    WkbGeometry.SridLambert72));
+            _fixture = new Fixture();
+            _fixture.Customize(new WithExtendedWkbGeometry());
+
             _sut = new DetachAddressRequestValidator(_addressContext);
         }
 
@@ -43,7 +60,7 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
                 {
                     AdresId = PuriCreator.CreateAdresId(123)
                 });
-            
+
             result.Errors.Count.Should().Be(1);
             result.ShouldHaveValidationErrorFor(nameof(DetachAddressRequest.AdresId))
                 .WithErrorCode("PerceelAdresOngeldig")
@@ -55,7 +72,13 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(1);
 
-            _addressContext.AddAddress(addressPersistentLocalId, AddressStatus.Current, isRemoved: true);
+            _addressContext.AddAddress(
+                addressPersistentLocalId,
+                AddressStatus.Current,
+                "DerivedFromObject",
+                "Parcel",
+                (Point)_wkbReader.Read(_fixture.Create<ExtendedWkbGeometry>().ToString().ToByteArray()),
+                isRemoved: true);
 
             var result = _sut.TestValidate(new DetachAddressRequest{AdresId = addressPersistentLocalId });
 

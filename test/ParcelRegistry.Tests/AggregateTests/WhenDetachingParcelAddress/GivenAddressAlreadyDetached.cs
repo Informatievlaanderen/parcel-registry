@@ -1,17 +1,21 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingParcelAddress
 {
     using System.Collections.Generic;
+    using Autofac;
     using AutoFixture;
+    using BackOffice;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Consumer.Address;
+    using Fixtures;
+    using NetTopologySuite.Geometries;
     using Parcel;
     using Parcel.Commands;
     using Parcel.Events;
-    using Fixtures;
     using Xunit;
     using Xunit.Abstractions;
-    using Autofac;
-    using ParcelRegistry.Tests.BackOffice;
+    using Coordinate = Parcel.Coordinate;
 
     public class GivenAddressAlreadyDetached : ParcelRegistryTest
     {
@@ -48,7 +52,12 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingParcelAddress
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
-            consumerAddress.AddAddress(addressPersistentLocalId, Consumer.Address.AddressStatus.Current);
+            consumerAddress.AddAddress(
+                addressPersistentLocalId,
+                AddressStatus.Current,
+                "DerivedFromObject",
+                "Parcel",
+                (Point)_wkbReader.Read(Fixture.Create<ExtendedWkbGeometry>().ToString().ToByteArray()));
 
             Assert(new Scenario()
                 .Given(
