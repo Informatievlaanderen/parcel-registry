@@ -15,12 +15,20 @@ namespace ParcelRegistry.Tests
     using Newtonsoft.Json;
     using Parcel;
     using BackOffice;
+    using Consumer.Address;
+    using NetTopologySuite;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.Geometries.Implementation;
+    using NetTopologySuite.IO;
     using Xunit.Abstractions;
 
     public class ParcelRegistryTest : AutofacBasedTest
     {
+        protected readonly WKBReader _wkbReader;
+
         protected Fixture Fixture { get; }
         protected string ConfigDetailUrl => "http://base/{0}";
+
         protected JsonSerializerSettings EventSerializerSettings { get; } = EventsJsonSerializerSettingsProvider.CreateSerializerSettings();
 
         public void DispatchArrangeCommand<T>(T command) where T : IHasCommandProvenance
@@ -35,9 +43,16 @@ namespace ParcelRegistry.Tests
             Fixture = new Fixture();
 
             Fixture.Customize(new WithParcelStatus());
+            Fixture.Customize(new WithExtendedWkbGeometry());
 
             Fixture.Customize(new SetProvenanceImplementationsCallSetProvenance());
             Fixture.Register(() => (ISnapshotStrategy)NoSnapshotStrategy.Instance);
+
+            _wkbReader = new WKBReader(
+                new NtsGeometryServices(
+                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
+                    new PrecisionModel(PrecisionModels.Floating),
+                    WkbGeometry.SridLambert72));
         }
 
         protected override void ConfigureCommandHandling(ContainerBuilder builder)

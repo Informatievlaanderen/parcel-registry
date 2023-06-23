@@ -1,9 +1,15 @@
 namespace ParcelRegistry.Tests.BackOffice.Validators
 {
     using System;
+    using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Consumer.Address;
     using FluentAssertions;
     using FluentValidation.TestHelper;
+    using NetTopologySuite;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.Geometries.Implementation;
+    using NetTopologySuite.IO;
     using Parcel;
     using ParcelRegistry.Api.BackOffice.Abstractions.Requests;
     using ParcelRegistry.Api.BackOffice.Validators;
@@ -11,12 +17,23 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
 
     public class AttachAddressRequestValidatorTests
     {
-        private readonly AttachAddressRequestValidator _sut;
         private readonly FakeConsumerAddressContext _addressContext;
+        private readonly WKBReader _wkbReader;
+        private readonly Fixture _fixture;
+
+        private readonly AttachAddressRequestValidator _sut;
 
         public AttachAddressRequestValidatorTests()
         {
             _addressContext = new FakeConsumerAddressContextFactory().CreateDbContext(Array.Empty<string>());
+            _wkbReader = new WKBReader(
+                new NtsGeometryServices(
+                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
+                    new PrecisionModel(PrecisionModels.Floating),
+                    WkbGeometry.SridLambert72));
+            _fixture = new Fixture();
+            _fixture.Customize(new WithExtendedWkbGeometry());
+
             _sut = new AttachAddressRequestValidator(_addressContext);
         }
 
@@ -55,7 +72,13 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(1);
 
-            _addressContext.AddAddress(addressPersistentLocalId, AddressStatus.Current, isRemoved: true);
+            _addressContext.AddAddress(
+                addressPersistentLocalId,
+                AddressStatus.Current,
+                "DerivedFromObject",
+                "Parcel",
+                (Point)_wkbReader.Read(_fixture.Create<ExtendedWkbGeometry>().ToString().ToByteArray()),
+                isRemoved: true);
 
             var result = _sut.TestValidate(new AttachAddressRequest{AdresId = addressPersistentLocalId });
 
@@ -73,7 +96,12 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
             var addressPersistentLocalId = new AddressPersistentLocalId(1);
             var adresId = PuriCreator.CreateAdresId(addressPersistentLocalId);
 
-            _addressContext.AddAddress(addressPersistentLocalId, AddressStatus.Parse(addressStatus));
+            _addressContext.AddAddress(
+                addressPersistentLocalId,
+                AddressStatus.Parse(addressStatus),
+                "DerivedFromObject",
+                "Parcel",
+                (Point)_wkbReader.Read(_fixture.Create<ExtendedWkbGeometry>().ToString().ToByteArray()));
 
             var result = _sut.TestValidate(new AttachAddressRequest { AdresId = adresId });
 

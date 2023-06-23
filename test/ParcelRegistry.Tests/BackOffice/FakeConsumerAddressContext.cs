@@ -5,6 +5,7 @@ namespace ParcelRegistry.Tests.BackOffice
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.EntityFrameworkCore.Diagnostics;
+    using NetTopologySuite.Geometries;
     using Parcel;
 
     public class FakeConsumerAddressContext : ConsumerAddressContext
@@ -19,13 +20,19 @@ namespace ParcelRegistry.Tests.BackOffice
         public void AddAddress(
             AddressPersistentLocalId addressPersistentLocalId,
             AddressStatus status,
+            string geometryMethod,
+            string geometrySpecification,
+            Point position,
             bool isRemoved = false)
         {
             AddressConsumerItems.Add(new AddressConsumerItem(
                 addressPersistentLocalId,
                 Guid.Empty,
                 status,
-                isRemoved));
+                isRemoved,
+                geometryMethod,
+                geometrySpecification,
+                position));
             SaveChanges();
         }
 

@@ -3,6 +3,7 @@ namespace ParcelRegistry.Consumer.Address
     using System;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using NetTopologySuite.Geometries;
     using ParcelRegistry.Infrastructure;
 
     public sealed class AddressConsumerItem
@@ -10,18 +11,28 @@ namespace ParcelRegistry.Consumer.Address
         public int AddressPersistentLocalId { get; set; }
         public Guid? AddressId { get; set; }
         public AddressStatus Status { get; set; }
+        public string GeometryMethod { get; set; }
+        public string GeometrySpecification { get; set; }
+        public Point Position { get; set; }
         public bool IsRemoved { get; set; }
 
         //Needed for EF
         private AddressConsumerItem()
-        { }
+        {
+        }
 
         public AddressConsumerItem(
             int addressPersistentLocalId,
-            AddressStatus status)
+            AddressStatus status,
+            string geometryMethod,
+            string geometrySpecification,
+            Point position)
         {
             AddressPersistentLocalId = addressPersistentLocalId;
             Status = status;
+            GeometryMethod = geometryMethod;
+            GeometrySpecification = geometrySpecification;
+            Position = position;
             IsRemoved = false;
         }
 
@@ -29,10 +40,18 @@ namespace ParcelRegistry.Consumer.Address
             int addressPersistentLocalId,
             Guid addressId,
             AddressStatus status,
-            bool isRemoved)
-            : this(addressPersistentLocalId, status)
+            bool isRemoved,
+            string geometryMethod,
+            string geometrySpecification,
+            Point position)
+            : this(addressPersistentLocalId, status, geometryMethod, geometrySpecification, position)
         {
+            AddressPersistentLocalId = addressPersistentLocalId;
             AddressId = addressId;
+            Status = status;
+            GeometryMethod = geometryMethod;
+            GeometrySpecification = geometrySpecification;
+            Position = position;
             IsRemoved = isRemoved;
         }
     }
@@ -78,6 +97,9 @@ namespace ParcelRegistry.Consumer.Address
                 .ValueGeneratedNever();
 
             builder.Property(x => x.AddressId);
+            builder.Property(x => x.GeometryMethod);
+            builder.Property(x => x.GeometrySpecification);
+            builder.Property(x => x.Position).HasColumnType("sys.geometry");
             builder.Property(x => x.IsRemoved);
 
             builder

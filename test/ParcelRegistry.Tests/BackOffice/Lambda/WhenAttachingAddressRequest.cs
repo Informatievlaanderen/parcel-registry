@@ -13,6 +13,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Builders;
     using Consumer.Address;
     using Fixtures;
@@ -20,6 +21,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Moq;
+    using NetTopologySuite.Geometries;
     using Parcel;
     using Parcel.Commands;
     using Parcel.Exceptions;
@@ -30,6 +32,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
+    using Coordinate = Parcel.Coordinate;
 
     public class WhenAttachingAddressRequest : LambdaHandlerTest
     {
@@ -59,7 +62,12 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
-            consumerAddress.AddAddress(addressPersistentLocalId, AddressStatus.Current);
+            consumerAddress.AddAddress(
+                addressPersistentLocalId,
+                AddressStatus.Current,
+                "DerivedFromObject",
+                "Parcel",
+                (Point)_wkbReader.Read(Fixture.Create<ExtendedWkbGeometry>().ToString().ToByteArray()));
 
             DispatchArrangeCommand(new MigrateParcel(
                 legacyParcelId,
@@ -171,7 +179,12 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
-            consumerAddress.AddAddress(addressPersistentLocalId, AddressStatus.Current);
+            consumerAddress.AddAddress(
+                addressPersistentLocalId,
+                AddressStatus.Current,
+                "DerivedFromObject",
+                "Parcel",
+                (Point)_wkbReader.Read(Fixture.Create<ExtendedWkbGeometry>().ToString().ToByteArray()));
 
             _backOfficeContext.ParcelAddressRelations.Add(new ParcelAddressRelation(parcelId, addressPersistentLocalId));
             await _backOfficeContext.SaveChangesAsync();
