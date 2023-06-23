@@ -1,3 +1,10 @@
+# [4.21.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.6...v4.21.0) (2023-06-23)
+
+
+### Features
+
+* consume address geometry ([d0d9f81](https://github.com/informatievlaanderen/parcel-registry/commit/d0d9f817548cbe576cd154f662c87f8dd1dab323))
+
 ## [4.20.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.5...v4.20.6) (2023-06-22)
 
 
