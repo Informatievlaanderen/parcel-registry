@@ -100,6 +100,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                                 .ExecuteAsync(async () =>
                                 {
                                     await migrator.ProcessAsync(ct);
+
+                                    //TODO: add parcels not found in migration
                                 });
 
                             watch.Stop();

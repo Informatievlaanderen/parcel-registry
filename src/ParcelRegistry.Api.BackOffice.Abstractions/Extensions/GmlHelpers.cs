@@ -17,7 +17,7 @@
             return ExtendedWkbGeometry.CreateEWkb(geometry.AsBinary());
         }
 
-        private static GMLReader CreateGmlReader() =>
+        public static GMLReader CreateGmlReader() =>
             new GMLReader(
                 new GeometryFactory(
                     new PrecisionModel(PrecisionModels.Floating),

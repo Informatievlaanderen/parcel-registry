@@ -6,8 +6,16 @@
     <ProjectReference Include="..\..\src\ParcelRegistry.Api.BackOffice\ParcelRegistry.Api.BackOffice.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Api.Legacy\ParcelRegistry.Api.Legacy.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Consumer.Address\ParcelRegistry.Consumer.Address.csproj" />
+    <ProjectReference Include="..\..\src\ParcelRegistry.Migrator.Parcel\ParcelRegistry.Migrator.Parcel.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Projections.BackOffice\ParcelRegistry.Projections.BackOffice.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry\ParcelRegistry.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="GrbXmlReaderTests\Adp_Full.gml" CopyToOutputDirectory="Always" />
+    <None Update="GrbXmlReaderTests\AdpAdd_NoChanges.gml" CopyToOutputDirectory="Always" />
+    <None Update="GrbXmlReaderTests\AdpAdd.gml" CopyToOutputDirectory="Always" />
+    <None Update="GrbXmlReaderTests\AdpDel.gml" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
