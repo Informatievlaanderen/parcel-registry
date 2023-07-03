@@ -11,8 +11,8 @@
 
     [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
-    [EventDescription("De geometrie van het perceel is geimporteerd.")]
-    public sealed class ParcelGeometryWasImported : IParcelEvent
+    [EventDescription("Het perceel werd geïmporteerd.")]
+    public sealed class ParcelWasImported : IParcelEvent
     {
         public const string EventName = "ParcelGeometryWasImported"; // BE CAREFUL CHANGING THIS!!
 
@@ -28,7 +28,7 @@
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
-        public ParcelGeometryWasImported(
+        public ParcelWasImported(
             ParcelId parcelId,
             VbrCaPaKey vbrCaPaKey,
             ExtendedWkbGeometry geometry)
@@ -39,7 +39,7 @@
         }
 
         [JsonConstructor]
-        private ParcelGeometryWasImported(
+        private ParcelWasImported(
             Guid parcelId,
             string caPaKey,
             string geometry,

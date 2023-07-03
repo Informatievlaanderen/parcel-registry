@@ -76,23 +76,23 @@ namespace ParcelRegistry.Parcel
                     parcel.DetachAddress(message.Command.AddressPersistentLocalId);
                 });
 
-            For<ImportParcelGeometry>()
+            For<ImportParcel>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-                .AddEventHash<ImportParcelGeometry, Parcel>(getUnitOfWork)
+                .AddEventHash<ImportParcel, Parcel>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
                     var streamId = new ParcelStreamId(message.Command.ParcelId);
-                    var parcel = await parcelRepository().GetAsync(streamId, ct); // TODO: POSSIBLE AGGREGATE NOT FOUND
 
-                    //var a = await parcelRepository().GetOptionalAsync(streamId, ct); // TODO: POSSIBLE AGGREGATE NOT FOUND
-                    //
-                    // if (!a.HasValue)
-                    // {
-                    //      throw new CustomAggregateDomainExpection
-                    // }
+                    var parcel = await parcelRepository().GetOptionalAsync(streamId, ct); // TODO: POSSIBLE AGGREGATE NOT FOUND
 
-                    parcel.ImportParcelGeometry(message.Command.Geometry);
+                     if (parcel.HasValue)
+                     {
+                          //throw new ParcelAlreadyExists()
+                     }
+
+                    var createdParcel = Parcel.ImportParcel(message.Command.VbrCaPaKey, message.Command.ParcelId, message.Command.Geometry);
+                    parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
                 });
         }
     }

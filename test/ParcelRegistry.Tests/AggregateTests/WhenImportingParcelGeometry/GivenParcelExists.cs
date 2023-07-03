@@ -6,6 +6,7 @@
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using EventExtensions;
     using Fixtures;
+    using FluentAssertions;
     using Parcel;
     using Parcel.Commands;
     using Parcel.Events;
@@ -25,24 +26,24 @@
         public void ThenParcelGeometryImported()
         {
             // TODO: legacy parcelId and command.parcelId should be the same fixed
-            var legacyParcelId = Fixture.Create<ParcelRegistry.Legacy.ParcelId>();
-            var newParcelId = Fixture.Create<ParcelId>();
 
-            var command = new ImportParcelGeometry(
-                Fixture.Create<VbrCaPaKey>(),
+            var caPaKey = Fixture.Create<VbrCaPaKey>();
+
+            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(caPaKey);
+            var newParcelId = ParcelId.CreateFor(caPaKey);
+
+            var command = new ImportParcel(
+                caPaKey,
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
-            var parcelWasMigrated = Fixture.Create<ParcelWasMigrated>().WithClearedAddresses();
-
-            // Assert
             Assert(new Scenario()
-                .Given(new ParcelStreamId(command.ParcelId), parcelWasMigrated)
+                .Given(new ParcelStreamId(command.ParcelId))
                 .When(command)
                 .Then(new ParcelStreamId(command.ParcelId),
-                    new ParcelGeometryWasImported(
+                    new ParcelWasImported(
                         command.ParcelId,
-                        new VbrCaPaKey(command.ParcelId),
+                        caPaKey,
                         command.Geometry)));
         }
     }

@@ -136,16 +136,13 @@ namespace ParcelRegistry.Parcel
                 previousAddressPersistentLocalId));
         }
 
-        public void ImportParcelGeometry(ExtendedWkbGeometry extendedWkbGeometry)
+        public static Parcel ImportParcel(VbrCaPaKey vbrCaPaKey, ParcelId parcelId, ExtendedWkbGeometry extendedWkbGeometry)
         {
-            ;
-            GuardParcelNotRemoved();
             GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
 
-            if (Geometry == extendedWkbGeometry)
-                return;
+            //TODO parcelFactory create a parcel
 
-            ApplyChange(new ParcelGeometryWasImported(
+            ApplyChange(new ParcelWasImported(
                 ParcelId,
                 CaPaKey,
                 extendedWkbGeometry));

@@ -21,7 +21,41 @@ namespace ParcelRegistry.Tests.EventExtensions
                 Array.Empty<AddressPersistentLocalId>(),
                 @event.XCoordinate is not null ? new  Coordinate(@event.XCoordinate.Value) : null,
                 @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null,
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
+
+            return newEvent;
+        }
+
+        public static ParcelWasMigrated WithRemoved(this ParcelWasMigrated @event, bool removed)
+        {
+            var newEvent = new ParcelWasMigrated(
+                new ParcelId(@event.OldParcelId),
+                new ParcelRegistry.Parcel.ParcelId(@event.ParcelId),
+                new VbrCaPaKey(@event.CaPaKey),
+                ParcelStatus.Parse(@event.ParcelStatus),
+                removed,
+                @event.AddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
+                @event.XCoordinate is not null ? new  Coordinate(@event.XCoordinate.Value) : null,
+                @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null,
+                GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
+            ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
+
+            return newEvent;
+        }
+
+        public static ParcelWasMigrated WithParcelId(this ParcelWasMigrated @event,  ParcelRegistry.Legacy.ParcelId parcelId)
+        {
+            var newEvent = new ParcelWasMigrated(
+                parcelId,
+                new ParcelRegistry.Parcel.ParcelId(@event.ParcelId),
+                new VbrCaPaKey(@event.CaPaKey),
+                ParcelStatus.Parse(@event.ParcelStatus),
+                @event.IsRemoved,
+                @event.AddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
+                @event.XCoordinate is not null ? new  Coordinate(@event.XCoordinate.Value) : null,
+                @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null,
+                GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -43,7 +77,7 @@ namespace ParcelRegistry.Tests.EventExtensions
                 addressPersistentLocalIds,
                 @event.XCoordinate is not null ? new  Coordinate(@event.XCoordinate.Value) : null,
                 @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null,
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;

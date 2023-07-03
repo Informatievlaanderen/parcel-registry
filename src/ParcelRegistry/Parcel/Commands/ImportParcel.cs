@@ -6,7 +6,7 @@
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities;
 
-    public class ImportParcelGeometry : IHasCommandProvenance
+    public class ImportParcel : IHasCommandProvenance
     {
         private static readonly Guid Namespace = new Guid("23d7f186-ec16-4872-87b6-4d0efcc31976");
 
@@ -18,7 +18,7 @@
 
         public Provenance Provenance { get; }
 
-        public ImportParcelGeometry(
+        public ImportParcel(
             VbrCaPaKey vbrCaPaKey,
             ExtendedWkbGeometry geometry,
             Provenance provenance)
@@ -30,7 +30,7 @@
         }
 
         public Guid CreateCommandId()
-            => Deterministic.Create(Namespace, $"ImportParcelGeometry-{ToString()}");
+            => Deterministic.Create(Namespace, $"ImportParcel-{ToString()}");
 
         public override string? ToString()
             => ToStringBuilder.ToString(IdentityFields());
