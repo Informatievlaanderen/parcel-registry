@@ -20,7 +20,7 @@ namespace ParcelRegistry.Parcel.Commands
 
         public Coordinate? XCoordinate { get; }
         public Coordinate? YCoordinate { get; }
-
+        public ExtendedWkbGeometry ExtendedWkbGeometry { get; }
         public Provenance Provenance { get; }
 
         public MigrateParcel(
@@ -31,6 +31,7 @@ namespace ParcelRegistry.Parcel.Commands
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
             Coordinate? xCoordinate,
             Coordinate? yCoordinate,
+            ExtendedWkbGeometry extendedWkbGeometry,
             Provenance provenance)
         {
             OldParcelId = parcelId;
@@ -41,6 +42,7 @@ namespace ParcelRegistry.Parcel.Commands
             AddressPersistentLocalIds = addressPersistentLocalIds.ToList();
             XCoordinate = xCoordinate;
             YCoordinate = yCoordinate;
+            ExtendedWkbGeometry = extendedWkbGeometry;
             Provenance = provenance;
         }
 
@@ -72,6 +74,8 @@ namespace ParcelRegistry.Parcel.Commands
             {
                 yield return YCoordinate;
             }
+
+            yield return ExtendedWkbGeometry;
         }
     }
 }

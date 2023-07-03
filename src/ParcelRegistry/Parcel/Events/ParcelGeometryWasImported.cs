@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text.Json.Serialization;
+    using Newtonsoft.Json;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -39,7 +39,7 @@
         }
 
         [JsonConstructor]
-        public ParcelGeometryWasImported(
+        private ParcelGeometryWasImported(
             Guid parcelId,
             string caPaKey,
             string geometry,

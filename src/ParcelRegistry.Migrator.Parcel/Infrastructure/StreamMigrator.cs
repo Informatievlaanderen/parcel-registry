@@ -183,7 +183,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(addressIds
                 .Where(x => x.isSuccess)
                 .Select(x => x.addressPersistentLocalId)
-                .ToList());
+                .ToList(),
+                new ExtendedWkbGeometry(""));
 
             var markMigrated = new MarkParcelAsMigrated(
                 migrateParcel.OldParcelId,

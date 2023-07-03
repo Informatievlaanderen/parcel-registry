@@ -2,6 +2,7 @@ namespace ParcelRegistry.Tests.EventExtensions
 {
     using System;
     using System.Linq;
+    using Api.BackOffice.Abstractions.Extensions;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Parcel;
     using Parcel.Events;
@@ -19,7 +20,8 @@ namespace ParcelRegistry.Tests.EventExtensions
                 @event.IsRemoved,
                 Array.Empty<AddressPersistentLocalId>(),
                 @event.XCoordinate is not null ? new  Coordinate(@event.XCoordinate.Value) : null,
-                @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null);
+                @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null,
+                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -40,7 +42,8 @@ namespace ParcelRegistry.Tests.EventExtensions
                 @event.IsRemoved,
                 addressPersistentLocalIds,
                 @event.XCoordinate is not null ? new  Coordinate(@event.XCoordinate.Value) : null,
-                @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null);
+                @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null,
+                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;

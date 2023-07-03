@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.AggregateTests
 {
     using System.Collections.Generic;
+    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Parcel;
@@ -52,6 +53,7 @@ namespace ParcelRegistry.Tests.AggregateTests
                 addressPersistentLocalIds: _fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
                 xCoordinate: _fixture.Create<Coordinate>(),
                 yCoordinate: _fixture.Create<Coordinate>(),
+                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
                 _fixture.Create<Provenance>());
         }
     }

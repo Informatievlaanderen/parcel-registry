@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddressWasRejected
 {
     using System.Collections.Generic;
+    using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
     using BackOffice;
@@ -52,7 +53,8 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddress
                     new AddressPersistentLocalId(789),
                 },
                 Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>());
+                Fixture.Create<Coordinate>(),
+                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
@@ -90,7 +92,8 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddress
                     new AddressPersistentLocalId(789),
                 },
                 Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>());
+                Fixture.Create<Coordinate>(),
+                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var parcelAddressWasDetachedV2 = new ParcelAddressWasDetachedBecauseAddressWasRejected(Fixture.Create<ParcelId>(), new VbrCaPaKey(parcelWasMigrated.CaPaKey), addressPersistentLocalId);

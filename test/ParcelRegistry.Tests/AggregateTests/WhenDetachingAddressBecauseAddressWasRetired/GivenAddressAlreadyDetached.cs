@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddressWasRetired
 {
     using System.Collections.Generic;
+    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -42,9 +43,10 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddress
                     new AddressPersistentLocalId(789),
                 },
                 Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>());
+                Fixture.Create<Coordinate>(),
+                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
-            
+
             Assert(new Scenario()
                 .Given(
                     new ParcelStreamId(command.ParcelId),

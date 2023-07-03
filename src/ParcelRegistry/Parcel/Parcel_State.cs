@@ -69,6 +69,8 @@ namespace ParcelRegistry.Parcel
                 ? new Coordinate(@event.YCoordinate.Value)
                 : null;
 
+            Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
+            
             _lastEvent = @event;
         }
 

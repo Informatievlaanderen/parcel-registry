@@ -46,7 +46,8 @@ namespace ParcelRegistry.Parcel
                         message.Command.IsRemoved,
                         message.Command.AddressPersistentLocalIds,
                         message.Command.XCoordinate,
-                        message.Command.YCoordinate);
+                        message.Command.YCoordinate,
+                        message.Command.ExtendedWkbGeometry);
 
                     parcelRepository().Add(streamId, newParcel);
                 });

@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 {
     using System.Collections.Generic;
+    using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
@@ -30,6 +31,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
                 Fixture.Create<Coordinate>(),
                 Fixture.Create<Coordinate>(),
+                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -44,7 +46,8 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                         command.IsRemoved,
                         command.AddressPersistentLocalIds,
                         command.XCoordinate,
-                        command.YCoordinate))));
+                        command.YCoordinate,
+                        command.ExtendedWkbGeometry))));
         }
 
         [Fact]
@@ -58,6 +61,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
                 Fixture.Create<Coordinate>(),
                 Fixture.Create<Coordinate>(),
+                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             // Act
@@ -70,7 +74,8 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 command.IsRemoved,
                 command.AddressPersistentLocalIds,
                 command.XCoordinate,
-                command.YCoordinate);
+                command.YCoordinate,
+                command.ExtendedWkbGeometry);
 
             // Assert
             result.Should().NotBeNull();
@@ -81,6 +86,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
             result.AddressPersistentLocalIds.Should().BeEquivalentTo(command.AddressPersistentLocalIds);
             result.XCoordinate.Should().Be(command.XCoordinate);
             result.YCoordinate.Should().Be(command.YCoordinate);
+            result.Geometry.Should().Be(command.ExtendedWkbGeometry);
         }
     }
 }

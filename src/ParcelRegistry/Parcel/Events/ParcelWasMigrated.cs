@@ -40,6 +40,9 @@ namespace ParcelRegistry.Parcel.Events
         [EventPropertyDescription("Y-coördinaat van de centroïde van het terreinobject.")]
         public decimal? YCoordinate { get; }
 
+        [EventPropertyDescription("De geometrie van het perceel.")]
+        public string ExtendedWkbGeometry { get; }
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
@@ -51,7 +54,8 @@ namespace ParcelRegistry.Parcel.Events
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
             Coordinate? xCoordinate,
-            Coordinate? yCoordinate)
+            Coordinate? yCoordinate,
+            ExtendedWkbGeometry extendedWkbGeometry)
         {
             OldParcelId = oldParcelId;
             ParcelId = newParcelId;
@@ -61,6 +65,7 @@ namespace ParcelRegistry.Parcel.Events
             AddressPersistentLocalIds = addressPersistentLocalIds.Select(x => (int)x).ToList();
             XCoordinate = xCoordinate ?? (decimal?) null;
             YCoordinate = yCoordinate ?? (decimal?) null;
+            ExtendedWkbGeometry = extendedWkbGeometry;
         }
 
         [JsonConstructor]
@@ -73,6 +78,7 @@ namespace ParcelRegistry.Parcel.Events
             IEnumerable<int> addressPersistentLocalIds,
             decimal? xCoordinate,
             decimal? yCoordinate,
+            string extendedWkbGeometry,
             ProvenanceData provenance)
             : this(
                 new Legacy.ParcelId(oldParcelId),
@@ -86,7 +92,8 @@ namespace ParcelRegistry.Parcel.Events
                     : null,
                 yCoordinate.HasValue
                     ? new Coordinate(yCoordinate.Value)
-                    : null)
+                    : null,
+                new ExtendedWkbGeometry(extendedWkbGeometry))
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
         void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);
@@ -108,6 +115,7 @@ namespace ParcelRegistry.Parcel.Events
             {
                 fields.Add(YCoordinate.Value.ToString(CultureInfo.InvariantCulture));
             }
+            fields.Add(ExtendedWkbGeometry);
             return fields;
         }
 

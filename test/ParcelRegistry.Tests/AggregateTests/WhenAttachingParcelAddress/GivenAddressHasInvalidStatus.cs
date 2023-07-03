@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
 {
     using System.Collections.Generic;
+    using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
     using BackOffice;
@@ -53,7 +54,8 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
                     new AddressPersistentLocalId(789),
                 },
                 Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>());
+                Fixture.Create<Coordinate>(),
+                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
