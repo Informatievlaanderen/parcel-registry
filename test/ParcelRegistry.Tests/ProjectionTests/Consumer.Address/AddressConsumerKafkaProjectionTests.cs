@@ -12,6 +12,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using NetTopologySuite.Geometries;
+    using Parcel;
     using ParcelRegistry.Consumer.Address;
     using ParcelRegistry.Consumer.Address.Projections;
     using Xunit;
@@ -23,7 +24,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         public ConsumerAddressKafkaProjectionTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
             Fixture.Customize(new InfrastructureCustomization());
-            Fixture.Customize(new WithExtendedWkbGeometry());
+            Fixture.Customize(new WithExtendedWkbGeometryPoint());
         }
 
         [Fact]

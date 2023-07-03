@@ -74,6 +74,25 @@ namespace ParcelRegistry.Parcel
 
                     parcel.DetachAddress(message.Command.AddressPersistentLocalId);
                 });
+
+            For<ImportParcelGeometry>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<ImportParcelGeometry, Parcel>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streamId = new ParcelStreamId(message.Command.ParcelId);
+                    var parcel = await parcelRepository().GetAsync(streamId, ct); // TODO: POSSIBLE AGGREGATE NOT FOUND
+
+                    //var a = await parcelRepository().GetOptionalAsync(streamId, ct); // TODO: POSSIBLE AGGREGATE NOT FOUND
+                    //
+                    // if (!a.HasValue)
+                    // {
+                    //      throw new CustomAggregateDomainExpection
+                    // }
+
+                    parcel.ImportParcelGeometry(message.Command.Geometry);
+                });
         }
     }
 }

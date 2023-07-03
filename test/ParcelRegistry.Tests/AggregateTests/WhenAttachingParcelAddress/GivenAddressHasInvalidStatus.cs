@@ -25,7 +25,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
             Fixture.Customize(new WithFixedParcelId());
             Fixture.Customize(new WithParcelStatus());
             Fixture.Customize(new Legacy.AutoFixture.WithFixedParcelId());
-            Fixture.Customize(new WithExtendedWkbGeometry());
+            Fixture.Customize(new WithExtendedWkbGeometryPoint());
         }
 
         [Theory]

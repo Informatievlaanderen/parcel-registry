@@ -7,6 +7,7 @@ namespace ParcelRegistry.Parcel
     using DataStructures;
     using Events;
     using Exceptions;
+    using NetTopologySuite.Geometries;
 
     public sealed partial class Parcel : AggregateRootEntity, ISnapshotable
     {
@@ -45,7 +46,7 @@ namespace ParcelRegistry.Parcel
                 throw new ParcelHasInvalidStatusException();
             }
 
-            if(AddressPersistentLocalIds.Contains(addressPersistentLocalId))
+            if (AddressPersistentLocalIds.Contains(addressPersistentLocalId))
             {
                 return;
             }
@@ -129,6 +130,39 @@ namespace ParcelRegistry.Parcel
                 CaPaKey,
                 addressPersistentLocalId,
                 previousAddressPersistentLocalId));
+        }
+
+        public void ImportParcelGeometry(ExtendedWkbGeometry extendedWkbGeometry)
+        {
+            ;
+            GuardParcelNotRemoved();
+            GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
+
+            if (Geometry == extendedWkbGeometry)
+                return;
+
+            ApplyChange(new ParcelGeometryWasImported(
+                ParcelId,
+                CaPaKey,
+                extendedWkbGeometry));
+        }
+
+        private static void GuardPolygon(Geometry? geometry)
+        {
+            if (geometry is Polygon
+                && (geometry.SRID != ExtendedWkbGeometry.SridLambert72 || !GeometryValidator.IsValid(geometry)))
+            {
+                throw new PolygonIsInvalidException();
+            }
+
+            if (geometry is MultiPolygon multiPolygon
+                && (multiPolygon.SRID != ExtendedWkbGeometry.SridLambert72 ||
+                    multiPolygon.Geometries.Any(polygon => !GeometryValidator.IsValid(polygon))))
+            {
+                throw new PolygonIsInvalidException();
+            }
+
+            throw new PolygonIsInvalidException();
         }
 
         private void GuardParcelNotRemoved()

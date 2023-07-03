@@ -21,6 +21,7 @@ namespace ParcelRegistry.Parcel
         public IReadOnlyList<AddressPersistentLocalId> AddressPersistentLocalIds => _addressPersistentLocalIds;
         public Coordinate? XCoordinate { get; private set; }
         public Coordinate? YCoordinate { get; private set; }
+        public ExtendedWkbGeometry Geometry { get; private set; }
 
         public bool IsRemoved { get; private set; }
 

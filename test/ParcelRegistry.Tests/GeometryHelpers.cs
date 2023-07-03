@@ -5,6 +5,7 @@
     using NetTopologySuite.Geometries.Implementation;
     using NetTopologySuite.IO;
     using NetTopologySuite.IO.GML2;
+    using Parcel;
 
     public static class GeometryHelpers
     {
@@ -40,18 +41,10 @@
             ExampleExtendedWkb = WkbWriter.Write(geometry);
         }
 
-        public static ExtendedWkbGeometry CreateEwkbFrom(WkbGeometry wkbGeometry)
-        {
-            var reader = new WKBReader();
-            var geometry = reader.Read(wkbGeometry);
-            geometry.SRID = SpatialReferenceSystemId.Lambert72;
-            return new ExtendedWkbGeometry(WkbWriter.Write(geometry));
-        }
-
-        public static WkbGeometry CreateFromWkt(string wkt)
+        public static ExtendedWkbGeometry CreateFromWkt(string wkt)
         {
             var geometry = new WKTReader { DefaultSRID = SpatialReferenceSystemId.Lambert72 }.Read(wkt);
-            return new WkbGeometry(WkbWriter.Write(geometry));
+            return ExtendedWkbGeometry.CreateEWkb(WkbWriter.Write(geometry));
         }
 
         public static GMLReader CreateGmlReader() =>
