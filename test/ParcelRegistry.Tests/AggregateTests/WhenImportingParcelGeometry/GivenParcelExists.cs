@@ -25,12 +25,7 @@
         [Fact]
         public void ThenParcelGeometryImported()
         {
-            // TODO: legacy parcelId and command.parcelId should be the same fixed
-
             var caPaKey = Fixture.Create<VbrCaPaKey>();
-
-            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(caPaKey);
-            var newParcelId = ParcelId.CreateFor(caPaKey);
 
             var command = new ImportParcel(
                 caPaKey,
@@ -46,5 +41,27 @@
                         caPaKey,
                         command.Geometry)));
         }
+
+        // [Fact]
+        // public void WithAlreadyExistingParcel_ThenParcelGeometryImported()
+        // {
+        //     var caPaKey = Fixture.Create<VbrCaPaKey>();
+        //
+        //     var parcelWasMigrated = new Parcel
+        //
+        //     var command = new ImportParcel(
+        //         caPaKey,
+        //         GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
+        //         Fixture.Create<Provenance>());
+        //
+        //     Assert(new Scenario()
+        //         .Given(new ParcelStreamId(command.ParcelId))
+        //         .When(command)
+        //         .Then(new ParcelStreamId(command.ParcelId),
+        //             new ParcelWasImported(
+        //                 command.ParcelId,
+        //                 caPaKey,
+        //                 command.Geometry)));
+        // }
     }
 }

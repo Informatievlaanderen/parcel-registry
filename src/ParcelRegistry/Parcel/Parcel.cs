@@ -136,32 +136,42 @@ namespace ParcelRegistry.Parcel
                 previousAddressPersistentLocalId));
         }
 
-        public static Parcel ImportParcel(VbrCaPaKey vbrCaPaKey, ParcelId parcelId, ExtendedWkbGeometry extendedWkbGeometry)
+        public static Parcel ImportParcel(
+            IParcelFactory parcelFactory,
+            VbrCaPaKey vbrCaPaKey,
+            ParcelId parcelId,
+            ExtendedWkbGeometry extendedWkbGeometry)
         {
             GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
 
-            //TODO parcelFactory create a parcel
+            var newParcel = parcelFactory.Create();
 
-            ApplyChange(new ParcelWasImported(
-                ParcelId,
-                CaPaKey,
-                extendedWkbGeometry));
+            newParcel.ApplyChange(
+                new ParcelWasImported(
+                    parcelId,
+                    vbrCaPaKey,
+                    extendedWkbGeometry));
+
+            return newParcel;
         }
 
         private static void GuardPolygon(Geometry? geometry)
         {
             if (geometry is Polygon
-                && (geometry.SRID != ExtendedWkbGeometry.SridLambert72 || !GeometryValidator.IsValid(geometry)))
+                && geometry.SRID == ExtendedWkbGeometry.SridLambert72
+                && GeometryValidator.IsValid(geometry))
             {
-                throw new PolygonIsInvalidException();
+                return;
             }
 
             if (geometry is MultiPolygon multiPolygon
-                && (multiPolygon.SRID != ExtendedWkbGeometry.SridLambert72 ||
-                    multiPolygon.Geometries.Any(polygon => !GeometryValidator.IsValid(polygon))))
+                && multiPolygon.SRID == ExtendedWkbGeometry.SridLambert72
+                && multiPolygon.Geometries.All(GeometryValidator.IsValid))
             {
-                throw new PolygonIsInvalidException();
+                return;
             }
+
+            throw new PolygonIsInvalidException();
         }
 
         private void GuardParcelNotRemoved()

@@ -91,7 +91,7 @@ namespace ParcelRegistry.Parcel
                           //throw new ParcelAlreadyExists()
                      }
 
-                    var createdParcel = Parcel.ImportParcel(message.Command.VbrCaPaKey, message.Command.ParcelId, message.Command.Geometry);
+                    var createdParcel = Parcel.ImportParcel(parcelFactory, message.Command.VbrCaPaKey, message.Command.ParcelId, message.Command.Geometry);
                     parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
                 });
         }
