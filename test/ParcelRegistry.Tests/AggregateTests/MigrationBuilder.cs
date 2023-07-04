@@ -51,8 +51,6 @@ namespace ParcelRegistry.Tests.AggregateTests
                 _status ?? _fixture.Create<ParcelRegistry.Legacy.ParcelStatus>(),
                 isRemoved: _isRemoved,
                 addressPersistentLocalIds: _fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                xCoordinate: _fixture.Create<Coordinate>(),
-                yCoordinate: _fixture.Create<Coordinate>(),
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
                 _fixture.Create<Provenance>());
         }

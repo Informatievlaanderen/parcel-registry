@@ -32,8 +32,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
@@ -48,8 +46,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                         command.ParcelStatus,
                         command.IsRemoved,
                         command.AddressPersistentLocalIds,
-                        command.XCoordinate,
-                        command.YCoordinate,
                         command.ExtendedWkbGeometry))));
         }
 
@@ -62,8 +58,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.ToExtendedWkbGeometry(new MultiPolygon(new[] {GeometryHelpers.ValidPolygon})),
                 Fixture.Create<Provenance>());
 
@@ -78,8 +72,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                         command.ParcelStatus,
                         command.IsRemoved,
                         command.AddressPersistentLocalIds,
-                        command.XCoordinate,
-                        command.YCoordinate,
                         command.ExtendedWkbGeometry))));
         }
 
@@ -92,8 +84,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
@@ -112,8 +102,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.ToExtendedWkbGeometry(new MultiPolygon(new[] {GeometryHelpers.InValidPolygon})),
                 Fixture.Create<Provenance>());
 
@@ -132,8 +120,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
@@ -146,8 +132,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 command.ParcelStatus,
                 command.IsRemoved,
                 command.AddressPersistentLocalIds,
-                command.XCoordinate,
-                command.YCoordinate,
                 command.ExtendedWkbGeometry);
 
             // Assert
@@ -157,8 +141,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
             result.ParcelStatus.Should().Be(command.ParcelStatus);
             result.IsRemoved.Should().Be(command.IsRemoved);
             result.AddressPersistentLocalIds.Should().BeEquivalentTo(command.AddressPersistentLocalIds);
-            result.XCoordinate.Should().Be(command.XCoordinate);
-            result.YCoordinate.Should().Be(command.YCoordinate);
             result.Geometry.Should().Be(command.ExtendedWkbGeometry);
         }
     }

@@ -48,8 +48,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
                     previousAddressPersistentLocalId,
                     new AddressPersistentLocalId(2)
                 },
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
@@ -88,8 +86,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
                 {
                     new AddressPersistentLocalId(2)
                 },
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
@@ -124,8 +120,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
                     previousAddressPersistentLocalId,
                     otherAddressPersistentLocalId,
                 },
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 

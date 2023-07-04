@@ -65,7 +65,22 @@ namespace ParcelRegistry.Producer.Extensions
                 message.Provenance.ToContract());
 
         public static Contracts.ParcelWasMigrated ToContract(this ParcelAggregate.ParcelWasMigrated message) =>
-            new Contracts.ParcelWasMigrated(message.OldParcelId.ToString("D"), message.ParcelId.ToString("D"), message.CaPaKey, message.ParcelStatus, message.IsRemoved, message.AddressPersistentLocalIds, message.ExtendedWkbGeometry, message.Provenance.ToContract());
+            new Contracts.ParcelWasMigrated(
+                message.OldParcelId.ToString("D"),
+                message.ParcelId.ToString("D"),
+                message.CaPaKey,
+                message.ParcelStatus,
+                message.IsRemoved,
+                message.AddressPersistentLocalIds,
+                message.ExtendedWkbGeometry,
+                message.Provenance.ToContract());
+
+        public static Contracts.ParcelWasImported ToContract(this ParcelAggregate.ParcelWasImported message) =>
+            new Contracts.ParcelWasImported(
+                message.ParcelId.ToString("D"),
+                message.CaPaKey,
+                message.ExtendedWkbGeometry,
+                message.Provenance.ToContract());
 
         private static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)
         => new Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance(

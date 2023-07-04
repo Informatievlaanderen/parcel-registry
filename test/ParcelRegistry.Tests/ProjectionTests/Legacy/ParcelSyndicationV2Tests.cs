@@ -3,13 +3,17 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Api.BackOffice.Abstractions.Extensions;
     using Parcel.Events;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using EventExtensions;
     using FluentAssertions;
     using Fixtures;
+    using NetTopologySuite.IO;
     using Parcel;
     using Projections.Legacy.ParcelSyndication;
     using Xunit;
@@ -25,6 +29,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
             _fixture.Customize(new WithParcelStatus());
             _fixture.Customize(new WithFixedParcelId());
             _fixture.Customize(new Tests.Legacy.AutoFixture.WithFixedParcelId());
+            _fixture.Customize(new WithExtendedWkbGeometryPolygon());
         }
 
         [Fact]
@@ -40,6 +45,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 { Envelope.EventNameMetadataKey, nameof(ParcelWasMigrated) },
             };
 
+            var migratedGeometry = new WKBReader().Read(parcelWasMigrated.ExtendedWkbGeometry.ToByteArray());
+            var migratedCentroidX = decimal.Parse(migratedGeometry.CentroidWithinArea().Coordinate.X.ToString());
+            var migratedCentroidY = decimal.Parse(migratedGeometry.CentroidWithinArea().Coordinate.Y.ToString());
+
             await Sut
                 .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)))
                 .Then(async ct =>
@@ -48,8 +57,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelSyndicationItem.Should().NotBeNull();
                     parcelSyndicationItem!.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
                     parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Parse(parcelWasMigrated.ParcelStatus));
-                    parcelSyndicationItem.XCoordinate.Should().Be(parcelWasMigrated.XCoordinate);
-                    parcelSyndicationItem.YCoordinate.Should().Be(parcelWasMigrated.YCoordinate);
+                    parcelSyndicationItem.XCoordinate.Should().Be(migratedCentroidX);
+                    parcelSyndicationItem.YCoordinate.Should().Be(migratedCentroidY);
                     parcelSyndicationItem.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds);
                     parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelWasMigrated));
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
@@ -62,6 +71,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
         public async Task WhenParcelAddressWasAttachedV2()
         {
             var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() },

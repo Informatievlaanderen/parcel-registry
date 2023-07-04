@@ -52,8 +52,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
                     new AddressPersistentLocalId(456),
                     new AddressPersistentLocalId(789),
                 },
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 

@@ -76,8 +76,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 isRemoved: false,
                 new List<AddressPersistentLocalId> { new AddressPersistentLocalId(456), new AddressPersistentLocalId(789) },
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>()));
 
@@ -197,8 +195,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 isRemoved: false,
                 new List<AddressPersistentLocalId> { addressPersistentLocalId },
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>()));
 

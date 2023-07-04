@@ -19,9 +19,7 @@ namespace ParcelRegistry.Parcel
         public VbrCaPaKey CaPaKey { get; private set; }
         public ParcelStatus ParcelStatus { get; private set; }
         public IReadOnlyList<AddressPersistentLocalId> AddressPersistentLocalIds => _addressPersistentLocalIds;
-        public Coordinate? XCoordinate { get; private set; }
-        public Coordinate? YCoordinate { get; private set; }
-        public ExtendedWkbGeometry Geometry { get; private set; }
+        public ExtendedWkbGeometry Geometry { get; private set; } // TODO: change prop name to ExtendedWkbGeometry?
 
         public bool IsRemoved { get; private set; }
 
@@ -138,6 +136,7 @@ namespace ParcelRegistry.Parcel
             CaPaKey = new VbrCaPaKey(@event.CaPaKey);
             ParcelStatus = ParcelStatus.Parse(@event.ParcelStatus);
             IsRemoved = @event.IsRemoved;
+            Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
 
             foreach (var addressPersistentLocalId in @event.AddressPersistentLocalIds)
             {

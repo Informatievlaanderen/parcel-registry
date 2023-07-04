@@ -19,8 +19,6 @@ namespace ParcelRegistry.Tests.EventExtensions
                 ParcelStatus.Parse(@event.ParcelStatus),
                 @event.IsRemoved,
                 Array.Empty<AddressPersistentLocalId>(),
-                @event.XCoordinate is not null ? new  Coordinate(@event.XCoordinate.Value) : null,
-                @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null,
                 GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
@@ -36,8 +34,6 @@ namespace ParcelRegistry.Tests.EventExtensions
                 ParcelStatus.Parse(@event.ParcelStatus),
                 removed,
                 @event.AddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
-                @event.XCoordinate is not null ? new  Coordinate(@event.XCoordinate.Value) : null,
-                @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null,
                 GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
@@ -53,8 +49,6 @@ namespace ParcelRegistry.Tests.EventExtensions
                 ParcelStatus.Parse(@event.ParcelStatus),
                 @event.IsRemoved,
                 @event.AddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
-                @event.XCoordinate is not null ? new  Coordinate(@event.XCoordinate.Value) : null,
-                @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null,
                 GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
@@ -75,8 +69,6 @@ namespace ParcelRegistry.Tests.EventExtensions
                 ParcelStatus.Parse(@event.ParcelStatus),
                 @event.IsRemoved,
                 addressPersistentLocalIds,
-                @event.XCoordinate is not null ? new  Coordinate(@event.XCoordinate.Value) : null,
-                @event.YCoordinate is not null ? new  Coordinate(@event.YCoordinate.Value) : null,
                 GeometryHelpers.SecondGmlPointGeometry.ToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 

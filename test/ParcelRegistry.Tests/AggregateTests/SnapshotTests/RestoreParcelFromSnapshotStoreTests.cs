@@ -14,6 +14,10 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
     using Xunit.Abstractions;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.IO;
     using SqlStreamStore;
     using SqlStreamStore.Streams;
 
@@ -33,8 +37,7 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
                 Fixture.Create<ParcelStatus>(),
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
+                Fixture.Create<ExtendedWkbGeometry>(),
                 Fixture.Create<string>(),
                 Fixture.Create<ProvenanceData>());
 
@@ -67,8 +70,7 @@ namespace ParcelRegistry.Tests.AggregateTests.SnapshotTests
             _sut.IsRemoved.Should().Be(_parcelSnapshotV2.IsRemoved);
             _sut.AddressPersistentLocalIds.Select(x => (int) x).Should()
                 .BeEquivalentTo(_parcelSnapshotV2.AddressPersistentLocalIds);
-            ((decimal?)_sut.XCoordinate!).Should().Be(_parcelSnapshotV2.XCoordinate);
-            ((decimal?)_sut.YCoordinate!).Should().Be(_parcelSnapshotV2.YCoordinate);
+            _sut.Geometry.Should().Be(new ExtendedWkbGeometry(_parcelSnapshotV2.ExtendedWkbGeometry));
             _sut.LastEventHash.Should().Be(_parcelSnapshotV2.LastEventHash);
             _sut.LastProvenanceData.Should().BeEquivalentTo(_parcelSnapshotV2.LastProvenanceData);
         }

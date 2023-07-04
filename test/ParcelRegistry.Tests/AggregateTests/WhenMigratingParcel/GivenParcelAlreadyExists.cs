@@ -28,8 +28,6 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                xCoordinate: null,
-                yCoordinate: null,
                 GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
