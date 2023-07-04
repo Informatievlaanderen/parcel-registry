@@ -9,6 +9,7 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Commands;
+    using Exceptions;
     using SqlStreamStore;
 
     public sealed class ParcelCommandHandlerModule : CommandHandlerModule
@@ -88,7 +89,7 @@ namespace ParcelRegistry.Parcel
 
                      if (parcel.HasValue)
                      {
-                          //throw new ParcelAlreadyExists()
+                         throw new ParcelAlreadyExistsException(message.Command.VbrCaPaKey);
                      }
 
                     var createdParcel = Parcel.ImportParcel(parcelFactory, message.Command.VbrCaPaKey, message.Command.ParcelId, message.Command.Geometry);

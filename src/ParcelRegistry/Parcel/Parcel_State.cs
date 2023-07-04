@@ -40,13 +40,15 @@ namespace ParcelRegistry.Parcel
             Register<ParcelWasMigrated>(When);
             Register<ParcelAddressWasAttachedV2>(When);
             Register<ParcelAddressWasDetachedV2>(When);
-            Register<ParcelSnapshotV2>(When);
+            Register<ParcelWasImported>(When);
 
             // Address Events
             Register<ParcelAddressWasDetachedBecauseAddressWasRemoved>(When);
             Register<ParcelAddressWasDetachedBecauseAddressWasRejected>(When);
             Register<ParcelAddressWasDetachedBecauseAddressWasRetired>(When);
             Register<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(When);
+
+            Register<ParcelSnapshotV2>(When);
         }
 
         private void When(ParcelWasMigrated @event)
@@ -70,7 +72,7 @@ namespace ParcelRegistry.Parcel
                 : null;
 
             Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
-            
+
             _lastEvent = @event;
         }
 
@@ -84,6 +86,18 @@ namespace ParcelRegistry.Parcel
         private void When(ParcelAddressWasDetachedV2 @event)
         {
             _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelWasImported @event)
+        {
+            ParcelId = new ParcelId(@event.ParcelId);
+            CaPaKey = new VbrCaPaKey(@event.CaPaKey);
+            ParcelStatus = ParcelStatus.Realized;
+            IsRemoved = false;
+
+            Geometry = new ExtendedWkbGeometry(@event.Geometry);
 
             _lastEvent = @event;
         }
