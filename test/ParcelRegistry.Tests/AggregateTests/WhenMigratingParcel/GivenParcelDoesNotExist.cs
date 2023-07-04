@@ -32,7 +32,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -84,7 +84,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                GeometryHelpers.GmlPointGeometry.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -120,7 +120,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             // Act

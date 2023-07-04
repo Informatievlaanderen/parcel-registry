@@ -40,12 +40,12 @@
                 ParcelStatus.Realized,
                 false,
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             parcelWasMigrated.SetFixtureProvenance(Fixture);
 
             var command = new ImportParcel(
                 caPaKey,
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()

@@ -42,7 +42,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddress
                     new AddressPersistentLocalId(456),
                     new AddressPersistentLocalId(789),
                 },
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()

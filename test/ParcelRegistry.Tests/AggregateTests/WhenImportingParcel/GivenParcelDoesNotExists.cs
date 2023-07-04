@@ -33,7 +33,7 @@
 
             var command = new ImportParcel(
                 caPaKey,
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -51,7 +51,7 @@
         {
             var command = new ImportParcel(
                 Fixture.Create<VbrCaPaKey>(),
-                GeometryHelpers.GmlPointGeometry.ToExtendedWkbGeometry(),
+                GeometryHelpers.GmlPointGeometry.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -69,7 +69,7 @@
             var parcelWasImported = new ParcelWasImported(
                 parcelId,
                 caPaKey,
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             parcelWasImported.SetFixtureProvenance(Fixture);
 
             var parcel = new ParcelFactory(NoSnapshotStrategy.Instance,  new Mock<IAddresses>().Object).Create();
@@ -85,7 +85,7 @@
             parcel.ParcelStatus.Should().Be(ParcelStatus.Realized);
             parcel.IsRemoved.Should().BeFalse();
             parcel.AddressPersistentLocalIds.Should().BeEquivalentTo(new List<AddressPersistentLocalId>());
-            parcel.Geometry.Should().Be(GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+            parcel.Geometry.Should().Be(GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
         }
     }
 }

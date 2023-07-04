@@ -7,7 +7,7 @@
 
     public static class GmlHelpers
     {
-        public static ExtendedWkbGeometry ToExtendedWkbGeometry(this string gml)
+        public static ExtendedWkbGeometry GmlToExtendedWkbGeometry(this string gml)
         {
             var gmlReader = CreateGmlReader();
             var geometry = gmlReader.Read(gml);

@@ -9,7 +9,7 @@
     {
         public void Customize(IFixture fixture)
         {
-            var extendedWkbGeometry = GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry();
+            var extendedWkbGeometry = GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry();
 
             fixture.Customize<ExtendedWkbGeometry>(c => c.FromFactory(
                 () => extendedWkbGeometry));

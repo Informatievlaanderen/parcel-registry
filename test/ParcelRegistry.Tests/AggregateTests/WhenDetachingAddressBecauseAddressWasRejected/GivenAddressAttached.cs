@@ -52,7 +52,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddress
                     new AddressPersistentLocalId(456),
                     new AddressPersistentLocalId(789),
                 },
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
@@ -89,7 +89,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddress
                     new AddressPersistentLocalId(456),
                     new AddressPersistentLocalId(789),
                 },
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var parcelAddressWasDetachedV2 = new ParcelAddressWasDetachedBecauseAddressWasRejected(Fixture.Create<ParcelId>(), new VbrCaPaKey(parcelWasMigrated.CaPaKey), addressPersistentLocalId);

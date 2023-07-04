@@ -76,7 +76,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 isRemoved: false,
                 new List<AddressPersistentLocalId> { new AddressPersistentLocalId(456), new AddressPersistentLocalId(789) },
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>()));
 
             var handler = new AttachAddressLambdaHandler(
@@ -195,7 +195,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 isRemoved: false,
                 new List<AddressPersistentLocalId> { addressPersistentLocalId },
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry(),
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>()));
 
             var handler = new AttachAddressLambdaHandler(

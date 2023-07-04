@@ -48,7 +48,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
                     previousAddressPersistentLocalId,
                     new AddressPersistentLocalId(2)
                 },
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -86,7 +86,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
                 {
                     new AddressPersistentLocalId(2)
                 },
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -120,7 +120,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
                     previousAddressPersistentLocalId,
                     otherAddressPersistentLocalId,
                 },
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var attachedParcelAddressWasReplacedBecauseAddressWasReaddressed = new ParcelAddressWasReplacedBecauseAddressWasReaddressed(

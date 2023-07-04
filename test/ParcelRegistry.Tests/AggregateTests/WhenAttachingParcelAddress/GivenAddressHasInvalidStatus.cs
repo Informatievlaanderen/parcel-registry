@@ -53,7 +53,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
                     new AddressPersistentLocalId(456),
                     new AddressPersistentLocalId(789),
                 },
-                GeometryHelpers.ValidGmlPolygon.ToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
