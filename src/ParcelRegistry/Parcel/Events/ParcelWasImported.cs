@@ -23,7 +23,7 @@
         public string CaPaKey { get; }
 
         [EventPropertyDescription("De geometrie van het perceel.")]
-        public string Geometry { get; }
+        public string ExtendedWkbGeometry { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
@@ -31,23 +31,23 @@
         public ParcelWasImported(
             ParcelId parcelId,
             VbrCaPaKey vbrCaPaKey,
-            ExtendedWkbGeometry geometry)
+            ExtendedWkbGeometry extendedWkbGeometry)
         {
             ParcelId = parcelId;
             CaPaKey = vbrCaPaKey.ToString();
-            Geometry = geometry.ToString();
+            ExtendedWkbGeometry = extendedWkbGeometry.ToString();
         }
 
         [JsonConstructor]
         private ParcelWasImported(
             Guid parcelId,
             string caPaKey,
-            string geometry,
+            string extendedWkbGeometry,
             ProvenanceData provenance)
             : this (
                 new ParcelId(parcelId),
                 new VbrCaPaKey(caPaKey),
-                new ExtendedWkbGeometry(geometry)) // TODO: whats difference between extensions func geometry.ToExtendedWkbGeometry()) and new ExtendedWkbGeometry?
+                new ExtendedWkbGeometry(extendedWkbGeometry)) // TODO: whats difference between extensions func geometry.ToExtendedWkbGeometry()) and new ExtendedWkbGeometry?
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
         void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);
@@ -57,7 +57,7 @@
             var fields = Provenance.GetHashFields().ToList();
             fields.Add(ParcelId.ToString("D"));
             fields.Add(CaPaKey);
-            fields.Add(Geometry);
+            fields.Add(ExtendedWkbGeometry);
             return fields;
         }
 

@@ -19,8 +19,6 @@ namespace ParcelRegistry.Parcel
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
-            Coordinate? xCoordinate,
-            Coordinate? yCoordinate,
             ExtendedWkbGeometry extendedWkbGeometry)
         {
             GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
@@ -34,8 +32,6 @@ namespace ParcelRegistry.Parcel
                     parcelStatus,
                     isRemoved,
                     addressPersistentLocalIds,
-                    xCoordinate,
-                    yCoordinate,
                     extendedWkbGeometry));
 
             return newParcel;
@@ -202,8 +198,7 @@ namespace ParcelRegistry.Parcel
                 ParcelStatus,
                 IsRemoved,
                 _addressPersistentLocalIds,
-                XCoordinate,
-                YCoordinate,
+                Geometry,
                 LastEventHash,
                 LastProvenanceData);
         }

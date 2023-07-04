@@ -44,7 +44,7 @@
                     new ParcelWasImported(
                         command.ParcelId,
                         caPaKey,
-                        command.Geometry)));
+                        command.ExtendedWkbGeometry)));
         }
 
         [Fact]

@@ -14,18 +14,18 @@
 
         public VbrCaPaKey VbrCaPaKey { get; }
 
-        public ExtendedWkbGeometry Geometry { get; }
+        public ExtendedWkbGeometry ExtendedWkbGeometry { get; }
 
         public Provenance Provenance { get; }
 
         public ImportParcel(
             VbrCaPaKey vbrCaPaKey,
-            ExtendedWkbGeometry geometry,
+            ExtendedWkbGeometry extendedWkbGeometry,
             Provenance provenance)
         {
             VbrCaPaKey = vbrCaPaKey;
             ParcelId = ParcelId.CreateFor(VbrCaPaKey);
-            Geometry = geometry;
+            ExtendedWkbGeometry = extendedWkbGeometry;
             Provenance = provenance;
         }
 
@@ -38,7 +38,7 @@
         private IEnumerable<object> IdentityFields()
         {
             yield return VbrCaPaKey;
-            yield return Geometry;
+            yield return ExtendedWkbGeometry;
 
             foreach (var field in Provenance.GetIdentityFields())
             {

@@ -24,8 +24,6 @@ namespace ParcelRegistry.Legacy
                     : ParcelStatus.Retired,
                 IsRemoved,
                 addressPersistentLocalIds,
-                XCoordinate is not null ? new Coordinate(XCoordinate) : null,
-                YCoordinate is not null ? new Coordinate(YCoordinate) : null,
                 extendedWkbGeometry,
                 new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),

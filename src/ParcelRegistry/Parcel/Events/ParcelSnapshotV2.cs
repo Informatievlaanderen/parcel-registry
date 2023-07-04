@@ -6,7 +6,9 @@ namespace ParcelRegistry.Parcel.Events
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using NetTopologySuite.Geometries;
     using Newtonsoft.Json;
+    using Coordinate = ParcelRegistry.Parcel.Coordinate;
 
     [EventName("ParcelSnapshotV2")]
     [EventSnapshot(nameof(SnapshotContainer) + "<ParcelSnapshotV2>", typeof(SnapshotContainerV2))]
@@ -18,9 +20,7 @@ namespace ParcelRegistry.Parcel.Events
         public string ParcelStatus { get; }
         public bool IsRemoved { get; }
         public IEnumerable<int> AddressPersistentLocalIds { get; }
-        public decimal? XCoordinate { get; }
-        public decimal? YCoordinate { get; }
-
+        public string ExtendedWkbGeometry { get; }
         public string LastEventHash { get; }
         public ProvenanceData LastProvenanceData { get; }
 
@@ -30,8 +30,7 @@ namespace ParcelRegistry.Parcel.Events
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
-            Coordinate? xCoordinate,
-            Coordinate? yCoordinate,
+            string extendedWkbGeometry,
             string lastEventHash,
             ProvenanceData lastProvenanceData)
         {
@@ -40,8 +39,7 @@ namespace ParcelRegistry.Parcel.Events
             ParcelStatus = parcelStatus;
             IsRemoved = isRemoved;
             AddressPersistentLocalIds = addressPersistentLocalIds.Select(x => (int)x).ToList();
-            XCoordinate = xCoordinate ?? (decimal?)null;
-            YCoordinate = yCoordinate ?? (decimal?) null;
+            ExtendedWkbGeometry = extendedWkbGeometry;
             LastEventHash = lastEventHash;
             LastProvenanceData = lastProvenanceData;
         }
@@ -53,8 +51,7 @@ namespace ParcelRegistry.Parcel.Events
             string parcelStatus,
             bool isRemoved,
             IEnumerable<int> addressPersistentLocalIds,
-            decimal? xCoordinate,
-            decimal? yCoordinate,
+            string extendedWkbGeometry,
             string lastEventHash,
             ProvenanceData lastProvenanceData)
             : this(
@@ -63,8 +60,7 @@ namespace ParcelRegistry.Parcel.Events
                 ParcelRegistry.Parcel.ParcelStatus.Parse(parcelStatus),
                 isRemoved,
                 addressPersistentLocalIds.Select(id => new AddressPersistentLocalId(id)),
-                xCoordinate.HasValue ? new Coordinate(xCoordinate.Value) : null,
-                yCoordinate.HasValue ? new Coordinate(yCoordinate.Value) : null,
+                extendedWkbGeometry,
                 lastEventHash,
                 lastProvenanceData)
         { }

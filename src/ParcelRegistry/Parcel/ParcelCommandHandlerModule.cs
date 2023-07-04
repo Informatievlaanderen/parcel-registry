@@ -46,8 +46,6 @@ namespace ParcelRegistry.Parcel
                         message.Command.ParcelStatus,
                         message.Command.IsRemoved,
                         message.Command.AddressPersistentLocalIds,
-                        message.Command.XCoordinate,
-                        message.Command.YCoordinate,
                         message.Command.ExtendedWkbGeometry);
 
                     parcelRepository().Add(streamId, newParcel);
@@ -92,7 +90,7 @@ namespace ParcelRegistry.Parcel
                          throw new ParcelAlreadyExistsException(message.Command.VbrCaPaKey);
                      }
 
-                    var createdParcel = Parcel.ImportParcel(parcelFactory, message.Command.VbrCaPaKey, message.Command.ParcelId, message.Command.Geometry);
+                    var createdParcel = Parcel.ImportParcel(parcelFactory, message.Command.VbrCaPaKey, message.Command.ParcelId, message.Command.ExtendedWkbGeometry);
                     parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
                 });
         }

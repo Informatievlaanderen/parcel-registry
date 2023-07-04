@@ -17,9 +17,6 @@ namespace ParcelRegistry.Parcel.Commands
         public ParcelStatus ParcelStatus { get; }
         public bool IsRemoved { get; }
         public List<AddressPersistentLocalId> AddressPersistentLocalIds { get; }
-
-        public Coordinate? XCoordinate { get; }
-        public Coordinate? YCoordinate { get; }
         public ExtendedWkbGeometry ExtendedWkbGeometry { get; }
         public Provenance Provenance { get; }
 
@@ -29,8 +26,6 @@ namespace ParcelRegistry.Parcel.Commands
             Legacy.ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
-            Coordinate? xCoordinate,
-            Coordinate? yCoordinate,
             ExtendedWkbGeometry extendedWkbGeometry,
             Provenance provenance)
         {
@@ -40,8 +35,6 @@ namespace ParcelRegistry.Parcel.Commands
             ParcelStatus = Legacy.ParcelStatusHelpers.Map(parcelStatus);
             IsRemoved = isRemoved;
             AddressPersistentLocalIds = addressPersistentLocalIds.ToList();
-            XCoordinate = xCoordinate;
-            YCoordinate = yCoordinate;
             ExtendedWkbGeometry = extendedWkbGeometry;
             Provenance = provenance;
         }
@@ -63,16 +56,6 @@ namespace ParcelRegistry.Parcel.Commands
             foreach (var addressPersistentLocalId in AddressPersistentLocalIds)
             {
                 yield return addressPersistentLocalId;
-            }
-
-            if (XCoordinate is not null)
-            {
-                yield return XCoordinate;
-            }
-
-            if (YCoordinate is not null)
-            {
-                yield return YCoordinate;
             }
 
             yield return ExtendedWkbGeometry;

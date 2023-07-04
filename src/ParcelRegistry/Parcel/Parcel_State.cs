@@ -63,14 +63,6 @@ namespace ParcelRegistry.Parcel
                 _addressPersistentLocalIds.Add(new AddressPersistentLocalId(addressPersistentLocalId));
             }
 
-            XCoordinate = @event.XCoordinate.HasValue
-                ? new Coordinate(@event.XCoordinate.Value)
-                : null;
-
-            YCoordinate = @event.YCoordinate.HasValue
-                ? new Coordinate(@event.YCoordinate.Value)
-                : null;
-
             Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
 
             _lastEvent = @event;
@@ -97,7 +89,7 @@ namespace ParcelRegistry.Parcel
             ParcelStatus = ParcelStatus.Realized;
             IsRemoved = false;
 
-            Geometry = new ExtendedWkbGeometry(@event.Geometry);
+            Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
 
             _lastEvent = @event;
         }
@@ -151,14 +143,6 @@ namespace ParcelRegistry.Parcel
             {
                 _addressPersistentLocalIds.Add(new AddressPersistentLocalId(addressPersistentLocalId));
             }
-
-            XCoordinate = @event.XCoordinate.HasValue
-                ? new Coordinate(@event.XCoordinate.Value)
-                : null;
-
-            YCoordinate = @event.YCoordinate.HasValue
-                ? new Coordinate(@event.YCoordinate.Value)
-                : null;
 
             _lastSnapshotEventHash = @event.LastEventHash;
             _lastSnapshotProvenance = @event.LastProvenanceData;
