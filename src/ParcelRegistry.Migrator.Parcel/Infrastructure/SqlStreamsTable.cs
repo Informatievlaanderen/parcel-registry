@@ -6,7 +6,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
     using Dapper;
     using Microsoft.Data.SqlClient;
 
-    public class SqlStreamsTable
+    public sealed class SqlStreamsTable
     {
         private readonly string _connectionString;
         private readonly int _pageSize;
@@ -32,6 +32,20 @@ where
     and IdInternal > {lastCursorPosition}
 order by
     IdInternal", commandTimeout: 60);
+        }
+
+        public async Task<IEnumerable<string>> ReadAllNewStreamIds()
+        {
+            await using var conn = new SqlConnection(_connectionString);
+
+            return await conn.QueryAsync<string>($@"
+select [IdOriginal]
+from
+    [{Schema.Default}].[Streams]
+where
+    IdOriginal like 'parcel-%'
+order by
+    IdInternal", commandTimeout: 600);
         }
     }
 }
