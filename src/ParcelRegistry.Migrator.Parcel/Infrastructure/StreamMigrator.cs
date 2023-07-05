@@ -45,7 +45,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             ILifetimeScope lifetimeScope,
             Dictionary<Guid, int> consumedAddressItems,
             Dictionary<Guid, List<Guid>> addressesByParcel,
-            IEnumerable<GrbParcel> parcelGeometries)
+            Dictionary<ParcelId, GrbParcel> parcelGeometries)
         {
             _lifetimeScope = lifetimeScope;
             _logger = loggerFactory.CreateLogger("ParcelMigrator");
@@ -55,7 +55,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             _sqlStreamTable = new SqlStreamsTable(connectionString);
             _consumedAddressItems = consumedAddressItems;
             _addressesByParcel = addressesByParcel;
-            _parcelGeometriesByParcelId = parcelGeometries.ToDictionary(x => ParcelId.CreateFor(new VbrCaPaKey(x.GrbCaPaKey)));
+            _parcelGeometriesByParcelId = parcelGeometries;
 
             _skipNotFoundAddress = bool.Parse(configuration["SkipNotFoundAddress"]);
         }

@@ -13,6 +13,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Consumer.Address;
+    using Legacy;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -81,9 +82,10 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                     throw new InvalidOperationException("Empty addresses by parcel.");
                 }
 
-                var parcelGeometries = await container
+                var parcelGeometries = (await container
                     .GetRequiredService<ParcelGeometries>()
-                    .ReadParcelGeometriesFrom(configuration["BucketName"], "parcelmigration/parcelsfulldownload.xml");
+                    .ReadParcelGeometriesFrom(configuration["BucketName"], "parcelmigration/parcelsfulldownload.xml")
+                    ).ToDictionary(x => ParcelId.CreateFor(new VbrCaPaKey(x.GrbCaPaKey)));
 
                 var migrator = new StreamMigrator(
                     container.GetRequiredService<ILoggerFactory>(),
@@ -107,7 +109,13 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                                 {
                                     await migrator.ProcessAsync(ct);
 
-                                    //TODO: add parcels not found in migration
+                                    var importParcels = new ImportParcels(
+                                        container.GetRequiredService<ILifetimeScope>(),
+                                        configuration,
+                                        parcelGeometries,
+                                        container.GetRequiredService<ILoggerFactory>());
+
+                                    await importParcels.ImportNewParcels(ct);
                                 });
 
                             watch.Stop();
