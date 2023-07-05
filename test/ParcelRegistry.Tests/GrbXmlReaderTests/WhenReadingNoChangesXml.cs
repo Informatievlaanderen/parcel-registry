@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using FluentAssertions;
-    using Migrator.Parcel.Infrastructure;
+    using Importer.Grb.Infrastructure;
     using Xunit;
 
     public sealed class WhenReadingNoChangesXml

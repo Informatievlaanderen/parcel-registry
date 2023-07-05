@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Migrator.Parcel.Infrastructure
+﻿namespace ParcelRegistry.Importer.Grb.Infrastructure
 {
     using System;
     using System.Collections.Generic;

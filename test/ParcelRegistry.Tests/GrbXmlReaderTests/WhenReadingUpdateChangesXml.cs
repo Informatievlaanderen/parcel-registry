@@ -5,7 +5,7 @@
     using System.Linq;
     using Api.BackOffice.Abstractions.Extensions;
     using FluentAssertions;
-    using Migrator.Parcel.Infrastructure;
+    using Importer.Grb.Infrastructure;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO.GML2;
     using Xunit;
