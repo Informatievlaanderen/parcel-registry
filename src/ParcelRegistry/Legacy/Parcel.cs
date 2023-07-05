@@ -201,6 +201,14 @@ namespace ParcelRegistry.Legacy
                 organisation));
         }
 
+        public void Retire()
+        {
+            if (!IsRetired && !IsRemoved)
+            {
+                ApplyChange(new ParcelWasRetired(ParcelId));
+            }
+        }
+
         /// <summary>
         /// Fixes issue where address attachments happened after the parcel was removed.
         /// Detaches all parcel addresses and re-applies removed event.

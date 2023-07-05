@@ -7,6 +7,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Amazon.S3;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -80,12 +81,17 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                     throw new InvalidOperationException("Empty addresses by parcel.");
                 }
 
+                var parcelGeometries = await container
+                    .GetRequiredService<ParcelGeometries>()
+                    .ReadParcelGeometriesFrom(configuration["BucketName"], "parcelmigration/parcelsfulldownload.xml");
+
                 var migrator = new StreamMigrator(
                     container.GetRequiredService<ILoggerFactory>(),
                     configuration,
                     container.GetRequiredService<ILifetimeScope>(),
                     consumedAddressItems,
-                    addressesByParcel);
+                    addressesByParcel,
+                    parcelGeometries);
 
                 await DistributedLock<Program>.RunAsync(
                     async () =>
@@ -139,6 +145,13 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
 
             var tempProvider = services.BuildServiceProvider();
             var loggerFactory = tempProvider.GetRequiredService<ILoggerFactory>();
+
+            services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client(new AmazonS3Config
+            {
+                RegionEndpoint = Amazon.RegionEndpoint.EUWest1
+            }));
+
+            services.AddSingleton<ParcelGeometries>();
 
             builder.RegisterModule(new ApiModule(configuration, services, loggerFactory));
             builder.RegisterModule(new ProjectorModule(configuration));

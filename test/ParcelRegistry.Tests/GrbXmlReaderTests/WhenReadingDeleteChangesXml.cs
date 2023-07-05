@@ -17,8 +17,8 @@
 
         public WhenReadingDeleteChangesXml()
         {
-            var grbDeleteXmlReader = new GrbDeleteXmlReader($"{AppContext.BaseDirectory}/GrbXmlReaderTests/AdpDel.gml");
-            _parcels = grbDeleteXmlReader.Read().ToList();
+            var grbDeleteXmlReader = new GrbDeleteXmlReader();
+            _parcels = grbDeleteXmlReader.Read($"{AppContext.BaseDirectory}/GrbXmlReaderTests/AdpDel.gml").ToList();
 
             _gmlReader = GmlHelpers.CreateGmlReader();
         }

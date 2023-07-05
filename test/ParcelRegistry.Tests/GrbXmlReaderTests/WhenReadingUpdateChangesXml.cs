@@ -17,8 +17,8 @@
 
         public WhenReadingUpdateChangesXml()
         {
-            var grbUpdateXmlReader = new GrbUpdateXmlReader($"{AppContext.BaseDirectory}/GrbXmlReaderTests/AdpAdd.gml");
-            _parcels = grbUpdateXmlReader.Read().ToList();
+            var grbUpdateXmlReader = new GrbUpdateXmlReader();
+            _parcels = grbUpdateXmlReader.Read($"{AppContext.BaseDirectory}/GrbXmlReaderTests/AdpAdd.gml").ToList();
 
             _gmlReader = GmlHelpers.CreateGmlReader();
         }

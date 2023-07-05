@@ -13,8 +13,8 @@
 
         public WhenReadingNoChangesXml()
         {
-            var grbXmlReader = new GrbXmlReader($"{AppContext.BaseDirectory}/GrbXmlReaderTests/AdpAdd_NoChanges.gml");
-            _parcels = grbXmlReader.Read().ToList();
+            var grbXmlReader = new GrbXmlReader();
+            _parcels = grbXmlReader.Read($"{AppContext.BaseDirectory}/GrbXmlReaderTests/AdpAdd_NoChanges.gml").ToList();
         }
 
         [Fact]
