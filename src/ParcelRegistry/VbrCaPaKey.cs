@@ -12,6 +12,8 @@ namespace ParcelRegistry
 
         public VbrCaPaKey([JsonProperty("value")] string vbrCaPaKey) : base(vbrCaPaKey) { }
 
+        public VbrCaPaKey([JsonProperty("value")] CaPaKey caPaKey) : base(caPaKey.VbrCaPaKey) { }
+
         public CaPaKey ToCaPaKey() => CaPaKey.CreateFrom(Value);
 
         public Guid CreateDeterministicId()

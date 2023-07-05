@@ -17,9 +17,8 @@
 
         public WhenReadingFullXml()
         {
-            var grbXmlReader = new GrbXmlReader($"{AppContext.BaseDirectory}/GrbXmlReaderTests/Adp_Full.gml");
-            //var grbXmlReader = new GrbXmlReader($"C:\\Users\\xxx\\Downloads\\Adp_20230703_GML\\GML\\Adp.gml"); // use to test full download
-            _parcels = grbXmlReader.Read().ToList();
+            var grbXmlReader = new GrbXmlReader();
+            _parcels = grbXmlReader.Read($"{AppContext.BaseDirectory}/GrbXmlReaderTests/Adp_Full.gml").ToList(); // $"C:\\Users\\xxx\\Downloads\\Adp_20230703_GML\\GML\\Adp.gml" use to test full download
             _gmlReader = GmlHelpers.CreateGmlReader();
         }
 

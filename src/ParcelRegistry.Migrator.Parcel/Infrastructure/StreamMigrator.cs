@@ -12,10 +12,12 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Importer.Grb.Infrastructure;
     using Legacy.Commands;
     using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using NodaTime;
     using ParcelRegistry.Parcel;
     using Polly;
     using Serilog;
@@ -36,12 +38,14 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
 
         private List<(int processedId, bool isPageCompleted)> _processedIds;
         private readonly Stopwatch _stopwatch = new Stopwatch();
+        private readonly Dictionary<ParcelId, GrbParcel> _parcelGeometriesByParcelId;
 
         public StreamMigrator(ILoggerFactory loggerFactory,
             IConfiguration configuration,
             ILifetimeScope lifetimeScope,
             Dictionary<Guid, int> consumedAddressItems,
-            Dictionary<Guid, List<Guid>> addressesByParcel)
+            Dictionary<Guid, List<Guid>> addressesByParcel,
+            IEnumerable<GrbParcel> parcelGeometries)
         {
             _lifetimeScope = lifetimeScope;
             _logger = loggerFactory.CreateLogger("ParcelMigrator");
@@ -51,6 +55,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             _sqlStreamTable = new SqlStreamsTable(connectionString);
             _consumedAddressItems = consumedAddressItems;
             _addressesByParcel = addressesByParcel;
+            _parcelGeometriesByParcelId = parcelGeometries.ToDictionary(x => ParcelId.CreateFor(new VbrCaPaKey(x.GrbCaPaKey)));
 
             _skipNotFoundAddress = bool.Parse(configuration["SkipNotFoundAddress"]);
         }
@@ -180,33 +185,54 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                     })
                 : Array.Empty<(bool, AddressPersistentLocalId)>();
 
-            var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(addressIds
-                .Where(x => x.isSuccess)
-                .Select(x => x.addressPersistentLocalId)
-                .ToList(),
-                new ExtendedWkbGeometry(""));
-
-            var markMigrated = new MarkParcelAsMigrated(
-                migrateParcel.OldParcelId,
-                migrateParcel.Provenance);
-
-            await DispatchCommand(markMigrated, ct);
-            await DispatchCommand(migrateParcel, ct);
-
-            await _processedIdsTable.Add(internalId);
-            processedItems.Add(internalId);
-
-            await using var backOfficeContext = streamLifetimeScope.Resolve<BackOfficeContext>();
-            foreach (var addressPersistentLocalId in migrateParcel.AddressPersistentLocalIds)
+            if (_parcelGeometriesByParcelId.TryGetValue(parcelId, out var grbParcel))
             {
-                await backOfficeContext
-                    .ParcelAddressRelations.AddAsync(
-                        new ParcelAddressRelation(
-                            migrateParcel.NewParcelId,
-                            addressPersistentLocalId), ct);
-            }
+                var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(addressIds
+                        .Where(x => x.isSuccess)
+                        .Select(x => x.addressPersistentLocalId)
+                        .ToList(),
+                    new ExtendedWkbGeometry(grbParcel.Geometry.ToBinary()));
 
-            await backOfficeContext.SaveChangesAsync(ct);
+                var markMigrated = new MarkParcelAsMigrated(
+                    migrateParcel.OldParcelId,
+                    migrateParcel.Provenance);
+
+                await DispatchCommand(markMigrated, ct);
+                await DispatchCommand(migrateParcel, ct);
+
+                await _processedIdsTable.Add(internalId);
+                processedItems.Add(internalId);
+
+                await using var backOfficeContext = streamLifetimeScope.Resolve<BackOfficeContext>();
+                foreach (var addressPersistentLocalId in migrateParcel.AddressPersistentLocalIds)
+                {
+                    await backOfficeContext
+                        .ParcelAddressRelations.AddAsync(
+                            new ParcelAddressRelation(
+                                migrateParcel.NewParcelId,
+                                addressPersistentLocalId), ct);
+                }
+
+                await backOfficeContext.SaveChangesAsync(ct);
+            }
+            else
+            {
+                _logger.LogWarning($"Parcel geometry not found for '{aggregateId}', retiring parcel.");
+
+                var provenance = new Provenance(
+                    SystemClock.Instance.GetCurrentInstant(),
+                    Application.ParcelRegistry,
+                    new Reason("Migrate Parcel aggregate."),
+                    new Operator("Parcel Registry"),
+                    Modification.Insert,
+                    Organisation.DigitaalVlaanderen);
+
+                await DispatchCommand(new RetireParcel(parcelId, provenance), ct);
+                await DispatchCommand(new MarkParcelAsMigrated(parcelId, provenance), ct); //TODO: do we mark it or not?
+
+                await _processedIdsTable.Add(internalId);
+                processedItems.Add(internalId);
+            }
         }
 
         private async Task DispatchCommand<TCommand>(

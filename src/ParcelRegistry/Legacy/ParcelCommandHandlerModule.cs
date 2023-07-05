@@ -68,6 +68,17 @@ namespace ParcelRegistry.Legacy
 
                     parcel.MarkAsMigrated();
                 });
+
+            For<RetireParcel>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var parcels = getParcels();
+
+                    var parcel = await parcels.GetAsync(message.Command.ParcelId, ct);
+                    parcel.Retire();
+                });
         }
 
         public async Task ImportSubaddress(
