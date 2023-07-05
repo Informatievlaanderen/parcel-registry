@@ -14,7 +14,7 @@
     [EventDescription("Het perceel werd geïmporteerd.")]
     public sealed class ParcelWasImported : IParcelEvent
     {
-        public const string EventName = "ParcelGeometryWasImported"; // BE CAREFUL CHANGING THIS!!
+        public const string EventName = "ParcelWasImported"; // BE CAREFUL CHANGING THIS!!
 
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }

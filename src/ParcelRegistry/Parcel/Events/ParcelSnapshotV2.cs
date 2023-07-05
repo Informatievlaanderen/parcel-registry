@@ -6,9 +6,7 @@ namespace ParcelRegistry.Parcel.Events
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using NetTopologySuite.Geometries;
     using Newtonsoft.Json;
-    using Coordinate = ParcelRegistry.Parcel.Coordinate;
 
     [EventName("ParcelSnapshotV2")]
     [EventSnapshot(nameof(SnapshotContainer) + "<ParcelSnapshotV2>", typeof(SnapshotContainerV2))]
@@ -30,7 +28,7 @@ namespace ParcelRegistry.Parcel.Events
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
-            string extendedWkbGeometry,
+            ExtendedWkbGeometry extendedWkbGeometry,
             string lastEventHash,
             ProvenanceData lastProvenanceData)
         {
@@ -60,7 +58,7 @@ namespace ParcelRegistry.Parcel.Events
                 ParcelRegistry.Parcel.ParcelStatus.Parse(parcelStatus),
                 isRemoved,
                 addressPersistentLocalIds.Select(id => new AddressPersistentLocalId(id)),
-                extendedWkbGeometry,
+                new ExtendedWkbGeometry(extendedWkbGeometry),
                 lastEventHash,
                 lastProvenanceData)
         { }

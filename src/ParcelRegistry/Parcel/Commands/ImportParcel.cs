@@ -37,6 +37,7 @@
 
         private IEnumerable<object> IdentityFields()
         {
+            yield return ParcelId;
             yield return VbrCaPaKey;
             yield return ExtendedWkbGeometry;
 

@@ -20,11 +20,7 @@
     public class GivenParcelDoesNotExists : ParcelRegistryTest
     {
         public GivenParcelDoesNotExists (ITestOutputHelper testOutputHelper) : base(testOutputHelper)
-        {
-            Fixture.Customize(new WithFixedParcelId());
-            Fixture.Customize(new WithParcelStatus());
-            Fixture.Customize(new Legacy.AutoFixture.WithFixedParcelId());
-        }
+        { }
 
         [Fact]
         public void ThenParcelImported()
