@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecauseAddressWasReaddressed
 {
     using System.Collections.Generic;
+    using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
@@ -48,8 +49,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
                     new AddressPersistentLocalId(2),
                     addressPersistentLocalId
                 },
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -88,8 +88,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
                     new AddressPersistentLocalId(2),
                     addressPersistentLocalId
                 },
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
 
             Assert(new Scenario()

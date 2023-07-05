@@ -30,9 +30,9 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
                 new NtsGeometryServices(
                     new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
                     new PrecisionModel(PrecisionModels.Floating),
-                    WkbGeometry.SridLambert72));
+                    ExtendedWkbGeometry.SridLambert72));
             _fixture = new Fixture();
-            _fixture.Customize(new WithExtendedWkbGeometry());
+            _fixture.Customize(new WithExtendedWkbGeometryPoint());
 
             _sut = new AttachAddressRequestValidator(_addressContext);
         }

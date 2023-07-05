@@ -2,6 +2,7 @@ Autofac
 Newtonsoft.Json
 NodaTime
 SqlStreamStore.MsSql
+NetTopologySuite
 
 Be.Vlaanderen.Basisregisters.AggregateSource
 Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting

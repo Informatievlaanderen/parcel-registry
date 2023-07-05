@@ -26,6 +26,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Parcel.Commands;
     using Parcel.Exceptions;
     using ParcelRegistry.Api.BackOffice.Abstractions;
+    using ParcelRegistry.Api.BackOffice.Abstractions.Extensions;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
     using SqlStreamStore.Streams;
     using SqlStreamStore;
@@ -75,8 +76,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 isRemoved: false,
                 new List<AddressPersistentLocalId> { new AddressPersistentLocalId(456), new AddressPersistentLocalId(789) },
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>()));
 
             var handler = new AttachAddressLambdaHandler(
@@ -195,8 +195,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 isRemoved: false,
                 new List<AddressPersistentLocalId> { addressPersistentLocalId },
-                Fixture.Create<Coordinate>(),
-                Fixture.Create<Coordinate>(),
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>()));
 
             var handler = new AttachAddressLambdaHandler(

@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 {
     using System.Collections.Generic;
+    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
@@ -27,8 +28,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
                 ParcelRegistry.Legacy.ParcelStatus.Realized,
                 Fixture.Create<bool>(),
                 Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                xCoordinate: null,
-                yCoordinate: null,
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()

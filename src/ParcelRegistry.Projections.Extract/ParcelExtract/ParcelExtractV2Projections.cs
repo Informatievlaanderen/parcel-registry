@@ -108,6 +108,24 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                     },
                     ct);
             });
+
+            When<Envelope<ParcelWasImported>>(async (context, message, ct) =>
+            {
+                await context
+                    .ParcelExtractV2
+                    .AddAsync(new ParcelExtractItemV2
+                    {
+                        ParcelId = message.Message.ParcelId,
+                        CaPaKey = message.Message.CaPaKey,
+                        DbaseRecord = new ParcelDbaseRecord
+                        {
+                            id = { Value = $"{extractConfig.Value.DataVlaanderenNamespace}/{message.Message.CaPaKey}" },
+                            perceelid = { Value = message.Message.CaPaKey },
+                            status = { Value = Realized },
+                            versieid = { Value = message.Message.Provenance.Timestamp.ToBelgianDateTimeOffset().FromDateTimeOffset() }
+                        }.ToBytes(_encoding)
+                    }, ct);
+            });
         }
 
         private void SetDelete(ParcelExtractItemV2 parcel)

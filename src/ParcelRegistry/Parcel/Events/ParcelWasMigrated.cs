@@ -34,11 +34,8 @@ namespace ParcelRegistry.Parcel.Events
         [EventPropertyDescription("Objectidentificatoren van adressen die gekoppeld zijn aan de perceeleenheid.")]
         public List<int> AddressPersistentLocalIds { get; }
 
-        [EventPropertyDescription("X-coördinaat van de centroïde van het terreinobject.")]
-        public decimal? XCoordinate { get; }
-
-        [EventPropertyDescription("Y-coördinaat van de centroïde van het terreinobject.")]
-        public decimal? YCoordinate { get; }
+        [EventPropertyDescription("De geometrie van het perceel.")]
+        public string ExtendedWkbGeometry { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
@@ -50,8 +47,7 @@ namespace ParcelRegistry.Parcel.Events
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
-            Coordinate? xCoordinate,
-            Coordinate? yCoordinate)
+            ExtendedWkbGeometry extendedWkbGeometry)
         {
             OldParcelId = oldParcelId;
             ParcelId = newParcelId;
@@ -59,8 +55,7 @@ namespace ParcelRegistry.Parcel.Events
             ParcelStatus = parcelStatus;
             IsRemoved = isRemoved;
             AddressPersistentLocalIds = addressPersistentLocalIds.Select(x => (int)x).ToList();
-            XCoordinate = xCoordinate ?? (decimal?) null;
-            YCoordinate = yCoordinate ?? (decimal?) null;
+            ExtendedWkbGeometry = extendedWkbGeometry;
         }
 
         [JsonConstructor]
@@ -71,8 +66,7 @@ namespace ParcelRegistry.Parcel.Events
             string parcelStatus,
             bool isRemoved,
             IEnumerable<int> addressPersistentLocalIds,
-            decimal? xCoordinate,
-            decimal? yCoordinate,
+            string extendedWkbGeometry,
             ProvenanceData provenance)
             : this(
                 new Legacy.ParcelId(oldParcelId),
@@ -81,12 +75,7 @@ namespace ParcelRegistry.Parcel.Events
                 ParcelRegistry.Parcel.ParcelStatus.Parse(parcelStatus),
                 isRemoved,
                 addressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
-                xCoordinate.HasValue
-                    ? new Coordinate(xCoordinate.Value)
-                    : null,
-                yCoordinate.HasValue
-                    ? new Coordinate(yCoordinate.Value)
-                    : null)
+                new ExtendedWkbGeometry(extendedWkbGeometry))
             => ((ISetProvenance)this).SetProvenance(provenance.ToProvenance());
 
         void ISetProvenance.SetProvenance(Provenance provenance) => Provenance = new ProvenanceData(provenance);
@@ -100,14 +89,7 @@ namespace ParcelRegistry.Parcel.Events
             fields.Add(ParcelStatus);
             fields.Add(IsRemoved.ToString());
             fields.AddRange(AddressPersistentLocalIds.Select(x => x.ToString(CultureInfo.InvariantCulture)));
-            if (XCoordinate.HasValue)
-            {
-                fields.Add(XCoordinate.Value.ToString(CultureInfo.InvariantCulture));
-            }
-            if (YCoordinate.HasValue)
-            {
-                fields.Add(YCoordinate.Value.ToString(CultureInfo.InvariantCulture));
-            }
+            fields.Add(ExtendedWkbGeometry);
             return fields;
         }
 

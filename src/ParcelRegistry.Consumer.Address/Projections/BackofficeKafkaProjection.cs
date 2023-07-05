@@ -8,6 +8,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Geometries.Implementation;
     using NetTopologySuite.IO;
+    using Parcel;
 
     public sealed class BackOfficeKafkaProjection : ConnectedProjection<ConsumerAddressContext>
     {
@@ -19,7 +20,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
                 new NtsGeometryServices(
                     new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
                     new PrecisionModel(PrecisionModels.Floating),
-                    WkbGeometry.SridLambert72));
+                    ExtendedWkbGeometry.SridLambert72));
 
             When<AddressWasMigratedToStreetName>(async (context, message, ct) =>
             {

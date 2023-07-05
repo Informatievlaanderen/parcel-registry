@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
@@ -170,6 +171,23 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                         UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
                     },
                     ct);
+            });
+
+            When<Envelope<ParcelWasImported>>(async (context, message, ct) =>
+            {
+                var item = new ParcelDetailV2(
+                    message.Message.ParcelId,
+                    message.Message.CaPaKey,
+                    ParcelStatus.Realized,
+                    new List<ParcelDetailAddressV2>(),
+                    false,
+                    message.Message.Provenance.Timestamp);
+
+                UpdateHash(item, message);
+
+                await context
+                    .ParcelDetailV2
+                    .AddAsync(item, ct);
             });
         }
 

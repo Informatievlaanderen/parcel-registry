@@ -2,8 +2,12 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 {
     using System;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using NetTopologySuite.IO;
+    using NetTopologySuite.IO.GML2;
     using Parcel.Events;
     using ParcelRegistry.Legacy;
     using ParcelRegistry.Legacy.Events;
@@ -16,6 +20,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         public ParcelSyndicationProjections()
         {
             #region Legacy
+
             When<Envelope<ParcelWasRegistered>>(async (context, message, ct) =>
             {
                 var parcelSyndicationItem = new ParcelSyndicationItem
@@ -125,18 +130,21 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             When<Envelope<TerrainObjectWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
             When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
             When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (context, message, ct) => await DoNothing());
+
             #endregion
 
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
+                var geometry  = new WKBReader().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+
                 var parcelSyndicationItem = new ParcelSyndicationItem
                 {
                     Position = message.Position,
                     ParcelId = message.Message.ParcelId,
                     CaPaKey = message.Message.CaPaKey,
                     Status = ParcelStatus.Parse(message.Message.ParcelStatus),
-                    XCoordinate = message.Message.XCoordinate,
-                    YCoordinate = message.Message.YCoordinate,
+                    XCoordinate = decimal.Parse(geometry.CentroidWithinArea().Coordinate.X.ToString()),
+                    YCoordinate = decimal.Parse(geometry.CentroidWithinArea().Coordinate.Y.ToString()),
                     AddressPersistentLocalIds = message.Message.AddressPersistentLocalIds,
                     RecordCreatedAt = message.Message.Provenance.Timestamp,
                     LastChangedOn = message.Message.Provenance.Timestamp,

@@ -14,7 +14,7 @@ namespace ParcelRegistry.Legacy
 
     public partial class Parcel : AggregateRootEntity, ISnapshotable
     {
-        public MigrateParcel CreateMigrateCommand(IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds)
+        public MigrateParcel CreateMigrateCommand(IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds, ExtendedWkbGeometry extendedWkbGeometry)
         {
             return new MigrateParcel(
                 ParcelId,
@@ -24,8 +24,7 @@ namespace ParcelRegistry.Legacy
                     : ParcelStatus.Retired,
                 IsRemoved,
                 addressPersistentLocalIds,
-                XCoordinate is not null ? new Coordinate(XCoordinate) : null,
-                YCoordinate is not null ? new Coordinate(YCoordinate) : null,
+                extendedWkbGeometry,
                 new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),
                     Application.ParcelRegistry,

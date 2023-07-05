@@ -2,15 +2,14 @@
 {
     using AutoFixture;
     using AutoFixture.Kernel;
-    using Consumer.Address;
-    using Projections.Syndication.Address;
+    using Parcel;
 
-    public class WithExtendedWkbGeometry : ICustomization
+    public class WithExtendedWkbGeometryPoint : ICustomization
     {
         public void Customize(IFixture fixture)
         {
-            var extendedWkbGeometry = GeometryHelpers.CreateEwkbFrom(
-                GeometryHelpers.CreateFromWkt($"POINT ({fixture.Create<uint>()} {fixture.Create<uint>()})"));
+            var extendedWkbGeometry = GeometryHelpers
+                .CreateFromWkt($"POINT ({fixture.Create<uint>()} {fixture.Create<uint>()})");
 
             fixture.Customize<ExtendedWkbGeometry>(c => c.FromFactory(
                 () => new ExtendedWkbGeometry(extendedWkbGeometry.ToString())));

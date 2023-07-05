@@ -8,14 +8,12 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using NodaTime;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
     using ParcelRegistry.Legacy;
 
     public class ParcelSyndicationItem
     {
         public long Position { get; set; }
-
         public Guid? ParcelId { get; set; }
         public string? CaPaKey { get; set; }
         public string? ChangeType { get; set; }

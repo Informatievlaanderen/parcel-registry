@@ -7,6 +7,7 @@ namespace ParcelRegistry.Parcel
     using DataStructures;
     using Events;
     using Exceptions;
+    using NetTopologySuite.Geometries;
 
     public sealed partial class Parcel : AggregateRootEntity, ISnapshotable
     {
@@ -18,9 +19,10 @@ namespace ParcelRegistry.Parcel
             ParcelStatus parcelStatus,
             bool isRemoved,
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
-            Coordinate? xCoordinate,
-            Coordinate? yCoordinate)
+            ExtendedWkbGeometry extendedWkbGeometry)
         {
+            GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
+
             var newParcel = parcelFactory.Create();
             newParcel.ApplyChange(
                 new ParcelWasMigrated(
@@ -30,8 +32,7 @@ namespace ParcelRegistry.Parcel
                     parcelStatus,
                     isRemoved,
                     addressPersistentLocalIds,
-                    xCoordinate,
-                    yCoordinate));
+                    extendedWkbGeometry));
 
             return newParcel;
         }
@@ -45,7 +46,7 @@ namespace ParcelRegistry.Parcel
                 throw new ParcelHasInvalidStatusException();
             }
 
-            if(AddressPersistentLocalIds.Contains(addressPersistentLocalId))
+            if (AddressPersistentLocalIds.Contains(addressPersistentLocalId))
             {
                 return;
             }
@@ -131,6 +132,44 @@ namespace ParcelRegistry.Parcel
                 previousAddressPersistentLocalId));
         }
 
+        public static Parcel ImportParcel(
+            IParcelFactory parcelFactory,
+            VbrCaPaKey vbrCaPaKey,
+            ParcelId parcelId,
+            ExtendedWkbGeometry extendedWkbGeometry)
+        {
+            GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
+
+            var newParcel = parcelFactory.Create();
+
+            newParcel.ApplyChange(
+                new ParcelWasImported(
+                    parcelId,
+                    vbrCaPaKey,
+                    extendedWkbGeometry));
+
+            return newParcel;
+        }
+
+        private static void GuardPolygon(Geometry? geometry)
+        {
+            if (geometry is Polygon
+                && geometry.SRID == ExtendedWkbGeometry.SridLambert72
+                && GeometryValidator.IsValid(geometry))
+            {
+                return;
+            }
+
+            if (geometry is MultiPolygon multiPolygon
+                && multiPolygon.SRID == ExtendedWkbGeometry.SridLambert72
+                && multiPolygon.Geometries.All(GeometryValidator.IsValid))
+            {
+                return;
+            }
+
+            throw new PolygonIsInvalidException();
+        }
+
         private void GuardParcelNotRemoved()
         {
             if (IsRemoved)
@@ -159,8 +198,7 @@ namespace ParcelRegistry.Parcel
                 ParcelStatus,
                 IsRemoved,
                 _addressPersistentLocalIds,
-                XCoordinate,
-                YCoordinate,
+                Geometry,
                 LastEventHash,
                 LastProvenanceData);
         }

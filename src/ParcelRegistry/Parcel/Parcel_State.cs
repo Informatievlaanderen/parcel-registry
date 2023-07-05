@@ -19,8 +19,7 @@ namespace ParcelRegistry.Parcel
         public VbrCaPaKey CaPaKey { get; private set; }
         public ParcelStatus ParcelStatus { get; private set; }
         public IReadOnlyList<AddressPersistentLocalId> AddressPersistentLocalIds => _addressPersistentLocalIds;
-        public Coordinate? XCoordinate { get; private set; }
-        public Coordinate? YCoordinate { get; private set; }
+        public ExtendedWkbGeometry Geometry { get; private set; } // TODO: change prop name to ExtendedWkbGeometry?
 
         public bool IsRemoved { get; private set; }
 
@@ -39,13 +38,15 @@ namespace ParcelRegistry.Parcel
             Register<ParcelWasMigrated>(When);
             Register<ParcelAddressWasAttachedV2>(When);
             Register<ParcelAddressWasDetachedV2>(When);
-            Register<ParcelSnapshotV2>(When);
+            Register<ParcelWasImported>(When);
 
             // Address Events
             Register<ParcelAddressWasDetachedBecauseAddressWasRemoved>(When);
             Register<ParcelAddressWasDetachedBecauseAddressWasRejected>(When);
             Register<ParcelAddressWasDetachedBecauseAddressWasRetired>(When);
             Register<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(When);
+
+            Register<ParcelSnapshotV2>(When);
         }
 
         private void When(ParcelWasMigrated @event)
@@ -60,13 +61,7 @@ namespace ParcelRegistry.Parcel
                 _addressPersistentLocalIds.Add(new AddressPersistentLocalId(addressPersistentLocalId));
             }
 
-            XCoordinate = @event.XCoordinate.HasValue
-                ? new Coordinate(@event.XCoordinate.Value)
-                : null;
-
-            YCoordinate = @event.YCoordinate.HasValue
-                ? new Coordinate(@event.YCoordinate.Value)
-                : null;
+            Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
 
             _lastEvent = @event;
         }
@@ -81,6 +76,18 @@ namespace ParcelRegistry.Parcel
         private void When(ParcelAddressWasDetachedV2 @event)
         {
             _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelWasImported @event)
+        {
+            ParcelId = new ParcelId(@event.ParcelId);
+            CaPaKey = new VbrCaPaKey(@event.CaPaKey);
+            ParcelStatus = ParcelStatus.Realized;
+            IsRemoved = false;
+
+            Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
 
             _lastEvent = @event;
         }
@@ -129,19 +136,12 @@ namespace ParcelRegistry.Parcel
             CaPaKey = new VbrCaPaKey(@event.CaPaKey);
             ParcelStatus = ParcelStatus.Parse(@event.ParcelStatus);
             IsRemoved = @event.IsRemoved;
+            Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
 
             foreach (var addressPersistentLocalId in @event.AddressPersistentLocalIds)
             {
                 _addressPersistentLocalIds.Add(new AddressPersistentLocalId(addressPersistentLocalId));
             }
-
-            XCoordinate = @event.XCoordinate.HasValue
-                ? new Coordinate(@event.XCoordinate.Value)
-                : null;
-
-            YCoordinate = @event.YCoordinate.HasValue
-                ? new Coordinate(@event.YCoordinate.Value)
-                : null;
 
             _lastSnapshotEventHash = @event.LastEventHash;
             _lastSnapshotProvenance = @event.LastProvenanceData;

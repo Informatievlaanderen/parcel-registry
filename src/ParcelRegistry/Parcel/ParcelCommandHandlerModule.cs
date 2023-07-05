@@ -9,6 +9,7 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Commands;
+    using Exceptions;
     using SqlStreamStore;
 
     public sealed class ParcelCommandHandlerModule : CommandHandlerModule
@@ -45,8 +46,7 @@ namespace ParcelRegistry.Parcel
                         message.Command.ParcelStatus,
                         message.Command.IsRemoved,
                         message.Command.AddressPersistentLocalIds,
-                        message.Command.XCoordinate,
-                        message.Command.YCoordinate);
+                        message.Command.ExtendedWkbGeometry);
 
                     parcelRepository().Add(streamId, newParcel);
                 });
@@ -73,6 +73,25 @@ namespace ParcelRegistry.Parcel
                     var parcel = await parcelRepository().GetAsync(streamId, ct);
 
                     parcel.DetachAddress(message.Command.AddressPersistentLocalId);
+                });
+
+            For<ImportParcel>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<ImportParcel, Parcel>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streamId = new ParcelStreamId(message.Command.ParcelId);
+
+                    var parcel = await parcelRepository().GetOptionalAsync(streamId, ct); // TODO: POSSIBLE AGGREGATE NOT FOUND
+
+                     if (parcel.HasValue)
+                     {
+                         throw new ParcelAlreadyExistsException(message.Command.VbrCaPaKey);
+                     }
+
+                    var createdParcel = Parcel.ImportParcel(parcelFactory, message.Command.VbrCaPaKey, message.Command.ParcelId, message.Command.ExtendedWkbGeometry);
+                    parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
                 });
         }
     }

@@ -43,7 +43,7 @@ namespace ParcelRegistry.Tests
             Fixture = new Fixture();
 
             Fixture.Customize(new WithParcelStatus());
-            Fixture.Customize(new WithExtendedWkbGeometry());
+            Fixture.Customize(new WithExtendedWkbGeometryPoint());
 
             Fixture.Customize(new SetProvenanceImplementationsCallSetProvenance());
             Fixture.Register(() => (ISnapshotStrategy)NoSnapshotStrategy.Instance);
@@ -52,7 +52,7 @@ namespace ParcelRegistry.Tests
                 new NtsGeometryServices(
                     new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
                     new PrecisionModel(PrecisionModels.Floating),
-                    WkbGeometry.SridLambert72));
+                    ExtendedWkbGeometry.SridLambert72));
         }
 
         protected override void ConfigureCommandHandling(ContainerBuilder builder)
