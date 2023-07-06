@@ -21,6 +21,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             string caPaKey,
             ParcelStatus status,
             IEnumerable<ParcelDetailAddressV2> addresses,
+            string gml,
+            string gmlType,
             bool removed,
             Instant versionTimeStamp)
         {
@@ -28,6 +30,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             CaPaKey = caPaKey;
             Status = status;
             Addresses = addresses.ToList();
+            Gml = gml;
+            GmlType = gmlType;
             Removed = removed;
             VersionTimestamp = versionTimeStamp;
         }
@@ -41,6 +45,10 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
         }
 
         public string StatusAsString { get; private set; }
+
+        public string Gml { get; private set; }
+
+        public string GmlType { get; private set; }
 
         public virtual List<ParcelDetailAddressV2> Addresses { get; set; }
 
@@ -66,6 +74,9 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                 .IsClustered(false);
 
             builder.Ignore(x => x.Status);
+
+            builder.Property(p => p.Gml);
+            builder.Property(p => p.GmlType);
 
             builder.Property(p => p.CaPaKey);
             builder.Property(x => x.StatusAsString).HasMaxLength(450).HasColumnName("Status");

@@ -36,34 +36,58 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
         public async Task WhenParcelWasMigrated()
         {
             const long position = 1L;
-            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var message = _fixture.Create<ParcelWasMigrated>();
 
             var metadata = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() },
+                { AddEventHashPipe.HashMetadataKey, message.GetHash() },
                 { Envelope.PositionMetadataKey, position },
                 { Envelope.EventNameMetadataKey, nameof(ParcelWasMigrated) },
             };
 
-            var migratedGeometry = new WKBReader().Read(parcelWasMigrated.ExtendedWkbGeometry.ToByteArray());
-            var migratedCentroidX = decimal.Parse(migratedGeometry.CentroidWithinArea().Coordinate.X.ToString());
-            var migratedCentroidY = decimal.Parse(migratedGeometry.CentroidWithinArea().Coordinate.Y.ToString());
-
             await Sut
-                .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)))
+                .Given(new Envelope<ParcelWasMigrated>(new Envelope(message, metadata)))
                 .Then(async ct =>
                 {
                     var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
                     parcelSyndicationItem.Should().NotBeNull();
-                    parcelSyndicationItem!.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
-                    parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Parse(parcelWasMigrated.ParcelStatus));
-                    parcelSyndicationItem.XCoordinate.Should().Be(migratedCentroidX);
-                    parcelSyndicationItem.YCoordinate.Should().Be(migratedCentroidY);
-                    parcelSyndicationItem.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds);
+                    parcelSyndicationItem!.CaPaKey.Should().Be(message.CaPaKey);
+                    parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Parse(message.ParcelStatus));
+                    parcelSyndicationItem.AddressPersistentLocalIds.Should().BeEquivalentTo(message.AddressPersistentLocalIds);
                     parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelWasMigrated));
+                    parcelSyndicationItem.ExtendedWkbGeometry.Should().BeEquivalentTo(message.ExtendedWkbGeometry.ToByteArray());
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
-                    parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);
-                    parcelSyndicationItem.LastChangedOn.Should().Be(parcelWasMigrated.Provenance.Timestamp);
+                    parcelSyndicationItem.RecordCreatedAt.Should().Be(message.Provenance.Timestamp);
+                    parcelSyndicationItem.LastChangedOn.Should().Be(message.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelWasImported()
+        {
+            const long position = 1L;
+            var message = _fixture.Create<ParcelWasImported>();
+
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, message.GetHash() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelWasImported) },
+            };
+
+            await Sut
+                .Given(new Envelope<ParcelWasImported>(new Envelope(message, metadata)))
+                .Then(async ct =>
+                {
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
+                    parcelSyndicationItem.Should().NotBeNull();
+                    parcelSyndicationItem!.CaPaKey.Should().Be(message.CaPaKey);
+                    parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Realized);
+                    parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelWasImported));
+                    parcelSyndicationItem.ExtendedWkbGeometry.Should().BeEquivalentTo(message.ExtendedWkbGeometry.ToByteArray());
+                    parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
+                    parcelSyndicationItem.RecordCreatedAt.Should().Be(message.Provenance.Timestamp);
+                    parcelSyndicationItem.LastChangedOn.Should().Be(message.Provenance.Timestamp);
                 });
         }
 

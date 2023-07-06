@@ -5,9 +5,13 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.IO;
     using NodaTime;
     using Parcel;
     using Parcel.Events;
@@ -16,15 +20,39 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
     [ConnectedProjectionDescription("Projectie die de percelen data voor het percelen detail & lijst voorziet.")]
     public class ParcelDetailV2Projections : ConnectedProjection<LegacyContext>
     {
+        private string MapGeometryType(OgcGeometryType ogcGeometryType)
+        {
+            return ogcGeometryType switch
+            {
+                OgcGeometryType.Polygon => OgcGeometryType.Polygon.ToString(),
+                OgcGeometryType.MultiSurface => OgcGeometryType.MultiSurface.ToString(),
+                OgcGeometryType.MultiPolygon => OgcGeometryType.MultiSurface.ToString(),
+                _ => throw new ArgumentOutOfRangeException(nameof(ogcGeometryType), ogcGeometryType, null)
+            };
+        }
+
         public ParcelDetailV2Projections()
         {
+            var wkbReader = WKBReaderFactory.Create();
+
+            (string gmlType, string gml) ToGml(string extendedWkbGeometry)
+            {
+                var geometry = wkbReader.Read(extendedWkbGeometry.ToByteArray());
+                var gml = geometry.ConvertToGml();
+                return (MapGeometryType(geometry.OgcGeometryType), gml);
+            }
+
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
+                var (geometryType, gml) = ToGml(message.Message.ExtendedWkbGeometry);
+
                 var item = new ParcelDetailV2(
                     message.Message.ParcelId,
                     message.Message.CaPaKey,
                     ParcelStatus.Parse(message.Message.ParcelStatus),
                     message.Message.AddressPersistentLocalIds.Select(x => new ParcelDetailAddressV2(message.Message.ParcelId, x)),
+                    gml,
+                    geometryType,
                     message.Message.IsRemoved,
                     message.Message.Provenance.Timestamp);
 
@@ -175,11 +203,15 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
 
             When<Envelope<ParcelWasImported>>(async (context, message, ct) =>
             {
+                var (geometryType, gml) = ToGml(message.Message.ExtendedWkbGeometry);
+
                 var item = new ParcelDetailV2(
                     message.Message.ParcelId,
                     message.Message.CaPaKey,
                     ParcelStatus.Realized,
                     new List<ParcelDetailAddressV2>(),
+                    gml,
+                    geometryType,
                     false,
                     message.Message.Provenance.Timestamp);
 

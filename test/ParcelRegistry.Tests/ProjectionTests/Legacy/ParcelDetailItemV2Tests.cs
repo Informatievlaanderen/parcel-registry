@@ -3,15 +3,17 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Parcel.Events;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using EventExtensions;
-    using FluentAssertions;
     using Fixtures;
+    using FluentAssertions;
     using Parcel;
+    using Parcel.Events;
     using Projections.Legacy.ParcelDetailV2;
     using Xunit;
 
@@ -26,42 +28,74 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
             _fixture.Customize(new WithParcelStatus());
             _fixture.Customize(new WithFixedParcelId());
             _fixture.Customize(new Tests.Legacy.AutoFixture.WithFixedParcelId());
+            _fixture.Customize(new WithExtendedWkbGeometryPolygon());
         }
 
         [Fact]
         public async Task WhenParcelWasMigrated()
         {
-            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var message = _fixture.Create<ParcelWasMigrated>();
 
             var metadata = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, message.GetHash() }
             };
 
             await Sut
-                .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)))
+                .Given(new Envelope<ParcelWasMigrated>(new Envelope(message, metadata)))
                 .Then(async ct =>
                 {
-                    var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(parcelWasMigrated.ParcelId);
+                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+
+                    var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(message.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
-                    parcelDetailV2!.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
-                    parcelDetailV2.Status.Should().Be(ParcelStatus.Parse(parcelWasMigrated.ParcelStatus));
-                    parcelDetailV2.Removed.Should().Be(parcelWasMigrated.IsRemoved);
+                    parcelDetailV2!.CaPaKey.Should().Be(message.CaPaKey);
+                    parcelDetailV2.Status.Should().Be(ParcelStatus.Parse(message.ParcelStatus));
+                    parcelDetailV2.Removed.Should().Be(message.IsRemoved);
+                    parcelDetailV2.Gml.Should().Be(geometry.ConvertToGml());
                     parcelDetailV2.Addresses.Should().BeEquivalentTo(
-                        parcelWasMigrated.AddressPersistentLocalIds.Select(x =>
-                            new ParcelDetailAddressV2(parcelWasMigrated.ParcelId, x)));
-                    parcelDetailV2.VersionTimestamp.Should().Be(parcelWasMigrated.Provenance.Timestamp);
-                    parcelDetailV2.LastEventHash.Should().Be(parcelWasMigrated.GetHash());
+                        message.AddressPersistentLocalIds.Select(x =>
+                            new ParcelDetailAddressV2(message.ParcelId, x)));
+                    parcelDetailV2.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
+                    parcelDetailV2.LastEventHash.Should().Be(message.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelWasImported()
+        {
+            var message = _fixture.Create<ParcelWasImported>();
+
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, message.GetHash() }
+            };
+
+            await Sut
+                .Given(new Envelope<ParcelWasImported>(new Envelope(message, metadata)))
+                .Then(async ct =>
+                {
+                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+
+                    var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(message.ParcelId);
+                    parcelDetailV2.Should().NotBeNull();
+                    parcelDetailV2!.CaPaKey.Should().Be(message.CaPaKey);
+                    parcelDetailV2.Status.Should().Be(ParcelStatus.Realized);
+                    parcelDetailV2.Removed.Should().Be(false);
+                    parcelDetailV2.Gml.Should().Be(geometry.ConvertToGml());
+                    //parcelDetailV2.GmlType.Should().Be();
+                    parcelDetailV2.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
+                    parcelDetailV2.LastEventHash.Should().Be(message.GetHash());
                 });
         }
 
         [Fact]
         public async Task WhenParcelAddressWasAttachedV2()
         {
-            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var message = _fixture.Create<ParcelWasMigrated>();
             var metadata = new Dictionary<string, object>
             {
-                { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() }
+                { AddEventHashPipe.HashMetadataKey, message.GetHash() }
             };
 
             var addressWasAttached = _fixture.Create<ParcelAddressWasAttachedV2>();
@@ -72,14 +106,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
 
             await Sut
                 .Given(
-                    new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
+                    new Envelope<ParcelWasMigrated>(new Envelope(message, metadata)),
                     new Envelope<ParcelAddressWasAttachedV2>(new Envelope(addressWasAttached, metadata2)))
                 .Then(async ct =>
                 {
-                    var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(parcelWasMigrated.ParcelId);
+                    var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(message.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
                     parcelDetailV2!.Addresses.Should().BeEquivalentTo(
-                        parcelWasMigrated.AddressPersistentLocalIds
+                        message.AddressPersistentLocalIds
                             .Concat(new[] { addressWasAttached.AddressPersistentLocalId })
                             .Select(x => new ParcelDetailAddressV2(addressWasAttached.ParcelId, x)));
                     parcelDetailV2.VersionTimestamp.Should().Be(addressWasAttached.Provenance.Timestamp);

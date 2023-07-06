@@ -18,8 +18,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
         public string? CaPaKey { get; set; }
         public string? ChangeType { get; set; }
         public string? StatusAsString { get; set; }
-        public decimal? XCoordinate { get; set; }
-        public decimal? YCoordinate { get; set; }
+        public byte[]? ExtendedWkbGeometry { get; set; }
 
         public ParcelStatus? Status
         {
@@ -131,8 +130,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 AddressIds = AddressIds,
                 AddressPersistentLocalIds = AddressPersistentLocalIds,
                 Status = Status,
-                XCoordinate = XCoordinate,
-                YCoordinate = YCoordinate,
+                ExtendedWkbGeometry = ExtendedWkbGeometry,
 
                 RecordCreatedAt = RecordCreatedAt,
                 Application = Application,
@@ -171,8 +169,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
             b.Property(x => x.StatusAsString)
                 .HasColumnName("Status");
 
-            b.Property(x => x.XCoordinate).HasPrecision(18, 2);
-            b.Property(x => x.YCoordinate).HasPrecision(18, 2);
+            b.Property(x => x.ExtendedWkbGeometry);
 
             b.Ignore(x => x.AddressIds);
             b.Property(x => x.AddressesAsString)

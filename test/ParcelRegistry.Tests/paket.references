@@ -16,3 +16,5 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit
 Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events
+Be.Vlaanderen.Basisregisters.Grar.Common
+
