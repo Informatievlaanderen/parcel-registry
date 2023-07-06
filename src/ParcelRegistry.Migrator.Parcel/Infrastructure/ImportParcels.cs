@@ -41,7 +41,7 @@
 
         public async Task ImportNewParcels(CancellationToken cancellationToken = default)
         {
-            var allStreamParcelIds = new HashSet<ParcelId>((await _sqlStreamTable.ReadAllNewStreamIds()).Select(x => new ParcelId(Guid.Parse(x.Split('-')[1]))));
+            var allStreamParcelIds = new HashSet<ParcelId>((await _sqlStreamTable.ReadAllNewStreamIds()).Select(x => new ParcelId(Guid.Parse(x.Split("parcel-")[1]))));
 
             var newParcelIds = _parcelGeometries.Keys.Where(x => !allStreamParcelIds.Contains(x)).ToList();
 
@@ -59,7 +59,7 @@
                         new Operator("Parcel Registry"),
                         Modification.Insert,
                         Organisation.DigitaalVlaanderen));
-                
+
                 await using var scope = _lifetimeScope.BeginLifetimeScope();
                 var cmdResolver = scope.Resolve<ICommandHandlerResolver>();
                 await cmdResolver.Dispatch(
