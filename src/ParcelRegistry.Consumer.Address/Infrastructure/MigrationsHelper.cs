@@ -48,6 +48,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerAddress, Schema.ConsumerAddress);
+                        sqlServerOptions.UseNetTopologySuite();
                     });
 
             migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);
