@@ -11,17 +11,23 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Syndication;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Convertors;
+    using Infrastructure.Options;
     using Microsoft.Extensions.Options;
     using Microsoft.SyndicationFeed;
     using Microsoft.SyndicationFeed.Atom;
-    using ParcelRegistry.Api.Legacy.Convertors;
-    using ParcelRegistry.Api.Legacy.Infrastructure.Options;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.IO;
     using Swashbuckle.AspNetCore.Filters;
+    using Polygon = NetTopologySuite.Geometries.Polygon;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Syndication.Provenance;
 
     public static class ParcelSyndicationResponse
     {
+        private static readonly WKBReader WkbReader = WKBReaderFactory.Create();
+
         public static async Task WriteParcel(
             this ISyndicationFeedWriter writer,
             IOptions<ResponseOptions> responseOptions,
@@ -79,6 +85,11 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
 
             var content = new SyndicationContent();
             if(parcel.ContainsObject)
+            {
+                var geometry = parcel.ExtendedWkbGeometry is null
+                    ? null
+                    : WkbReader.Read(parcel.ExtendedWkbGeometry);
+
                 content.Object = new ParcelSyndicationContent(
                     parcel.ParcelId,
                     naamruimte,
@@ -86,10 +97,15 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
                     parcel.LastChangedOn.ToBelgianDateTimeOffset(),
                     parcel.Status.MapToPerceelStatusSyndication(),
                     parcel.AddressIds,
-                    parcel.XCoordinate,
-                    parcel.YCoordinate,
+                    geometry is MultiPolygon
+                        ? GmlMultiSurfaceBuilder.Build(parcel.ExtendedWkbGeometry!, WkbReader)
+                        : null,
+                    geometry is Polygon
+                        ? PolygonBuilder.Build(parcel.ExtendedWkbGeometry!, WkbReader)?.XmlPolygon
+                        : null,
                     parcel.Organisation,
                     parcel.Reason);
+            }
 
             if (parcel.ContainsEvent)
             {
@@ -140,16 +156,16 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
         public List<string> AddressIds { get; set; }
 
         /// <summary>
-        /// Het x-coordinaat van de centroïde van het perceel
+        /// De geometrie multi-polygoon van het perceel.
         /// </summary>
-        [DataMember(Name = "XCoordinaat", Order = 5)]
-        public decimal? XCoordinate { get; set; }
+        [DataMember(Name = "GeometrieMultiPolygoon", Order = 5)]
+        public SyndicationMultiSurface MultiSurfacePolygon  { get; set; }
 
         /// <summary>
-        /// Het y-coordinaat van de centroïde van het perceel
+        /// De geometrie polygoon van het perceel.
         /// </summary>
-        [DataMember(Name = "YCoordinaat", Order = 6)]
-        public decimal? YCoordinate { get; set; }
+        [DataMember(Name = "GeometriePolygoon", Order = 6)]
+        public SyndicationPolygon Polygon  { get; set; }
 
         /// <summary>
         /// Creatie data ivm het item.
@@ -164,8 +180,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
             DateTimeOffset version,
             PerceelStatus? status,
             IEnumerable<string> addressIds,
-            decimal? xCoordinate,
-            decimal? yCoordinate,
+            GmlMultiSurface? gmlMultiSurface,
+            GmlPolygon? gmlPolygon,
             Organisation? organisation,
             string reason)
         {
@@ -173,8 +189,15 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
             Identificator = new PerceelIdentificator(naamruimte, string.IsNullOrEmpty(caPaKey) ? string.Empty : caPaKey, version);
             Status = status;
             AddressIds = addressIds.ToList();
-            XCoordinate = xCoordinate;
-            YCoordinate = yCoordinate;
+            if (gmlMultiSurface != null)
+            {
+                MultiSurfacePolygon = new SyndicationMultiSurface { XmlMultiSurface = gmlMultiSurface };
+            }
+
+            if (gmlPolygon != null)
+            {
+                Polygon = new SyndicationPolygon { XmlPolygon = gmlPolygon };
+            }
 
             Provenance = new Provenance(version, organisation, new Reason(reason));
         }

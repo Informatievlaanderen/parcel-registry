@@ -2,16 +2,15 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 {
     using System;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using NetTopologySuite.IO;
-    using NetTopologySuite.IO.GML2;
+    using Parcel;
     using Parcel.Events;
-    using ParcelRegistry.Legacy;
     using ParcelRegistry.Legacy.Events;
     using ParcelRegistry.Legacy.Events.Crab;
+    using ParcelStatus = ParcelRegistry.Legacy.ParcelStatus;
 
     [ConnectedProjectionName("Feed endpoint percelen")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor de percelen feed voorziet.")]
@@ -143,8 +142,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     ParcelId = message.Message.ParcelId,
                     CaPaKey = message.Message.CaPaKey,
                     Status = ParcelStatus.Parse(message.Message.ParcelStatus),
-                    XCoordinate = decimal.Parse(geometry.CentroidWithinArea().Coordinate.X.ToString()),
-                    YCoordinate = decimal.Parse(geometry.CentroidWithinArea().Coordinate.Y.ToString()),
+                    ExtendedWkbGeometry = new ExtendedWkbGeometry(message.Message.ExtendedWkbGeometry),
                     AddressPersistentLocalIds = message.Message.AddressPersistentLocalIds,
                     RecordCreatedAt = message.Message.Provenance.Timestamp,
                     LastChangedOn = message.Message.Provenance.Timestamp,
@@ -159,6 +157,30 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     .ParcelSyndication
                     .AddAsync(parcelSyndicationItem, ct);
             });
+
+            When<Envelope<ParcelWasImported>>(async (context, message, ct) =>
+            {
+                var parcelSyndicationItem = new ParcelSyndicationItem
+                {
+                    Position = message.Position,
+                    ParcelId = message.Message.ParcelId,
+                    CaPaKey = message.Message.CaPaKey,
+                    Status = ParcelStatus.Realized,
+                    ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry.ToByteArray(),
+                    RecordCreatedAt = message.Message.Provenance.Timestamp,
+                    LastChangedOn = message.Message.Provenance.Timestamp,
+                    ChangeType = message.EventName,
+                    SyndicationItemCreatedAt = DateTimeOffset.Now
+                };
+
+                parcelSyndicationItem.ApplyProvenance(message.Message.Provenance);
+                parcelSyndicationItem.SetEventData(message.Message, message.EventName);
+
+                await context
+                    .ParcelSyndication
+                    .AddAsync(parcelSyndicationItem, ct);
+            });
+
 
             When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
             {

@@ -10,9 +10,10 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Microsoft.EntityFrameworkCore;
     using NodaTime;
-    using ParcelRegistry.Legacy;
+    using ParcelRegistry.Parcel;
     using ParcelRegistry.Projections.Legacy;
     using ParcelRegistry.Projections.Legacy.ParcelSyndication;
+    using ParcelStatus = ParcelRegistry.Legacy.ParcelStatus;
 
     public class ParcelSyndicationQueryResult
     {
@@ -27,8 +28,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
         public Instant LastChangedOn { get; }
         public ParcelStatus? Status { get; }
         public IEnumerable<string> AddressIds { get; } = new List<string>();
-        public decimal? XCoordinate { get; }
-        public decimal? YCoordinate { get; }
+        public byte[]? ExtendedWkbGeometry { get; }
         public Organisation? Organisation { get; }
         public string Reason { get; }
         public string EventDataAsXml { get; }
@@ -92,8 +92,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
             IEnumerable<Guid> addressIds,
             IEnumerable<int> addressPersistentLocalIds,
             Organisation? organisation,
-            decimal? xCoordinate,
-            decimal? yCoordinate,
+            byte[]? extendedWkbGeometry,
             string reason)
             : this(
                 parcelId,
@@ -109,8 +108,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
 
             Status = status;
             AddressIds = addressIds.Select(y => y.ToString()).Concat(addressPersistentLocalIds.Select(y => y.ToString())).ToList();
-            XCoordinate = xCoordinate;
-            YCoordinate = yCoordinate;
+            ExtendedWkbGeometry = extendedWkbGeometry;
         }
 
         public ParcelSyndicationQueryResult(
@@ -124,8 +122,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
             IEnumerable<Guid> addressIds,
             IEnumerable<int> addressPersistentLocalIds,
             Organisation? organisation,
-            decimal? xCoordinate,
-            decimal? yCoordinate,
+            byte[]? extendedWkbGeometry,
             string reason,
             string eventDataAsXml)
             : this(
@@ -139,8 +136,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
                 addressIds,
                 addressPersistentLocalIds,
                 organisation,
-                xCoordinate,
-                yCoordinate,
+                extendedWkbGeometry,
                 reason)
         {
             ContainsEvent = true;
@@ -180,8 +176,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
                         x.AddressIds,
                         x.AddressPersistentLocalIds,
                         x.Organisation,
-                        x.XCoordinate,
-                        x.YCoordinate,
+                        x.ExtendedWkbGeometry,
                         x.Reason,
                         x.EventDataAsXml);
 
@@ -209,8 +204,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.Sync
                         x.AddressIds,
                         x.AddressPersistentLocalIds,
                         x.Organisation,
-                        x.XCoordinate,
-                        x.YCoordinate,
+                        x.ExtendedWkbGeometry,
                         x.Reason);
 
                 return x => new ParcelSyndicationQueryResult(
