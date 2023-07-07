@@ -1,3 +1,10 @@
+# [4.23.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.22.1...v4.23.0) (2023-07-07)
+
+
+### Features
+
+* add geometry to projections ([4d830f7](https://github.com/informatievlaanderen/parcel-registry/commit/4d830f70cb213e303d047053802ba349ba621d30))
+
 ## [4.22.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.22.0...v4.22.1) (2023-07-07)
 
 
