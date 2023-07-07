@@ -96,6 +96,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                             {
                                 sqlServerOptions.EnableRetryOnFailure();
                                 sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerAddress, Schema.ConsumerAddress);
+                                sqlServerOptions.UseNetTopologySuite();
                             }));
 
                     services.AddScoped<IAddresses, ConsumerAddressContext>();
