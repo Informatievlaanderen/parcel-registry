@@ -1,3 +1,20 @@
+# [4.22.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.21.0...v4.22.0) (2023-07-07)
+
+
+### Bug Fixes
+
+* importparcels split streamid ([2a68ae8](https://github.com/informatievlaanderen/parcel-registry/commit/2a68ae8cec1509252af4d4d59c9b8e302bf91276))
+* use NTS for EF in consumer address ([b9897cb](https://github.com/informatievlaanderen/parcel-registry/commit/b9897cb2378bab84205a5cef985a7a5318b80288))
+
+
+### Features
+
+* add extendedWkbGeometry to migrate parcel + import parcel ([ce91fff](https://github.com/informatievlaanderen/parcel-registry/commit/ce91fff5ae36afaf2639b91337bcc040d3e8c045))
+* add Grb XML Readers ([91ab074](https://github.com/informatievlaanderen/parcel-registry/commit/91ab074cd368a4dd2bbb11c475d6d592a6c5ab3f))
+* add Importer Grb skeleton with XmlReaders ([10a9668](https://github.com/informatievlaanderen/parcel-registry/commit/10a966805238401398f28730316428503ad1483a))
+* add importing new parcels after migration ([37a2e52](https://github.com/informatievlaanderen/parcel-registry/commit/37a2e5265546d7e960177a77a837c40fae8d44cc))
+* read parcel geometries and migrate or retire old Parcels ([43ae62e](https://github.com/informatievlaanderen/parcel-registry/commit/43ae62e3e35036281be8a2bbde0c8ee997ad43be))
+
 # [4.21.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.20.6...v4.21.0) (2023-06-23)
 
 
