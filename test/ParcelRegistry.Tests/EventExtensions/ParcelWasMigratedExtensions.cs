@@ -19,7 +19,7 @@ namespace ParcelRegistry.Tests.EventExtensions
                 ParcelStatus.Parse(@event.ParcelStatus),
                 @event.IsRemoved,
                 Array.Empty<AddressPersistentLocalId>(),
-                GeometryHelpers.SecondGmlPointGeometry.GmlToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -34,7 +34,7 @@ namespace ParcelRegistry.Tests.EventExtensions
                 ParcelStatus.Parse(@event.ParcelStatus),
                 removed,
                 @event.AddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
-                GeometryHelpers.SecondGmlPointGeometry.GmlToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -49,7 +49,7 @@ namespace ParcelRegistry.Tests.EventExtensions
                 ParcelStatus.Parse(@event.ParcelStatus),
                 @event.IsRemoved,
                 @event.AddressPersistentLocalIds.Select(x => new AddressPersistentLocalId(x)),
-                GeometryHelpers.SecondGmlPointGeometry.GmlToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
@@ -69,7 +69,7 @@ namespace ParcelRegistry.Tests.EventExtensions
                 ParcelStatus.Parse(@event.ParcelStatus),
                 @event.IsRemoved,
                 addressPersistentLocalIds,
-                GeometryHelpers.SecondGmlPointGeometry.GmlToExtendedWkbGeometry());
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             ((ISetProvenance)newEvent).SetProvenance(@event.Provenance.ToProvenance());
 
             return newEvent;
