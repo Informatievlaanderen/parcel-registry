@@ -1,3 +1,11 @@
+## [4.22.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.22.0...v4.22.1) (2023-07-07)
+
+
+### Bug Fixes
+
+* remove address ids when retiring parcel ([1fb5ec6](https://github.com/informatievlaanderen/parcel-registry/commit/1fb5ec6d37e415ac3a76bc097d13af8f7a9f6c5d))
+* use NTS for EF in consumer address DbContextFactory ([f357b26](https://github.com/informatievlaanderen/parcel-registry/commit/f357b26667655deb049853c4f32d22dc69bfeaeb))
+
 # [4.22.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.21.0...v4.22.0) (2023-07-07)
 
 
