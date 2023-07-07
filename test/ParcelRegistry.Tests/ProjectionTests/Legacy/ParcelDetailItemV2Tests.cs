@@ -1,9 +1,13 @@
 namespace ParcelRegistry.Tests.ProjectionTests.Legacy
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -135,7 +139,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 new ParcelId(parcelWasMigrated.ParcelId),
                 new VbrCaPaKey(parcelWasMigrated.CaPaKey),
                 new AddressPersistentLocalId(parcelWasMigrated.AddressPersistentLocalIds.First()));
-            ((ISetProvenance)addressWasDetached).SetProvenance(_fixture.Create<Provenance>());
+            ((ISetProvenance) addressWasDetached).SetProvenance(_fixture.Create<Provenance>());
             var metadata2 = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, addressWasDetached.GetHash() }
@@ -149,7 +153,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 {
                     var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(parcelWasMigrated.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
-                    parcelDetailV2!.Addresses.Select(x => x.AddressPersistentLocalId).Should().NotContain(addressWasDetached.AddressPersistentLocalId);
+                    parcelDetailV2!.Addresses.Select(x => x.AddressPersistentLocalId).Should()
+                        .NotContain(addressWasDetached.AddressPersistentLocalId);
                     parcelDetailV2.VersionTimestamp.Should().Be(addressWasDetached.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(addressWasDetached.GetHash());
                 });
@@ -174,7 +179,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 new VbrCaPaKey(parcelWasMigrated.CaPaKey),
                 addressPersistentLocalId,
                 previousAddressPersistentLocalId);
-            ((ISetProvenance)@event).SetProvenance(_fixture.Create<Provenance>());
+            ((ISetProvenance) @event).SetProvenance(_fixture.Create<Provenance>());
             var metadata2 = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, @event.GetHash() }
@@ -195,6 +200,36 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelDetailV2.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(@event.GetHash());
                 });
+        }
+
+        [Fact]
+        public async Task WhenParcelWasRetiredV2()
+        {
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+
+            var parcelWasRetiredV2 = _fixture.Create<ParcelWasRetiredV2>();
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasImported),
+                    CreateEnvelope(parcelWasRetiredV2))
+                .Then(async ct =>
+                {
+                    var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync(parcelWasRetiredV2.ParcelId);
+                    parcelDetailV2.Should().NotBeNull();
+                    parcelDetailV2!.CaPaKey.Should().Be(parcelWasRetiredV2.CaPaKey);
+                    parcelDetailV2.Status.Should().Be(ParcelStatus.Retired);
+                    parcelDetailV2.LastEventHash.Should().Be(parcelWasRetiredV2.GetHash());
+                });
+        }
+
+        private Envelope<TEvent> CreateEnvelope<TEvent>(TEvent @event)
+            where TEvent : IMessage, IHaveHash
+        {
+            return new Envelope<TEvent>(new Envelope(@event, new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, @event.GetHash() }
+            }));
         }
 
         protected override ParcelDetailV2Projections CreateProjection()

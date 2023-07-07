@@ -221,6 +221,20 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                     .ParcelDetailV2
                     .AddAsync(item, ct);
             });
+
+            When<Envelope<ParcelWasRetiredV2>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelDetail(
+                    message.Message.ParcelId,
+                    entity =>
+                    {
+                        entity.Status = ParcelStatus.Retired;
+
+                        UpdateHash(entity, message);
+                        UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
         }
 
         private static void UpdateHash<T>(ParcelDetailV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage

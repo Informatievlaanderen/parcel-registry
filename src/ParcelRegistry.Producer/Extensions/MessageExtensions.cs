@@ -82,6 +82,19 @@ namespace ParcelRegistry.Producer.Extensions
                 message.ExtendedWkbGeometry,
                 message.Provenance.ToContract());
 
+        public static Contracts.ParcelWasRetiredV2 ToContract(this ParcelAggregate.ParcelWasRetiredV2 message) =>
+            new Contracts.ParcelWasRetiredV2(
+                message.ParcelId.ToString("D"),
+                message.CaPaKey,
+                message.Provenance.ToContract());
+
+        // public static Contracts.ParcelGeometryWasChanged ToContract(this ParcelAggregate.ParcelGeometryWasChanged message) =>
+        //     new Contracts.ParcelGeometryWasChanged(
+        //         message.ParcelId.ToString("D"),
+        //         message.CaPaKey,
+        //         message.ExtendedWkbGeometry,
+        //         message.Provenance.ToContract());
+
         private static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)
         => new Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance(
             provenance.Timestamp.ToString(),

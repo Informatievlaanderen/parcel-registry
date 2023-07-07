@@ -39,6 +39,7 @@ namespace ParcelRegistry.Parcel
             Register<ParcelAddressWasAttachedV2>(When);
             Register<ParcelAddressWasDetachedV2>(When);
             Register<ParcelWasImported>(When);
+            Register<ParcelWasRetiredV2>(When);
 
             // Address Events
             Register<ParcelAddressWasDetachedBecauseAddressWasRemoved>(When);
@@ -91,6 +92,14 @@ namespace ParcelRegistry.Parcel
 
             _lastEvent = @event;
         }
+
+        private void When(ParcelWasRetiredV2 @event)
+        {
+            ParcelStatus = ParcelStatus.Retired;
+
+            _lastEvent = @event;
+        }
+
 
         private void When(ParcelAddressWasDetachedBecauseAddressWasRemoved @event)
         {

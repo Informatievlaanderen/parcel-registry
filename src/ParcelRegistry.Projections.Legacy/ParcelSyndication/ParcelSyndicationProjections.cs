@@ -134,8 +134,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
 
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
-                var geometry  = new WKBReader().Read(message.Message.ExtendedWkbGeometry.ToByteArray());
-
                 var parcelSyndicationItem = new ParcelSyndicationItem
                 {
                     Position = message.Position,
@@ -236,6 +234,18 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     {
                         x.RemoveAddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId);
                         x.AddAddressPersistentLocalId(message.Message.NewAddressPersistentLocalId);
+                    },
+                    ct);
+            });
+
+            When<Envelope<ParcelWasRetiredV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x =>
+                    {
+                        x.Status = ParcelStatus.Retired;
                     },
                     ct);
             });
