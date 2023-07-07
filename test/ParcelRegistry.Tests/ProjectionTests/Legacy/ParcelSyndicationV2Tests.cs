@@ -6,6 +6,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using Api.BackOffice.Abstractions.Extensions;
     using Parcel.Events;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -92,6 +94,39 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenParcelWasRetiredV2()
+        {
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var parcelWasRetiredV2 = _fixture.Create<ParcelWasRetiredV2>();
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasImported, 1L),
+                    CreateEnvelope(parcelWasRetiredV2, 2L))
+                .Then(async ct =>
+                {
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(2L);
+                    parcelSyndicationItem.Should().NotBeNull();
+                    parcelSyndicationItem!.CaPaKey.Should().Be(parcelWasRetiredV2.CaPaKey);
+                    parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Retired);
+                    parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelWasRetiredV2));
+                    parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
+                    parcelSyndicationItem.LastChangedOn.Should().Be(parcelWasRetiredV2.Provenance.Timestamp);
+                });
+        }
+
+        private Envelope<TEvent> CreateEnvelope<TEvent>(TEvent @event, long position)
+            where TEvent : IMessage, IHaveHash
+        {
+            return new Envelope<TEvent>(new Envelope(@event, new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, @event.GetHash() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey,typeof(TEvent).Name }
+            }));
+        }
+
+        [Fact]
         public async Task WhenParcelAddressWasAttachedV2()
         {
             var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
@@ -114,12 +149,13 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
 
             await Sut
                 .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
-                        new Envelope<ParcelAddressWasAttachedV2>(new Envelope(addressWasAttached, metadata2)))
+                    new Envelope<ParcelAddressWasAttachedV2>(new Envelope(addressWasAttached, metadata2)))
                 .Then(async ct =>
                 {
                     var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
                     parcelSyndicationItem.Should().NotBeNull();
-                    parcelSyndicationItem.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds.Concat(new []{addressWasAttached.AddressPersistentLocalId}));
+                    parcelSyndicationItem.AddressPersistentLocalIds.Should()
+                        .BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds.Concat(new[] { addressWasAttached.AddressPersistentLocalId }));
                     parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelAddressWasAttachedV2));
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
                     parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);
@@ -149,7 +185,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
 
             await Sut
                 .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
-                        new Envelope<ParcelAddressWasDetachedV2>(new Envelope(addressWasDetached, metadata2)))
+                    new Envelope<ParcelAddressWasDetachedV2>(new Envelope(addressWasDetached, metadata2)))
                 .Then(async ct =>
                 {
                     var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
@@ -188,7 +224,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
 
             await Sut
                 .Given(new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, metadata)),
-                        new Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(new Envelope(@event, metadata2)))
+                    new Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(new Envelope(@event, metadata2)))
                 .Then(async ct =>
                 {
                     var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);

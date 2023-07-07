@@ -10,6 +10,7 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Commands;
     using Exceptions;
+    using Legacy.Commands;
     using SqlStreamStore;
 
     public sealed class ParcelCommandHandlerModule : CommandHandlerModule
@@ -92,6 +93,19 @@ namespace ParcelRegistry.Parcel
 
                     var createdParcel = Parcel.ImportParcel(parcelFactory, message.Command.VbrCaPaKey, message.Command.ParcelId, message.Command.ExtendedWkbGeometry);
                     parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
+                });
+
+            For<RetireParcelV2>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<RetireParcelV2, Parcel>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streamId = new ParcelStreamId(message.Command.ParcelId);
+
+                    var parcel = await parcelRepository().GetAsync(streamId, ct);
+
+                    parcel.RetireParcel();
                 });
         }
     }

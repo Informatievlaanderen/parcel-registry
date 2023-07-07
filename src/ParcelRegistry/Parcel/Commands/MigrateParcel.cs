@@ -58,6 +58,11 @@ namespace ParcelRegistry.Parcel.Commands
                 yield return addressPersistentLocalId;
             }
 
+            foreach (var field in Provenance.GetIdentityFields())
+            {
+                yield return field;
+            }
+
             yield return ExtendedWkbGeometry;
         }
     }

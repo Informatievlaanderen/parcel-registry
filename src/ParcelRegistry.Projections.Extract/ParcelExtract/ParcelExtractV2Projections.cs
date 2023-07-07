@@ -126,6 +126,18 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                         }.ToBytes(_encoding)
                     }, ct);
             });
+
+            When<Envelope<ParcelWasRetiredV2>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelExtract(
+                    message.Message.ParcelId,
+                    parcel =>
+                    {
+                        UpdateStatus(parcel, Retired);
+                        UpdateVersie(parcel, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
         }
 
         private void SetDelete(ParcelExtractItemV2 parcel)

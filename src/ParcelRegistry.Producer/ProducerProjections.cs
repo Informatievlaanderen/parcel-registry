@@ -115,6 +115,11 @@ namespace ParcelRegistry.Producer
             {
                 await Produce(message.Message.ParcelId, message.Message.ToContract(), message.Position, ct);
             });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<Parcel.Events.ParcelWasRetiredV2>>(async (_, message, ct) =>
+            {
+                await Produce(message.Message.ParcelId, message.Message.ToContract(), message.Position, ct);
+            });
         }
 
         private async Task Produce<T>(Guid parcelId, T message, long storePosition, CancellationToken cancellationToken = default)

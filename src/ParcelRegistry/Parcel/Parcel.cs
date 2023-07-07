@@ -151,6 +151,24 @@ namespace ParcelRegistry.Parcel
             return newParcel;
         }
 
+        public void RetireParcel()
+        {
+            GuardParcelNotRemoved();
+
+            if (ParcelStatus == ParcelStatus.Retired)
+            {
+                return;
+            }
+
+            foreach (var address in _addressPersistentLocalIds.ToList())
+            {
+                // TODO: add reason (parcel retired) to provenance?
+                ApplyChange(new ParcelAddressWasDetachedV2(ParcelId, CaPaKey, address));
+            }
+
+            ApplyChange(new ParcelWasRetiredV2(ParcelId, CaPaKey));
+        }
+
         private static void GuardPolygon(Geometry? geometry)
         {
             if (geometry is Polygon
