@@ -53,6 +53,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelDetailV2.Status.Should().Be(ParcelStatus.Parse(message.ParcelStatus));
                     parcelDetailV2.Removed.Should().Be(message.IsRemoved);
                     parcelDetailV2.Gml.Should().Be(geometry.ConvertToGml());
+                    parcelDetailV2.GmlType.Should().Be("Polygon");
                     parcelDetailV2.Addresses.Should().BeEquivalentTo(
                         message.AddressPersistentLocalIds.Select(x =>
                             new ParcelDetailAddressV2(message.ParcelId, x)));
@@ -83,7 +84,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelDetailV2.Status.Should().Be(ParcelStatus.Realized);
                     parcelDetailV2.Removed.Should().Be(false);
                     parcelDetailV2.Gml.Should().Be(geometry.ConvertToGml());
-                    //parcelDetailV2.GmlType.Should().Be();
+                    parcelDetailV2.GmlType.Should().Be("Polygon");
                     parcelDetailV2.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(message.GetHash());
                 });
