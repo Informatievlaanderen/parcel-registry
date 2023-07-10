@@ -162,7 +162,6 @@ namespace ParcelRegistry.Parcel
 
             foreach (var address in _addressPersistentLocalIds.ToList())
             {
-                // TODO: add reason (parcel retired) to provenance?
                 ApplyChange(new ParcelAddressWasDetachedV2(ParcelId, CaPaKey, address));
             }
 

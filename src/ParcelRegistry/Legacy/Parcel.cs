@@ -205,7 +205,7 @@ namespace ParcelRegistry.Legacy
         {
             if (!IsRetired && !IsRemoved)
             {
-                foreach (var addressId in _addressCollection.AllAddressIds())
+                foreach (var addressId in _addressCollection.AllAddressIds().ToList())
                 {
                     ApplyChange(new ParcelAddressWasDetached(ParcelId, addressId));
                 }
