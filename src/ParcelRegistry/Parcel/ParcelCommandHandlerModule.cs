@@ -107,6 +107,19 @@ namespace ParcelRegistry.Parcel
 
                     parcel.RetireParcel();
                 });
+
+            For<ChangeParcelGeometry>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<ChangeParcelGeometry, Parcel>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streamId = new ParcelStreamId(message.Command.ParcelId);
+
+                    var parcel = await parcelRepository().GetAsync(streamId, ct);
+
+                    parcel.ChangeGeometry(message.Command.ExtendedWkbGeometry);
+                });
         }
     }
 }

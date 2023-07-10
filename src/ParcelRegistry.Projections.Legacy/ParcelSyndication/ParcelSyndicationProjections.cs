@@ -179,6 +179,29 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     .AddAsync(parcelSyndicationItem, ct);
             });
 
+            When<Envelope<ParcelWasRetiredV2>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x =>
+                    {
+                        x.Status = ParcelStatus.Retired;
+                    },
+                    ct);
+            });
+
+            When<Envelope<ParcelGeometryWasChanged>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x =>
+                    {
+                        x.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry.ToByteArray();
+                    },
+                    ct);
+            });
 
             When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
             {
@@ -234,18 +257,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     {
                         x.RemoveAddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId);
                         x.AddAddressPersistentLocalId(message.Message.NewAddressPersistentLocalId);
-                    },
-                    ct);
-            });
-
-            When<Envelope<ParcelWasRetiredV2>>(async (context, message, ct) =>
-            {
-                await context.CreateNewParcelSyndicationItem(
-                    message.Message.ParcelId,
-                    message,
-                    x =>
-                    {
-                        x.Status = ParcelStatus.Retired;
                     },
                     ct);
             });
