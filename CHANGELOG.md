@@ -1,3 +1,15 @@
+# [4.24.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.23.0...v4.24.0) (2023-07-10)
+
+
+### Bug Fixes
+
+* enumerate addresses when retiring legacy parcel ([652e57e](https://github.com/informatievlaanderen/parcel-registry/commit/652e57e3314fe8b2f48e5ce6c20840c02acac8cd))
+
+
+### Features
+
+* retire parcel ([6f6a019](https://github.com/informatievlaanderen/parcel-registry/commit/6f6a0194f21329bbce4e7ab93e701293a935a959))
+
 # [4.23.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.22.1...v4.23.0) (2023-07-07)
 
 
