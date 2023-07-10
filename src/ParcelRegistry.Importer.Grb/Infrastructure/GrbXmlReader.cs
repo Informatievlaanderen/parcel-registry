@@ -3,13 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Xml;
     using Api.BackOffice.Abstractions.Extensions;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO.GML2;
 
-    public sealed record GrbParcel(CaPaKey GrbCaPaKey, Geometry Geometry);
+    public sealed record GrbParcel(CaPaKey GrbCaPaKey, Geometry Geometry, int Version);
 
     public class GrbAddXmlReader : GrbXmlReader
     {
@@ -36,6 +37,18 @@
             var versionNode = featureMemberNode.SelectSingleNode(".//agiv:BEWERK", NamespaceManager);
             return versionNode is { InnerText: "1" };
         }
+
+        public override IEnumerable<GrbParcel> Read(string filePath)
+        {
+            var parcels = base.Read(filePath);
+            return parcels.Select(x => new GrbParcel(x.GrbCaPaKey, x.Geometry, x.Version + 1));
+        }
+
+        public override IEnumerable<GrbParcel> Read(Stream fileStream)
+        {
+            var parcels = base.Read(fileStream);
+            return parcels.Select(x => new GrbParcel(x.GrbCaPaKey, x.Geometry, x.Version + 1));
+        }
     }
 
     public class GrbXmlReader
@@ -48,7 +61,7 @@
             _gmlReader = GmlHelpers.CreateGmlReader();
         }
 
-        public IEnumerable<GrbParcel> Read(string filePath)
+        public virtual IEnumerable<GrbParcel> Read(string filePath)
         {
             var xmlDoc = new XmlDocument();
             xmlDoc.Load(filePath);
@@ -56,7 +69,7 @@
             return GetParcelsFromXml(xmlDoc);
         }
 
-        public IEnumerable<GrbParcel> Read(Stream fileStream)
+        public virtual IEnumerable<GrbParcel> Read(Stream fileStream)
         {
             var xmlDoc = new XmlDocument();
             xmlDoc.Load(fileStream);
@@ -76,6 +89,7 @@
             {
                 // Process each featureMemberNode
                 var caPaKeyNode = featureMemberNode.SelectSingleNode(".//agiv:CAPAKEY", NamespaceManager);
+                var versionNode = featureMemberNode.SelectSingleNode(".//agiv:VERSIE", NamespaceManager);
                 var polygonNode = featureMemberNode.SelectSingleNode(".//gml:polygonProperty", NamespaceManager);
                 var multiPolygonNode = featureMemberNode.SelectSingleNode(".//gml:multiPolygonProperty", NamespaceManager);
 
@@ -84,11 +98,11 @@
 
                 if (polygonNode != null)
                 {
-                    yield return new GrbParcel(CaPaKey.CreateFrom(caPaKeyNode.InnerText), _gmlReader.Read(polygonNode.InnerXml));
+                    yield return new GrbParcel(CaPaKey.CreateFrom(caPaKeyNode.InnerText), _gmlReader.Read(polygonNode.InnerXml), Convert.ToInt32(versionNode.InnerText));
                 }
                 else if (multiPolygonNode != null)
                 {
-                    yield return new GrbParcel(CaPaKey.CreateFrom(caPaKeyNode.InnerText), _gmlReader.Read(multiPolygonNode.InnerXml));
+                    yield return new GrbParcel(CaPaKey.CreateFrom(caPaKeyNode.InnerText), _gmlReader.Read(multiPolygonNode.InnerXml), Convert.ToInt32(versionNode.InnerText));
                 }
                 else
                 {
@@ -98,6 +112,5 @@
         }
 
         protected virtual bool IsValid(XmlNode featureMemberNode) => true;
-
     }
 }
