@@ -137,11 +137,6 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
         {
             var (internalId, aggregateId) = stream;
 
-            if (ct.IsCancellationRequested)
-            {
-                return;
-            }
-
             if (_processedIds.Contains((internalId, false)))
             {
                 _logger.LogDebug($"Already migrated '{internalId}', skipping...");
@@ -163,6 +158,11 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             if (legacyParcelAggregate.IsRemoved)
             {
                 _logger.LogDebug($"Skipping removed parcel '{aggregateId}'.");
+                return;
+            }
+
+            if (ct.IsCancellationRequested)
+            {
                 return;
             }
 
@@ -197,8 +197,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                     migrateParcel.OldParcelId,
                     migrateParcel.Provenance);
 
-                await DispatchCommand(markMigrated, ct);
-                await DispatchCommand(migrateParcel, ct);
+                await DispatchCommand(markMigrated, CancellationToken.None);
+                await DispatchCommand(migrateParcel, CancellationToken.None);
 
                 await _processedIdsTable.Add(internalId);
                 processedItems.Add(internalId);
@@ -210,10 +210,10 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                         .ParcelAddressRelations.AddAsync(
                             new ParcelAddressRelation(
                                 migrateParcel.NewParcelId,
-                                addressPersistentLocalId), ct);
+                                addressPersistentLocalId), CancellationToken.None);
                 }
 
-                await backOfficeContext.SaveChangesAsync(ct);
+                await backOfficeContext.SaveChangesAsync(CancellationToken.None);
             }
             else
             {
@@ -227,8 +227,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                     Modification.Insert,
                     Organisation.DigitaalVlaanderen);
 
-                await DispatchCommand(new RetireParcel(parcelId, provenance), ct);
-                await DispatchCommand(new MarkParcelAsMigrated(parcelId, provenance), ct); //TODO: do we mark it or not?
+                await DispatchCommand(new RetireParcel(parcelId, provenance), CancellationToken.None);
+                await DispatchCommand(new MarkParcelAsMigrated(parcelId, provenance), CancellationToken.None); //TODO: do we mark it or not?
 
                 await _processedIdsTable.Add(internalId);
                 processedItems.Add(internalId);
