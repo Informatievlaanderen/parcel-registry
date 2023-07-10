@@ -1,3 +1,16 @@
+# [4.25.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.24.0...v4.25.0) (2023-07-10)
+
+
+### Bug Fixes
+
+* don't cancel migrator after certain point ([58e281a](https://github.com/informatievlaanderen/parcel-registry/commit/58e281ab9f4d4044fa3752d330a612e875dc9c92))
+
+
+### Features
+
+* add version to GrbParcel ([2030632](https://github.com/informatievlaanderen/parcel-registry/commit/2030632ad1d0f4ba0a59ccbe5a33a6297bd336f0))
+* change parcel geometry ([3666205](https://github.com/informatievlaanderen/parcel-registry/commit/3666205d1dcf2237e6e3b4fd70507ab154f66e37))
+
 # [4.24.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.23.0...v4.24.0) (2023-07-10)
 
 
