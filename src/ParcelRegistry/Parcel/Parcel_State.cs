@@ -40,6 +40,7 @@ namespace ParcelRegistry.Parcel
             Register<ParcelAddressWasDetachedV2>(When);
             Register<ParcelWasImported>(When);
             Register<ParcelWasRetiredV2>(When);
+            Register<ParcelGeometryWasChanged>(When);
 
             // Address Events
             Register<ParcelAddressWasDetachedBecauseAddressWasRemoved>(When);
@@ -100,6 +101,12 @@ namespace ParcelRegistry.Parcel
             _lastEvent = @event;
         }
 
+        private void When(ParcelGeometryWasChanged @event)
+        {
+            Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
+
+            _lastEvent = @event;
+        }
 
         private void When(ParcelAddressWasDetachedBecauseAddressWasRemoved @event)
         {

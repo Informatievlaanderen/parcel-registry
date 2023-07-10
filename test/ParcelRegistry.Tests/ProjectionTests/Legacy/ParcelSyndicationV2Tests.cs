@@ -10,6 +10,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using EventExtensions;
@@ -115,9 +116,38 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenParcelGeometryWasChanged()
+        {
+            var parcelId = _fixture.Create<ParcelId>();
+            var caPaKey = _fixture.Create<VbrCaPaKey>();
+
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var parcelGeometryWasChanged = new ParcelGeometryWasChanged(
+                parcelId,
+                caPaKey,
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasImported, 1L),
+                    CreateEnvelope(parcelGeometryWasChanged, 2L))
+                .Then(async ct =>
+                {
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(2L);
+                    parcelSyndicationItem.Should().NotBeNull();
+                    parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelGeometryWasChanged));
+                    parcelSyndicationItem.ExtendedWkbGeometry.Should().BeEquivalentTo(GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry().ToString().ToByteArray());
+                    parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
+                    parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasImported.Provenance.Timestamp);
+                    parcelSyndicationItem.LastChangedOn.Should().Be(parcelGeometryWasChanged.Provenance.Timestamp);
+                });
+        }
+
         private Envelope<TEvent> CreateEnvelope<TEvent>(TEvent @event, long position)
             where TEvent : IMessage, IHaveHash
         {
+            ((ISetProvenance)@event).SetProvenance(_fixture.Create<Provenance>());
             return new Envelope<TEvent>(new Envelope(@event, new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, @event.GetHash() },

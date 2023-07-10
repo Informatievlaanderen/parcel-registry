@@ -168,6 +168,19 @@ namespace ParcelRegistry.Parcel
             ApplyChange(new ParcelWasRetiredV2(ParcelId, CaPaKey));
         }
 
+        public void ChangeGeometry(ExtendedWkbGeometry extendedWkbGeometry)
+        {
+            GuardParcelNotRemoved();
+            GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
+
+            if (Geometry == extendedWkbGeometry)
+            {
+                return;
+            }
+
+            ApplyChange(new ParcelGeometryWasChanged(ParcelId, CaPaKey, extendedWkbGeometry));
+        }
+
         private static void GuardPolygon(Geometry? geometry)
         {
             if (geometry is Polygon

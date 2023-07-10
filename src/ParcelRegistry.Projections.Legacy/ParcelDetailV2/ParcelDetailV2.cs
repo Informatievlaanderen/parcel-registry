@@ -46,9 +46,9 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
 
         public string StatusAsString { get; private set; }
 
-        public string Gml { get; private set; }
+        public string Gml { get; set; }
 
-        public string GmlType { get; private set; }
+        public string GmlType { get; set; }
 
         public virtual List<ParcelDetailAddressV2> Addresses { get; set; }
 

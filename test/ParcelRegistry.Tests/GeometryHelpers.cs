@@ -20,6 +20,17 @@
             "</gml:exterior>" +
             "</gml:Polygon>";
 
+        public const string ValidGmlPolygon2 =
+            "<gml:Polygon srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+            "<gml:exterior>" +
+            "<gml:LinearRing>" +
+            "<gml:posList>" +
+            "100 100 200 100 200 200 100 200 100 100" +
+            "</gml:posList>" +
+            "</gml:LinearRing>" +
+            "</gml:exterior>" +
+            "</gml:Polygon>";
+
         // Polygon is invalid because interior and exterior rings intersect
         public const string InValidGmlPolygon =
             "<gml:Polygon srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
@@ -99,6 +110,7 @@
         }
 
         public static Polygon ValidPolygon => (Polygon)ValidGmlPolygon.ToGeometry();
+        public static Polygon ValidPolygon2 => (Polygon)ValidGmlPolygon2.ToGeometry();
         public static Polygon InValidPolygon => (Polygon)InValidGmlPolygon.ToGeometry();
     }
 }

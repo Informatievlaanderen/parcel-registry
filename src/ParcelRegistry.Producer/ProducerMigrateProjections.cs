@@ -66,6 +66,11 @@ namespace ParcelRegistry.Producer
             {
                 await Produce(message.Message.ParcelId, message.Message.ToContract(), message.Position, ct);
             });
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<Parcel.Events.ParcelGeometryWasChanged>>(async (_, message, ct) =>
+            {
+                await Produce(message.Message.ParcelId, message.Message.ToContract(), message.Position, ct);
+            });
         }
 
         private async Task Produce<T>(Guid persistentLocalId, T message, long storePosition, CancellationToken cancellationToken = default)

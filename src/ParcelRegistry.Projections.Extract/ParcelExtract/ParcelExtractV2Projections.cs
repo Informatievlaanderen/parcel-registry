@@ -138,6 +138,17 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                     },
                     ct);
             });
+
+            When<Envelope<ParcelGeometryWasChanged>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelExtract(
+                    message.Message.ParcelId,
+                    parcel =>
+                    {
+                        UpdateVersie(parcel, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
         }
 
         private void SetDelete(ParcelExtractItemV2 parcel)
