@@ -217,7 +217,10 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
             }
             else
             {
-                _logger.LogWarning($"Parcel geometry not found for '{aggregateId}', retiring parcel.");
+                if (legacyParcelAggregate is { IsRetired: false, IsRemoved: false })
+                {
+                    _logger.LogWarning($"Parcel geometry not found for '{aggregateId}', retiring parcel.");
+                }
 
                 var provenance = new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),
