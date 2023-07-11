@@ -8,7 +8,6 @@ namespace ParcelRegistry.Api.BackOffice.IntegrationTests
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.DockerUtilities;
     using IdentityModel;
-    using IdentityModel.AspNetCore.OAuth2Introspection;
     using IdentityModel.Client;
     using Infrastructure;
     using Microsoft.AspNetCore.Hosting;
