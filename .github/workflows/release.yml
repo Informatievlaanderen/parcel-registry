@@ -233,6 +233,21 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
+  build-importer-grb:
+    name: Build Parcel Importer Grb
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_ImporterGrb
+      image-file: pr-importer-grb-image.tar
+      image-name: importer-grb
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Importer.Grb
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
   pack-api-backoffice:
     name: Pack Api BackOffice
     uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
@@ -340,7 +355,8 @@ jobs:
       build-producer,
       build-producer-snapshot-oslo,
       build-migrator-parcel,
-      build-lambda-backoffice ]
+      build-lambda-backoffice,
+      build-importer-grb ]
     outputs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
@@ -696,7 +712,8 @@ jobs:
           'consumer-address',
           'producer',
           'producer-snapshot-oslo',
-          'migrator-parcel' ]
+          'migrator-parcel',
+          'importer-grb' ]
     steps:
       - name: Configure AWS credentials (Test)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -755,7 +772,8 @@ jobs:
           'consumer-address',
           'producer',
           'producer-snapshot-oslo',
-          'migrator-parcel' ]
+          'migrator-parcel',
+          'importer-grb' ]
     steps:
       - name: Configure AWS credentials (Staging)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -816,7 +834,8 @@ jobs:
           'consumer-address',
           'producer',
           'producer-snapshot-oslo',
-          'migrator-parcel' ]
+          'migrator-parcel',
+          'importer-grb' ]
     steps:
       - name: Configure AWS credentials (New Production)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -1067,7 +1086,8 @@ jobs:
           'parcel-registry-producer',
           'parcel-registry-producer-snapshot-oslo',
           'parcel-registry-projections',
-          'parcel-registry-projections-backoffice' ]
+          'parcel-registry-projections-backoffice',
+          'parcel-registry-importer-grb' ]
     steps:
     - name: CD services
       env:
@@ -1184,7 +1204,8 @@ jobs:
           'parcel-registry-producer',
           'parcel-registry-producer-snapshot-oslo',
           'parcel-registry-projections',
-          'parcel-registry-projections-backoffice' ]
+          'parcel-registry-projections-backoffice', 
+          'parcel-registry-importer-grb' ]
     steps:
     - name: CD services
       env:
