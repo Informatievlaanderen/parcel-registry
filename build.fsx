@@ -59,6 +59,7 @@ Target.create "Publish_Solution" (fun _ ->
     "ParcelRegistry.Api.Oslo"
     "ParcelRegistry.Api.Extract"
     "ParcelRegistry.Api.CrabImport"
+    "ParcelRegistry.Importer.Grb"
     "ParcelRegistry.Projections.Legacy"
     "ParcelRegistry.Projections.Extract"
     "ParcelRegistry.Projections.LastChangedList"
@@ -81,6 +82,7 @@ Target.create "Pack_Solution" (fun _ ->
     "ParcelRegistry.Api.CrabImport"
     "ParcelRegistry.Api.BackOffice"
     "ParcelRegistry.Api.BackOffice.Abstractions"
+    "ParcelRegistry.Importer.Grb"
   ] |> List.iter pack)
 
 Target.create "Containerize_Projector" (fun _ -> containerize "ParcelRegistry.Projector" "projector")
@@ -95,6 +97,7 @@ Target.create "Containerize_MigratorParcel" (fun _ -> containerize "ParcelRegist
 Target.create "Containerize_ApiBackOffice" (fun _ -> containerize "ParcelRegistry.Api.BackOffice" "api-backoffice")
 Target.create "Containerize_Producer" (fun _ -> containerize "ParcelRegistry.Producer" "producer")
 Target.create "Containerize_ProducerSnapshotOslo" (fun _ -> containerize "ParcelRegistry.Producer.Snapshot.Oslo" "producer-snapshot-oslo")
+Target.create "Containerize_ImporterGrb" (fun _ -> containerize "ParcelRegistry.Importer.Grb" "importer-grb")
 
 Target.create "SetAssemblyVersions" (fun _ -> setVersions "SolutionInfo.cs")
 // --------------------------------------------------------------------------------
