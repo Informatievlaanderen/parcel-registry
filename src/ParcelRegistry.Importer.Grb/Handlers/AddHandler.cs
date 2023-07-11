@@ -2,15 +2,14 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Infrastructure;
     using MediatR;
 
-    public record AddParcel() : IRequest<AddParcelResponse>;
+    public record GrbAddParcelRequest(GrbParcel GrbParcel) : GrbParcelRequest(GrbParcel);
 
-    public record AddParcelResponse();
-
-    public class AddHandler : IRequestHandler<AddParcel, AddParcelResponse>
+    public class AddHandler : IRequestHandler<GrbAddParcelRequest, ParcelResponse>
     {
-        public Task<AddParcelResponse> Handle(AddParcel request, CancellationToken cancellationToken)
+        public Task<ParcelResponse> Handle(GrbAddParcelRequest request, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }
