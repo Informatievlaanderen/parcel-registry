@@ -83,6 +83,7 @@
         [Fact]
         public async Task ThenCompleteLastRunHistory()
         {
+            var mockImporterContext = new Mock<IImporterContext>();
             var mockMediator = new Mock<IMediator>();
             var mockIUniqueParcelPlanProxy = new Mock<IUniqueParcelPlanProxy>();
             var mockZipArchiveProcessor = new Mock<IZipArchiveProcessor>();
@@ -90,9 +91,10 @@
 
             var capakey1 = CaPaKey.CreateFrom(Fixture.Create<string>());
 
+            var alreadyExecutedRequest = new ImportParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 9));
             var requests = new List<ParcelRequest>
             {
-                new ImportParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 9)),
+                alreadyExecutedRequest,
                 new RetireParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 10)),
                 new ChangeParcelGeometryRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 11))
             };
@@ -102,12 +104,16 @@
             mockRequestMapper.Setup(x => x.Map(It.IsAny<Dictionary<GrbParcelActions, FileStream>>()))
                 .Returns(requests);
 
+            mockImporterContext
+                .Setup(x => x.ProcessedRequestExists(It.Is<string>(x => x == alreadyExecutedRequest.GetSHA256())))
+                .ReturnsAsync(true);
+
             var sut = new Importer(mockMediator.Object, mockIUniqueParcelPlanProxy.Object, mockZipArchiveProcessor.Object, mockRequestMapper.Object, _fakeImporterContext);
 
             await sut.StartAsync(CancellationToken.None);
 
             // Assert
-            mockMediator.Verify(x => x.Send(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockMediator.Verify(x => x.Send(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()), Times.Never);
             mockMediator.Verify(x => x.Send(It.IsAny<ChangeParcelGeometryRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             mockMediator.Verify(x => x.Send(It.IsAny<RetireParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
 

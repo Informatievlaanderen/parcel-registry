@@ -55,10 +55,17 @@
             mockRequestMapper.Setup(x => x.Map(It.IsAny<Dictionary<GrbParcelActions, FileStream>>()))
                 .Returns(requests);
 
-            var sut = new Importer(mockMediator.Object, mockIUniqueParcelPlanProxy.Object, mockZipArchiveProcessor.Object, mockRequestMapper.Object, _fakeImporterContext);
+            var sut = new Importer(
+                mockMediator.Object,
+                mockIUniqueParcelPlanProxy.Object,
+                mockZipArchiveProcessor.Object,
+                mockRequestMapper.Object,
+                _fakeImporterContext);
 
+            // Act
             await sut.StartAsync(CancellationToken.None);
 
+            // Assert
             mockMediator.Verify(x => x.Send(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             mockMediator.Verify(x => x.Send(It.IsAny<ChangeParcelGeometryRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             mockMediator.Verify(x => x.Send(It.IsAny<RetireParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
