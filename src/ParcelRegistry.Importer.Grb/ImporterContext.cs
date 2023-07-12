@@ -1,74 +1,114 @@
 ﻿namespace ParcelRegistry.Importer.Grb
 {
     using System;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using Microsoft.EntityFrameworkCore.Design;
+    using Microsoft.Extensions.Configuration;
     using ParcelRegistry.Infrastructure;
 
-    public class ImporterContext : DbContext
+    public interface IImporterContext
     {
+        Task<bool> ProcessedRequestExists(string getSha256);
+        Task AddProcessedRequest(string sha256);
+        Task ClearProcessedRequests();
+        Task<RunHistory> AddRunHistory(DateTimeOffset from, DateTimeOffset to);
+        Task<RunHistory> GetLatestRunHistory();
+        Task CompleteRunHistory(int id);
+    }
 
+    public class ImporterContext : DbContext, IImporterContext
+    {
         public DbSet<RunHistory> RunHistory { get; set; }
         public DbSet<ProcessedRequests> ProcessedRequests { get; set; }
-    }
 
-    public class RunHistory
-    {
-        public int Id { get; }
-        public DateTimeOffset FromDate { get; }
-        public DateTimeOffset ToDate { get; }
-        public bool Completed { get; set; }
-
-        public RunHistory()
-        { }
-
-        public RunHistory(DateTimeOffset fromDate, DateTimeOffset toDate)
+        public async Task<bool> ProcessedRequestExists(string getSha256)
         {
-            FromDate = fromDate;
-            ToDate = toDate;
+            return await ProcessedRequests.FindAsync(getSha256) is not null;
         }
 
-        public void SetComplete() => Completed = true;
-    }
-
-    public class RunHistoryConfiguration : IEntityTypeConfiguration<RunHistory>
-    {
-        public const string TableName = "RunHistory";
-
-        public void Configure(EntityTypeBuilder<RunHistory> builder)
+        public async Task AddProcessedRequest(string sha256)
         {
-            builder.ToTable(TableName, Schema.GrbImporter)
-                .HasKey(x => x.Id);
+            var processedRequest = new ProcessedRequests(sha256);
+            ProcessedRequests.Add(processedRequest);
+            await SaveChangesAsync();
+        }
 
-            builder.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
+        public async Task ClearProcessedRequests()
+        {
+            ProcessedRequests.RemoveRange(ProcessedRequests);
+            await SaveChangesAsync();
+        }
 
-            builder.Property(x => x.FromDate);
-            builder.Property(x => x.ToDate);
-            builder.Property(x => x.Completed);
+        public async Task<RunHistory> AddRunHistory(DateTimeOffset from, DateTimeOffset to)
+        {
+            var runHistory = new RunHistory(from, to);
+            await RunHistory.AddAsync(runHistory);
+            await SaveChangesAsync();
+
+            return runHistory;
+        }
+
+        public async Task<RunHistory> GetLatestRunHistory()
+        {
+            return await RunHistory
+                .OrderByDescending(x => x.Id)
+                .FirstAsync();
+        }
+
+
+        public async Task CompleteRunHistory(int id)
+        {
+            var runHistory = await RunHistory.FindAsync(id);
+            runHistory.Completed = true;
+            await SaveChangesAsync();
+        }
+
+        public ImporterContext()
+        { }
+
+        public ImporterContext(DbContextOptions<ImporterContext> options)
+            : base(options)
+        { }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ImporterContext).Assembly);
         }
     }
 
-    public class ProcessedRequests
+    public class ConfigBasedImporterGrbContextFactory : IDesignTimeDbContextFactory<ImporterContext>
     {
-        public string SHA256 { get; set; }
-
-        public ProcessedRequests()
-        { }
-    }
-
-    public class ProcessedRequestsConfiguration : IEntityTypeConfiguration<ProcessedRequests>
-    {
-        public const string TableName = "ProcessedRequests";
-
-        public void Configure(EntityTypeBuilder<ProcessedRequests> builder)
+        public ImporterContext CreateDbContext(string[] args)
         {
-            builder.ToTable(TableName, Schema.GrbImporter)
-                .HasKey(x => x.SHA256);
+            var migrationConnectionStringName = "Events";
 
-            builder.Property(x => x.SHA256);
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{Environment.MachineName}.json", true)
+                .AddEnvironmentVariables()
+                .Build();
 
-            builder.HasIndex(x => x.SHA256).IsClustered();
+            var builder = new DbContextOptionsBuilder<ImporterContext>();
+
+            var connectionString = configuration.GetConnectionString(migrationConnectionStringName);
+            if (string.IsNullOrEmpty(connectionString))
+                throw new InvalidOperationException(
+                    $"Could not find a connection string with name '{migrationConnectionStringName}'");
+
+            builder
+                .UseSqlServer(connectionString, sqlServerOptions =>
+                {
+                    sqlServerOptions.EnableRetryOnFailure();
+                    sqlServerOptions.MigrationsHistoryTable(MigrationTables.GrbImporter, Schema.GrbImporter);
+                });
+
+            return new ImporterContext(builder.Options);
         }
     }
 }

@@ -13,16 +13,39 @@
     using MediatR;
     using Microsoft.Extensions.Hosting;
     using System.Security.Cryptography;
+    using System.Text;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
 
     public interface IUniqueParcelPlanProxy
     {
         public Task<Stream> Download(DateTimeOffset fromDate, DateTimeOffset toDate, CancellationToken cancellationToken);
+        DateTimeOffset GetMaxDate();
+    }
+
+    public class UniqueParcelPlanProxy : IUniqueParcelPlanProxy
+    {
+        public Task<Stream> Download(DateTimeOffset fromDate, DateTimeOffset toDate, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DateTimeOffset GetMaxDate()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public interface IZipArchiveProcessor
     {
         public Task<Dictionary<GrbParcelActions, FileStream>> Open(Stream stream, CancellationToken cancellationToken);
+    }
+
+    public class ZipArchiveProcessor : IZipArchiveProcessor
+    {
+        public Task<Dictionary<GrbParcelActions, FileStream>> Open(Stream stream, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public enum GrbParcelActions
@@ -37,49 +60,41 @@
         private readonly IMediator _mediator;
         private readonly IUniqueParcelPlanProxy _uniqueParcelPlanProxy;
         private readonly IZipArchiveProcessor _zipArchiveProcessor;
+        private readonly IRequestMapper _requestMapper;
+        private readonly IImporterContext _importerContext;
 
-        public Importer(IMediator mediator, IUniqueParcelPlanProxy uniqueParcelPlanProxy, IZipArchiveProcessor zipArchiveProcessor)
+        public Importer(
+            IMediator mediator,
+            IUniqueParcelPlanProxy uniqueParcelPlanProxy,
+            IZipArchiveProcessor zipArchiveProcessor,
+            IRequestMapper requestMapper,
+            IImporterContext importerContext)
         {
             _mediator = mediator;
             _uniqueParcelPlanProxy = uniqueParcelPlanProxy;
             _zipArchiveProcessor = zipArchiveProcessor;
+            _requestMapper = requestMapper;
+            _importerContext = importerContext;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // first run
-            //db DateTime.lowest --> lastDateTime
-            // now --> vandaag
+            var lastRun = await _importerContext.GetLatestRunHistory();
+            RunHistory currentRun;
+            if (lastRun.Completed)
+            {
+               currentRun = await _importerContext.AddRunHistory(lastRun.ToDate, _uniqueParcelPlanProxy.GetMaxDate());
+            }
+            else
+            {
+                currentRun = lastRun;
+            }
 
-            // second (volgende dag)
-            // LastDT -> gisteren
-            // now
-
-            var stream = await _uniqueParcelPlanProxy.Download(DateTimeOffset.Now, DateTimeOffset.Now.AddDays(1), stoppingToken);
+            var stream = await _uniqueParcelPlanProxy.Download(currentRun.FromDate, currentRun.ToDate, stoppingToken);
 
             var files = await _zipArchiveProcessor.Open(stream, stoppingToken);
 
-            var parcelsRequests = new List<GrbParcelRequest>();
-
-            foreach (var (action, fileStream) in files)
-            {
-                switch (action)
-                {
-                    case GrbParcelActions.Add:
-                        var parcels = new GrbAddXmlReader().Read(fileStream);
-                        parcelsRequests.AddRange(parcels.Select(x => new GrbAddParcelRequest(x)));
-                        break;
-                    case GrbParcelActions.Update:
-                        parcelsRequests.AddRange(new GrbUpdateXmlReader().Read(fileStream).Select(x => new GrbAddParcelRequest(x)));
-
-                        break;
-                    case GrbParcelActions.Delete:
-                        parcelsRequests.AddRange(new GrbDeleteXmlReader().Read(fileStream).Select(x => new GrbAddParcelRequest(x)));
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
+            var parcelsRequests = _requestMapper.Map(files);
 
             var groupedParcels = parcelsRequests
                 .OrderBy(x => x.GrbParcel.Version)
@@ -89,19 +104,24 @@
             {
                 try
                 {
-                    // get hash
-                    // if same skip
-                    await _mediator.Send(parcelRequest, stoppingToken);
-                    // context.Insert(parcel);
-                    // update
-                    var hash = parcelRequest.GetSHA256();
+                    if (await _importerContext.ProcessedRequestExists(parcelRequest.GetSHA256()))
+                    {
+                        continue;
+                    }
 
+                    await _mediator.Send(parcelRequest, stoppingToken);
+
+                    await _importerContext.AddProcessedRequest(parcelRequest.GetSHA256());
                 }
                 catch (DomainException e)
                 { }
                 catch (Exception e)
                 { }
             }
+
+            // update history
+            await _importerContext.CompleteRunHistory(currentRun.Id);
+            await _importerContext.ClearProcessedRequests();
         }
     }
 
@@ -116,7 +136,8 @@
             var stringToHash = request.GrbParcel.GrbCaPaKey + request.GrbParcel.Version + request.GrbParcel.Geometry;
 
             using var sha256 = SHA256.Create();
-            var hashBytes = sha256.ComputeHash(stringToHash.ToByteArray());
+
+            var hashBytes = sha256.ComputeHash(ASCIIEncoding.ASCII.GetBytes(stringToHash));
 
             return hashBytes.ToHexString();
         }

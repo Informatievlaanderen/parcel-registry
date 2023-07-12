@@ -11,14 +11,18 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.DependencyInjection;
     using Destructurama;
     using Handlers;
     using MediatR;
+    using Microsoft.Data.SqlClient;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Infrastructure.Modules;
     using Serilog;
     using Serilog.Debugging;
@@ -49,7 +53,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                     builder
                         .SetBasePath(Directory.GetCurrentDirectory())
                         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                        .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true, reloadOnChange: false)
+                        .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: false)
                         .AddEnvironmentVariables()
                         .AddCommandLine(args);
                 })
@@ -73,16 +77,17 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                 {
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
-                    // services
-                    //     .AddScoped(s => new TraceDbConnection<BackOfficeContext>(
-                    //         new SqlConnection(hostContext.Configuration.GetConnectionString("BackOffice")),
-                    //         hostContext.Configuration["DataDog:ServiceName"]))
-                    //     .AddDbContextFactory<BackOfficeContext>((provider, options) => options
-                    //         .UseLoggerFactory(loggerFactory)
-                    //         .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BackOfficeContext>>(), sqlServerOptions => sqlServerOptions
-                    //             .EnableRetryOnFailure()
-                    //             .MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice)
-                    //         ));
+                    services
+                        .AddScoped(s => new TraceDbConnection<ImporterContext>(
+                            new SqlConnection(hostContext.Configuration.GetConnectionString("Events")),
+                            hostContext.Configuration["DataDog:ServiceName"]))
+                        .AddScoped<IImporterContext,ImporterContext>()
+                        .AddDbContextFactory<ImporterContext>((provider, options) => options
+                            .UseLoggerFactory(loggerFactory)
+                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ImporterContext>>(), sqlServerOptions => sqlServerOptions
+                                .EnableRetryOnFailure()
+                                .MigrationsHistoryTable(MigrationTables.GrbImporter, Schema.GrbImporter)
+                            ));
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>
@@ -101,6 +106,12 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                         .As<IMediator>()
                         .InstancePerLifetimeScope();
 
+                    builder.RegisterType<UniqueParcelPlanProxy>()
+                        .As<IUniqueParcelPlanProxy>();
+
+                    builder.RegisterType<ZipArchiveProcessor>()
+                        .As<IZipArchiveProcessor>();
+
                     builder.RegisterAssemblyTypes(typeof(AddHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
 
                     builder
@@ -113,8 +124,28 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                 .UseConsoleLifetime()
                 .Build();
 
-            var logger = host.Services.GetRequiredService<ILogger<Program>>();
+            var cfg = host.Services.GetRequiredService<IConfiguration>();
             var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+
+            var contextOptions = new DbContextOptionsBuilder<ImporterContext>()
+                .UseSqlServer(
+                    new SqlConnection(cfg.GetConnectionString("Events")),
+                    sqlServerOptions =>
+                    {
+                        sqlServerOptions.EnableRetryOnFailure();
+                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.GrbImporter, Schema.GrbImporter);
+                    });
+
+            if (loggerFactory != null)
+                contextOptions = contextOptions.UseLoggerFactory(loggerFactory);
+
+            using (var migrator = new ImporterContext(contextOptions.Options))
+                await migrator.Database.MigrateAsync();
+
+
+
+            var logger = host.Services.GetRequiredService<ILogger<Program>>();
+
             var configuration = host.Services.GetRequiredService<IConfiguration>();
 
             try
