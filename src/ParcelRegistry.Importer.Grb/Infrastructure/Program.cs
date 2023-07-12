@@ -124,29 +124,11 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                 .UseConsoleLifetime()
                 .Build();
 
-            var cfg = host.Services.GetRequiredService<IConfiguration>();
+            var configuration = host.Services.GetRequiredService<IConfiguration>();
             var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
-
-            var contextOptions = new DbContextOptionsBuilder<ImporterContext>()
-                .UseSqlServer(
-                    new SqlConnection(cfg.GetConnectionString("Events")),
-                    sqlServerOptions =>
-                    {
-                        sqlServerOptions.EnableRetryOnFailure();
-                        sqlServerOptions.MigrationsHistoryTable(MigrationTables.GrbImporter, Schema.GrbImporter);
-                    });
-
-            if (loggerFactory != null)
-                contextOptions = contextOptions.UseLoggerFactory(loggerFactory);
-
-            using (var migrator = new ImporterContext(contextOptions.Options))
-                await migrator.Database.MigrateAsync();
-
-
-
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-            var configuration = host.Services.GetRequiredService<IConfiguration>();
+            await host.Services.GetRequiredService<ImporterContext>().Database.MigrateAsync();
 
             try
             {
