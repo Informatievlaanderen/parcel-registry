@@ -32,8 +32,6 @@
             _options = downloadOptions.Value;
             _httpClientFactory = httpClientFactory;
             _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions();
-
-            //TODO: add base url: https://download.vlaanderen.be/
         }
 
         public async Task<DateTime> GetMaxEndDate()
@@ -86,8 +84,6 @@
             return response.Status;
         }
 
-        //In the zip file there is a GML folder
-        //In the GML folder is ApdAdd.gml and ApdDel.gml
         public async Task<ZipArchive> GetOrderArchive(int orderId)
         {
             if (await GetOrderStatus(orderId) != OrderStatus.Completed)
@@ -122,7 +118,7 @@
             }
 
             var tokenClient = new TokenClient(
-                () => new HttpClient(), //TODO: use IHttpClientFactory
+                _httpClientFactory.CreateClient(),
                 new TokenClientOptions
                 {
                     Address = _options.TokenEndpoint,
@@ -139,7 +135,7 @@
         }
 
 
-        private class AccessToken
+        private sealed class AccessToken
         {
             private readonly DateTime _expiresAt;
 
