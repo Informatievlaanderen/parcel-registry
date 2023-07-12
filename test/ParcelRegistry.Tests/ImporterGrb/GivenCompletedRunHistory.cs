@@ -37,11 +37,11 @@
 
             var capakey1 = CaPaKey.CreateFrom(Fixture.Create<string>());
 
-            var requests = new List<GrbParcelRequest>
+            var requests = new List<ParcelRequest>
             {
-                new GrbAddParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 9)),
-                new GrbDeleteParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 10)),
-                new GrbUpdateParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 11))
+                new ImportParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 9)),
+                new RetireParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 10)),
+                new ChangeParcelGeometryRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 11))
             };
 
             var today = DateTimeOffset.Now;
@@ -59,9 +59,9 @@
 
             await sut.StartAsync(CancellationToken.None);
 
-            mockMediator.Verify(x => x.Send(It.IsAny<GrbAddParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
-            mockMediator.Verify(x => x.Send(It.IsAny<GrbUpdateParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
-            mockMediator.Verify(x => x.Send(It.IsAny<GrbDeleteParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockMediator.Verify(x => x.Send(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockMediator.Verify(x => x.Send(It.IsAny<ChangeParcelGeometryRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockMediator.Verify(x => x.Send(It.IsAny<RetireParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
 
             var processedRequests = await _fakeImporterContext.ProcessedRequests.ToListAsync();
             processedRequests.Should().HaveCount(0);

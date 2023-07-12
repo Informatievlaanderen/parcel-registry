@@ -13,6 +13,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Destructurama;
     using Handlers;
     using MediatR;
@@ -112,7 +113,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                     builder.RegisterType<ZipArchiveProcessor>()
                         .As<IZipArchiveProcessor>();
 
-                    builder.RegisterAssemblyTypes(typeof(AddHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
+                    builder.RegisterAssemblyTypes(typeof(ImportParcelHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
 
                     builder
                         .RegisterType<Importer>()

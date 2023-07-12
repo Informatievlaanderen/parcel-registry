@@ -125,13 +125,13 @@
         }
     }
 
-    public record GrbParcelRequest(GrbParcel GrbParcel) : IRequest<ParcelResponse>;
+    public record ParcelRequest(GrbParcel GrbParcel) : IRequest;
 
     public record ParcelResponse;
 
     public static class GrbParcelRequestExtensions
     {
-        public static string GetSHA256(this GrbParcelRequest request)
+        public static string GetSHA256(this ParcelRequest request)
         {
             var stringToHash = request.GrbParcel.GrbCaPaKey + request.GrbParcel.Version + request.GrbParcel.Geometry;
 

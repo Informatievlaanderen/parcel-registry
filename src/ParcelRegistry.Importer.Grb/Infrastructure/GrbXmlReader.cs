@@ -41,13 +41,13 @@
         public override IEnumerable<GrbParcel> Read(string filePath)
         {
             var parcels = base.Read(filePath);
-            return parcels.Select(x => new GrbParcel(x.GrbCaPaKey, x.Geometry, x.Version + 1));
+            return parcels.Select(x => x with { Version = x.Version + 1 });
         }
 
         public override IEnumerable<GrbParcel> Read(Stream fileStream)
         {
             var parcels = base.Read(fileStream);
-            return parcels.Select(x => new GrbParcel(x.GrbCaPaKey, x.Geometry, x.Version + 1));
+            return parcels.Select(x => x with { Version = x.Version + 1 });
         }
     }
 
