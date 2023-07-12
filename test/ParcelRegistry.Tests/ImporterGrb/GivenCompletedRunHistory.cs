@@ -35,13 +35,13 @@
             var mockZipArchiveProcessor = new Mock<IZipArchiveProcessor>();
             var mockRequestMapper = new Mock<IRequestMapper>();
 
-            var capakey1 = CaPaKey.CreateFrom(Fixture.Create<string>());
+            var caPaKey = CaPaKey.CreateFrom(Fixture.Create<string>());
 
             var requests = new List<ParcelRequest>
             {
-                new ImportParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 9)),
-                new RetireParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 10)),
-                new ChangeParcelGeometryRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 11))
+                new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9)),
+                new RetireParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 10)),
+                new ChangeParcelGeometryRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 11))
             };
 
             var today = DateTimeOffset.Now;
@@ -55,13 +55,20 @@
             mockRequestMapper.Setup(x => x.Map(It.IsAny<Dictionary<GrbParcelActions, FileStream>>()))
                 .Returns(requests);
 
-            var sut = new Importer(mockMediator.Object, mockIUniqueParcelPlanProxy.Object, mockZipArchiveProcessor.Object, mockRequestMapper.Object, _fakeImporterContext);
+            var sut = new Importer(
+                mockMediator.Object,
+                mockIUniqueParcelPlanProxy.Object,
+                mockZipArchiveProcessor.Object,
+                mockRequestMapper.Object,
+                _fakeImporterContext);
 
+            // Act
             await sut.StartAsync(CancellationToken.None);
 
-            mockMediator.Verify(x => x.Send(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
-            mockMediator.Verify(x => x.Send(It.IsAny<ChangeParcelGeometryRequest>(), It.IsAny<CancellationToken>()), Times.Once);
-            mockMediator.Verify(x => x.Send(It.IsAny<RetireParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            // Assert
+            mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<ChangeParcelGeometryRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<RetireParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
 
             var processedRequests = await _fakeImporterContext.ProcessedRequests.ToListAsync();
             processedRequests.Should().HaveCount(0);
