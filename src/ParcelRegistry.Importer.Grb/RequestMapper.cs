@@ -9,14 +9,14 @@
 
     public interface IRequestMapper
     {
-        List<GrbParcelRequest> Map(Dictionary<GrbParcelActions, FileStream> files);
+        List<ParcelRequest> Map(Dictionary<GrbParcelActions, FileStream> files);
     }
 
     public class RequestMapper: IRequestMapper
     {
-        public List<GrbParcelRequest> Map(Dictionary<GrbParcelActions, FileStream> files)
+        public List<ParcelRequest> Map(Dictionary<GrbParcelActions, FileStream> files)
         {
-            var parcelsRequests = new List<GrbParcelRequest>();
+            var parcelsRequests = new List<ParcelRequest>();
 
             foreach (var (action, fileStream) in files)
             {
@@ -24,14 +24,14 @@
                 {
                     case GrbParcelActions.Add:
                         var parcels = new GrbAddXmlReader().Read(fileStream);
-                        parcelsRequests.AddRange(parcels.Select(x => new GrbAddParcelRequest(x)));
+                        parcelsRequests.AddRange(parcels.Select(x => new ImportParcelRequest(x)));
                         break;
                     case GrbParcelActions.Update:
-                        parcelsRequests.AddRange(new GrbUpdateXmlReader().Read(fileStream).Select(x => new GrbAddParcelRequest(x)));
+                        parcelsRequests.AddRange(new GrbUpdateXmlReader().Read(fileStream).Select(x => new ImportParcelRequest(x)));
 
                         break;
                     case GrbParcelActions.Delete:
-                        parcelsRequests.AddRange(new GrbDeleteXmlReader().Read(fileStream).Select(x => new GrbAddParcelRequest(x)));
+                        parcelsRequests.AddRange(new GrbDeleteXmlReader().Read(fileStream).Select(x => new ImportParcelRequest(x)));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

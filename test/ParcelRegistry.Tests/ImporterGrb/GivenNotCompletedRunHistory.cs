@@ -42,12 +42,12 @@
                 .ReturnsAsync(incompleteRunHistory);
 
             var capakey1 = CaPaKey.CreateFrom(Fixture.Create<string>());
-            var alreadyExecutedRequest = new GrbAddParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 9));
-            var requests = new List<GrbParcelRequest>
+            var alreadyExecutedRequest = new ImportParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 9));
+            var requests = new List<ParcelRequest>
             {
                 alreadyExecutedRequest,
-                new GrbDeleteParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 10)),
-                new GrbUpdateParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 11))
+                new RetireParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 10)),
+                new ChangeParcelGeometryRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 11))
             };
 
             mockImporterContext
@@ -83,6 +83,7 @@
         [Fact]
         public async Task ThenCompleteLastRunHistory()
         {
+            var mockImporterContext = new Mock<IImporterContext>();
             var mockMediator = new Mock<IMediator>();
             var mockIUniqueParcelPlanProxy = new Mock<IUniqueParcelPlanProxy>();
             var mockZipArchiveProcessor = new Mock<IZipArchiveProcessor>();
@@ -90,11 +91,12 @@
 
             var capakey1 = CaPaKey.CreateFrom(Fixture.Create<string>());
 
-            var requests = new List<GrbParcelRequest>
+            var alreadyExecutedRequest = new ImportParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 9));
+            var requests = new List<ParcelRequest>
             {
-                new GrbAddParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 9)),
-                new GrbDeleteParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 10)),
-                new GrbUpdateParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 11))
+                alreadyExecutedRequest,
+                new RetireParcelRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 10)),
+                new ChangeParcelGeometryRequest(new GrbParcel(capakey1, GeometryHelpers.ValidPolygon, 11))
             };
 
             var lastRunHistory = await _fakeImporterContext.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
@@ -102,14 +104,18 @@
             mockRequestMapper.Setup(x => x.Map(It.IsAny<Dictionary<GrbParcelActions, FileStream>>()))
                 .Returns(requests);
 
+            mockImporterContext
+                .Setup(x => x.ProcessedRequestExists(It.Is<string>(x => x == alreadyExecutedRequest.GetSHA256())))
+                .ReturnsAsync(true);
+
             var sut = new Importer(mockMediator.Object, mockIUniqueParcelPlanProxy.Object, mockZipArchiveProcessor.Object, mockRequestMapper.Object, _fakeImporterContext);
 
             await sut.StartAsync(CancellationToken.None);
 
             // Assert
-            mockMediator.Verify(x => x.Send(It.IsAny<GrbAddParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
-            mockMediator.Verify(x => x.Send(It.IsAny<GrbUpdateParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
-            mockMediator.Verify(x => x.Send(It.IsAny<GrbDeleteParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockMediator.Verify(x => x.Send(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+            mockMediator.Verify(x => x.Send(It.IsAny<ChangeParcelGeometryRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            mockMediator.Verify(x => x.Send(It.IsAny<RetireParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
 
             mockIUniqueParcelPlanProxy.Verify(x => x.GetMaxDate(), Times.Never);
 
