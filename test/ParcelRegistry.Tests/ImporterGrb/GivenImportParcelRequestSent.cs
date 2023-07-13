@@ -46,13 +46,5 @@
                     Organisation.DigitaalVlaanderen),
                 options => options.Excluding(x => x.Timestamp));
         }
-
-
-        public void DispatchArrangeCommand<T>(T command) where T : IHasCommandProvenance
-        {
-            using var scope = Container.BeginLifetimeScope();
-            var bus = scope.Resolve<ICommandHandlerResolver>();
-            bus.Dispatch(command.CreateCommandId(), command);
-        }
     }
 }
