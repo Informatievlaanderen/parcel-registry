@@ -12,6 +12,7 @@
     using Importer.Grb;
     using Importer.Grb.Handlers;
     using Importer.Grb.Infrastructure;
+    using Importer.Grb.Infrastructure.Download;
     using MediatR;
     using Moq;
     using Xunit;
@@ -57,7 +58,7 @@
             var lastRunHistory = await _fakeImporterContext.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
             await _fakeImporterContext.CompleteRunHistory(lastRunHistory.Id);
 
-            mockRequestMapper.Setup(x => x.Map(It.IsAny<Dictionary<GrbParcelActions, FileStream>>()))
+            mockRequestMapper.Setup(x => x.Map(It.IsAny<Dictionary<GrbParcelActions, Stream>>()))
                 .Returns(requests);
 
             var sut = new Importer(
@@ -98,7 +99,7 @@
 
             var lastRunHistory = await _fakeImporterContext.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
 
-            mockRequestMapper.Setup(x => x.Map(It.IsAny<Dictionary<GrbParcelActions, FileStream>>()))
+            mockRequestMapper.Setup(x => x.Map(It.IsAny<Dictionary<GrbParcelActions, Stream>>()))
                 .Returns(requests);
 
             await _fakeImporterContext.AddProcessedRequest(alreadyExecutedRequest.GetSHA256());

@@ -1,5 +1,6 @@
 ﻿namespace ParcelRegistry.Tests.ImporterGrb
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
@@ -44,7 +45,8 @@
                     new Operator("Parcel Registry"),
                     Modification.Insert,
                     Organisation.DigitaalVlaanderen),
-                options => options.Excluding(x => x.Timestamp));
+                options => options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)));
+            //options => options.Excluding(x => x.Timestamp));
         }
     }
 }

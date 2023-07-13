@@ -112,7 +112,7 @@
 
         private async Task<string> GetAccessToken(string requiredScopes)
         {
-            if (_accessToken is not null && _accessToken.IsExpired)
+            if (_accessToken is not null && !_accessToken.IsExpired)
             {
                 return _accessToken.Token;
             }
