@@ -35,6 +35,7 @@
             var mockIUniqueParcelPlanProxy = new Mock<IUniqueParcelPlanProxy>();
             var mockZipArchiveProcessor = new Mock<IZipArchiveProcessor>();
             var mockRequestMapper = new Mock<IRequestMapper>();
+            var mockNotificationService = new Mock<INotificationService>();
 
             var incompleteRunHistory = new RunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
 
@@ -66,7 +67,8 @@
                 mockIUniqueParcelPlanProxy.Object,
                 mockZipArchiveProcessor.Object,
                 mockRequestMapper.Object,
-                mockImporterContext.Object);
+                mockImporterContext.Object,
+                mockNotificationService.Object);
 
             // Act
             await sut.StartAsync(CancellationToken.None);
@@ -86,6 +88,7 @@
             var mockIUniqueParcelPlanProxy = new Mock<IUniqueParcelPlanProxy>();
             var mockZipArchiveProcessor = new Mock<IZipArchiveProcessor>();
             var mockRequestMapper = new Mock<IRequestMapper>();
+            var mockNotificationService = new Mock<INotificationService>();
 
             var caPaKey = CaPaKey.CreateFrom(Fixture.Create<string>());
 
@@ -107,7 +110,9 @@
             var sut = new Importer(mockMediator.Object,
                 mockIUniqueParcelPlanProxy.Object,
                 mockZipArchiveProcessor.Object,
-                mockRequestMapper.Object, _fakeImporterContext);
+                mockRequestMapper.Object,
+                _fakeImporterContext,
+                mockNotificationService.Object);
 
             await sut.StartAsync(CancellationToken.None);
 

@@ -35,6 +35,7 @@
             var mockIUniqueParcelPlanProxy = new Mock<IUniqueParcelPlanProxy>();
             var mockZipArchiveProcessor = new Mock<IZipArchiveProcessor>();
             var mockRequestMapper = new Mock<IRequestMapper>();
+            var mockNotificationService = new Mock<INotificationService>();
 
             var caPaKey = CaPaKey.CreateFrom(Fixture.Create<string>());
 
@@ -61,7 +62,8 @@
                 mockIUniqueParcelPlanProxy.Object,
                 mockZipArchiveProcessor.Object,
                 mockRequestMapper.Object,
-                _fakeImporterContext);
+                _fakeImporterContext,
+                mockNotificationService.Object);
 
             // Act
             await sut.StartAsync(CancellationToken.None);
