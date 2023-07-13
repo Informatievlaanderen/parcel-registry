@@ -12,6 +12,7 @@
     using Importer.Grb;
     using Importer.Grb.Handlers;
     using Importer.Grb.Infrastructure;
+    using Importer.Grb.Infrastructure.Download;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using Moq;
@@ -44,15 +45,15 @@
                 new ChangeParcelGeometryRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 11))
             };
 
-            var today = DateTimeOffset.Now;
+            var today = DateTime.Now;
 
             var lastRunHistory = await _fakeImporterContext.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
             await _fakeImporterContext.CompleteRunHistory(lastRunHistory.Id);
 
             mockIUniqueParcelPlanProxy.Setup(x => x.GetMaxDate())
-                .Returns(today);
+                .ReturnsAsync(today);
 
-            mockRequestMapper.Setup(x => x.Map(It.IsAny<Dictionary<GrbParcelActions, FileStream>>()))
+            mockRequestMapper.Setup(x => x.Map(It.IsAny<Dictionary<GrbParcelActions, Stream>>()))
                 .Returns(requests);
 
             var sut = new Importer(

@@ -1,7 +1,6 @@
 ﻿namespace ParcelRegistry.Importer.Grb
 {
     using System;
-    using System.IO.Compression;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
@@ -42,7 +41,8 @@
             RunHistory currentRun;
             if (lastRun.Completed)
             {
-               currentRun = await _importerContext.AddRunHistory(lastRun.ToDate, await _uniqueParcelPlanProxy.GetMaxDate());
+                var maxDate = await _uniqueParcelPlanProxy.GetMaxDate();
+               currentRun = await _importerContext.AddRunHistory(lastRun.ToDate, maxDate);
             }
             else
             {
@@ -85,8 +85,6 @@
     }
 
     public record ParcelRequest(GrbParcel GrbParcel) : IRequest;
-
-    public record ParcelResponse;
 
     public static class GrbParcelRequestExtensions
     {

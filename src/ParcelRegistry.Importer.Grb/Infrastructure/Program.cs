@@ -2,7 +2,10 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
 {
     using System;
     using System.IO;
+    using System.Net.Http;
     using System.Reflection;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
     using Autofac;
@@ -21,6 +24,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Infrastructure.Modules;
     using Serilog;
@@ -32,7 +36,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
         protected Program()
         { }
 
-         public static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
                 Log.Debug(
@@ -41,7 +45,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                     AppDomain.CurrentDomain.FriendlyName);
 
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
-                Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
+                Log.Fatal((Exception) eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
 
             var projectName = Assembly.GetEntryAssembly().GetName().Name;
             Log.Information($"Starting {projectName}");
@@ -80,21 +84,29 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                         .AddScoped(s => new TraceDbConnection<ImporterContext>(
                             new SqlConnection(hostContext.Configuration.GetConnectionString("Events")),
                             hostContext.Configuration["DataDog:ServiceName"]))
-                        .AddScoped<IImporterContext,ImporterContext>()
+                        .AddScoped<IImporterContext, ImporterContext>()
                         .AddDbContextFactory<ImporterContext>((provider, options) => options
                             .UseLoggerFactory(loggerFactory)
                             .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ImporterContext>>(), sqlServerOptions => sqlServerOptions
                                 .EnableRetryOnFailure()
                                 .MigrationsHistoryTable(MigrationTables.GrbImporter, Schema.GrbImporter)
                             ));
+
+                    services.Configure<DownloadClientOptions>(hostContext.Configuration.GetSection("DownloadClientOptions"));
+
+                    services.AddHttpClient(nameof(DownloadClient), client =>
+                    {
+                        var url = hostContext.Configuration["DownloadUrl"] ?? throw new ArgumentNullException();
+                        client.BaseAddress = new Uri(url);
+                    });
                 })
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>
                 {
                     var services = new ServiceCollection();
-                    var loggerFactory = new SerilogLoggerFactory(Log.Logger);
-
                     services.RegisterModule(new DataDogModule(hostContext.Configuration));
+
+                    var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     builder
                         .RegisterModule(new CommandHandlingModule(hostContext.Configuration))
@@ -104,14 +116,23 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                         .RegisterType<Mediator>()
                         .As<IMediator>()
                         .InstancePerLifetimeScope();
+                    builder.RegisterAssemblyTypes(typeof(ImportParcelHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
 
-                    builder.RegisterType<UniqueParcelPlanProxy>()
-                        .As<IUniqueParcelPlanProxy>();
+                    builder.Register(c =>
+                        new DownloadClient(
+                            c.Resolve<IOptions<DownloadClientOptions>>(),
+                            c.Resolve<IHttpClientFactory>(),
+                            new JsonSerializerOptions
+                            {
+                                Converters = { new JsonStringEnumConverter() },
+                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                                PropertyNameCaseInsensitive = true
+                            }));
+
+                    builder.RegisterType<DownloadFacade>().As<IUniqueParcelPlanProxy>();
 
                     builder.RegisterType<ZipArchiveProcessor>()
                         .As<IZipArchiveProcessor>();
-
-                    builder.RegisterAssemblyTypes(typeof(ImportParcelHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
 
                     builder
                         .RegisterType<Importer>()
@@ -132,12 +153,9 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
             try
             {
                 await DistributedLock<Program>.RunAsync(
-                    async () =>
-                    {
-                      await host.RunAsync().ConfigureAwait(false);
-                    },
-                    DistributedLockOptions.LoadFromConfiguration(configuration),
-                    logger)
+                        async () => { await host.RunAsync().ConfigureAwait(false); },
+                        DistributedLockOptions.LoadFromConfiguration(configuration),
+                        logger)
                     .ConfigureAwait(false);
             }
             catch (AggregateException aggregateException)
