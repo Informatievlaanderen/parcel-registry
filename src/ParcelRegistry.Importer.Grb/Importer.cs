@@ -1,59 +1,18 @@
 ﻿namespace ParcelRegistry.Importer.Grb
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
+    using System.IO.Compression;
     using System.Linq;
-    using System.Runtime.Intrinsics.Arm;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Handlers;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Infrastructure;
+    using Infrastructure.Download;
     using MediatR;
     using Microsoft.Extensions.Hosting;
-    using System.Security.Cryptography;
-    using System.Text;
-    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-
-    public interface IUniqueParcelPlanProxy
-    {
-        public Task<Stream> Download(DateTimeOffset fromDate, DateTimeOffset toDate, CancellationToken cancellationToken);
-        DateTimeOffset GetMaxDate();
-    }
-
-    public class UniqueParcelPlanProxy : IUniqueParcelPlanProxy
-    {
-        public Task<Stream> Download(DateTimeOffset fromDate, DateTimeOffset toDate, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public DateTimeOffset GetMaxDate()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public interface IZipArchiveProcessor
-    {
-        public Task<Dictionary<GrbParcelActions, FileStream>> Open(Stream stream, CancellationToken cancellationToken);
-    }
-
-    public class ZipArchiveProcessor : IZipArchiveProcessor
-    {
-        public Task<Dictionary<GrbParcelActions, FileStream>> Open(Stream stream, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public enum GrbParcelActions
-    {
-        Add,
-        Update,
-        Delete
-    }
 
     public class Importer : BackgroundService
     {
@@ -83,16 +42,16 @@
             RunHistory currentRun;
             if (lastRun.Completed)
             {
-               currentRun = await _importerContext.AddRunHistory(lastRun.ToDate, _uniqueParcelPlanProxy.GetMaxDate());
+               currentRun = await _importerContext.AddRunHistory(lastRun.ToDate, await _uniqueParcelPlanProxy.GetMaxDate());
             }
             else
             {
                 currentRun = lastRun;
             }
 
-            var stream = await _uniqueParcelPlanProxy.Download(currentRun.FromDate, currentRun.ToDate, stoppingToken);
+            var zipArchive = await _uniqueParcelPlanProxy.Download(currentRun.FromDate, currentRun.ToDate);
 
-            var files = await _zipArchiveProcessor.Open(stream, stoppingToken);
+            var files = _zipArchiveProcessor.Open(zipArchive);
 
             var parcelsRequests = _requestMapper.Map(files);
 

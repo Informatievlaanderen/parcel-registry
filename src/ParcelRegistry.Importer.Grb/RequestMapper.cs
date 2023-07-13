@@ -6,15 +6,16 @@
     using System.Linq;
     using Handlers;
     using Infrastructure;
+    using Infrastructure.Download;
 
     public interface IRequestMapper
     {
-        List<ParcelRequest> Map(Dictionary<GrbParcelActions, FileStream> files);
+        List<ParcelRequest> Map(Dictionary<GrbParcelActions, Stream> files);
     }
 
     public class RequestMapper: IRequestMapper
     {
-        public List<ParcelRequest> Map(Dictionary<GrbParcelActions, FileStream> files)
+        public List<ParcelRequest> Map(Dictionary<GrbParcelActions, Stream> files)
         {
             var parcelsRequests = new List<ParcelRequest>();
 
