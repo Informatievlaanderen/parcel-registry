@@ -2,6 +2,7 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
@@ -12,13 +13,16 @@
     using Importer.Grb.Infrastructure;
     using NodaTime;
     using Parcel;
+    using Parcel.Commands;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class GivenImportParcelRequestSent : ParcelRegistryTest
+    public class GivenRetireParcelRequestSent : ParcelRegistryTest
     {
-        public GivenImportParcelRequestSent(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
-        { }
+        public GivenRetireParcelRequestSent(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+            Fixture.Customize(new WithExtendedWkbGeometryPolygon());
+        }
 
         [Fact]
         public async Task ThenCommandDispatched_StateCheck()
@@ -26,23 +30,31 @@
             var caPaKey = CaPaKey.CreateFrom(Fixture.Create<string>());
             var parcelId = ParcelId.CreateFor(new VbrCaPaKey(caPaKey.VbrCaPaKey));
 
-            var importRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9));
+            DispatchArrangeCommand(
+                new ImportParcel(
+                    new VbrCaPaKey(caPaKey.VbrCaPaKey),
+                    GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
+                    Fixture.Create<Provenance>()));
 
-            var sut = new ImportParcelHandler(Container.Resolve<ICommandHandlerResolver>());
+            var retireParcelRequest = new RetireParcelRequest(
+                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9));
 
-            await sut.Handle(importRequest, CancellationToken.None);
+            var sut = new RetireParcelHandler(Container.Resolve<ICommandHandlerResolver>());
+
+            await sut.Handle(retireParcelRequest, CancellationToken.None);
 
             var parcels = Container.Resolve<IParcels>();
             var parcel = await parcels.GetOptionalAsync(new ParcelStreamId(parcelId));
 
             parcel.Should().NotBeNull();
-            parcel.Value.Geometry.Should().Be(ExtendedWkbGeometry.CreateEWkb(importRequest.GrbParcel.Geometry.ToBinary()));
+            parcel.Value.Geometry.Should().Be(GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
+            parcel.Value.ParcelStatus.Should().Be(ParcelStatus.Retired);
             parcel.Value.LastProvenanceData.ToProvenance().Should().BeEquivalentTo(new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),
                     Application.ParcelRegistry,
                     new Reason("Uniek Percelen Plan"),
                     new Operator("Parcel Registry"),
-                    Modification.Insert,
+                    Modification.Update,
                     Organisation.DigitaalVlaanderen),
                 options => options.Excluding(x => x.Timestamp));
         }

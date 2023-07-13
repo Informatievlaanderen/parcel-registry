@@ -54,8 +54,6 @@
                 .Setup(x => x.ProcessedRequestExists(It.Is<string>(x => x == alreadyExecutedRequest.GetSHA256())))
                 .ReturnsAsync(true);
 
-            var today = DateTimeOffset.Now;
-
             var lastRunHistory = await _fakeImporterContext.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
             await _fakeImporterContext.CompleteRunHistory(lastRunHistory.Id);
 
@@ -73,11 +71,11 @@
             await sut.StartAsync(CancellationToken.None);
 
             // Assert
+            mockIUniqueParcelPlanProxy.Verify(x => x.GetMaxDate(), Times.Never);
+
             mockImporterContext.Verify(x => x.AddProcessedRequest(It.IsAny<string>()), Times.Exactly(2));
             mockImporterContext.Verify(x => x.CompleteRunHistory(incompleteRunHistory.Id), Times.Once);
             mockImporterContext.Verify(x => x.ClearProcessedRequests(), Times.Once);
-
-            mockIUniqueParcelPlanProxy.Verify(x => x.GetMaxDate(), Times.Never);
         }
 
         [Fact]
