@@ -50,13 +50,12 @@
             parcel.Value.Geometry.Should().Be(GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             parcel.Value.ParcelStatus.Should().Be(ParcelStatus.Retired);
             parcel.Value.LastProvenanceData.ToProvenance().Should().BeEquivalentTo(new Provenance(
-                    SystemClock.Instance.GetCurrentInstant(),
+                    parcel.Value.LastProvenanceData.Timestamp,
                     Application.ParcelRegistry,
                     new Reason("Uniek Percelen Plan"),
                     new Operator("Parcel Registry"),
                     Modification.Update,
-                    Organisation.DigitaalVlaanderen),
-                options => options.Excluding(x => x.Timestamp));
+                    Organisation.DigitaalVlaanderen));
         }
     }
 }

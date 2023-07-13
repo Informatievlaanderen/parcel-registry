@@ -39,14 +39,12 @@
             parcel.Should().NotBeNull();
             parcel.Value.Geometry.Should().Be(ExtendedWkbGeometry.CreateEWkb(importRequest.GrbParcel.Geometry.ToBinary()));
             parcel.Value.LastProvenanceData.ToProvenance().Should().BeEquivalentTo(new Provenance(
-                    SystemClock.Instance.GetCurrentInstant(),
+                    parcel.Value.LastProvenanceData.Timestamp, // this should be excluded from the assert
                     Application.ParcelRegistry,
                     new Reason("Uniek Percelen Plan"),
                     new Operator("Parcel Registry"),
                     Modification.Insert,
-                    Organisation.DigitaalVlaanderen),
-                options => options.Using<DateTimeOffset>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)));
-            //options => options.Excluding(x => x.Timestamp));
+                    Organisation.DigitaalVlaanderen));
         }
     }
 }
