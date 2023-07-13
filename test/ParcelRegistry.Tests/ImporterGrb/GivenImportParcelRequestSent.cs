@@ -39,7 +39,7 @@
             parcel.Should().NotBeNull();
             parcel.Value.Geometry.Should().Be(ExtendedWkbGeometry.CreateEWkb(importRequest.GrbParcel.Geometry.ToBinary()));
             parcel.Value.LastProvenanceData.ToProvenance().Should().BeEquivalentTo(new Provenance(
-                    parcel.Value.LastProvenanceData.Timestamp, // this should be excluded from the assert
+                    parcel.Value.LastProvenanceData.Timestamp,
                     Application.ParcelRegistry,
                     new Reason("Uniek Percelen Plan"),
                     new Operator("Parcel Registry"),
