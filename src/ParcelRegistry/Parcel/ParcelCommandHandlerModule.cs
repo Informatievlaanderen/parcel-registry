@@ -95,8 +95,8 @@ namespace ParcelRegistry.Parcel
                         parcelFactory,
                         message.Command.VbrCaPaKey,
                         message.Command.ParcelId,
-                        message.Command.AddressesToAttach,
-                        message.Command.ExtendedWkbGeometry);
+                        message.Command.ExtendedWkbGeometry,
+                        message.Command.AddressesToAttach);
 
                     parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
                 });
@@ -124,7 +124,7 @@ namespace ParcelRegistry.Parcel
 
                     var parcel = await parcelRepository().GetAsync(streamId, ct);
 
-                    parcel.ChangeGeometry(message.Command.Addresses, message.Command.ExtendedWkbGeometry);
+                    parcel.ChangeGeometry(message.Command.ExtendedWkbGeometry, message.Command.Addresses);
                 });
         }
     }
