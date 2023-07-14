@@ -30,7 +30,11 @@
             var command = new ImportParcel(
                 caPaKey,
                 GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
-                new List<AddressPersistentLocalId>(),
+                new List<AddressPersistentLocalId>()
+                {
+                    new AddressPersistentLocalId(1),
+                    new AddressPersistentLocalId(2)
+                },
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -40,7 +44,9 @@
                     new ParcelWasImported(
                         command.ParcelId,
                         caPaKey,
-                        command.ExtendedWkbGeometry)));
+                        command.ExtendedWkbGeometry),
+                    new ParcelAddressWasAttachedV2(command.ParcelId, caPaKey, new AddressPersistentLocalId(1)),
+                    new ParcelAddressWasAttachedV2(command.ParcelId, caPaKey, new AddressPersistentLocalId(2))));
         }
 
         [Fact]
