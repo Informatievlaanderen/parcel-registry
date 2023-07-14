@@ -136,7 +136,8 @@ namespace ParcelRegistry.Parcel
             IParcelFactory parcelFactory,
             VbrCaPaKey vbrCaPaKey,
             ParcelId parcelId,
-            ExtendedWkbGeometry extendedWkbGeometry)
+            ExtendedWkbGeometry extendedWkbGeometry,
+            List<AddressPersistentLocalId> addressesToAttach)
         {
             GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
 
@@ -147,6 +148,15 @@ namespace ParcelRegistry.Parcel
                     parcelId,
                     vbrCaPaKey,
                     extendedWkbGeometry));
+
+            foreach (var address in addressesToAttach)
+            {
+                newParcel.ApplyChange(
+                    new ParcelAddressWasAttachedV2(
+                        parcelId,
+                        vbrCaPaKey,
+                        address));
+            }
 
             return newParcel;
         }
@@ -168,7 +178,7 @@ namespace ParcelRegistry.Parcel
             ApplyChange(new ParcelWasRetiredV2(ParcelId, CaPaKey));
         }
 
-        public void ChangeGeometry(ExtendedWkbGeometry extendedWkbGeometry)
+        public void ChangeGeometry(ExtendedWkbGeometry extendedWkbGeometry, List<AddressPersistentLocalId> addresses)
         {
             GuardParcelNotRemoved();
             GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
@@ -176,6 +186,25 @@ namespace ParcelRegistry.Parcel
             if (Geometry == extendedWkbGeometry)
             {
                 return;
+            }
+
+            var addressesToDetach = _addressPersistentLocalIds.Except(addresses).ToList();
+            var addressesToAttach = addresses.Except(_addressPersistentLocalIds).ToList();
+
+            foreach (var address in addressesToDetach)
+            {
+                ApplyChange(new ParcelAddressWasDetachedV2(
+                    ParcelId,
+                    CaPaKey,
+                    address));
+            }
+
+            foreach (var address in addressesToAttach)
+            {
+                ApplyChange(new ParcelAddressWasAttachedV2(
+                    ParcelId,
+                    CaPaKey,
+                    address));
             }
 
             ApplyChange(new ParcelGeometryWasChanged(ParcelId, CaPaKey, extendedWkbGeometry));

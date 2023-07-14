@@ -86,12 +86,18 @@ namespace ParcelRegistry.Parcel
 
                     var parcel = await parcelRepository().GetOptionalAsync(streamId, ct); // TODO: POSSIBLE AGGREGATE NOT FOUND
 
-                     if (parcel.HasValue)
-                     {
-                         throw new ParcelAlreadyExistsException(message.Command.VbrCaPaKey);
-                     }
+                    if (parcel.HasValue)
+                    {
+                        throw new ParcelAlreadyExistsException(message.Command.VbrCaPaKey);
+                    }
 
-                    var createdParcel = Parcel.ImportParcel(parcelFactory, message.Command.VbrCaPaKey, message.Command.ParcelId, message.Command.ExtendedWkbGeometry);
+                    var createdParcel = Parcel.ImportParcel(
+                        parcelFactory,
+                        message.Command.VbrCaPaKey,
+                        message.Command.ParcelId,
+                        message.Command.ExtendedWkbGeometry,
+                        message.Command.AddressesToAttach);
+
                     parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
                 });
 
@@ -118,7 +124,7 @@ namespace ParcelRegistry.Parcel
 
                     var parcel = await parcelRepository().GetAsync(streamId, ct);
 
-                    parcel.ChangeGeometry(message.Command.ExtendedWkbGeometry);
+                    parcel.ChangeGeometry(message.Command.ExtendedWkbGeometry, message.Command.Addresses);
                 });
         }
     }

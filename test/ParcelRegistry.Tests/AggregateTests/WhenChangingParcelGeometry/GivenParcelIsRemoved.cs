@@ -30,6 +30,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenChangingParcelGeometry
             var command = new ChangeParcelGeometry(
                 Fixture.Create<VbrCaPaKey>(),
                 GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
+                new List<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             var parcelWasMigrated = new ParcelWasMigrated(

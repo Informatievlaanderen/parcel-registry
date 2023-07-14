@@ -1,5 +1,6 @@
 ﻿namespace ParcelRegistry.Importer.Grb.Handlers
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
@@ -28,6 +29,7 @@
             var command = new ImportParcel(
                 new VbrCaPaKey(request.GrbParcel.GrbCaPaKey),
                 extendedWkbGeometry,
+                new List<AddressPersistentLocalId>(),
                 new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),
                     Application.ParcelRegistry,
