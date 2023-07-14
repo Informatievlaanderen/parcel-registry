@@ -5,13 +5,13 @@
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
 
-    public interface IUniqueParcelPlanProxy
+    public interface IDownloadFacade
     {
         public Task<ZipArchive> Download(DateTimeOffset fromDate, DateTimeOffset toDate);
         Task<DateTime> GetMaxDate();
     }
 
-    public sealed class DownloadFacade : IUniqueParcelPlanProxy
+    public sealed class DownloadFacade : IDownloadFacade
     {
         private readonly DownloadClient _downloadClient;
         private readonly ILogger<DownloadFacade> _logger;

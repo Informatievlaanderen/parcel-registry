@@ -82,9 +82,8 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
 
                     services
                         .AddScoped(s => new TraceDbConnection<ImporterContext>(
-                            new SqlConnection(hostContext.Configuration.GetConnectionString("Events")),
+                            new SqlConnection(hostContext.Configuration.GetConnectionString("ImporterGrb")),
                             hostContext.Configuration["DataDog:ServiceName"]))
-                        .AddScoped<IImporterContext, ImporterContext>()
                         .AddDbContextFactory<ImporterContext>((provider, options) => options
                             .UseLoggerFactory(loggerFactory)
                             .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ImporterContext>>(), sqlServerOptions => sqlServerOptions
@@ -96,7 +95,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
 
                     services.AddHttpClient(nameof(DownloadClient), client =>
                     {
-                        var url = hostContext.Configuration["DownloadUrl"] ?? throw new ArgumentNullException();
+                        var url = hostContext.Configuration["DownloadUrl"] ?? throw new ArgumentNullException("DownloadUrl");
                         client.BaseAddress = new Uri(url);
                     });
                 })
@@ -116,7 +115,11 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                         .RegisterType<Mediator>()
                         .As<IMediator>()
                         .InstancePerLifetimeScope();
-                    builder.RegisterAssemblyTypes(typeof(ImportParcelHandler).GetTypeInfo().Assembly).AsImplementedInterfaces();
+
+                    builder
+                        .RegisterAssemblyTypes(typeof(ImportParcelHandler)
+                        .GetTypeInfo().Assembly)
+                        .AsImplementedInterfaces();
 
                     builder.Register(c =>
                         new DownloadClient(
@@ -129,9 +132,12 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                                 PropertyNameCaseInsensitive = true
                             }));
 
-                    builder.RegisterType<DownloadFacade>().As<IUniqueParcelPlanProxy>();
+                    builder
+                        .RegisterType<DownloadFacade>()
+                        .As<IDownloadFacade>();
 
-                    builder.RegisterType<ZipArchiveProcessor>()
+                    builder
+                        .RegisterType<ZipArchiveProcessor>()
                         .As<IZipArchiveProcessor>();
 
                     builder
@@ -145,13 +151,12 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                 .Build();
 
             var configuration = host.Services.GetRequiredService<IConfiguration>();
-            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
-
-            await host.Services.GetRequiredService<ImporterContext>().Database.MigrateAsync();
 
             try
             {
+                await host.Services.GetRequiredService<ImporterContext>().Database.MigrateAsync();
+
                 await DistributedLock<Program>.RunAsync(
                         async () => { await host.RunAsync().ConfigureAwait(false); },
                         DistributedLockOptions.LoadFromConfiguration(configuration),

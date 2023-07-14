@@ -2,7 +2,7 @@
 {
     using System.Text.Json.Serialization;
 
-    public class NotificationMessage
+    public sealed class NotificationMessage
     {
         [JsonIgnore]
         public string MessageType { get; }

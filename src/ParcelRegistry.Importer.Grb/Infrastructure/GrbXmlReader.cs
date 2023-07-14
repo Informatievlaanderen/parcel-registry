@@ -12,7 +12,7 @@
 
     public sealed record GrbParcel(CaPaKey GrbCaPaKey, Geometry Geometry, int Version);
 
-    public class GrbAddXmlReader : GrbXmlReader
+    public sealed class GrbAddXmlReader : GrbXmlReader
     {
         protected override bool IsValid(XmlNode featureMemberNode)
         {
@@ -21,7 +21,7 @@
         }
     }
 
-    public class GrbUpdateXmlReader : GrbXmlReader
+    public sealed class GrbUpdateXmlReader : GrbXmlReader
     {
         protected override bool IsValid(XmlNode featureMemberNode)
         {
@@ -30,7 +30,7 @@
         }
     }
 
-    public class GrbDeleteXmlReader : GrbXmlReader
+    public sealed class GrbDeleteXmlReader : GrbXmlReader
     {
         protected override bool IsValid(XmlNode featureMemberNode)
         {

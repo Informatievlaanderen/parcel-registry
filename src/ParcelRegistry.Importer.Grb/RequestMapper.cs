@@ -13,7 +13,7 @@
         List<ParcelRequest> Map(Dictionary<GrbParcelActions, Stream> files);
     }
 
-    public class RequestMapper: IRequestMapper
+    public sealed class RequestMapper : IRequestMapper
     {
         public List<ParcelRequest> Map(Dictionary<GrbParcelActions, Stream> files)
         {
@@ -35,7 +35,7 @@
                         parcelsRequests.AddRange(new GrbDeleteXmlReader().Read(fileStream).Select(x => new RetireParcelRequest(x)));
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException($"No {nameof(ParcelRequest)} mapping implemented for action {action}");
                 }
             }
 

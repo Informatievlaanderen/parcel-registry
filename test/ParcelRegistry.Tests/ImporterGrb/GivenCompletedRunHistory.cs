@@ -21,18 +21,18 @@
 
     public class GivenCompletedRunHistory : ParcelRegistryTest
     {
-        private readonly ImporterContext _fakeImporterContext;
+        private readonly  FakeImportParcelContextFactory _fakeImporterContextFactory;
 
         public GivenCompletedRunHistory(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _fakeImporterContext = new FakeImportParcelContextFactory().CreateDbContext(Array.Empty<string>());
+            _fakeImporterContextFactory = new FakeImportParcelContextFactory(false);
         }
 
         [Fact]
         public async Task ThenStartNewRunHistory_AndClearProcessedRequests()
         {
             var mockMediator = new Mock<IMediator>();
-            var mockIUniqueParcelPlanProxy = new Mock<IUniqueParcelPlanProxy>();
+            var mockIUniqueParcelPlanProxy = new Mock<IDownloadFacade>();
             var mockZipArchiveProcessor = new Mock<IZipArchiveProcessor>();
             var mockRequestMapper = new Mock<IRequestMapper>();
             var mockNotificationService = new Mock<INotificationService>();
@@ -48,8 +48,10 @@
 
             var today = DateTime.Now;
 
-            var lastRunHistory = await _fakeImporterContext.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
-            await _fakeImporterContext.CompleteRunHistory(lastRunHistory.Id);
+            var context = _fakeImporterContextFactory.CreateDbContext();
+
+            var lastRunHistory = await context.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
+            await context.CompleteRunHistory(lastRunHistory.Id);
 
             mockIUniqueParcelPlanProxy.Setup(x => x.GetMaxDate())
                 .ReturnsAsync(today);
@@ -62,7 +64,7 @@
                 mockIUniqueParcelPlanProxy.Object,
                 mockZipArchiveProcessor.Object,
                 mockRequestMapper.Object,
-                _fakeImporterContext,
+                _fakeImporterContextFactory,
                 mockNotificationService.Object);
 
             // Act
@@ -73,10 +75,10 @@
             mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<ChangeParcelGeometryRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<RetireParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
 
-            var processedRequests = await _fakeImporterContext.ProcessedRequests.ToListAsync();
+            var processedRequests = await context.ProcessedRequests.ToListAsync();
             processedRequests.Should().HaveCount(0);
 
-            var lastRun = await _fakeImporterContext.GetLatestRunHistory();
+            var lastRun = await context.GetLatestRunHistory();
             lastRun.Id.Should().Be(2);
             lastRun.Completed.Should().BeTrue();
             lastRun.FromDate.Should().Be(lastRunHistory.ToDate);

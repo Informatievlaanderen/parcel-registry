@@ -1,38 +1,39 @@
 ﻿namespace ParcelRegistry.Importer.Grb
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Infrastructure;
     using Infrastructure.Download;
     using MediatR;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
-    using Parcel.Exceptions;
 
-    public class Importer : BackgroundService
+    public sealed class Importer : BackgroundService
     {
         private readonly IMediator _mediator;
-        private readonly IUniqueParcelPlanProxy _uniqueParcelPlanProxy;
+        private readonly IDownloadFacade _downloadFacade;
         private readonly IZipArchiveProcessor _zipArchiveProcessor;
         private readonly IRequestMapper _requestMapper;
-        private readonly IImporterContext _importerContext;
+        private readonly IDbContextFactory<ImporterContext> _importerContext;
         private readonly INotificationService _notificationService;
 
         public Importer(
             IMediator mediator,
-            IUniqueParcelPlanProxy uniqueParcelPlanProxy,
+            IDownloadFacade downloadFacade,
             IZipArchiveProcessor zipArchiveProcessor,
             IRequestMapper requestMapper,
-            IImporterContext importerContext,
+            IDbContextFactory<ImporterContext> importerContext,
             INotificationService notificationService)
         {
             _mediator = mediator;
-            _uniqueParcelPlanProxy = uniqueParcelPlanProxy;
+            _downloadFacade = downloadFacade;
             _zipArchiveProcessor = zipArchiveProcessor;
             _requestMapper = requestMapper;
             _importerContext = importerContext;
@@ -43,19 +44,9 @@
         {
             try
             {
-                var lastRun = await _importerContext.GetLatestRunHistory();
-                RunHistory currentRun;
-                if (lastRun.Completed)
-                {
-                    var maxDate = await _uniqueParcelPlanProxy.GetMaxDate();
-                    currentRun = await _importerContext.AddRunHistory(lastRun.ToDate, maxDate);
-                }
-                else
-                {
-                    currentRun = lastRun;
-                }
+                var currentRun = await GetCurrentRunHistory(stoppingToken);
 
-                var zipArchive = await _uniqueParcelPlanProxy.Download(currentRun.FromDate, currentRun.ToDate);
+                var zipArchive = await _downloadFacade.Download(currentRun.FromDate, currentRun.ToDate);
 
                 var files = _zipArchiveProcessor.Open(zipArchive);
 
@@ -65,50 +56,79 @@
                     .OrderBy(x => x.GrbParcel.Version)
                     .GroupBy(y => y.GrbParcel.GrbCaPaKey);
 
-                foreach (var parcelRequest in groupedParcels.SelectMany(x => x))
-                {
-                    try
-                    {
-                        if (await _importerContext.ProcessedRequestExists(parcelRequest.GetSHA256()))
-                        {
-                            continue;
-                        }
+                await ProcessRecords(stoppingToken, groupedParcels);
 
-                        await _mediator.Send(parcelRequest, stoppingToken);
+                await using var context = await _importerContext.CreateDbContextAsync(stoppingToken);
 
-                        await _importerContext.AddProcessedRequest(parcelRequest.GetSHA256());
-                    }
-                    catch (Exception e)
-                    {
-                        throw new ImportGrbException($"Exception for parcel: {parcelRequest.GrbParcel.GrbCaPaKey.VbrCaPaKey}, {e.GetType()}", e);
-                    }
-                }
-
-                await _importerContext.CompleteRunHistory(currentRun.Id);
-                await _importerContext.ClearProcessedRequests();
-            }
-            catch (ImportGrbException e)
-            {
-                await _notificationService.PublishToTopicAsync(new NotificationMessage(
-                    nameof(ParcelRegistry.Importer.Grb),
-                    e.Message,
-                    "Parcel Importer Grb",
-                    NotificationSeverity.Danger));
-                throw;
+                await context.CompleteRunHistory(currentRun.Id);
+                await context.ClearProcessedRequests();
             }
             catch (Exception e)
             {
                 await _notificationService.PublishToTopicAsync(new NotificationMessage(
-                    nameof(ParcelRegistry.Importer.Grb),
+                    nameof(Grb),
                     e.Message,
                     "Parcel Importer Grb",
                     NotificationSeverity.Danger));
                 throw;
             }
         }
+
+        private async Task ProcessRecords(CancellationToken stoppingToken, IEnumerable<IGrouping<CaPaKey, ParcelRequest>> groupedParcels)
+        {
+            foreach (var parcelRequest in groupedParcels.SelectMany(x => x))
+            {
+                await using var context = await _importerContext.CreateDbContextAsync(stoppingToken);
+                try
+                {
+                    if (await context.ProcessedRequestExists(parcelRequest.Hash))
+                    {
+                        continue;
+                    }
+
+                    await _mediator.Send(parcelRequest, stoppingToken);
+
+                    await context.AddProcessedRequest(parcelRequest.Hash);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Exception for parcel: {parcelRequest.GrbParcel.GrbCaPaKey.VbrCaPaKey}, {e.GetType()} {Environment.NewLine} Parcel hash: {parcelRequest.Hash}", e);
+                }
+            }
+        }
+
+        private async Task<RunHistory> GetCurrentRunHistory(CancellationToken stoppingToken)
+        {
+            await using var context = await _importerContext.CreateDbContextAsync(stoppingToken);
+
+            var lastRun = await context.GetLatestRunHistory();
+            RunHistory currentRun;
+            if (lastRun.Completed)
+            {
+                var maxDate = await _downloadFacade.GetMaxDate();
+                currentRun = await context.AddRunHistory(lastRun.ToDate, maxDate);
+            }
+            else
+            {
+                currentRun = lastRun;
+            }
+
+            return currentRun;
+        }
     }
 
-    public record ParcelRequest(GrbParcel GrbParcel) : IRequest;
+    public record ParcelRequest : IRequest
+    {
+        public GrbParcel GrbParcel { get; }
+
+        public string Hash { get; }
+
+        public ParcelRequest(GrbParcel grbParcel)
+        {
+            GrbParcel = grbParcel;
+            Hash = this.GetSHA256();
+        }
+    }
 
     public static class GrbParcelRequestExtensions
     {

@@ -5,7 +5,7 @@ namespace ParcelRegistry.Importer.Grb
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using ParcelRegistry.Infrastructure;
 
-    public class RunHistory
+    public sealed class RunHistory
     {
         public int Id { get; }
         public DateTimeOffset FromDate { get; }
@@ -24,7 +24,7 @@ namespace ParcelRegistry.Importer.Grb
         public void SetComplete() => Completed = true;
     }
 
-    public class RunHistoryConfiguration : IEntityTypeConfiguration<RunHistory>
+    public sealed class RunHistoryConfiguration : IEntityTypeConfiguration<RunHistory>
     {
         public const string TableName = "RunHistory";
 

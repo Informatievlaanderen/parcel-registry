@@ -10,9 +10,9 @@
     using Parcel;
     using Parcel.Commands;
 
-    public record ChangeParcelGeometryRequest(GrbParcel GrbParcel) : ParcelRequest(GrbParcel);
+    public sealed record ChangeParcelGeometryRequest(GrbParcel GrbParcel) : ParcelRequest(GrbParcel);
 
-    public class ChangeParcelGeometryHandler : IRequestHandler<ChangeParcelGeometryRequest>
+    public sealed class ChangeParcelGeometryHandler : IRequestHandler<ChangeParcelGeometryRequest>
     {
         private readonly ICommandHandlerResolver _commandHandlerResolver;
 
@@ -26,12 +26,12 @@
             var extendedWkbGeometry = ExtendedWkbGeometry.CreateEWkb(request.GrbParcel.Geometry.ToBinary());
 
             var command = new ChangeParcelGeometry(
-                new VbrCaPaKey(request.GrbParcel.GrbCaPaKey.VbrCaPaKey),
+                new VbrCaPaKey(request.GrbParcel.GrbCaPaKey),
                 extendedWkbGeometry,
                 new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),
                     Application.ParcelRegistry,
-                    new Reason("Uniek Percelen Plan"),
+                    new Reason("Uniek Percelenplan"),
                     new Operator("Parcel Registry"),
                     Modification.Update,
                     Organisation.DigitaalVlaanderen));

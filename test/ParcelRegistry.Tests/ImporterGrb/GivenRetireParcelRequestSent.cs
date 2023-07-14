@@ -52,7 +52,7 @@
             parcel.Value.LastProvenanceData.ToProvenance().Should().BeEquivalentTo(new Provenance(
                     parcel.Value.LastProvenanceData.Timestamp,
                     Application.ParcelRegistry,
-                    new Reason("Uniek Percelen Plan"),
+                    new Reason("Uniek Percelenplan"),
                     new Operator("Parcel Registry"),
                     Modification.Update,
                     Organisation.DigitaalVlaanderen));

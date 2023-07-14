@@ -9,17 +9,7 @@
     using Microsoft.Extensions.Configuration;
     using ParcelRegistry.Infrastructure;
 
-    public interface IImporterContext
-    {
-        Task<bool> ProcessedRequestExists(string getSha256);
-        Task AddProcessedRequest(string sha256);
-        Task ClearProcessedRequests();
-        Task<RunHistory> AddRunHistory(DateTimeOffset from, DateTimeOffset to);
-        Task<RunHistory> GetLatestRunHistory();
-        Task CompleteRunHistory(int id);
-    }
-
-    public class ImporterContext : DbContext, IImporterContext
+    public class ImporterContext : DbContext
     {
         public DbSet<RunHistory> RunHistory { get; set; }
         public DbSet<ProcessedRequests> ProcessedRequests { get; set; }
@@ -81,11 +71,11 @@
         }
     }
 
-    public class ConfigBasedImporterGrbContextFactory : IDesignTimeDbContextFactory<ImporterContext>
+    public sealed class ConfigBasedImporterGrbContextFactory : IDesignTimeDbContextFactory<ImporterContext>
     {
         public ImporterContext CreateDbContext(string[] args)
         {
-            var migrationConnectionStringName = "Events";
+            var migrationConnectionStringName = "ImporterGrb";
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

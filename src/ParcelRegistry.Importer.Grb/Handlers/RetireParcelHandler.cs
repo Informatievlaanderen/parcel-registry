@@ -9,9 +9,9 @@
     using NodaTime;
     using Parcel.Commands;
 
-    public record RetireParcelRequest(GrbParcel GrbParcel) : ParcelRequest(GrbParcel);
+    public sealed record RetireParcelRequest(GrbParcel GrbParcel) : ParcelRequest(GrbParcel);
 
-    public class RetireParcelHandler : IRequestHandler<RetireParcelRequest>
+    public sealed class RetireParcelHandler : IRequestHandler<RetireParcelRequest>
     {
         private readonly ICommandHandlerResolver _commandHandlerResolver;
 
@@ -23,11 +23,11 @@
         public async Task Handle(RetireParcelRequest request, CancellationToken cancellationToken)
         {
             var command = new RetireParcelV2(
-                new VbrCaPaKey(request.GrbParcel.GrbCaPaKey.VbrCaPaKey),
+                new VbrCaPaKey(request.GrbParcel.GrbCaPaKey),
                 new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),
                     Application.ParcelRegistry,
-                    new Reason("Uniek Percelen Plan"),
+                    new Reason("Uniek Percelenplan"),
                     new Operator("Parcel Registry"),
                     Modification.Update,
                     Organisation.DigitaalVlaanderen));

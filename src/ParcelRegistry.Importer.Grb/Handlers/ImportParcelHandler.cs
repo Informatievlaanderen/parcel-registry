@@ -10,9 +10,9 @@
     using Parcel;
     using Parcel.Commands;
 
-    public record ImportParcelRequest(GrbParcel GrbParcel) : ParcelRequest(GrbParcel);
+    public sealed record ImportParcelRequest(GrbParcel GrbParcel) : ParcelRequest(GrbParcel);
 
-    public class ImportParcelHandler : IRequestHandler<ImportParcelRequest>
+    public sealed class ImportParcelHandler : IRequestHandler<ImportParcelRequest>
     {
         private readonly ICommandHandlerResolver _commandHandlerResolver;
 
@@ -26,12 +26,12 @@
             var extendedWkbGeometry = ExtendedWkbGeometry.CreateEWkb(request.GrbParcel.Geometry.ToBinary());
 
             var command = new ImportParcel(
-                new VbrCaPaKey(request.GrbParcel.GrbCaPaKey.VbrCaPaKey),
+                new VbrCaPaKey(request.GrbParcel.GrbCaPaKey),
                 extendedWkbGeometry,
                 new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),
                     Application.ParcelRegistry,
-                    new Reason("Uniek Percelen Plan"),
+                    new Reason("Uniek Percelenplan"),
                     new Operator("Parcel Registry"),
                     Modification.Insert,
                     Organisation.DigitaalVlaanderen));

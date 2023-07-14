@@ -4,7 +4,7 @@ namespace ParcelRegistry.Importer.Grb
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using ParcelRegistry.Infrastructure;
 
-    public class ProcessedRequests
+    public sealed class ProcessedRequests
     {
         public string SHA256 { get; set; }
 
@@ -17,7 +17,7 @@ namespace ParcelRegistry.Importer.Grb
         }
     }
 
-    public class ProcessedRequestsConfiguration : IEntityTypeConfiguration<ProcessedRequests>
+    public sealed class ProcessedRequestsConfiguration : IEntityTypeConfiguration<ProcessedRequests>
     {
         public const string TableName = "ProcessedRequests";
 

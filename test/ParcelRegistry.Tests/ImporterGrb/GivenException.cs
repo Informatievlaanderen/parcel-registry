@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoFixture;
@@ -20,18 +21,18 @@
 
     public class GivenException : ParcelRegistryTest
     {
-        private readonly FakeImportParcelContext _fakeImporterContext;
+        private readonly  FakeImportParcelContextFactory _fakeImporterContextFactory;
 
         public GivenException(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _fakeImporterContext = new FakeImportParcelContextFactory().CreateDbContext(Array.Empty<string>());
+            _fakeImporterContextFactory = new FakeImportParcelContextFactory(false);
         }
 
         [Fact]
         public async Task InMediator_ThenSendNotificationAndThrowException()
         {
             var mockMediator = new Mock<IMediator>();
-            var mockIUniqueParcelPlanProxy = new Mock<IUniqueParcelPlanProxy>();
+            var mockIUniqueParcelPlanProxy = new Mock<IDownloadFacade>();
             var mockZipArchiveProcessor = new Mock<IZipArchiveProcessor>();
             var mockRequestMapper = new Mock<IRequestMapper>();
             var mockNotificationService = new Mock<INotificationService>();
@@ -45,8 +46,10 @@
 
             var today = DateTime.Now;
 
-            var lastRunHistory = await _fakeImporterContext.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
-            await _fakeImporterContext.CompleteRunHistory(lastRunHistory.Id);
+            var context = _fakeImporterContextFactory.CreateDbContext();
+
+            var lastRunHistory = await context.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
+            await context.CompleteRunHistory(lastRunHistory.Id);
 
             mockIUniqueParcelPlanProxy.Setup(x => x.GetMaxDate())
                 .ReturnsAsync(today);
@@ -62,31 +65,36 @@
                 mockIUniqueParcelPlanProxy.Object,
                 mockZipArchiveProcessor.Object,
                 mockRequestMapper.Object,
-                _fakeImporterContext,
+                _fakeImporterContextFactory,
                 mockNotificationService.Object);
 
             // Act
             var act = async () => await sut.StartAsync(CancellationToken.None);
 
             // Assert
+
+            var expectedExceptionMessage =
+                $"Exception for parcel: {caPaKey.VbrCaPaKey}, {typeof(Exception)} {Environment.NewLine} Parcel hash: {requests.First().Hash}";
             act.Should().ThrowAsync<Exception>().Result
-                .Where(x => x.Message == $"Exception for parcel: {caPaKey.VbrCaPaKey}, {typeof(Exception)}");
+                .Where(x => x.Message == expectedExceptionMessage);
 
             mockNotificationService.Verify(x => x.PublishToTopicAsync(
-                It.Is<NotificationMessage>(y => y.BasisregistersError == $"Exception for parcel: {caPaKey.VbrCaPaKey}, {typeof(Exception)}")));
+                It.Is<NotificationMessage>(y => y.BasisregistersError == expectedExceptionMessage)));
         }
 
         [Fact]
         public async Task InUniqueParcelPlanProxy_ThenSendNotificationAndThrowException()
         {
             var mockMediator = new Mock<IMediator>();
-            var mockIUniqueParcelPlanProxy = new Mock<IUniqueParcelPlanProxy>();
+            var mockIUniqueParcelPlanProxy = new Mock<IDownloadFacade>();
             var mockZipArchiveProcessor = new Mock<IZipArchiveProcessor>();
             var mockRequestMapper = new Mock<IRequestMapper>();
             var mockNotificationService = new Mock<INotificationService>();
 
-            var lastRunHistory = await _fakeImporterContext.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
-            await _fakeImporterContext.CompleteRunHistory(lastRunHistory.Id);
+            var context = _fakeImporterContextFactory.CreateDbContext();
+
+            var lastRunHistory = await context.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
+            await context.CompleteRunHistory(lastRunHistory.Id);
 
             mockIUniqueParcelPlanProxy.Setup(x => x.GetMaxDate())
                 .Throws(new Exception("Something went wrong"));
@@ -96,7 +104,7 @@
                 mockIUniqueParcelPlanProxy.Object,
                 mockZipArchiveProcessor.Object,
                 mockRequestMapper.Object,
-                _fakeImporterContext,
+                _fakeImporterContextFactory,
                 mockNotificationService.Object);
 
             // Act

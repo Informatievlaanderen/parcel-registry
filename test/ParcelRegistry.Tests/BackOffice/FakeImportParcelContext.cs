@@ -4,10 +4,7 @@ namespace ParcelRegistry.Tests.BackOffice
     using System.Threading.Tasks;
     using Importer.Grb;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.EntityFrameworkCore.Diagnostics;
-    using Parcel;
-    using ParcelRegistry.Api.BackOffice.Abstractions;
 
     public class FakeImportParcelContext : ImporterContext
     {
@@ -42,20 +39,19 @@ namespace ParcelRegistry.Tests.BackOffice
         }
     }
 
-    public class FakeImportParcelContextFactory : IDesignTimeDbContextFactory<FakeImportParcelContext>
+    public class FakeImportParcelContextFactory : IDbContextFactory<ImporterContext>
     {
         private readonly bool _dispose;
+
+        private readonly FakeImportParcelContext _context;
 
         public FakeImportParcelContextFactory(bool dispose = true)
         {
             _dispose = dispose;
-        }
-
-        public FakeImportParcelContext CreateDbContext(params string[] args)
-        {
             var builder = new DbContextOptionsBuilder<ImporterContext>().UseInMemoryDatabase(Guid.NewGuid().ToString());
-
-            return new FakeImportParcelContext(builder.Options, _dispose);
+            _context = new FakeImportParcelContext(builder.Options, _dispose);
         }
+
+        public ImporterContext CreateDbContext() => _context;
     }
 }

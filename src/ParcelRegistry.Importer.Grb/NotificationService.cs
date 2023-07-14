@@ -11,7 +11,7 @@
         public Task PublishToTopicAsync(NotificationMessage message);
     }
 
-    public class NotificationService : INotificationService, IDisposable
+    public sealed class NotificationService : INotificationService, IDisposable
     {
         private readonly IAmazonSimpleNotificationService _amazonSimpleNotificationService;
         private readonly string _topicArn;
