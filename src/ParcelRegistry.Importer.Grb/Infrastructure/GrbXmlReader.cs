@@ -12,7 +12,7 @@
 
     public sealed record GrbParcel(CaPaKey GrbCaPaKey, Geometry Geometry, int Version);
 
-    public class GrbAddXmlReader : GrbXmlReader
+    public sealed class GrbAddXmlReader : GrbXmlReader
     {
         protected override bool IsValid(XmlNode featureMemberNode)
         {
@@ -21,7 +21,7 @@
         }
     }
 
-    public class GrbUpdateXmlReader : GrbXmlReader
+    public sealed class GrbUpdateXmlReader : GrbXmlReader
     {
         protected override bool IsValid(XmlNode featureMemberNode)
         {
@@ -30,7 +30,7 @@
         }
     }
 
-    public class GrbDeleteXmlReader : GrbXmlReader
+    public sealed class GrbDeleteXmlReader : GrbXmlReader
     {
         protected override bool IsValid(XmlNode featureMemberNode)
         {
@@ -41,13 +41,13 @@
         public override IEnumerable<GrbParcel> Read(string filePath)
         {
             var parcels = base.Read(filePath);
-            return parcels.Select(x => new GrbParcel(x.GrbCaPaKey, x.Geometry, x.Version + 1));
+            return parcels.Select(x => x with { Version = x.Version + 1 });
         }
 
         public override IEnumerable<GrbParcel> Read(Stream fileStream)
         {
             var parcels = base.Read(fileStream);
-            return parcels.Select(x => new GrbParcel(x.GrbCaPaKey, x.Geometry, x.Version + 1));
+            return parcels.Select(x => x with { Version = x.Version + 1 });
         }
     }
 

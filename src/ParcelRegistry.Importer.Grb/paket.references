@@ -2,5 +2,9 @@ NetTopologySuite
 
 Be.Vlaanderen.Basisregisters.Auth.AcmIdm
 
+MediatR.Contracts
+
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles
+
+AWSSDK.SimpleNotificationService

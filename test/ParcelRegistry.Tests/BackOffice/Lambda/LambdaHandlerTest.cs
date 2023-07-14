@@ -18,13 +18,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         public LambdaHandlerTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         { }
 
-        public void DispatchArrangeCommand<T>(T command) where T : IHasCommandProvenance
-        {
-            using var scope = Container.BeginLifetimeScope();
-            var bus = scope.Resolve<ICommandHandlerResolver>();
-            bus.Dispatch(command.CreateCommandId(), command);
-        }
-
         protected Mock<ITicketing> MockTicketing(Action<ETagResponse> ticketingCompleteCallback)
         {
             var ticketing = new Mock<ITicketing>();

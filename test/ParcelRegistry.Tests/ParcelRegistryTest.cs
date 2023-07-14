@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Tests
 {
+    using System;
     using System.Collections.Generic;
     using Autofac;
     using AutoFixture;
@@ -63,7 +64,7 @@ namespace ParcelRegistry.Tests
                 .AddInMemoryCollection(new Dictionary<string, string> { { "DetailUrl", ConfigDetailUrl } })
                 .Build();
 
-            builder.Register(a => (IConfiguration)configuration);
+            builder.Register(a => (IConfiguration) configuration);
 
             builder
                 .RegisterModule(new CommandHandlingModule(configuration))
