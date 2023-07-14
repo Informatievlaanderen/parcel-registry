@@ -124,7 +124,7 @@ namespace ParcelRegistry.Parcel
 
                     var parcel = await parcelRepository().GetAsync(streamId, ct);
 
-                    parcel.ChangeGeometry(message.Command.ExtendedWkbGeometry);
+                    parcel.ChangeGeometry(message.Command.Addresses, message.Command.ExtendedWkbGeometry);
                 });
         }
     }

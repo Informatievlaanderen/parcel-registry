@@ -178,7 +178,7 @@ namespace ParcelRegistry.Parcel
             ApplyChange(new ParcelWasRetiredV2(ParcelId, CaPaKey));
         }
 
-        public void ChangeGeometry(ExtendedWkbGeometry extendedWkbGeometry)
+        public void ChangeGeometry(List<AddressPersistentLocalId> addresses, ExtendedWkbGeometry extendedWkbGeometry)
         {
             GuardParcelNotRemoved();
             GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
@@ -186,6 +186,25 @@ namespace ParcelRegistry.Parcel
             if (Geometry == extendedWkbGeometry)
             {
                 return;
+            }
+
+            var addressesToDetach = _addressPersistentLocalIds.Except(addresses).ToList();
+            var addressesToAttach = addresses.Except(_addressPersistentLocalIds).ToList();
+
+            foreach (var address in addressesToDetach)
+            {
+                ApplyChange(new ParcelAddressWasDetachedV2(
+                    ParcelId,
+                    CaPaKey,
+                    address));
+            }
+
+            foreach (var address in addressesToAttach)
+            {
+                ApplyChange(new ParcelAddressWasAttachedV2(
+                    ParcelId,
+                    CaPaKey,
+                    address));
             }
 
             ApplyChange(new ParcelGeometryWasChanged(ParcelId, CaPaKey, extendedWkbGeometry));
