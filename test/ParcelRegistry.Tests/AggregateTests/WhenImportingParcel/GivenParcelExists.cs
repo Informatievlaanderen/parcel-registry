@@ -46,6 +46,7 @@
             var command = new ImportParcel(
                 caPaKey,
                 GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
+                new List<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()

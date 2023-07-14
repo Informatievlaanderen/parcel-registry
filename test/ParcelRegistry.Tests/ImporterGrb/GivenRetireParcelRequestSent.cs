@@ -1,5 +1,6 @@
 ﻿namespace ParcelRegistry.Tests.ImporterGrb
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions.Extensions;
@@ -34,6 +35,7 @@
                 new ImportParcel(
                     new VbrCaPaKey(caPaKey.VbrCaPaKey),
                     GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
+                    new List<AddressPersistentLocalId>(),
                     Fixture.Create<Provenance>()));
 
             var retireParcelRequest = new RetireParcelRequest(

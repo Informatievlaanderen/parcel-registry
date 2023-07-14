@@ -30,6 +30,7 @@
             var command = new ImportParcel(
                 caPaKey,
                 GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
+                new List<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -48,6 +49,7 @@
             var command = new ImportParcel(
                 Fixture.Create<VbrCaPaKey>(),
                 GeometryHelpers.GmlPointGeometry.GmlToExtendedWkbGeometry(),
+                new List<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()

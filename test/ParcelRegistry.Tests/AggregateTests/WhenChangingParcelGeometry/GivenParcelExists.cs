@@ -38,6 +38,7 @@
             var command = new ChangeParcelGeometry(
                 caPaKey,
                 GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry(),
+                new List<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()
@@ -57,6 +58,7 @@
             var command = new ChangeParcelGeometry(
                 caPaKey,
                 extendedWkbGeometry,
+                new List<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             var parcelWasMigrated = new ParcelWasMigrated(
@@ -90,6 +92,7 @@
             var command = new ChangeParcelGeometry(
                 caPaKey,
                 GeometryHelpers.GmlPointGeometry.GmlToExtendedWkbGeometry(),
+                new List<AddressPersistentLocalId>(),
                 Fixture.Create<Provenance>());
 
             Assert(new Scenario()

@@ -52,6 +52,7 @@
                 var command = new ImportParcel(
                     new VbrCaPaKey(grbParcel.GrbCaPaKey.VbrCaPaKey),
                     new ExtendedWkbGeometry(grbParcel.Geometry.AsBinary()),
+                    new List<AddressPersistentLocalId>(),
                     new Provenance(
                         SystemClock.Instance.GetCurrentInstant(),
                         Application.ParcelRegistry,

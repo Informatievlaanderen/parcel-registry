@@ -16,16 +16,20 @@
 
         public ExtendedWkbGeometry ExtendedWkbGeometry { get; }
 
+        public List<AddressPersistentLocalId> Addresses { get; }
+
         public Provenance Provenance { get; }
 
         public ChangeParcelGeometry(
             VbrCaPaKey vbrCaPaKey,
             ExtendedWkbGeometry extendedWkbGeometry,
+            List<AddressPersistentLocalId> addresses,
             Provenance provenance)
         {
             VbrCaPaKey = vbrCaPaKey;
             ParcelId = ParcelId.CreateFor(VbrCaPaKey);
             ExtendedWkbGeometry = extendedWkbGeometry;
+            Addresses = addresses;
             Provenance = provenance;
         }
 
@@ -40,6 +44,7 @@
             yield return ParcelId;
             yield return VbrCaPaKey;
             yield return ExtendedWkbGeometry;
+            yield return Addresses;
 
             foreach (var field in Provenance.GetIdentityFields())
             {
