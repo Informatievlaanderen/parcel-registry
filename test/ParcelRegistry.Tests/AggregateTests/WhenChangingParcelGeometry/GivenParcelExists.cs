@@ -49,6 +49,56 @@
         }
 
         [Fact]
+        public void WithAddresses_ThenParcelAddressesAreAttachedAndDetached()
+        {
+            var caPaKey = Fixture.Create<VbrCaPaKey>();
+            var parcelId = ParcelId.CreateFor(caPaKey);
+
+            var parcelWasImported = new ParcelWasImported(
+                parcelId,
+                caPaKey,
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
+            parcelWasImported.SetFixtureProvenance(Fixture);
+
+            var addressPersistentLocalIdToAttach = new AddressPersistentLocalId(1);
+            var addressPersistentLocalIdToDoNothing = new AddressPersistentLocalId(2);
+            var addressPersistentLocalIdToDetach = new AddressPersistentLocalId(3);
+
+            var toDoNothingParcelAddressWasAttached = new ParcelAddressWasAttachedV2(
+                parcelId,
+                caPaKey,
+                addressPersistentLocalIdToDoNothing);
+            toDoNothingParcelAddressWasAttached.SetFixtureProvenance(Fixture);
+
+            var toDetachParcelAddressWasAttached = new ParcelAddressWasAttachedV2(
+                parcelId,
+                caPaKey,
+                addressPersistentLocalIdToDetach);
+            toDetachParcelAddressWasAttached.SetFixtureProvenance(Fixture);
+
+            var command = new ChangeParcelGeometry(
+                caPaKey,
+                GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry(),
+                new List<AddressPersistentLocalId>()
+                {
+                    addressPersistentLocalIdToAttach,
+                    addressPersistentLocalIdToDoNothing
+                },
+                Fixture.Create<Provenance>());
+
+            Assert(new Scenario()
+                .Given(new ParcelStreamId(parcelId),
+                    parcelWasImported,
+                    toDoNothingParcelAddressWasAttached,
+                    toDetachParcelAddressWasAttached)
+                .When(command)
+                .Then(new ParcelStreamId(command.ParcelId),
+                    new ParcelAddressWasDetachedV2(parcelId, caPaKey, addressPersistentLocalIdToDetach),
+                    new ParcelAddressWasAttachedV2(parcelId, caPaKey, addressPersistentLocalIdToAttach),
+                    new ParcelGeometryWasChanged(parcelId, caPaKey,  GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry())));
+        }
+
+        [Fact]
         public void WhenGeometryIsTheSame_ThenNone()
         {
             var caPaKey = Fixture.Create<VbrCaPaKey>();
