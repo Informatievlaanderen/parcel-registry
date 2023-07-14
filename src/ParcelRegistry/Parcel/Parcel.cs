@@ -136,6 +136,7 @@ namespace ParcelRegistry.Parcel
             IParcelFactory parcelFactory,
             VbrCaPaKey vbrCaPaKey,
             ParcelId parcelId,
+            List<AddressPersistentLocalId> addressesToAttach,
             ExtendedWkbGeometry extendedWkbGeometry)
         {
             GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
@@ -147,6 +148,15 @@ namespace ParcelRegistry.Parcel
                     parcelId,
                     vbrCaPaKey,
                     extendedWkbGeometry));
+
+            foreach (var address in addressesToAttach)
+            {
+                newParcel.ApplyChange(
+                    new ParcelAddressWasAttachedV2(
+                        parcelId,
+                        vbrCaPaKey,
+                        address));
+            }
 
             return newParcel;
         }
