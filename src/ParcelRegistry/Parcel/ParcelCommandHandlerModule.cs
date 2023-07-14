@@ -97,7 +97,7 @@ namespace ParcelRegistry.Parcel
                         message.Command.ParcelId,
                         message.Command.AddressesToAttach,
                         message.Command.ExtendedWkbGeometry);
-                    
+
                     parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
                 });
 

@@ -34,12 +34,31 @@
                 GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             parcelWasImported.SetFixtureProvenance(Fixture);
 
+            var firstAddressPersistentLocalId = new AddressPersistentLocalId(1);
+            var firstParcelAddressWasAttached = new ParcelAddressWasAttachedV2(
+                parcelId,
+                caPaKey,
+                firstAddressPersistentLocalId);
+            firstParcelAddressWasAttached.SetFixtureProvenance(Fixture);
+
+            var secondAddressPersistentLocalId = new AddressPersistentLocalId(2);
+            var secondParcelAddressWasAttached = new ParcelAddressWasAttachedV2(
+                parcelId,
+                caPaKey,
+                secondAddressPersistentLocalId);
+            secondParcelAddressWasAttached.SetFixtureProvenance(Fixture);
+
             var command = new RetireParcelV2(caPaKey, Fixture.Create<Provenance>());
 
             Assert(new Scenario()
-                .Given(new ParcelStreamId(parcelId), parcelWasImported)
+                .Given(new ParcelStreamId(parcelId),
+                    parcelWasImported,
+                    firstParcelAddressWasAttached,
+                    secondParcelAddressWasAttached)
                 .When(command)
                 .Then(new ParcelStreamId(command.ParcelId),
+                    new ParcelAddressWasDetachedV2(parcelId, caPaKey, firstAddressPersistentLocalId),
+                    new ParcelAddressWasDetachedV2(parcelId, caPaKey, secondAddressPersistentLocalId),
                     new ParcelWasRetiredV2(parcelId, caPaKey)));
         }
 
