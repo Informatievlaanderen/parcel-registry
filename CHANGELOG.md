@@ -1,3 +1,18 @@
+# [4.26.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.25.0...v4.26.0) (2023-07-17)
+
+
+### Bug Fixes
+
+* add release for grb importer ([f965719](https://github.com/informatievlaanderen/parcel-registry/commit/f96571900d13017375cab845ca73017e690d5b6d))
+* add spatial index on consumer address ([d78bd3e](https://github.com/informatievlaanderen/parcel-registry/commit/d78bd3eba3c6eb78b6c30b8d8947b876e10ec1e3))
+
+
+### Features
+
+* add importer downloadclient ([55f7ff7](https://github.com/informatievlaanderen/parcel-registry/commit/55f7ff760c27ffd3b583a9ce2411ae82f21de92e))
+* attach/detach addresses to import/change geometry in domain ([bf3793e](https://github.com/informatievlaanderen/parcel-registry/commit/bf3793e90d5fbb2acb523b5005d04b56a10cd6ee))
+* import grb data ([6b88c74](https://github.com/informatievlaanderen/parcel-registry/commit/6b88c7434473361392b84c33cbf03be7e35f8c69))
+
 # [4.25.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.24.0...v4.25.0) (2023-07-10)
 
 
