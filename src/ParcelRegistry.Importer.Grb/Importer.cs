@@ -59,7 +59,6 @@
                 await ProcessRecords(stoppingToken, groupedParcels);
 
                 await using var context = await _importerContext.CreateDbContextAsync(stoppingToken);
-
                 await context.CompleteRunHistory(currentRun.Id);
                 await context.ClearProcessedRequests();
             }

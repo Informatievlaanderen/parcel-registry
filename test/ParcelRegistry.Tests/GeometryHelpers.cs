@@ -30,6 +30,21 @@
             "</gml:LinearRing>" +
             "</gml:exterior>" +
             "</gml:Polygon>";
+        public static Point ValidPoint1InPolgyon2 = new Point(150, 150);
+        public static Point ValidPointOnEdgeOfPolygon2 = new Point(100, 100);
+        public static Point PointOutsideOfValidPolygon2 = new Point(1, 1);
+
+        public const string ValidGmlPolygon3 =
+            "<gml:Polygon srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+            "<gml:exterior>" +
+            "<gml:LinearRing>" +
+            "<gml:posList>" +
+            "300 300 400 300 400 400 300 400 300 300" +
+            "</gml:posList>" +
+            "</gml:LinearRing>" +
+            "</gml:exterior>" +
+            "</gml:Polygon>";
+        public static Point ValidPoint1InPolgyon3 = new Point(250, 350);
 
         // Polygon is invalid because interior and exterior rings intersect
         public const string InValidGmlPolygon =
