@@ -14,6 +14,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.DependencyInjection;
+    using Consumer.Address.Infrastructure.Modules;
     using Destructurama;
     using Download;
     using Handlers;
@@ -102,10 +103,12 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>((hostContext, builder) =>
                 {
-                    var services = new ServiceCollection();
-                    services.RegisterModule(new DataDogModule(hostContext.Configuration));
-
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
+
+                    var services = new ServiceCollection();
+                    services
+                        .RegisterModule(new DataDogModule(hostContext.Configuration))
+                        .ConfigureConsumerAddress(hostContext.Configuration, loggerFactory, ServiceLifetime.Singleton);
 
                     builder
                         .RegisterModule(new CommandHandlingModule(hostContext.Configuration))

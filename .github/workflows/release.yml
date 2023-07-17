@@ -968,7 +968,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        services: ['parcel-registry-api', 'parcel-registry-import-api', 'parcel-registry-projections', 'parcel-registry-producer', 'parcel-registry-producer-snapshot-oslo']
+        services: [
+        'parcel-registry-api', 
+        'parcel-registry-import-api', 
+        'parcel-registry-projections', 
+        'parcel-registry-producer', 
+        'parcel-registry-producer-snapshot-oslo',
+        'parcel-registry-importer-grb'
+        ]
 
     steps:
     - name: Deploy services

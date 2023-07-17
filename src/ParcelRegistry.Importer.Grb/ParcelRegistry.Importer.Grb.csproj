@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ParcelRegistry.Api.BackOffice.Abstractions\ParcelRegistry.Api.BackOffice.Abstractions.csproj" />
+    <ProjectReference Include="..\ParcelRegistry.Consumer.Address\ParcelRegistry.Consumer.Address.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Infrastructure\ParcelRegistry.Infrastructure.csproj" />
     <ProjectReference Include="..\ParcelRegistry\ParcelRegistry.csproj" />
   </ItemGroup>

@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Consumer.Address
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
@@ -10,6 +11,7 @@ namespace ParcelRegistry.Consumer.Address
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
+    using NetTopologySuite.Geometries;
     using Parcel;
     using Parcel.DataStructures;
     using ParcelRegistry.Infrastructure;
@@ -41,6 +43,13 @@ namespace ParcelRegistry.Consumer.Address
             }
 
             return new AddressData(new AddressPersistentLocalId(item.AddressPersistentLocalId), Map(item.Status), item.IsRemoved);
+        }
+
+        public List<AddressConsumerItem> FindAddressesWithinGeometry(Geometry geometry)
+        {
+            return AddressConsumerItems
+                .Where(x => x.Position.Within(geometry) || x.Position.Touches(geometry))
+                .ToList();
         }
 
         public ParcelRegistry.Parcel.DataStructures.AddressStatus Map(AddressStatus status)
