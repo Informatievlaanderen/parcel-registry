@@ -1,3 +1,10 @@
+# [4.27.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.26.0...v4.27.0) (2023-07-18)
+
+
+### Features
+
+* perform spatial query to collect addresses within a parcel ([78efd01](https://github.com/informatievlaanderen/parcel-registry/commit/78efd01ffea46177df96291e1357ce1c2d7cfaa5))
+
 # [4.26.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.25.0...v4.26.0) (2023-07-17)
 
 
