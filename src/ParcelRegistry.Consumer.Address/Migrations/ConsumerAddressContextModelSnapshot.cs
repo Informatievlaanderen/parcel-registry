@@ -76,8 +76,6 @@ namespace ParcelRegistry.Consumer.Address.Migrations
 
                     b.HasIndex("IsRemoved");
 
-                    b.HasIndex("Position");
-
                     b.ToTable("Addresses", "ParcelRegistryConsumerAddress");
                 });
 #pragma warning restore 612, 618
