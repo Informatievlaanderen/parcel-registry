@@ -25,6 +25,7 @@ nuget Amazon.Lambda.Serialization.Json 2.0.0
 nuget Amazon.Lambda.SQSEvents 2.1.0
 nuget AWSSDK.S3 3.7.103.26
 nuget AWSSDK.SimpleNotificationService 3.7.101.86
+nuget AWSSDK.Extensions.NETCore.Setup 3.7.5
 
 nuget AsyncEnumerator 4.0.2
 
