@@ -7,6 +7,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading.Tasks;
+    using Amazon.SimpleNotificationService;
     using Api.BackOffice.Abstractions;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -106,6 +107,15 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     var services = new ServiceCollection();
+
+                    services.AddAWSService<IAmazonSimpleNotificationService>();
+                    services.AddScoped<INotificationService>(provider =>
+                    {
+                        var snsService = provider.GetRequiredService<IAmazonSimpleNotificationService>();
+                        var topicArn = hostContext.Configuration["TopicArn"];
+                        return new NotificationService(snsService, topicArn);
+                    });
+
                     services
                         .RegisterModule(new DataDogModule(hostContext.Configuration))
                         .ConfigureConsumerAddress(hostContext.Configuration, loggerFactory, ServiceLifetime.Singleton);
