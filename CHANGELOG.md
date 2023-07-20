@@ -1,3 +1,10 @@
+## [4.27.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.1...v4.27.2) (2023-07-20)
+
+
+### Bug Fixes
+
+* register notification service in importer ([ff296b6](https://github.com/informatievlaanderen/parcel-registry/commit/ff296b68129108bc43ca836b402f1b7d873fe829))
+
 ## [4.27.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.0...v4.27.1) (2023-07-20)
 
 
