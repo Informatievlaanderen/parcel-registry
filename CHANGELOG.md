@@ -1,3 +1,11 @@
+## [4.27.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.0...v4.27.1) (2023-07-20)
+
+
+### Bug Fixes
+
+* add ConsumerAddress connectionstring to importer ([1e70d6d](https://github.com/informatievlaanderen/parcel-registry/commit/1e70d6d8b45f7f41af94151624db2f1d624b8b5f))
+* remove index creation because its already made ([aa4e1c4](https://github.com/informatievlaanderen/parcel-registry/commit/aa4e1c400339d3a4999d1901e397f7b651d49c8a))
+
 # [4.27.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.26.0...v4.27.0) (2023-07-18)
 
 
