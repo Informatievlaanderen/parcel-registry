@@ -1,3 +1,11 @@
+## [4.27.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.2...v4.27.3) (2023-07-24)
+
+
+### Bug Fixes
+
+* re-make grb_download_file.zip ([703eea9](https://github.com/informatievlaanderen/parcel-registry/commit/703eea94bb0dbdce1bf2e603710c63c8193ef015))
+* zipArchiveProcessor read entry file path ([588a9ed](https://github.com/informatievlaanderen/parcel-registry/commit/588a9ed2dc5238c0d02643db60b5c5730028b7c3))
+
 ## [4.27.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.1...v4.27.2) (2023-07-20)
 
 
