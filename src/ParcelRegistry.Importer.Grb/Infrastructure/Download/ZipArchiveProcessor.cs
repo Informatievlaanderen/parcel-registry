@@ -15,8 +15,8 @@
         public Dictionary<GrbParcelActions, Stream> Open(ZipArchive zipArchive)
         {
             var filesByAction = new Dictionary<GrbParcelActions, Stream>();
-            var adpAddEntry = zipArchive.GetEntry("GML\\AdpAdd.gml");
-            var adpDelEntry = zipArchive.GetEntry("GML\\AdpDel.gml");
+            var adpAddEntry = zipArchive.GetEntry("GML/AdpAdd.gml");
+            var adpDelEntry = zipArchive.GetEntry("GML/AdpDel.gml");
             if (adpAddEntry is null)
                 throw new InvalidOperationException("AdpAdd.gml not found in zip archive.");
 
