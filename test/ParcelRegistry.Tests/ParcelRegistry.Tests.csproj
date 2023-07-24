@@ -16,6 +16,7 @@
     <None Update="GrbXmlReaderTests\AdpAdd_NoChanges.gml" CopyToOutputDirectory="Always" />
     <None Update="GrbXmlReaderTests\AdpAdd.gml" CopyToOutputDirectory="Always" />
     <None Update="GrbXmlReaderTests\AdpDel.gml" CopyToOutputDirectory="Always" />
+    <None Update="ImporterGrb\grb_download_file.zip" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
