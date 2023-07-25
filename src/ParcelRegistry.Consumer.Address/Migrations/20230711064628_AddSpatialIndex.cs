@@ -17,7 +17,7 @@ namespace ParcelRegistry.Consumer.Address.Migrations
 			            LEVEL_2 = MEDIUM,
 			            LEVEL_3 = MEDIUM,
 			            LEVEL_4 = MEDIUM),
-	            CELLS_PER_OBJECT = 5");
+	            CELLS_PER_OBJECT = 5)");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
