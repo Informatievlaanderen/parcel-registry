@@ -1,3 +1,10 @@
+## [4.27.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.4...v4.27.5) (2023-07-25)
+
+
+### Bug Fixes
+
+* spatial query typo ([1c9f4c5](https://github.com/informatievlaanderen/parcel-registry/commit/1c9f4c50a6e6ebe60362a1dc81e11e3f05455042))
+
 ## [4.27.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.3...v4.27.4) (2023-07-25)
 
 
