@@ -122,7 +122,8 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
 
                     builder
                         .RegisterModule(new CommandHandlingModule(hostContext.Configuration))
-                        .RegisterModule(new BackOfficeModule(hostContext.Configuration, services, loggerFactory));
+                        .RegisterModule(new BackOfficeModule(hostContext.Configuration, services, loggerFactory))
+                        .RegisterSnapshotModule(hostContext.Configuration);
 
                     builder
                         .RegisterType<Mediator>()
