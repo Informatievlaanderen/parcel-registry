@@ -1,3 +1,10 @@
+## [4.27.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.5...v4.27.6) (2023-07-25)
+
+
+### Bug Fixes
+
+* add snapshot registration to importer ([cf7e167](https://github.com/informatievlaanderen/parcel-registry/commit/cf7e1679f7d7aafb254eccb1e98e5a042d4b8c6c))
+
 ## [4.27.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.4...v4.27.5) (2023-07-25)
 
 
