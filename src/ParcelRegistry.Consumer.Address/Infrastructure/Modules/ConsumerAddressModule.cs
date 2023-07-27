@@ -53,6 +53,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure.Modules
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerAddress, Schema.ConsumerAddress);
                         sqlServerOptions.UseNetTopologySuite();
+                        sqlServerOptions.CommandTimeout(120);
                     }), serviceLifetime);
         }
 

@@ -154,11 +154,6 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                         .RegisterType<ZipArchiveProcessor>()
                         .As<IZipArchiveProcessor>();
 
-                    builder
-                        .RegisterType<Importer>()
-                        .As<IHostedService>()
-                        .SingleInstance();
-
                     builder.Populate(services);
                 })
                 .UseConsoleLifetime()
@@ -172,7 +167,10 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                 await host.Services.GetRequiredService<ImporterContext>().Database.MigrateAsync();
 
                 await DistributedLock<Program>.RunAsync(
-                        async () => { await host.RunAsync().ConfigureAwait(false); },
+                        async () =>
+                        {
+                            await host.RunAsync().ConfigureAwait(false);
+                        },
                         DistributedLockOptions.LoadFromConfiguration(configuration),
                         logger)
                     .ConfigureAwait(false);
