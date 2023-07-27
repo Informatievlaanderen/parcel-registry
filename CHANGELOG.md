@@ -1,3 +1,10 @@
+## [4.27.8](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.7...v4.27.8) (2023-07-27)
+
+
+### Bug Fixes
+
+* double registration of importer + sql timeout to 120 sec ([140570b](https://github.com/informatievlaanderen/parcel-registry/commit/140570b29bd3eca09f84fa96f53560beeee63ae8))
+
 ## [4.27.7](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.6...v4.27.7) (2023-07-26)
 
 
