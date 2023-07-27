@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Consumer.Address;
@@ -17,12 +18,12 @@
 
     public sealed class ChangeParcelGeometryHandler : IRequestHandler<ChangeParcelGeometryRequest>
     {
-        private readonly ICommandHandlerResolver _commandHandlerResolver;
+        private readonly ILifetimeScope _lifetimeScope;
         private readonly ConsumerAddressContext _addresses;
 
-        public ChangeParcelGeometryHandler(ICommandHandlerResolver commandHandlerResolver, ConsumerAddressContext addresses)
+        public ChangeParcelGeometryHandler(ILifetimeScope lifetimeScope, ConsumerAddressContext addresses)
         {
-            _commandHandlerResolver = commandHandlerResolver;
+            _lifetimeScope = lifetimeScope;
             _addresses = addresses;
         }
 
@@ -47,7 +48,10 @@
                     Modification.Update,
                     Organisation.DigitaalVlaanderen));
 
-            await _commandHandlerResolver.Dispatch(command.CreateCommandId(), command, cancellationToken: cancellationToken);
+            await using var scope = _lifetimeScope.BeginLifetimeScope();
+            await scope
+                .Resolve<ICommandHandlerResolver>()
+                .Dispatch(command.CreateCommandId(), command, cancellationToken: cancellationToken);
         }
     }
 }
