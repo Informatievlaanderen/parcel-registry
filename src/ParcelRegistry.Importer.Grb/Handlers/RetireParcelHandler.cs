@@ -2,6 +2,7 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Infrastructure;
@@ -13,11 +14,11 @@
 
     public sealed class RetireParcelHandler : IRequestHandler<RetireParcelRequest>
     {
-        private readonly ICommandHandlerResolver _commandHandlerResolver;
+        private readonly ILifetimeScope _lifetimeScope;
 
-        public RetireParcelHandler(ICommandHandlerResolver commandHandlerResolver)
+        public RetireParcelHandler(ILifetimeScope lifetimeScope)
         {
-            _commandHandlerResolver = commandHandlerResolver;
+            _lifetimeScope = lifetimeScope;
         }
 
         public async Task Handle(RetireParcelRequest request, CancellationToken cancellationToken)
@@ -32,7 +33,10 @@
                     Modification.Update,
                     Organisation.DigitaalVlaanderen));
 
-            await _commandHandlerResolver.Dispatch(command.CreateCommandId(), command, cancellationToken: cancellationToken);
+            await using var scope = _lifetimeScope.BeginLifetimeScope();
+            await scope
+                .Resolve<ICommandHandlerResolver>()
+                .Dispatch(command.CreateCommandId(), command, cancellationToken: cancellationToken);
         }
     }
 }
