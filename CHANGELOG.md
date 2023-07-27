@@ -1,3 +1,10 @@
+## [4.27.7](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.6...v4.27.7) (2023-07-26)
+
+
+### Bug Fixes
+
+* dummy to trigger release ([22402ff](https://github.com/informatievlaanderen/parcel-registry/commit/22402fff1628762273fa5d641d047fc52eb1f0d9))
+
 ## [4.27.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.5...v4.27.6) (2023-07-25)
 
 
