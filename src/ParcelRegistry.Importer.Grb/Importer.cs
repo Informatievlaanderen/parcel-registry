@@ -53,7 +53,8 @@
                 var parcelsRequests = _requestMapper.Map(files);
 
                 var groupedParcels = parcelsRequests
-                    .OrderBy(x => x.GrbParcel.Version)
+                    .OrderBy(x => x.GrbParcel.VersionDate)
+                    .ThenBy(x => x.GrbParcel.Version)
                     .GroupBy(y => y.GrbParcel.GrbCaPaKey);
 
                 await ProcessRecords(stoppingToken, groupedParcels);

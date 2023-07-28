@@ -1,5 +1,6 @@
 ﻿namespace ParcelRegistry.Tests.ImporterGrb
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -39,9 +40,9 @@
                     Fixture.Create<Provenance>()));
 
             var retireParcelRequest = new RetireParcelRequest(
-                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9));
+                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, new DateTime()));
 
-            var sut = new RetireParcelHandler(Container.Resolve<ICommandHandlerResolver>());
+            var sut = new RetireParcelHandler(Container);
 
             await sut.Handle(retireParcelRequest, CancellationToken.None);
 

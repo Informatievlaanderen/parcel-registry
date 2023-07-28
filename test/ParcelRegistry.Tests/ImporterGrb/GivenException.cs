@@ -41,7 +41,7 @@
 
             var requests = new List<ParcelRequest>
             {
-                new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9))
+                new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9, new DateTime()))
             };
 
             var today = DateTime.Now;

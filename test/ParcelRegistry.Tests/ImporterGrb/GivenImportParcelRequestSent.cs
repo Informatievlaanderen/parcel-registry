@@ -1,5 +1,6 @@
 ﻿namespace ParcelRegistry.Tests.ImporterGrb
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
@@ -50,9 +51,9 @@
                 ));
             fakeAddressConsumerContext.SaveChanges();
 
-            var importRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9));
+            var importRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, new DateTime()));
 
-            var sut = new ImportParcelHandler(Container.Resolve<ICommandHandlerResolver>(), fakeAddressConsumerContext);
+            var sut = new ImportParcelHandler(Container, fakeAddressConsumerContext);
 
             await sut.Handle(importRequest, CancellationToken.None);
 

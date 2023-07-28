@@ -1,5 +1,6 @@
 ﻿namespace ParcelRegistry.Tests.ImporterGrb
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -73,10 +74,10 @@
                     Fixture.Create<Provenance>()));
 
             var changeParcelGeometryRequest = new ChangeParcelGeometryRequest(
-                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9));
+                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, new DateTime()));
 
             var sut = new ChangeParcelGeometryHandler(
-                Container.Resolve<ICommandHandlerResolver>(),
+                Container,
                 fakeAddressConsumerContext);
 
             await sut.Handle(changeParcelGeometryRequest, CancellationToken.None);
