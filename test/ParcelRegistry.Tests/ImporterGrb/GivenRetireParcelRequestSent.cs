@@ -40,7 +40,7 @@
                     Fixture.Create<Provenance>()));
 
             var retireParcelRequest = new RetireParcelRequest(
-                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, new DateTime()));
+                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, DateTime.Now));
 
             var sut = new RetireParcelHandler(Container);
 

@@ -51,7 +51,7 @@
                 ));
             fakeAddressConsumerContext.SaveChanges();
 
-            var importRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, new DateTime()));
+            var importRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, DateTime.Now));
 
             var sut = new ImportParcelHandler(Container, fakeAddressConsumerContext);
 

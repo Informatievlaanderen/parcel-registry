@@ -39,7 +39,7 @@
 
             var caPaKey = CaPaKey.CreateFrom(Fixture.Create<string>());
 
-            var alreadyExecutedRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9, new DateTime()));
+            var alreadyExecutedRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9, DateTime.Now));
             var requests = new List<ParcelRequest>
             {
                 alreadyExecutedRequest,

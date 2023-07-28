@@ -74,7 +74,7 @@
                     Fixture.Create<Provenance>()));
 
             var changeParcelGeometryRequest = new ChangeParcelGeometryRequest(
-                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, new DateTime()));
+                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, DateTime.Now));
 
             var sut = new ChangeParcelGeometryHandler(
                 Container,
