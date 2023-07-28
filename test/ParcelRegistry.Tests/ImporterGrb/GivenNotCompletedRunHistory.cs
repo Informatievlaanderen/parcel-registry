@@ -43,8 +43,8 @@
             var requests = new List<ParcelRequest>
             {
                 alreadyExecutedRequest,
-                new RetireParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 10, new DateTime())),
-                new ChangeParcelGeometryRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 11, new DateTime()))
+                new RetireParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 10,  DateTime.Now)),
+                new ChangeParcelGeometryRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 11,  DateTime.Now))
             };
 
             var context = _fakeImporterContextFactory.CreateDbContext();
