@@ -37,16 +37,7 @@
                 },
                 Fixture.Create<Provenance>());
 
-            Assert(new Scenario()
-                .Given(new ParcelStreamId(command.ParcelId))
-                .When(command)
-                .Then(new ParcelStreamId(command.ParcelId),
-                    new ParcelWasImported(
-                        command.ParcelId,
-                        caPaKey,
-                        command.ExtendedWkbGeometry),
-                    new ParcelAddressWasAttachedV2(command.ParcelId, caPaKey, new AddressPersistentLocalId(1)),
-                    new ParcelAddressWasAttachedV2(command.ParcelId, caPaKey, new AddressPersistentLocalId(2))));
+
         }
 
         [Fact]

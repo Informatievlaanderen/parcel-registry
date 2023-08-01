@@ -76,23 +76,27 @@
 
         private async Task ProcessRecords(CancellationToken stoppingToken, IEnumerable<IGrouping<CaPaKey, ParcelRequest>> groupedParcels)
         {
-            foreach (var parcelRequest in groupedParcels.SelectMany(x => x))
+            foreach (var parcelRequests in groupedParcels)
             {
-                await using var context = await _importerContext.CreateDbContextAsync(stoppingToken);
-                try
+                foreach (var request in parcelRequests)
                 {
-                    if (await context.ProcessedRequestExists(parcelRequest.Hash))
+                    await using var context = await _importerContext.CreateDbContextAsync(stoppingToken);
+
+                    try
                     {
-                        continue;
+                        if (await context.ProcessedRequestExists(request.Hash))
+                        {
+                            continue;
+                        }
+
+                        await _mediator.Send(request, stoppingToken);
+
+                        await context.AddProcessedRequest(request.Hash);
                     }
-
-                    await _mediator.Send(parcelRequest, stoppingToken);
-
-                    await context.AddProcessedRequest(parcelRequest.Hash);
-                }
-                catch (Exception e)
-                {
-                    throw new Exception($"Exception for parcel: {parcelRequest.GrbParcel.GrbCaPaKey.VbrCaPaKey}, {e.GetType()} {Environment.NewLine} Parcel hash: {parcelRequest.Hash}", e);
+                    catch (Exception e)
+                    {
+                        throw new Exception($"Exception for parcel: {request.GrbParcel.GrbCaPaKey.VbrCaPaKey}, {e.GetType()} {Environment.NewLine} Parcel hash: {request.Hash}", e);
+                    }
                 }
             }
         }
