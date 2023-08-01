@@ -12,9 +12,9 @@
     [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
     [EventDescription("Het perceel kreeg status 'gerealiseerd' (via correctie)..")]
-    public sealed class ParcelRetirementWasCorrected : IParcelEvent
+    public sealed class ParcelWasCorrectedFromRetiredToRealized : IParcelEvent
     {
-        public const string EventName = "ParcelRetirementWasCorrected"; // BE CAREFUL CHANGING THIS!!
+        public const string EventName = "ParcelWasCorrectedFromRetiredToRealized"; // BE CAREFUL CHANGING THIS!!
 
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }
@@ -28,7 +28,7 @@
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 
-        public ParcelRetirementWasCorrected(
+        public ParcelWasCorrectedFromRetiredToRealized(
             ParcelId parcelId,
             VbrCaPaKey vbrCaPaKey,
             ExtendedWkbGeometry extendedWkbGeometry)
@@ -39,7 +39,7 @@
         }
 
         [JsonConstructor]
-        private ParcelRetirementWasCorrected(
+        private ParcelWasCorrectedFromRetiredToRealized(
             Guid parcelId,
             string caPaKey,
             string extendedWkbGeometry,

@@ -144,6 +144,35 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task WhenParcelWasCorrectedFromRetiredToRealized()
+        {
+            var parcelId = _fixture.Create<ParcelId>();
+            var caPaKey = _fixture.Create<VbrCaPaKey>();
+
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var @event = new ParcelWasCorrectedFromRetiredToRealized(
+                parcelId,
+                caPaKey,
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasImported, 1L),
+                    CreateEnvelope(@event, 2L))
+                .Then(async ct =>
+                {
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(2L);
+                    parcelSyndicationItem.Should().NotBeNull();
+                    parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelWasCorrectedFromRetiredToRealized));
+                    parcelSyndicationItem.ExtendedWkbGeometry.Should().BeEquivalentTo(GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry().ToString().ToByteArray());
+                    parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
+                    parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Realized);
+                    parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasImported.Provenance.Timestamp);
+                    parcelSyndicationItem.LastChangedOn.Should().Be(@event.Provenance.Timestamp);
+                });
+        }
+
         private Envelope<TEvent> CreateEnvelope<TEvent>(TEvent @event, long position)
             where TEvent : IMessage, IHaveHash
         {

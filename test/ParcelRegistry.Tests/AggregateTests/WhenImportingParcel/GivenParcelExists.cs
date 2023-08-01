@@ -84,7 +84,7 @@
                     parcelWasMigrated)
                 .When(command)
                 .Then(new ParcelStreamId(command.ParcelId),
-                    new ParcelRetirementWasCorrected(
+                    new ParcelWasCorrectedFromRetiredToRealized(
                         command.ParcelId,
                         caPaKey,
                         command.ExtendedWkbGeometry)
@@ -106,7 +106,7 @@
             var parcelWasRetiredV2 = new ParcelWasRetiredV2(parcelId, caPaKey);
             parcelWasRetiredV2.SetFixtureProvenance(Fixture);
 
-            var parcelRetirementWasCorrected = new ParcelRetirementWasCorrected(
+            var parcelRetirementWasCorrected = new ParcelWasCorrectedFromRetiredToRealized(
                 parcelId,
                 caPaKey,
                 GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry());

@@ -143,6 +143,33 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
         }
 
         [Fact]
+        public async Task WhenParcelWasCorrectedFromRetiredToRealized()
+        {
+            var caPaKey = _fixture.Create<VbrCaPaKey>();
+            var parcelId = _fixture.Create<ParcelId>();
+
+            var @event = new ParcelWasCorrectedFromRetiredToRealized(
+                parcelId,
+                caPaKey,
+                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
+
+            await Sut
+                .Given(
+                    CreateEnvelope(_fixture.Create<ParcelWasImported>()),
+                    CreateEnvelope(@event))
+                .Then(async ct =>
+                {
+                    var parcelDetailV2 = await ct.ParcelDetailV2.FindAsync((Guid)_fixture.Create<ParcelId>());
+                    parcelDetailV2.Should().NotBeNull();
+                    parcelDetailV2.Gml.Should().Be(GeometryHelpers.ValidGmlPolygon);
+                    parcelDetailV2.GmlType.Should().Be("Polygon");
+                    parcelDetailV2.Status.Should().Be(ParcelStatus.Realized);
+                    parcelDetailV2.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+                    parcelDetailV2.LastEventHash.Should().Be(@event.GetHash());
+                });
+        }
+
+        [Fact]
         public async Task WhenParcelAddressWasAttachedV2()
         {
             var message = _fixture.Create<ParcelWasMigrated>();

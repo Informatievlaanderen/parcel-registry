@@ -167,10 +167,11 @@ namespace ParcelRegistry.Parcel
             ExtendedWkbGeometry extendedWkbGeometry,
             List<AddressPersistentLocalId> addressesToAttach)
         {
+            GuardParcelNotRemoved();
             GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
 
             ApplyChange(
-                new ParcelRetirementWasCorrected(
+                new ParcelWasCorrectedFromRetiredToRealized(
                     parcelId,
                     vbrCaPaKey,
                     extendedWkbGeometry));
