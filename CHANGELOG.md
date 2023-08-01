@@ -1,3 +1,11 @@
+# [4.28.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.9...v4.28.0) (2023-08-01)
+
+
+### Features
+
+* add ParcelRetirementWasCorrected ([9460df7](https://github.com/informatievlaanderen/parcel-registry/commit/9460df7684b826864f777a4f658556794c7d7d3e))
+* add projections for ParcelWasCorrectedFromRetiredToRealized ([e9614aa](https://github.com/informatievlaanderen/parcel-registry/commit/e9614aa49a20735a42d6938c9b810402a556a7dc))
+
 ## [4.27.9](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.8...v4.27.9) (2023-07-28)
 
 
