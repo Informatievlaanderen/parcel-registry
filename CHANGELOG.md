@@ -1,3 +1,10 @@
+## [4.28.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.28.0...v4.28.1) (2023-08-01)
+
+
+### Bug Fixes
+
+* new release because of init.sh overwrite problem ([efc5c52](https://github.com/informatievlaanderen/parcel-registry/commit/efc5c52af3cc932578cdd66574b173b504723eda))
+
 # [4.28.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.9...v4.28.0) (2023-08-01)
 
 
