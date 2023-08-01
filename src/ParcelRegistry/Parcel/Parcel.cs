@@ -161,6 +161,30 @@ namespace ParcelRegistry.Parcel
             return newParcel;
         }
 
+        public void CorrectRetirement(
+            VbrCaPaKey vbrCaPaKey,
+            ParcelId parcelId,
+            ExtendedWkbGeometry extendedWkbGeometry,
+            List<AddressPersistentLocalId> addressesToAttach)
+        {
+            GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
+
+            ApplyChange(
+                new ParcelRetirementWasCorrected(
+                    parcelId,
+                    vbrCaPaKey,
+                    extendedWkbGeometry));
+
+            foreach (var address in addressesToAttach)
+            {
+                ApplyChange(
+                    new ParcelAddressWasAttachedV2(
+                        parcelId,
+                        vbrCaPaKey,
+                        address));
+            }
+        }
+
         public void RetireParcel()
         {
             GuardParcelNotRemoved();
