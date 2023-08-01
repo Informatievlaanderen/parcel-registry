@@ -84,21 +84,34 @@ namespace ParcelRegistry.Parcel
                 {
                     var streamId = new ParcelStreamId(message.Command.ParcelId);
 
-                    var parcel = await parcelRepository().GetOptionalAsync(streamId, ct); // TODO: POSSIBLE AGGREGATE NOT FOUND
+                    var parcel = await parcelRepository().GetOptionalAsync(streamId, ct);
+
+                    if (parcel.HasValue == false)
+                    {
+                        var createdParcel = Parcel.ImportParcel(
+                            parcelFactory,
+                            message.Command.VbrCaPaKey,
+                            message.Command.ParcelId,
+                            message.Command.ExtendedWkbGeometry,
+                            message.Command.AddressesToAttach);
+
+                        parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
+                        return;
+                    }
+
+                    if (parcel.HasValue && parcel.Value.ParcelStatus == ParcelStatus.Retired)
+                    {
+                        parcel.Value.IdempotentImportParcel(
+                            message.Command.VbrCaPaKey,
+                            message.Command.ParcelId,
+                            message.Command.ExtendedWkbGeometry,
+                            message.Command.AddressesToAttach);
+                    }
 
                     if (parcel.HasValue)
                     {
                         throw new ParcelAlreadyExistsException(message.Command.VbrCaPaKey);
                     }
-
-                    var createdParcel = Parcel.ImportParcel(
-                        parcelFactory,
-                        message.Command.VbrCaPaKey,
-                        message.Command.ParcelId,
-                        message.Command.ExtendedWkbGeometry,
-                        message.Command.AddressesToAttach);
-
-                    parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
                 });
 
             For<RetireParcelV2>()
