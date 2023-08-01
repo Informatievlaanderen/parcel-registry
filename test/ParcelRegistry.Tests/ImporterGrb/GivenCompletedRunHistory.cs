@@ -41,9 +41,9 @@
 
             var requests = new List<ParcelRequest>
             {
-                new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9)),
-                new RetireParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 10)),
-                new ChangeParcelGeometryRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 11))
+                new RetireParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 10,  new DateTime(2023, 01, 01))),
+                new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9, new DateTime(2023, 01, 02))),
+                new ChangeParcelGeometryRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 11,  new DateTime(2023, 01, 02)))
             };
 
             var today = DateTime.Now;
@@ -66,6 +66,30 @@
                 mockRequestMapper.Object,
                 _fakeImporterContextFactory,
                 mockNotificationService.Object);
+
+            // Assert Order
+            int callOrder = 0;
+            mockMediator
+                .Setup(x => x.Send<ParcelRequest>(It.IsAny<RetireParcelRequest>(), It.IsAny<CancellationToken>()))
+                .Callback(() =>
+                {
+                    callOrder.Should().Be(0);
+                    callOrder++;
+                });
+            mockMediator
+                .Setup(x => x.Send<ParcelRequest>(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()))
+                .Callback(() =>
+                {
+                    callOrder.Should().Be(1);
+                    callOrder++;
+                });
+            mockMediator
+                .Setup(x => x.Send<ParcelRequest>(It.IsAny<ChangeParcelGeometryRequest>(), It.IsAny<CancellationToken>()))
+                .Callback(() =>
+                {
+                    callOrder.Should().Be(2);
+                    callOrder++;
+                });
 
             // Act
             await sut.StartAsync(CancellationToken.None);

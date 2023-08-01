@@ -39,12 +39,12 @@
 
             var caPaKey = CaPaKey.CreateFrom(Fixture.Create<string>());
 
-            var alreadyExecutedRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9));
+            var alreadyExecutedRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9, DateTime.Now));
             var requests = new List<ParcelRequest>
             {
                 alreadyExecutedRequest,
-                new RetireParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 10)),
-                new ChangeParcelGeometryRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 11))
+                new RetireParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 10,  DateTime.Now)),
+                new ChangeParcelGeometryRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 11,  DateTime.Now))
             };
 
             var context = _fakeImporterContextFactory.CreateDbContext();

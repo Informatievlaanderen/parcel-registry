@@ -1,3 +1,11 @@
+## [4.27.9](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.8...v4.27.9) (2023-07-28)
+
+
+### Bug Fixes
+
+* commandhandler lifetime exception ([d525ba0](https://github.com/informatievlaanderen/parcel-registry/commit/d525ba0495b0776d12be29fe8cd25768b3e2ce7d))
+* order on version date then on version ([4839c4a](https://github.com/informatievlaanderen/parcel-registry/commit/4839c4a1cee49ddb4881bcfdbbc3b7dabdb2300c))
+
 ## [4.27.8](https://github.com/informatievlaanderen/parcel-registry/compare/v4.27.7...v4.27.8) (2023-07-27)
 
 
