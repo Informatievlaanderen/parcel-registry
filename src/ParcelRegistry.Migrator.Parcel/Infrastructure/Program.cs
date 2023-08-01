@@ -1,7 +1,6 @@
 namespace ParcelRegistry.Migrator.Parcel.Infrastructure
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -12,10 +11,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
-    using Consumer.Address;
     using Legacy;
     using Microsoft.Data.SqlClient;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;

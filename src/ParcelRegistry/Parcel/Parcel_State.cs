@@ -41,6 +41,7 @@ namespace ParcelRegistry.Parcel
             Register<ParcelWasImported>(When);
             Register<ParcelWasRetiredV2>(When);
             Register<ParcelGeometryWasChanged>(When);
+            Register<ParcelRetirementWasCorrected>(When);
 
             // Address Events
             Register<ParcelAddressWasDetachedBecauseAddressWasRemoved>(When);
@@ -97,6 +98,15 @@ namespace ParcelRegistry.Parcel
         private void When(ParcelWasRetiredV2 @event)
         {
             ParcelStatus = ParcelStatus.Retired;
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelRetirementWasCorrected @event)
+        {
+            ParcelStatus = ParcelStatus.Realized;
+            Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
+            IsRemoved = false;
 
             _lastEvent = @event;
         }
