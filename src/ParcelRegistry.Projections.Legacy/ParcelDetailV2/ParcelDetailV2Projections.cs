@@ -251,6 +251,24 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                     },
                     ct);
             });
+
+            When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelDetail(
+                    message.Message.ParcelId,
+                    entity =>
+                    {
+                        var geometry = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                        entity.Gml = geometry.ConvertToGml();
+                        entity.GmlType = geometry.OgcGeometryType.ToString();
+
+                        entity.Status = ParcelStatus.Realized;
+
+                        UpdateHash(entity, message);
+                        UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
         }
 
         private static void UpdateHash<T>(ParcelDetailV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage

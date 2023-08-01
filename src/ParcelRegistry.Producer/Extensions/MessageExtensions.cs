@@ -95,6 +95,13 @@ namespace ParcelRegistry.Producer.Extensions
                 message.ExtendedWkbGeometry,
                 message.Provenance.ToContract());
 
+        public static Contracts.ParcelWasCorrectedFromRetiredToRealized ToContract(this ParcelAggregate.ParcelWasCorrectedFromRetiredToRealized message) =>
+            new Contracts.ParcelWasCorrectedFromRetiredToRealized(
+                message.ParcelId.ToString("D"),
+                message.CaPaKey,
+                message.ExtendedWkbGeometry,
+                message.Provenance.ToContract());
+
         private static Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance ToContract(this ProvenanceData provenance)
         => new Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance(
             provenance.Timestamp.ToString(),

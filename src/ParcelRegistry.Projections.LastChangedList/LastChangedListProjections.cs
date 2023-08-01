@@ -134,6 +134,11 @@ namespace ParcelRegistry.Projections.LastChangedList
             {
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
             });
+
+            When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
+            });
         }
 
         private static void RebuildKeyAndUri(IEnumerable<LastChangedRecord>? attachedRecords, Guid parcelId)

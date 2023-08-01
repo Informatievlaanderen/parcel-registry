@@ -203,6 +203,19 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     ct);
             });
 
+            When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x =>
+                    {
+                        x.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry.ToByteArray();
+                        x.Status = ParcelStatus.Realized;
+                    },
+                    ct);
+            });
+
             When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
             {
                 await context.CreateNewParcelSyndicationItem(
