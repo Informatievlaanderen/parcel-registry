@@ -1,6 +1,5 @@
 ﻿namespace ParcelRegistry.Projector.Importer
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api;
@@ -22,24 +21,31 @@
             [FromServices] IConfiguration configuration,
             CancellationToken cancellationToken = default)
         {
-            await using var sqlConnection =
-                new SqlConnection(configuration.GetConnectionString(ImportGrbConnectionStringKey));
-            var result =
-                await sqlConnection.QueryFirstAsync<DateTimeOffset>(
-                    @$"
-                    SELECT TOP(1) [{nameof(RunHistory.ToDate)}]
-                    FROM [{Schema.GrbImporter}].[{nameof(ImporterContext.RunHistory)}]
-                    WHERE [{nameof(RunHistory.Completed)}] = 1
-                    ORDER BY [{nameof(RunHistory.Id)}] DESC");
+            var connectionString = configuration.GetConnectionString(ImportGrbConnectionStringKey);
+            var lastCompletedRun = await GetRunHistory(true, connectionString);
+            var currentRun = await GetRunHistory(false, connectionString);
 
-            return Ok(new[]
-            {
+            return Ok(
                 new
                 {
                     Name = "Importer GRB",
-                    LastProcessedMessage = result
+                    LastCompletedBatch = new { From = lastCompletedRun.FromDate, Until = lastCompletedRun.ToDate },
+                    CurrentBatch = currentRun is not null ? new { From = currentRun.FromDate, Until = currentRun.ToDate } : null
                 }
-            });
+            );
+        }
+
+        private async Task<RunHistory?> GetRunHistory(bool completed, string connectionString)
+        {
+            await using var sqlConnection = new SqlConnection(connectionString);
+            var runHistory = await sqlConnection.QueryFirstOrDefaultAsync<RunHistory>(
+                    @$"
+                    SELECT TOP(1) *
+                    FROM [{Schema.GrbImporter}].[{nameof(ImporterContext.RunHistory)}]
+                    WHERE [{nameof(RunHistory.Completed)}] = @completed
+                    ORDER BY [{nameof(RunHistory.Id)}] DESC", new {completed});
+
+            return runHistory;
         }
     }
 }
