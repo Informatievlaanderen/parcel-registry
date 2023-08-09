@@ -6,11 +6,7 @@
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\ParcelRegistry.Api.BackOffice.Abstractions\ParcelRegistry.Api.BackOffice.Abstractions.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Infrastructure\ParcelRegistry.Infrastructure.csproj" />
