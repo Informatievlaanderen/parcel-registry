@@ -1017,8 +1017,8 @@ jobs:
     - name: Prepare Lambda(s)
       shell: bash
       run: |
-        echo aws s3 cp ~/lambda.zip s3://196194905350-vbr-test-lam-pr-sqsbackoffice/$SEMVER/lambda.zip --copy-props none
-        aws s3 cp ~/lambda.zip s3://196194905350-vbr-test-lam-pr-sqsbackoffice/$SEMVER/lambda.zip --copy-props none
+        echo aws s3 cp ~/lambda.zip s3://196194905350-vbr-test-lam-pr-sqsbackoffice/$VERSION/lambda.zip --copy-props none
+        aws s3 cp ~/lambda.zip s3://196194905350-vbr-test-lam-pr-sqsbackoffice/$VERSION/lambda.zip --copy-props none
       env:
         VERSION: ${{ needs.release.outputs.version }}
 
