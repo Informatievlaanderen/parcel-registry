@@ -1,3 +1,11 @@
+## [4.30.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.1...v4.30.2) (2023-08-09)
+
+
+### Bug Fixes
+
+* importgrb status ([0929723](https://github.com/informatievlaanderen/parcel-registry/commit/092972397a01faa38812ff6e4ffb2e3935e7204a))
+* update ci prepare lambda test ([7274469](https://github.com/informatievlaanderen/parcel-registry/commit/7274469d65639b78c14673154fa961f00e100a7e))
+
 ## [4.30.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.0...v4.30.1) (2023-08-09)
 
 
