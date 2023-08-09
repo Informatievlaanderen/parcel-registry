@@ -14,7 +14,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
-    using Consumer.Address.Infrastructure.Modules;
+    using Consumer.Address.Infrastructure;
     using Infrastructure;
     using Infrastructure.Modules;
     using MediatR;
