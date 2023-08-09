@@ -1,3 +1,16 @@
+# [4.30.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.29.0...v4.30.0) (2023-08-09)
+
+
+### Bug Fixes
+
+* change release for lambda on test ([d9f2992](https://github.com/informatievlaanderen/parcel-registry/commit/d9f2992951324960e0b4ecaa2c96bc2d2b55e0be))
+
+
+### Features
+
+* add importer grb status ([014e81d](https://github.com/informatievlaanderen/parcel-registry/commit/014e81dce5e87a24cdedcf29d0f7e269b353d2e2))
+* split AddressConsumer into console & lib projects ([9a6faaa](https://github.com/informatievlaanderen/parcel-registry/commit/9a6faaa2c99b3e350975067ed8e93f0cf36ef287))
+
 # [4.29.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.28.1...v4.29.0) (2023-08-09)
 
 
