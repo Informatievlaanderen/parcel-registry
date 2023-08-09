@@ -1,3 +1,11 @@
+## [4.30.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.0...v4.30.1) (2023-08-09)
+
+
+### Bug Fixes
+
+* prepare lambda to test step ([955d9c9](https://github.com/informatievlaanderen/parcel-registry/commit/955d9c93615d0f30791a6e2fee97882decc1ef40))
+* remove appsettings from ConsumerAddress csproj ([1da33a1](https://github.com/informatievlaanderen/parcel-registry/commit/1da33a1ff95aa030f86d2606b31304bbe75691e8))
+
 # [4.30.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.29.0...v4.30.0) (2023-08-09)
 
 
