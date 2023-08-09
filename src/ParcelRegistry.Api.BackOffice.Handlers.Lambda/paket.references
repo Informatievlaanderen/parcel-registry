@@ -3,6 +3,7 @@ Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency
 Be.Vlaanderen.Basisregisters.Sqs.Lambda
 Be.Vlaanderen.Basisregisters.TicketingService.Abstractions
 Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy
+Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac
 
 MediatR
 MediatR.Extensions.Microsoft.DependencyInjection

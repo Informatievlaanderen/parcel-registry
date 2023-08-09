@@ -184,7 +184,7 @@ jobs:
       image-file: pr-consumer-address-image.tar
       image-name: consumer-address
       test-project: ParcelRegistry.Tests
-      build-project: ParcelRegistry.Consumer.Address
+      build-project: ParcelRegistry.Consumer.Address.Console
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 

@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Consumer.Address.Infrastructure.Modules
+namespace ParcelRegistry.Consumer.Address.Infrastructure
 {
     using System;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
@@ -7,8 +7,8 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Parcel;
     using ParcelRegistry.Infrastructure;
+    using ParcelRegistry.Parcel;
 
     public static class ConsumerAddressModule
     {

@@ -65,7 +65,7 @@ Target.create "Publish_Solution" (fun _ ->
     "ParcelRegistry.Projections.LastChangedList"
     "ParcelRegistry.Projections.Syndication"
     "ParcelRegistry.Projections.BackOffice"
-    "ParcelRegistry.Consumer.Address"
+    "ParcelRegistry.Consumer.Address.Console"
     "ParcelRegistry.Migrator.Parcel"
     "ParcelRegistry.Producer"
     "ParcelRegistry.Producer.Snapshot.Oslo"
@@ -92,7 +92,7 @@ Target.create "Containerize_ApiExtract" (fun _ -> containerize "ParcelRegistry.A
 Target.create "Containerize_ApiCrabImport" (fun _ -> containerize "ParcelRegistry.Api.CrabImport" "api-crab-import")
 Target.create "Containerize_ProjectionsSyndication" (fun _ -> containerize "ParcelRegistry.Projections.Syndication" "projections-syndication")
 Target.create "Containerize_ProjectionsBackOffice" (fun _ -> containerize "ParcelRegistry.Projections.BackOffice" "projections-backoffice")
-Target.create "Containerize_ConsumerAddress" (fun _ -> containerize "ParcelRegistry.Consumer.Address" "consumer-address")
+Target.create "Containerize_ConsumerAddress" (fun _ -> containerize "ParcelRegistry.Consumer.Address.Console" "consumer-address")
 Target.create "Containerize_MigratorParcel" (fun _ -> containerize "ParcelRegistry.Migrator.Parcel" "migrator-parcel")
 Target.create "Containerize_ApiBackOffice" (fun _ -> containerize "ParcelRegistry.Api.BackOffice" "api-backoffice")
 Target.create "Containerize_Producer" (fun _ -> containerize "ParcelRegistry.Producer" "producer")

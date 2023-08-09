@@ -1,10 +1,9 @@
-namespace ParcelRegistry.Consumer.Address.Infrastructure
+namespace ParcelRegistry.Consumer.Address.Console
 {
     using System;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
-    using Api.BackOffice.Abstractions;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -14,15 +13,17 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Destructurama;
+    using Infrastructure;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Api.BackOffice.Abstractions;
     using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Infrastructure.Modules;
-    using ParcelRegistry.Parcel;
+    using Parcel;
     using Serilog;
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
@@ -34,19 +35,19 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
 
         public static async Task Main(string[] args)
         {
-            AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
+            AppDomain.CurrentDomain.FirstChanceException += (_, eventArgs) =>
                 Log.Debug(
                     eventArgs.Exception,
                     "FirstChanceException event raised in {AppDomain}.",
                     AppDomain.CurrentDomain.FriendlyName);
 
-            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+            AppDomain.CurrentDomain.UnhandledException += (_, eventArgs) =>
                 Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
 
             Log.Information("Starting ParcelRegistry.Consumer.Address");
 
             var host = new HostBuilder()
-                .ConfigureAppConfiguration((hostContext, builder) =>
+                .ConfigureAppConfiguration((_, builder) =>
                {
                    builder
                        .SetBasePath(Directory.GetCurrentDirectory())
@@ -76,7 +77,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     services
-                        .AddScoped(s => new TraceDbConnection<BackOfficeContext>(
+                        .AddScoped(_ => new TraceDbConnection<BackOfficeContext>(
                             new SqlConnection(hostContext.Configuration.GetConnectionString("BackOffice")),
                             hostContext.Configuration["DataDog:ServiceName"]))
                         .AddDbContextFactory<BackOfficeContext>((provider, options) => options
@@ -87,7 +88,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                             ));
 
                     services
-                        .AddScoped(s => new TraceDbConnection<ConsumerAddressContext>(
+                        .AddScoped(_ => new TraceDbConnection<ConsumerAddressContext>(
                             new SqlConnection(hostContext.Configuration.GetConnectionString("ConsumerAddress")),
                             hostContext.Configuration["DataDog:ServiceName"]))
                         .AddDbContextFactory<ConsumerAddressContext>((provider, options) => options

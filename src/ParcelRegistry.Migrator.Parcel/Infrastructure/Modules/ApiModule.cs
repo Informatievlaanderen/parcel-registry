@@ -4,7 +4,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure.Modules
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
-    using Consumer.Address.Infrastructure.Modules;
+    using Consumer.Address.Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
