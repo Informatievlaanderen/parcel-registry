@@ -1,3 +1,15 @@
+# [4.29.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.28.1...v4.29.0) (2023-08-09)
+
+
+### Bug Fixes
+
+* remove ErrorOnDuplicatePublishOutputFiles on address consumer ([5c8b44a](https://github.com/informatievlaanderen/parcel-registry/commit/5c8b44a9f3506b370ab0a46382183648202d813d))
+
+
+### Features
+
+* add GRB_01_PARCEL_SNAPSHOT_OSLO_STREAM_FLATTEN.ksql ([62bec4f](https://github.com/informatievlaanderen/parcel-registry/commit/62bec4f0429edf45332fbc61d3765a445daeea27))
+
 ## [4.28.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.28.0...v4.28.1) (2023-08-01)
 
 
