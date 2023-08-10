@@ -1,3 +1,10 @@
+## [4.30.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.3...v4.30.4) (2023-08-10)
+
+
+### Bug Fixes
+
+* split contains & touches methods in spatial query for performance ([36a5f92](https://github.com/informatievlaanderen/parcel-registry/commit/36a5f92211a4b5c325face32db8a34d26c880de7))
+
 ## [4.30.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.2...v4.30.3) (2023-08-10)
 
 
