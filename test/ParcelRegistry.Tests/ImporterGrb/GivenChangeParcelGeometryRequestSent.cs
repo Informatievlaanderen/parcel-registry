@@ -88,6 +88,7 @@
             parcel.Should().NotBeNull();
             parcel.Value.Geometry.Should().Be(ExtendedWkbGeometry.CreateEWkb(changeParcelGeometryRequest.GrbParcel.Geometry.ToBinary()));
 
+            parcel.Value.AddressPersistentLocalIds.Count.Should().Be(2);
             parcel.Value.AddressPersistentLocalIds.Should().Contain(addressPersistentLocalId1);
             parcel.Value.AddressPersistentLocalIds.Should().Contain(addressPersistentLocalId2);
             parcel.Value.AddressPersistentLocalIds.Should().NotContain(previouslyAttachedAddress);
