@@ -11,8 +11,8 @@
     using ParcelRegistry.Infrastructure;
 
     [ApiVersion("1.0")]
-    [ApiRoute("importer")]
-    public class ConsumersController : ApiController
+    [ApiRoute("importergrb")]
+    public class ImporterGrbController : ApiController
     {
         private const string? ImportGrbConnectionStringKey = "ImporterGrb";
 
