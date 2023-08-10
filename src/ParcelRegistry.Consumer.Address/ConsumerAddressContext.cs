@@ -47,9 +47,15 @@ namespace ParcelRegistry.Consumer.Address
 
         public List<AddressConsumerItem> FindAddressesWithinGeometry(Geometry geometry)
         {
-            return AddressConsumerItems
-                .Where(x => x.Position.Within(geometry) || x.Position.Touches(geometry))
+            var result = AddressConsumerItems
+                .Where(x => geometry.Contains(x.Position))
                 .ToList();
+
+            var result2= AddressConsumerItems
+                .Where(x => x.Position.Touches(geometry))
+                .ToList();
+
+            return result.Union(result2).Distinct().ToList();
         }
 
         public ParcelRegistry.Parcel.DataStructures.AddressStatus Map(AddressStatus status)
