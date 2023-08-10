@@ -1,3 +1,10 @@
+## [4.30.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.2...v4.30.3) (2023-08-10)
+
+
+### Bug Fixes
+
+* route status importer grb ([18035a6](https://github.com/informatievlaanderen/parcel-registry/commit/18035a60b39adf7b95abb4892a82090ebd1c52a6))
+
 ## [4.30.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.1...v4.30.2) (2023-08-09)
 
 
