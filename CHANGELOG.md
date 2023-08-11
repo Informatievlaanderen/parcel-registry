@@ -1,3 +1,10 @@
+## [4.30.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.4...v4.30.5) (2023-08-11)
+
+
+### Bug Fixes
+
+* fix the geometry before sending to SqlServer ([2ac81fd](https://github.com/informatievlaanderen/parcel-registry/commit/2ac81fddf8eea338416a6c110ea64dd2fc9a09d6))
+
 ## [4.30.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.3...v4.30.4) (2023-08-10)
 
 
