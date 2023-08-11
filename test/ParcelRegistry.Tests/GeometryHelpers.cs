@@ -73,6 +73,15 @@
             "<gml:Point srsName=\"https://www.opengis.net/def/crs/EPSG/0/31370\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
             "<gml:pos>103672.37 192046.71</gml:pos></gml:Point>";
 
+        public const string InValidNTSButValidSqlPolygon =
+            "<gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:31370\">" +
+            "<gml:outerBoundaryIs>" +
+            "<gml:LinearRing>" +
+            "<gml:coordinates>141432.609093331,175176.625403687 141432.334853329,175177.210299689 141383.167045295,175162.70905168 141306.913989246,175140.219963662 141306.922309242,175140.187771663 141317.018053249,175101.521979637 141328.873285256,175056.114363603 141329.352005258,175054.281019602 141415.977669321,175079.480251621 141459.125701353,175092.032059629 141462.171717353,175092.918139629 141465.388997354,175093.854011633 141465.131717354,175095.433659632 141464.984517351,175096.337211631 141450.921093345,175182.692027692 141454.980037346,175131.606395658 141457.163077347,175097.399419632 141457.448453352,175092.927867632 141457.45504535,175092.82437963 141454.600069344,175091.974331629 141454.62822935,175092.033979628 141457.163077347,175097.399419632 141432.609093331,175176.625403687</gml:coordinates>" +
+            "</gml:LinearRing>" +
+            "</gml:outerBoundaryIs>" +
+            "</gml:Polygon>";
+
         public static ExtendedWkbGeometry ToExtendedWkbGeometry(MultiPolygon multiPolygon)
         {
             return ExtendedWkbGeometry.CreateEWkb(new WKBWriter().Write(multiPolygon));
@@ -127,5 +136,6 @@
         public static Polygon ValidPolygon => (Polygon)ValidGmlPolygon.ToGeometry();
         public static Polygon ValidPolygon2 => (Polygon)ValidGmlPolygon2.ToGeometry();
         public static Polygon InValidPolygon => (Polygon)InValidGmlPolygon.ToGeometry();
+        public static Polygon InvalidNtsPolygon => (Polygon)InValidNTSButValidSqlPolygon.ToGeometry();
     }
 }

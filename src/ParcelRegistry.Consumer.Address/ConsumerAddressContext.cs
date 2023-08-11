@@ -45,20 +45,22 @@ namespace ParcelRegistry.Consumer.Address
             return new AddressData(new AddressPersistentLocalId(item.AddressPersistentLocalId), Map(item.Status), item.IsRemoved);
         }
 
-        public List<AddressConsumerItem> FindAddressesWithinGeometry(Geometry geometry)
+        public IEnumerable<AddressConsumerItem> FindAddressesWithinGeometry(Geometry geometry)
         {
-            var result = AddressConsumerItems
-                .Where(x => geometry.Contains(x.Position))
+            var fixedGeometry = NetTopologySuite.Geometries.Utilities.GeometryFixer.Fix(geometry);
+
+            var containsResult = AddressConsumerItems
+                .Where(x => fixedGeometry.Contains(x.Position))
                 .ToList();
 
-            var result2= AddressConsumerItems
-                .Where(x => x.Position.Touches(geometry))
+            var touchesResult= AddressConsumerItems
+                .Where(x => x.Position.Touches(fixedGeometry))
                 .ToList();
 
-            return result.Union(result2).Distinct().ToList();
+            return containsResult.Union(touchesResult).Distinct();
         }
 
-        public ParcelRegistry.Parcel.DataStructures.AddressStatus Map(AddressStatus status)
+        private static ParcelRegistry.Parcel.DataStructures.AddressStatus Map(AddressStatus status)
         {
             if (status == AddressStatus.Proposed)
             {
