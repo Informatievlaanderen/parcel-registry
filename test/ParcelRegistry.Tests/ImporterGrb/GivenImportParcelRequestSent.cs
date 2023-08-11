@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
     using BackOffice;
@@ -13,6 +14,7 @@
     using FluentAssertions;
     using Importer.Grb.Handlers;
     using Importer.Grb.Infrastructure;
+    using NetTopologySuite.Geometries;
     using Parcel;
     using Xunit;
     using Xunit.Abstractions;
@@ -73,6 +75,21 @@
                     new Operator("Parcel Registry"),
                     Modification.Insert,
                     Organisation.DigitaalVlaanderen));
+        }
+
+        /// <summary>
+        /// In ConsumerAddressContext.FindAddressesWithinGeometry uses the NTS library to find addresses within a geometry and uses the FixGeometry method.
+        /// </summary>
+        [Fact]
+        public void VerifyThatFixedGeometryIsApproximatelyTheOriginal()
+        {
+            var polygon = GmlHelpers.CreateGmlReader().Read(GeometryHelpers.InValidNTSButValidSqlPolygon);
+            polygon.Should().BeOfType<Polygon>();
+            polygon.IsValid.Should().BeFalse();
+            GeometryValidator.IsValid(polygon).Should().BeTrue();
+
+            var fixedPolygon = NetTopologySuite.Geometries.Utilities.GeometryFixer.Fix(polygon);
+            fixedPolygon.Area.Should().BeApproximately(polygon.Area, 0.00000000001); //In this case: 12166.896162859213, but found 12166.896162859215
         }
     }
 }
