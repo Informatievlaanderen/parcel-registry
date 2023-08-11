@@ -1,0 +1,129 @@
+name: Manual New Production Deploy
+
+concurrency: Manual New Production Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+
+jobs:
+  deploy_to_production_start_slack:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Deploy to new production started
+    environment: prd
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Parse repository name
+      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
+      shell: bash
+
+    - name: Notify deployment started
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: '#team-dinosaur-dev'
+        slack-message: Deployment of parcel-registry to new production has started
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
+        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
+
+  deploy_to_production:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ deploy_to_production_start_slack ]
+    name: Deploy to new Production
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        services: [
+          'parcel-registry-api',
+          'parcel-registry-backoffice-api',
+          'parcel-registry-consumer-address',
+          'parcel-registry-migrator-parcel',
+          'parcel-registry-producer',
+          'parcel-registry-producer-snapshot-oslo',
+          'parcel-registry-projections',
+          'parcel-registry-projections-backoffice',
+          'parcel-registry-importer-grb' ]
+
+    steps:
+    - name: CD services
+      env:
+        BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
+        STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
+      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
+      with:
+          environment: acc
+          version: ${{ github.event.inputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
+          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
+          region: eu-west-1
+          interval: 2
+
+    - name: output CD services
+      shell: bash
+      run: |
+        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
+  deploy_lambda_to_production:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [deploy_to_production]
+    name: Deploy lambda to new production
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: CD Lambda(s) Configure credentials
+      uses: aws-actions/configure-aws-credentials@v1-node16
+      with:
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_NEWPRD }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_NEWPRD }}
+        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+    - name: Prepare Lambda(s)
+      shell: bash
+      run: |
+        echo aws s3 cp s3://077849980894-vbr-prd-lam-par-sqsbackoffice/$VERSION/lambda.zip s3://077849980894-vbr-prd-lam-par-sqsbackoffice/lambda.zip --copy-props none
+        aws s3 cp s3://077849980894-vbr-prd-lam-par-sqsbackoffice/$VERSION/lambda.zip s3://077849980894-vbr-prd-lam-par-sqsbackoffice/lambda.zip --copy-props none
+      env:
+        VERSION: ${{ github.event.inputs.version }}
+
+    - name: Promote Lambda(s)
+      shell: bash
+      run: |
+        echo pulling awscurl docker image
+        docker pull ghcr.io/okigan/awscurl:latest
+        echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "par-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/acc
+        docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "par-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/acc
+      env:
+        ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
+        SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
+        REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
+        PROMOTEURL: ${{ secrets.VBR_AWS_PROMOTE_LAMBDA_BASEURL }}
+
+  deploy_to_production_finish_slack:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ deploy_lambda_to_production ]
+    name: Deploy to new production finished
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Parse repository name
+      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
+      shell: bash
+
+    - name: Notify deployment finished
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: '#team-dinosaur-dev'
+        slack-message: Deployment of parcel-registry to new production has finished
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
+        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
