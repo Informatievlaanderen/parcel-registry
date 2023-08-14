@@ -37,6 +37,12 @@ namespace ParcelRegistry.Tests.BackOffice
 
             return new ValueTask(Task.CompletedTask);
         }
+
+        public override Task ClearProcessedRequests()
+        {
+            ProcessedRequests.RemoveRange(ProcessedRequests);
+            return SaveChangesAsync();
+        }
     }
 
     public class FakeImportParcelContextFactory : IDbContextFactory<ImporterContext>

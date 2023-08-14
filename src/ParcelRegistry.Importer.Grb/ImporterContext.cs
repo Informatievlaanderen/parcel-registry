@@ -26,9 +26,9 @@
             await SaveChangesAsync();
         }
 
-        public async Task ClearProcessedRequests()
+        public virtual async Task ClearProcessedRequests()
         {
-            ProcessedRequests.RemoveRange(ProcessedRequests);
+            await Database.ExecuteSqlInterpolatedAsync($"TRUNCATE TABLE [{Schema.GrbImporter}].[{ProcessedRequestsConfiguration.TableName}]");
             await SaveChangesAsync();
         }
 
