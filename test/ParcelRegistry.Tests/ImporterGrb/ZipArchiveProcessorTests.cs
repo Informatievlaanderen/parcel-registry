@@ -17,7 +17,7 @@
 
             var result = new ZipArchiveProcessor().Open(archive);
 
-            result.Count.Should().Be(3);
+            result.Count.Should().Be(2);
         }
     }
 }

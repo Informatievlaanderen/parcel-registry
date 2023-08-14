@@ -28,7 +28,7 @@
         }
 
         [Fact]
-        public void WithRealizedParcel_ThenThrowsParcelAlreadyExistsException()
+        public void WithRealizedParcel_ThenParcelGeometryWasChanged()
         {
             var caPaKey = Fixture.Create<VbrCaPaKey>();
             var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(caPaKey);
@@ -40,11 +40,11 @@
                 Fixture.Create<VbrCaPaKey>(),
                 ParcelStatus.Realized,
                 false,
-                Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
+                new List<AddressPersistentLocalId>(),
+                GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry());
             parcelWasMigrated.SetFixtureProvenance(Fixture);
 
-            var command = new ImportParcel(
+            var command = new ImportOrUpdateParcel(
                 caPaKey,
                 GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 new List<AddressPersistentLocalId>(),
@@ -53,7 +53,9 @@
             Assert(new Scenario()
                 .Given(new ParcelStreamId(command.ParcelId), parcelWasMigrated)
                 .When(command)
-                .Throws(new ParcelAlreadyExistsException(caPaKey)));
+                .Then(new ParcelStreamId(command.ParcelId),
+                    new ParcelGeometryWasChanged(parcelId, caPaKey, GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry()))
+                );
         }
 
         [Fact]
@@ -73,7 +75,7 @@
                 GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
             parcelWasMigrated.SetFixtureProvenance(Fixture);
 
-            var command = new ImportParcel(
+            var command = new ImportOrUpdateParcel(
                 caPaKey,
                 GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry(),
                 new List<AddressPersistentLocalId>(),

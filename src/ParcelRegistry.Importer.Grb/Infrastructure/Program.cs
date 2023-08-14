@@ -131,7 +131,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                         .InstancePerLifetimeScope();
 
                     builder
-                        .RegisterAssemblyTypes(typeof(ImportParcelHandler)
+                        .RegisterAssemblyTypes(typeof(ImportOrUpdateParcelHandler)
                         .GetTypeInfo().Assembly)
                         .AsImplementedInterfaces();
 

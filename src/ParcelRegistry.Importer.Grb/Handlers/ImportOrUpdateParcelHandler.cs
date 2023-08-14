@@ -1,6 +1,5 @@
 ﻿namespace ParcelRegistry.Importer.Grb.Handlers
 {
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -14,20 +13,20 @@
     using Parcel;
     using Parcel.Commands;
 
-    public sealed record ChangeParcelGeometryRequest(GrbParcel GrbParcel) : ParcelRequest(GrbParcel);
+    public sealed record ImportOrUpdateParcelRequest(GrbParcel GrbParcel) : ParcelRequest(GrbParcel);
 
-    public sealed class ChangeParcelGeometryHandler : IRequestHandler<ChangeParcelGeometryRequest>
+    public sealed class ImportOrUpdateParcelHandler : IRequestHandler<ImportOrUpdateParcelRequest>
     {
         private readonly ILifetimeScope _lifetimeScope;
         private readonly ConsumerAddressContext _addresses;
 
-        public ChangeParcelGeometryHandler(ILifetimeScope lifetimeScope, ConsumerAddressContext addresses)
+        public ImportOrUpdateParcelHandler(ILifetimeScope lifetimeScope, ConsumerAddressContext addresses)
         {
             _lifetimeScope = lifetimeScope;
             _addresses = addresses;
         }
 
-        public async Task Handle(ChangeParcelGeometryRequest request, CancellationToken cancellationToken)
+        public async Task Handle(ImportOrUpdateParcelRequest request, CancellationToken cancellationToken)
         {
             var addressesWithinParcel = _addresses
                 .FindAddressesWithinGeometry(request.GrbParcel.Geometry)
@@ -36,7 +35,7 @@
 
             var extendedWkbGeometry = ExtendedWkbGeometry.CreateEWkb(request.GrbParcel.Geometry.ToBinary());
 
-            var command = new ChangeParcelGeometry(
+            var command = new ImportOrUpdateParcel(
                 new VbrCaPaKey(request.GrbParcel.GrbCaPaKey),
                 extendedWkbGeometry,
                 addressesWithinParcel,

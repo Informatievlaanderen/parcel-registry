@@ -12,24 +12,6 @@
 
     public sealed record GrbParcel(CaPaKey GrbCaPaKey, Geometry Geometry, int Version, DateTime VersionDate);
 
-    public sealed class GrbAddXmlReader : GrbXmlReader
-    {
-        protected override bool IsValid(XmlNode featureMemberNode)
-        {
-            var versionNode = featureMemberNode.SelectSingleNode(".//agiv:VERSIE", NamespaceManager);
-            return versionNode is { InnerText: "1" };
-        }
-    }
-
-    public sealed class GrbUpdateXmlReader : GrbXmlReader
-    {
-        protected override bool IsValid(XmlNode featureMemberNode)
-        {
-            var versionNode = featureMemberNode.SelectSingleNode(".//agiv:VERSIE", NamespaceManager);
-            return versionNode is not { InnerText: "1" };
-        }
-    }
-
     public sealed class GrbDeleteXmlReader : GrbXmlReader
     {
         protected override bool IsValid(XmlNode featureMemberNode)

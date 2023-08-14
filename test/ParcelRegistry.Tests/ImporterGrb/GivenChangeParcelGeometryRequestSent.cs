@@ -67,7 +67,7 @@
             fakeAddressConsumerContext.SaveChanges();
 
             DispatchArrangeCommand(
-                new ImportParcel(
+                new ImportOrUpdateParcel(
                     new VbrCaPaKey(caPaKey.VbrCaPaKey),
                     GeometryHelpers.ValidGmlPolygon3.GmlToExtendedWkbGeometry(),
                     new List<AddressPersistentLocalId> {previouslyAttachedAddress},

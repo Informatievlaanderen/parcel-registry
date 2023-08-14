@@ -27,7 +27,7 @@
         {
             var caPaKey = Fixture.Create<VbrCaPaKey>();
 
-            var command = new ImportParcel(
+            var command = new ImportOrUpdateParcel(
                 caPaKey,
                 GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                 new List<AddressPersistentLocalId>()
@@ -43,7 +43,7 @@
         [Fact]
         public void WithInvalidPolygon_ThenThrowsPolygonIsInvalidException()
         {
-            var command = new ImportParcel(
+            var command = new ImportOrUpdateParcel(
                 Fixture.Create<VbrCaPaKey>(),
                 GeometryHelpers.GmlPointGeometry.GmlToExtendedWkbGeometry(),
                 new List<AddressPersistentLocalId>(),

@@ -49,7 +49,7 @@
             foreach (var newParcelId in newParcelIds)
             {
                 var grbParcel = _parcelGeometries[newParcelId];
-                var command = new ImportParcel(
+                var command = new ImportOrUpdateParcel(
                     new VbrCaPaKey(grbParcel.GrbCaPaKey.VbrCaPaKey),
                     new ExtendedWkbGeometry(grbParcel.Geometry.AsBinary()),
                     new List<AddressPersistentLocalId>(),

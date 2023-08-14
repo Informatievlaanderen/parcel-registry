@@ -33,7 +33,7 @@
             var parcelId = ParcelId.CreateFor(new VbrCaPaKey(caPaKey.VbrCaPaKey));
 
             DispatchArrangeCommand(
-                new ImportParcel(
+                new ImportOrUpdateParcel(
                     new VbrCaPaKey(caPaKey.VbrCaPaKey),
                     GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
                     new List<AddressPersistentLocalId>(),

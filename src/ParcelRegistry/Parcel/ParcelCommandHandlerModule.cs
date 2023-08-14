@@ -76,9 +76,9 @@ namespace ParcelRegistry.Parcel
                     parcel.DetachAddress(message.Command.AddressPersistentLocalId);
                 });
 
-            For<ImportParcel>()
+            For<ImportOrUpdateParcel>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-                .AddEventHash<ImportParcel, Parcel>(getUnitOfWork)
+                .AddEventHash<ImportOrUpdateParcel, Parcel>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
@@ -95,21 +95,25 @@ namespace ParcelRegistry.Parcel
                                 message.Command.ParcelId,
                                 message.Command.ExtendedWkbGeometry,
                                 message.Command.AddressesToAttach);
-
-                            return;
                         }
-
-                        throw new ParcelAlreadyExistsException(message.Command.VbrCaPaKey);
+                        else
+                        {
+                            parcel.Value.ChangeGeometry(message.Command.ExtendedWkbGeometry, message.Command.AddressesToAttach);
+                        }
                     }
-                    
-                    var createdParcel = Parcel.ImportParcel(
-                        parcelFactory,
-                        message.Command.VbrCaPaKey,
-                        message.Command.ParcelId,
-                        message.Command.ExtendedWkbGeometry,
-                        message.Command.AddressesToAttach);
+                    else
+                    {
+                        var createdParcel = Parcel.ImportParcel(
+                            parcelFactory,
+                            message.Command.VbrCaPaKey,
+                            message.Command.ParcelId,
+                            message.Command.ExtendedWkbGeometry,
+                            message.Command.AddressesToAttach);
 
-                    parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
+                        message.Command.Provenance.Modification = Modification.Insert;
+
+                        parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
+                    }
                 });
 
             For<RetireParcelV2>()

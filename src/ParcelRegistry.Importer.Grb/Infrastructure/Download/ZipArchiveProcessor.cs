@@ -23,8 +23,7 @@
             if (adpDelEntry is null)
                 throw new InvalidOperationException("AdpDel.gml not found in zip archive.");
 
-            filesByAction.Add(GrbParcelActions.Add, adpAddEntry.Open());
-            filesByAction.Add(GrbParcelActions.Update, adpAddEntry.Open());
+            filesByAction.Add(GrbParcelActions.AddOrUpdate, adpAddEntry.Open());
             filesByAction.Add(GrbParcelActions.Delete, adpDelEntry.Open());
 
             return filesByAction;
@@ -33,8 +32,7 @@
 
     public enum GrbParcelActions
     {
-        Add,
-        Update,
+        AddOrUpdate,
         Delete
     }
 }

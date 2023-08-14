@@ -39,7 +39,7 @@
 
             var caPaKey = CaPaKey.CreateFrom(Fixture.Create<string>());
 
-            var alreadyExecutedRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9, DateTime.Now));
+            var alreadyExecutedRequest = new ImportOrUpdateParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9, DateTime.Now));
             var requests = new List<ParcelRequest>
             {
                 alreadyExecutedRequest,
@@ -66,7 +66,7 @@
             await sut.StartAsync(CancellationToken.None);
 
             // Assert
-            mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+            mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<ImportOrUpdateParcelRequest>(), It.IsAny<CancellationToken>()), Times.Never);
             mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<ChangeParcelGeometryRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<RetireParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
 

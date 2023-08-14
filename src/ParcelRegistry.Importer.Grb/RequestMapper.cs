@@ -23,12 +23,9 @@
             {
                 switch (action)
                 {
-                    case GrbParcelActions.Add:
-                        var parcels = new GrbAddXmlReader().Read(fileStream);
-                        parcelsRequests.AddRange(parcels.Select(x => new ImportParcelRequest(x)));
-                        break;
-                    case GrbParcelActions.Update:
-                        parcelsRequests.AddRange(new GrbUpdateXmlReader().Read(fileStream).Select(x => new ChangeParcelGeometryRequest(x)));
+                    case GrbParcelActions.AddOrUpdate:
+                        var parcels = new GrbXmlReader().Read(fileStream);
+                        parcelsRequests.AddRange(parcels.Select(x => new ImportOrUpdateParcelRequest(x)));
                         break;
                     case GrbParcelActions.Delete:
                         parcelsRequests.AddRange(new GrbDeleteXmlReader().Read(fileStream).Select(x => new RetireParcelRequest(x)));
