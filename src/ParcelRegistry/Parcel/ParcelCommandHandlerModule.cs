@@ -101,7 +101,7 @@ namespace ParcelRegistry.Parcel
 
                         throw new ParcelAlreadyExistsException(message.Command.VbrCaPaKey);
                     }
-                    
+
                     var createdParcel = Parcel.ImportParcel(
                         parcelFactory,
                         message.Command.VbrCaPaKey,
@@ -133,9 +133,23 @@ namespace ParcelRegistry.Parcel
                 {
                     var streamId = new ParcelStreamId(message.Command.ParcelId);
 
-                    var parcel = await parcelRepository().GetAsync(streamId, ct);
+                    var optionalParcel = await parcelRepository().GetOptionalAsync(streamId, ct);
 
-                    parcel.ChangeGeometry(message.Command.ExtendedWkbGeometry, message.Command.Addresses);
+                    if (optionalParcel.HasValue)
+                    {
+                        optionalParcel.Value.ChangeGeometry(message.Command.ExtendedWkbGeometry, message.Command.Addresses);
+                    }
+                    else
+                    {
+                        var createdParcel = Parcel.ImportParcel(
+                            parcelFactory,
+                            message.Command.VbrCaPaKey,
+                            message.Command.ParcelId,
+                            message.Command.ExtendedWkbGeometry,
+                            message.Command.Addresses);
+
+                        parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
+                    }
                 });
         }
     }

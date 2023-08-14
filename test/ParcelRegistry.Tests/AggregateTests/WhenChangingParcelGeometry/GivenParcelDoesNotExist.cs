@@ -9,6 +9,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenChangingParcelGeometry
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Parcel;
     using Parcel.Commands;
+    using Parcel.Events;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -18,7 +19,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenChangingParcelGeometry
         { }
 
         [Fact]
-        public void ThenThrowParcelIsRemovedException()
+        public void ThenParcelWasImported()
         {
             var command = new ChangeParcelGeometry(
                 Fixture.Create<VbrCaPaKey>(),
@@ -29,7 +30,8 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenChangingParcelGeometry
             Assert(new Scenario()
                 .Given()
                 .When(command)
-                .Throws(new AggregateNotFoundException(new ParcelStreamId(command.ParcelId), typeof(Parcel))));
+                .Then(new ParcelStreamId(command.ParcelId),
+                    new ParcelWasImported(command.ParcelId, command.VbrCaPaKey,  GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry())));
         }
     }
 }
