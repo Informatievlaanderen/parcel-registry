@@ -1,3 +1,10 @@
+# [4.31.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.5...v4.31.0) (2023-08-14)
+
+
+### Features
+
+* expand ChangeParcelGeometry to import when parcel doesn't exist ([b1027c8](https://github.com/informatievlaanderen/parcel-registry/commit/b1027c8f5d37f85cbc9afaa68d827e8d6eaf46c8))
+
 ## [4.30.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.4...v4.30.5) (2023-08-11)
 
 
