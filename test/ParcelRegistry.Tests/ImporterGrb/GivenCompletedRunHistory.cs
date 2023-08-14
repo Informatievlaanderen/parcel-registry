@@ -15,6 +15,7 @@
     using Importer.Grb.Infrastructure.Download;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Hosting;
     using Moq;
     using Xunit;
     using Xunit.Abstractions;
@@ -65,7 +66,8 @@
                 mockZipArchiveProcessor.Object,
                 mockRequestMapper.Object,
                 _fakeImporterContextFactory,
-                mockNotificationService.Object);
+                mockNotificationService.Object,
+                Mock.Of<IHostApplicationLifetime>());
 
             // Assert Order
             int callOrder = 0;

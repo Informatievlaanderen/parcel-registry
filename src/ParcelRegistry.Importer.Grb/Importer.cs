@@ -23,6 +23,7 @@
         private readonly IRequestMapper _requestMapper;
         private readonly IDbContextFactory<ImporterContext> _importerContext;
         private readonly INotificationService _notificationService;
+        private readonly IHostApplicationLifetime _applicationLifetime;
 
         public Importer(
             IMediator mediator,
@@ -30,7 +31,8 @@
             IZipArchiveProcessor zipArchiveProcessor,
             IRequestMapper requestMapper,
             IDbContextFactory<ImporterContext> importerContext,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            IHostApplicationLifetime applicationLifetime)
         {
             _mediator = mediator;
             _downloadFacade = downloadFacade;
@@ -38,6 +40,7 @@
             _requestMapper = requestMapper;
             _importerContext = importerContext;
             _notificationService = notificationService;
+            _applicationLifetime = applicationLifetime;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -62,6 +65,8 @@
                 await using var context = await _importerContext.CreateDbContextAsync(stoppingToken);
                 await context.CompleteRunHistory(currentRun.Id);
                 await context.ClearProcessedRequests();
+
+                _applicationLifetime.StopApplication();
             }
             catch (Exception e)
             {

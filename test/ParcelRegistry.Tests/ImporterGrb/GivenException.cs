@@ -15,6 +15,7 @@
     using Importer.Grb.Infrastructure;
     using Importer.Grb.Infrastructure.Download;
     using MediatR;
+    using Microsoft.Extensions.Hosting;
     using Moq;
     using Xunit;
     using Xunit.Abstractions;
@@ -66,7 +67,8 @@
                 mockZipArchiveProcessor.Object,
                 mockRequestMapper.Object,
                 _fakeImporterContextFactory,
-                mockNotificationService.Object);
+                mockNotificationService.Object,
+                Mock.Of<IHostApplicationLifetime>());
 
             // Act
             var act = async () => await sut.StartAsync(CancellationToken.None);
@@ -105,7 +107,8 @@
                 mockZipArchiveProcessor.Object,
                 mockRequestMapper.Object,
                 _fakeImporterContextFactory,
-                mockNotificationService.Object);
+                mockNotificationService.Object,
+                Mock.Of<IHostApplicationLifetime>());
 
             // Act
             var act = async () => await sut.StartAsync(CancellationToken.None);
