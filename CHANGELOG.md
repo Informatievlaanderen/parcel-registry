@@ -1,3 +1,15 @@
+## [4.31.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.0...v4.31.1) (2023-08-16)
+
+
+### Bug Fixes
+
+* stop application after processing ([fbe2fad](https://github.com/informatievlaanderen/parcel-registry/commit/fbe2fad39c34ee0befd2f86434656728fd6af3c4))
+
+
+### Performance Improvements
+
+* use truncate to clear processed requests ([5b5db0d](https://github.com/informatievlaanderen/parcel-registry/commit/5b5db0df29817a032256d909028565e9f94df158))
+
 # [4.31.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.30.5...v4.31.0) (2023-08-14)
 
 
