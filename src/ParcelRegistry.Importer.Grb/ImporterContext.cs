@@ -28,8 +28,7 @@
 
         public virtual async Task ClearProcessedRequests()
         {
-            await Database.ExecuteSqlInterpolatedAsync($"TRUNCATE TABLE [{Schema.GrbImporter}].[{ProcessedRequestsConfiguration.TableName}]");
-            await SaveChangesAsync();
+            await Database.ExecuteSqlRawAsync($"TRUNCATE TABLE [{Schema.GrbImporter}].[{ProcessedRequestsConfiguration.TableName}]");
         }
 
         public async Task<RunHistory> AddRunHistory(DateTimeOffset from, DateTimeOffset to)
