@@ -16,6 +16,7 @@
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using Xunit;
     using Xunit.Abstractions;
@@ -67,7 +68,8 @@
                 mockRequestMapper.Object,
                 _fakeImporterContextFactory,
                 mockNotificationService.Object,
-                Mock.Of<IHostApplicationLifetime>());
+                Mock.Of<IHostApplicationLifetime>(),
+                NullLoggerFactory.Instance);
 
             // Assert Order
             int callOrder = 0;
@@ -107,7 +109,7 @@
             var lastRun = await context.GetLatestRunHistory();
             lastRun.Id.Should().Be(2);
             lastRun.Completed.Should().BeTrue();
-            lastRun.FromDate.Should().Be(lastRunHistory.ToDate);
+            lastRun.FromDate.Should().Be(lastRunHistory.ToDate.AddDays(1));
             lastRun.ToDate.Should().Be(today);
         }
     }

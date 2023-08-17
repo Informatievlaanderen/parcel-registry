@@ -16,6 +16,7 @@
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using Xunit;
     using Xunit.Abstractions;
@@ -63,7 +64,8 @@
                 mockRequestMapper.Object,
                 _fakeImporterContextFactory,
                 mockNotificationService.Object,
-                Mock.Of<IHostApplicationLifetime>());
+                Mock.Of<IHostApplicationLifetime>(),
+                NullLoggerFactory.Instance);
 
             await sut.StartAsync(CancellationToken.None);
 
