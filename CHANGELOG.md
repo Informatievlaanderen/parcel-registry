@@ -1,3 +1,10 @@
+## [4.31.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.1...v4.31.2) (2023-08-17)
+
+
+### Bug Fixes
+
+* use (toDate + 1day) from last completed run as new fromDate ([edbd672](https://github.com/informatievlaanderen/parcel-registry/commit/edbd67239fb14243f2ae852b4a4cd24b04b14580))
+
 ## [4.31.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.0...v4.31.1) (2023-08-16)
 
 
