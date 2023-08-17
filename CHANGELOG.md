@@ -1,3 +1,10 @@
+## [4.31.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.2...v4.31.3) (2023-08-17)
+
+
+### Bug Fixes
+
+* how truncate processedRequests is called on importerContext ([73f06f4](https://github.com/informatievlaanderen/parcel-registry/commit/73f06f462f839723e3cc4959a8401189e964ba7d))
+
 ## [4.31.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.1...v4.31.2) (2023-08-17)
 
 
