@@ -53,7 +53,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                     request.IfMatchHeaderValue == messageData.IfMatchHeaderValue &&
                     request.Provenance == messageData.ProvenanceData.ToProvenance() &&
                     request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                     request.IfMatchHeaderValue == messageData.IfMatchHeaderValue &&
                     request.Provenance == messageData.ProvenanceData.ToProvenance() &&
                     request.Metadata == messageData.Metadata
-                ), CancellationToken.None), Times.Once);
+                ), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
