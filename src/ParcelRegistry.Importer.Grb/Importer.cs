@@ -8,13 +8,13 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Notifications;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Infrastructure;
     using Infrastructure.Download;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
 
     public sealed class Importer : BackgroundService
     {
@@ -25,7 +25,6 @@
         private readonly IDbContextFactory<ImporterContext> _importerContext;
         private readonly INotificationService _notificationService;
         private readonly IHostApplicationLifetime _applicationLifetime;
-        private readonly ILogger _logger;
 
         public Importer(
             IMediator mediator,
@@ -34,8 +33,7 @@
             IRequestMapper requestMapper,
             IDbContextFactory<ImporterContext> importerContext,
             INotificationService notificationService,
-            IHostApplicationLifetime applicationLifetime,
-            ILoggerFactory loggerFactory)
+            IHostApplicationLifetime applicationLifetime)
         {
             _mediator = mediator;
             _downloadFacade = downloadFacade;
@@ -44,7 +42,6 @@
             _importerContext = importerContext;
             _notificationService = notificationService;
             _applicationLifetime = applicationLifetime;
-            _logger = loggerFactory.CreateLogger<Importer>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -123,8 +120,7 @@
 
                 if (fromDate > toDate)
                 {
-                    _logger.LogError($"The fromDate ({fromDate}) is greater than the toDate ({toDate}) for the next run, application shutting down.");
-                    _applicationLifetime.StopApplication();
+                    throw new ArgumentException($"{nameof(toDate)} must be greater than {nameof(fromDate)}.");
                 }
 
                 currentRun = await context.AddRunHistory(fromDate, toDate);

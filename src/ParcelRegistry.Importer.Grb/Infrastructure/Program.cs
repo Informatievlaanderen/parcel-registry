@@ -15,6 +15,7 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.GrAr.Notifications;
     using Consumer.Address.Infrastructure;
     using Destructurama;
     using Download;
