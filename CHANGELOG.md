@@ -1,3 +1,10 @@
+## [4.31.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.4...v4.31.5) (2023-08-21)
+
+
+### Bug Fixes
+
+* add grar notifications package ([76d53d3](https://github.com/informatievlaanderen/parcel-registry/commit/76d53d32844b00884b65d065edc838d607a64e97))
+
 ## [4.31.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.3...v4.31.4) (2023-08-21)
 
 
