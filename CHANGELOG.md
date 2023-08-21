@@ -1,3 +1,10 @@
+## [4.31.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.3...v4.31.4) (2023-08-21)
+
+
+### Bug Fixes
+
+* call cancel on lambda cancellationToken after 5 minutes ([e7b8494](https://github.com/informatievlaanderen/parcel-registry/commit/e7b8494d4d4cc65250ea8f6bb88e45206049a988))
+
 ## [4.31.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.2...v4.31.3) (2023-08-17)
 
 
