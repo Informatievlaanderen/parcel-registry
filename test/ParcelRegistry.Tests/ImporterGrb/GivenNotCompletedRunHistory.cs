@@ -8,15 +8,14 @@
     using AutoFixture;
     using BackOffice;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Notifications;
     using FluentAssertions;
     using Importer.Grb;
     using Importer.Grb.Handlers;
     using Importer.Grb.Infrastructure;
     using Importer.Grb.Infrastructure.Download;
     using MediatR;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using Xunit;
     using Xunit.Abstractions;
@@ -64,8 +63,7 @@
                 mockRequestMapper.Object,
                 _fakeImporterContextFactory,
                 mockNotificationService.Object,
-                Mock.Of<IHostApplicationLifetime>(),
-                NullLoggerFactory.Instance);
+                Mock.Of<IHostApplicationLifetime>());
 
             await sut.StartAsync(CancellationToken.None);
 

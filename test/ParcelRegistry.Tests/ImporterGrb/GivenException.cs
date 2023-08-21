@@ -9,6 +9,7 @@
     using AutoFixture;
     using BackOffice;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Notifications;
     using FluentAssertions;
     using Importer.Grb;
     using Importer.Grb.Handlers;
@@ -16,7 +17,6 @@
     using Importer.Grb.Infrastructure.Download;
     using MediatR;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using Xunit;
     using Xunit.Abstractions;
@@ -50,7 +50,7 @@
 
             var context = _fakeImporterContextFactory.CreateDbContext();
 
-            var lastRunHistory = await context.AddRunHistory(DateTimeOffset.Now.AddDays(-2), DateTimeOffset.Now.AddDays(-1));
+            var lastRunHistory = await context.AddRunHistory(DateTimeOffset.Now.AddDays(-3), DateTimeOffset.Now.AddDays(-2));
             await context.CompleteRunHistory(lastRunHistory.Id);
 
             mockIUniqueParcelPlanProxy.Setup(x => x.GetMaxDate())
@@ -69,8 +69,7 @@
                 mockRequestMapper.Object,
                 _fakeImporterContextFactory,
                 mockNotificationService.Object,
-                Mock.Of<IHostApplicationLifetime>(),
-                NullLoggerFactory.Instance);
+                Mock.Of<IHostApplicationLifetime>());
 
             // Act
             var act = async () => await sut.StartAsync(CancellationToken.None);
@@ -110,8 +109,7 @@
                 mockRequestMapper.Object,
                 _fakeImporterContextFactory,
                 mockNotificationService.Object,
-                Mock.Of<IHostApplicationLifetime>(),
-                NullLoggerFactory.Instance);
+                Mock.Of<IHostApplicationLifetime>());
 
             // Act
             var act = async () => await sut.StartAsync(CancellationToken.None);

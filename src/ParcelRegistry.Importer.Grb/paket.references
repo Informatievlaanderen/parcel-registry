@@ -4,6 +4,7 @@ AWSSDK.SimpleNotificationService
 NetTopologySuite
 
 Be.Vlaanderen.Basisregisters.Auth.AcmIdm
+Be.Vlaanderen.Basisregisters.GrAr.Notifications
 
 MediatR.Contracts
 

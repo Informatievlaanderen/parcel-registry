@@ -317,6 +317,8 @@ NUGET
       Be.Vlaanderen.Basisregisters.GrAr.Common (20.3.1) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset (>= 3.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Newtonsoft.Json (>= 13.0.1) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
+    Be.Vlaanderen.Basisregisters.GrAr.Notifications (20.3.1)
+      AWSSDK.SimpleNotificationService (>= 3.7.101.86) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
     Be.Vlaanderen.Basisregisters.GrAr.Oslo (20.3.1)
       Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json (>= 4.0) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)
       Be.Vlaanderen.Basisregisters.GrAr.Common (20.3.1) - restriction: || (&& (== net472) (>= net6.0)) (== net6.0)

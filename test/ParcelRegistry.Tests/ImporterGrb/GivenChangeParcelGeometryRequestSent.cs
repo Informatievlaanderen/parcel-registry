@@ -8,7 +8,6 @@
     using Autofac;
     using AutoFixture;
     using BackOffice;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Consumer.Address;
