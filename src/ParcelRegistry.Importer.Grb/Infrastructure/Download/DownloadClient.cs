@@ -47,7 +47,7 @@
         {
             if (fromDate.Date >= endDate.Date)
             {
-                throw new ArgumentException($"{nameof(endDate)} must be greater than {nameof(fromDate)}.");
+                throw new OrderInvalidDateRangeException($"{nameof(endDate)} must be greater than {nameof(fromDate)}.");
             }
 
             using var client = _httpClientFactory.CreateClient(nameof(DownloadClient));

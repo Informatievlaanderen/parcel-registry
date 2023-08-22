@@ -67,7 +67,17 @@
                 await context.CompleteRunHistory(currentRun.Id);
                 await context.ClearProcessedRequests();
 
+                await _notificationService.PublishToTopicAsync(new NotificationMessage(
+                    nameof(Grb),
+                    $"Run completed: {currentRun.FromDate} - {currentRun.ToDate}",
+                    "Parcel Importer Grb",
+                    NotificationSeverity.Good));
+
                 _applicationLifetime.StopApplication();
+            }
+            catch (OrderInvalidDateRangeException e)
+            {
+                throw;
             }
             catch (Exception e)
             {
@@ -120,7 +130,7 @@
 
                 if (fromDate > toDate)
                 {
-                    throw new ArgumentException($"{nameof(toDate)} must be greater than {nameof(fromDate)}.");
+                    throw new OrderInvalidDateRangeException($"{nameof(toDate)} must be greater than {nameof(fromDate)}.");
                 }
 
                 currentRun = await context.AddRunHistory(fromDate, toDate);
