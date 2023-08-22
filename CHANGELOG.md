@@ -1,3 +1,10 @@
+## [4.31.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.5...v4.31.6) (2023-08-22)
+
+
+### Bug Fixes
+
+* throw orderInvalidDateRangeException + notify slack of completed run ([98697da](https://github.com/informatievlaanderen/parcel-registry/commit/98697da231d904faa78e809bef9841c7f689dc1b))
+
 ## [4.31.5](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.4...v4.31.5) (2023-08-21)
 
 
