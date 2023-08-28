@@ -128,7 +128,8 @@
                 var toDate = await _downloadFacade.GetMaxDate();
                 var fromDate = lastRun.ToDate.AddDays(1);
 
-                if (fromDate > toDate)
+                // fromDate and toDate are included in the date range.
+                if (fromDate >= toDate)
                 {
                     throw new OrderInvalidDateRangeException($"{nameof(toDate)} must be greater than {nameof(fromDate)}.");
                 }
