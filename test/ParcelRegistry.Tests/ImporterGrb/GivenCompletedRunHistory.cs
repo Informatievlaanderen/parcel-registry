@@ -23,11 +23,11 @@
 
     public class GivenCompletedRunHistory : ParcelRegistryTest
     {
-        private readonly  FakeImportParcelContextFactory _fakeImporterContextFactory;
+        private readonly  FakeImportParcelContextFactory _importerContextFactory;
 
         public GivenCompletedRunHistory(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _fakeImporterContextFactory = new FakeImportParcelContextFactory(false);
+            _importerContextFactory = new FakeImportParcelContextFactory(false);
         }
 
         [Fact]
@@ -50,7 +50,7 @@
 
             var today = DateTime.Now;
 
-            var context = _fakeImporterContextFactory.CreateDbContext();
+            var context = _importerContextFactory.CreateDbContext();
 
             var lastRunHistory = await context.AddRunHistory(DateTimeOffset.Now.AddDays(-3), DateTimeOffset.Now.AddDays(-2));
             await context.CompleteRunHistory(lastRunHistory.Id);
@@ -66,7 +66,7 @@
                 mockIUniqueParcelPlanProxy.Object,
                 mockZipArchiveProcessor.Object,
                 mockRequestMapper.Object,
-                _fakeImporterContextFactory,
+                _importerContextFactory,
                 mockNotificationService.Object,
                 Mock.Of<IHostApplicationLifetime>());
 
@@ -110,6 +110,35 @@
             lastRun.Completed.Should().BeTrue();
             lastRun.FromDate.Should().Be(lastRunHistory.ToDate.AddDays(1));
             lastRun.ToDate.Should().Be(today);
+        }
+
+        [Fact]
+        public async Task WhenNewToDateEqualsFromDate_ThenThrowsOrderInvalidDateRangeException()
+        {
+            var uniqueParcelPlanProxy = new Mock<IDownloadFacade>();
+
+            var today = DateTimeOffset.Now;
+
+            var context = _importerContextFactory.CreateDbContext();
+            var lastRunHistory = await context.AddRunHistory(DateTimeOffset.Now.AddDays(-3), today);
+            await context.CompleteRunHistory(lastRunHistory.Id);
+
+            uniqueParcelPlanProxy.Setup(x => x.GetMaxDate()).ReturnsAsync(today.DateTime);
+
+            var sut = new Importer(
+                Mock.Of<IMediator>(),
+                uniqueParcelPlanProxy.Object,
+                Mock.Of<IZipArchiveProcessor>(),
+                Mock.Of<IRequestMapper>(),
+                _importerContextFactory,
+                Mock.Of<INotificationService>(),
+                Mock.Of<IHostApplicationLifetime>());
+
+            // Act
+            var act = () => sut.StartAsync(CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<OrderInvalidDateRangeException>();
         }
     }
 }
