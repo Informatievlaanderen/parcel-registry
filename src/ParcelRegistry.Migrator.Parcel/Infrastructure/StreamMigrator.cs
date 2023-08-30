@@ -190,6 +190,7 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                 var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(addressIds
                         .Where(x => x.isSuccess)
                         .Select(x => x.addressPersistentLocalId)
+                        .Distinct()
                         .ToList(),
                     new ExtendedWkbGeometry(grbParcel.Geometry.ToBinary()));
 
