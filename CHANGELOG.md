@@ -1,3 +1,11 @@
+## [4.31.7](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.6...v4.31.7) (2023-08-30)
+
+
+### Bug Fixes
+
+* migrate command has unique address ids ([dd4a22f](https://github.com/informatievlaanderen/parcel-registry/commit/dd4a22f2ac4acd7c59c6d9cdf54542327318cabc))
+* parcel importer should only run when from date is greater than to date ([0e3f052](https://github.com/informatievlaanderen/parcel-registry/commit/0e3f05263b8e9bf10480dcd73e7fb1d311cab419))
+
 ## [4.31.6](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.5...v4.31.6) (2023-08-22)
 
 
