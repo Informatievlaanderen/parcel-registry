@@ -21,6 +21,7 @@
         {
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
+            _fixture.Customize(new WithParcelStatus());
 
             _fakeBackOfficeContext =
                 new FakeBackOfficeContextFactory(dispose: false).CreateDbContext(Array.Empty<string>());
@@ -30,7 +31,28 @@
         }
 
         [Fact]
-        public async Task GivenParcelAddressWasAttachedV_ThenRelationIsAdded()
+        public async Task GivenParcelWasMigrated_ThenRelationsAreAdded()
+        {
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+
+            await Sut
+                .Given(parcelWasMigrated)
+                .Then(async _ =>
+                {
+                    foreach (var addressPersistentLocalId in parcelWasMigrated.AddressPersistentLocalIds)
+                    {
+                        var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                            parcelWasMigrated.ParcelId, addressPersistentLocalId);
+
+                        result.Should().NotBeNull();
+                        result!.ParcelId.Should().Be(parcelWasMigrated.ParcelId);
+                        result!.AddressPersistentLocalId.Should().Be(addressPersistentLocalId);
+                    }
+                });
+        }
+
+        [Fact]
+        public async Task GivenParcelAddressWasAttachedV2_ThenRelationIsAdded()
         {
             var parcelAddressWasAttachedV2 = _fixture.Create<ParcelAddressWasAttachedV2>();
 
@@ -48,7 +70,7 @@
         }
 
         [Fact]
-        public async Task GivenParcelAddressWasAttachedVAndRelationPresent_ThenNothing()
+        public async Task GivenParcelAddressWasAttachedV2AndRelationPresent_ThenNothing()
         {
             var parcelAddressWasAttachedV2 = _fixture.Create<ParcelAddressWasAttachedV2>();
 

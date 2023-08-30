@@ -187,7 +187,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
 
             if (_parcelGeometriesByParcelId.TryGetValue(parcelId, out var grbParcel))
             {
-                var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(addressIds
+                var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(
+                    addressIds
                         .Where(x => x.isSuccess)
                         .Select(x => x.addressPersistentLocalId)
                         .Distinct()

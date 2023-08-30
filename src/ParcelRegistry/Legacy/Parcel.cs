@@ -14,7 +14,9 @@ namespace ParcelRegistry.Legacy
 
     public partial class Parcel : AggregateRootEntity, ISnapshotable
     {
-        public MigrateParcel CreateMigrateCommand(IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds, ExtendedWkbGeometry extendedWkbGeometry)
+        public MigrateParcel CreateMigrateCommand(
+            IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
+            ExtendedWkbGeometry extendedWkbGeometry)
         {
             return new MigrateParcel(
                 ParcelId,

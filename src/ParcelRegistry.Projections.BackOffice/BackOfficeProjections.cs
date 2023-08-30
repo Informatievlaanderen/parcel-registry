@@ -11,6 +11,18 @@
     {
         public BackOfficeProjections(IDbContextFactory<BackOfficeContext> backOfficeContextFactory)
         {
+            When<Envelope<ParcelWasMigrated>>(async (_, message, cancellationToken) =>
+            {
+                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
+                foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
+                {
+                    await backOfficeContext.AddIdempotentParcelAddressRelation(
+                        new ParcelId(message.Message.ParcelId),
+                        new AddressPersistentLocalId(addressPersistentLocalId),
+                        cancellationToken);
+                }
+            });
+
             When<Envelope<ParcelAddressWasAttachedV2>>(async (_, message, cancellationToken) =>
             {
                 await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
