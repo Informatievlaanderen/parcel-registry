@@ -1,3 +1,10 @@
+## [4.31.8](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.7...v4.31.8) (2023-08-30)
+
+
+### Bug Fixes
+
+* handle ParcelWasMigrated in backoffice projections ([b1865ab](https://github.com/informatievlaanderen/parcel-registry/commit/b1865ab8cec4f227d1afa3cf0837dbe6fd8e1b55))
+
 ## [4.31.7](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.6...v4.31.7) (2023-08-30)
 
 
