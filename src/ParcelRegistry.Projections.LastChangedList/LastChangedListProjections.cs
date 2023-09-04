@@ -2,13 +2,11 @@ namespace ParcelRegistry.Projections.LastChangedList
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList.Model;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Legacy.Events;
-    using Legacy.Events.Crab;
     using Parcel.Events;
 
     [ConnectedProjectionName("Cache markering percelen")]
@@ -72,10 +70,6 @@ namespace ParcelRegistry.Projections.LastChangedList
                 await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
             });
 
-            When<Envelope<TerrainObjectWasImportedFromCrab>>(async (_, _, _) => await DoNothing());
-            When<Envelope<TerrainObjectHouseNumberWasImportedFromCrab>>(async (_, _, _) => await DoNothing());
-            When<Envelope<AddressSubaddressWasImportedFromCrab>>(async (_, _, _) => await DoNothing());
-
             When<Envelope<ParcelWasMarkedAsMigrated>>(async (context, message, ct) =>
             {
                 var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
@@ -86,7 +80,7 @@ namespace ParcelRegistry.Projections.LastChangedList
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
                 var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
-                RebuildKeyAndUri(records, message.Message.ParcelId);
+                RebuildKeyAndUri(records, message.Message.CaPaKey);
             });
 
             When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
@@ -122,7 +116,7 @@ namespace ParcelRegistry.Projections.LastChangedList
             When<Envelope<ParcelWasImported>>(async (context, message, ct) =>
             {
                 var records = await GetLastChangedRecordsAndUpdatePosition(message.Message.ParcelId.ToString(), message.Position, context, ct);
-                RebuildKeyAndUri(records, message.Message.ParcelId);
+                RebuildKeyAndUri(records, message.Message.CaPaKey);
             });
 
             When<Envelope<ParcelWasRetiredV2>>(async (context, message, ct) =>
@@ -141,7 +135,7 @@ namespace ParcelRegistry.Projections.LastChangedList
             });
         }
 
-        private static void RebuildKeyAndUri(IEnumerable<LastChangedRecord>? attachedRecords, Guid parcelId)
+        private static void RebuildKeyAndUri(IEnumerable<LastChangedRecord>? attachedRecords, string caPaKey)
         {
             if (attachedRecords == null)
             {
@@ -152,12 +146,12 @@ namespace ParcelRegistry.Projections.LastChangedList
             {
                 if (record.CacheKey != null)
                 {
-                    record.CacheKey = string.Format(record.CacheKey, parcelId.ToString());
+                    record.CacheKey = string.Format(record.CacheKey, caPaKey);
                 }
 
                 if (record.Uri != null)
                 {
-                    record.Uri = string.Format(record.Uri, parcelId.ToString());
+                    record.Uri = string.Format(record.Uri, caPaKey);
                 }
             }
         }
@@ -183,11 +177,6 @@ namespace ParcelRegistry.Projections.LastChangedList
                 AcceptType.JsonLd => $"/v2/percelen/{{0}}",
                 _ => throw new NotImplementedException($"Cannot build Uri for type {typeof(AcceptType)}")
             };
-        }
-
-        private static async Task DoNothing()
-        {
-            await Task.Yield();
         }
     }
 }
