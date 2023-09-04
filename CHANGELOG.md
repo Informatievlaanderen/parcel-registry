@@ -1,3 +1,12 @@
+## [4.31.9](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.8...v4.31.9) (2023-09-04)
+
+
+### Bug Fixes
+
+* bump lambda package ([7882cab](https://github.com/informatievlaanderen/parcel-registry/commit/7882cab185cbda22dadf035917c43232b6993604))
+* bump lambda packages ([8b1757f](https://github.com/informatievlaanderen/parcel-registry/commit/8b1757fffe8d1498eba4a47e95320feda3e2ea96))
+* naming status import grb ([f68fea6](https://github.com/informatievlaanderen/parcel-registry/commit/f68fea66bb1102a630ef8708cf2938b3d81f32ad))
+
 ## [4.31.8](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.7...v4.31.8) (2023-08-30)
 
 
