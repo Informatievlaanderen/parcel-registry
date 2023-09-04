@@ -28,7 +28,7 @@
             return Ok(
                 new
                 {
-                    Name = "Importer GRB",
+                    Name = "GRB import percelen",
                     LastCompletedBatch = new { From = lastCompletedRun.FromDate, Until = lastCompletedRun.ToDate },
                     CurrentBatch = currentRun is not null ? new { From = currentRun.FromDate, Until = currentRun.ToDate } : null
                 }
