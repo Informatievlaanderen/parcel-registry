@@ -1,3 +1,10 @@
+## [4.31.10](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.9...v4.31.10) (2023-09-05)
+
+
+### Bug Fixes
+
+* correct cachekey last changed list ([b4d4805](https://github.com/informatievlaanderen/parcel-registry/commit/b4d4805f7981012ee002bbffd734b971fab2b34c))
+
 ## [4.31.9](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.8...v4.31.9) (2023-09-04)
 
 
