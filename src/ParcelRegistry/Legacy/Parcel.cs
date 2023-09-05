@@ -21,9 +21,7 @@ namespace ParcelRegistry.Legacy
             return new MigrateParcel(
                 ParcelId,
                 CaPaKey,
-                IsRealized
-                    ? ParcelStatus.Realized
-                    : ParcelStatus.Retired,
+                ParcelStatus.Realized, // Migrated parcels cannot be retired as we found a geometry in the GRB list.
                 IsRemoved,
                 addressPersistentLocalIds,
                 extendedWkbGeometry,
