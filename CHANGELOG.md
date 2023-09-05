@@ -1,3 +1,11 @@
+## [4.31.11](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.10...v4.31.11) (2023-09-05)
+
+
+### Bug Fixes
+
+* event descriptions ([b134ec2](https://github.com/informatievlaanderen/parcel-registry/commit/b134ec28658280e07023bfa3f65ef89a90f867b3))
+* migrated parcels are always realized ([aabe4ca](https://github.com/informatievlaanderen/parcel-registry/commit/aabe4cab9230eea188a6f8c7470f57e290dc217b))
+
 ## [4.31.10](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.9...v4.31.10) (2023-09-05)
 
 
