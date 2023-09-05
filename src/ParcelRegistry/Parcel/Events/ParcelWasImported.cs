@@ -22,7 +22,7 @@
         [EventPropertyDescription("CaPaKey (= objectidentificator) van het perceel, waarbij forward slashes vervangen zijn door koppeltekens i.f.v. gebruik in URI's.")]
         public string CaPaKey { get; }
 
-        [EventPropertyDescription("De geometrie van het perceel.")]
+        [EventPropertyDescription("Extended WKB-voorstelling van de perceelgeometrie (Hexadecimale notatie).")]
         public string ExtendedWkbGeometry { get; }
 
         [EventPropertyDescription("Metadata bij het event.")]
