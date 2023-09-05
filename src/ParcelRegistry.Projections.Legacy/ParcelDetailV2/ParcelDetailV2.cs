@@ -79,7 +79,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             builder.Property(p => p.GmlType);
 
             builder.Property(p => p.CaPaKey);
-            builder.Property(x => x.StatusAsString).HasMaxLength(450).HasColumnName("Status");
+            builder.Property(x => x.StatusAsString).HasMaxLength(450)
+                .HasColumnName("Status");
 
             builder.Property(p => p.Removed);
             builder.Property(x => x.LastEventHash);
@@ -91,8 +92,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             builder.HasMany(x => x.Addresses).WithOne()
                 .HasForeignKey(x => x.ParcelId);
 
-            builder.HasIndex(x => x.CaPaKey)
-                .IsClustered();
+            builder.HasIndex(x => x.CaPaKey).IsClustered();
             builder.HasAlternateKey(x => x.CaPaKey);
 
             builder.HasIndex(x => x.Removed);
