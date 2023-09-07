@@ -95,7 +95,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             builder.HasIndex(x => x.CaPaKey).IsClustered();
             builder.HasAlternateKey(x => x.CaPaKey);
 
-            builder.HasIndex(x => x.Removed);
+            builder.HasIndex(x => x.Removed)
+                .IncludeProperties(x => new { x.CaPaKey, x.StatusAsString, x.VersionTimestampAsDateTimeOffset });
             builder.HasIndex(x => x.StatusAsString);
         }
     }

@@ -12,7 +12,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
     using Projections.Legacy;
     using Projections.Legacy.ParcelDetailV2;
 
-    public class ParcelListOsloV2Query : Query<ParcelDetailV2, ParcelFilter>
+    public class ParcelListOsloV2Query : Query<ParcelListV2QueryItem, ParcelFilter>
     {
         private readonly LegacyContext _context;
 
@@ -20,7 +20,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
 
         public ParcelListOsloV2Query(LegacyContext context) => _context = context;
 
-        protected override IQueryable<ParcelDetailV2> Filter(FilteringHeader<ParcelFilter> filtering)
+        protected override IQueryable<ParcelListV2QueryItem> Filter(FilteringHeader<ParcelFilter> filtering)
         {
             var parcels = _context
                 .ParcelDetailV2
@@ -30,7 +30,12 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
 
             if (!filtering.ShouldFilter)
             {
-                return parcels;
+                return parcels.Select(x => new ParcelListV2QueryItem
+                {
+                    CaPaKey = x.CaPaKey,
+                    StatusAsString = x.StatusAsString,
+                    VersionTimestampAsDateTimeOffset = x.VersionTimestampAsDateTimeOffset
+                });
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.AddressId))
@@ -41,7 +46,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
                 }
                 else
                 {
-                    return new List<ParcelDetailV2>().AsQueryable();
+                    return new List<ParcelListV2QueryItem>().AsQueryable();
                 }
             }
 
@@ -54,11 +59,16 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
                 }
                 else
                 {
-                    return new List<ParcelDetailV2>().AsQueryable();
+                    return new List<ParcelListV2QueryItem>().AsQueryable();
                 }
             }
 
-            return parcels;
+            return parcels.Select(x => new ParcelListV2QueryItem
+            {
+                CaPaKey = x.CaPaKey,
+                StatusAsString = x.StatusAsString,
+                VersionTimestampAsDateTimeOffset = x.VersionTimestampAsDateTimeOffset
+            });
         }
     }
 
