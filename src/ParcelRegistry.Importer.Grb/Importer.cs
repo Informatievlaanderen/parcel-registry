@@ -126,9 +126,10 @@
             if (lastRun.Completed)
             {
                 var toDate = await _downloadFacade.GetMaxDate();
-                var fromDate = lastRun.ToDate.AddDays(1);
+                var fromDate = lastRun.ToDate;
 
-                // fromDate and toDate are included in the date range.
+                // to date is not inclusive, so if from:2023-08-29 - to:2023-09-04
+                // then there is no data for date 2023-09-04
                 if (fromDate >= toDate)
                 {
                     throw new OrderInvalidDateRangeException($"{nameof(toDate)} must be greater than {nameof(fromDate)}.");

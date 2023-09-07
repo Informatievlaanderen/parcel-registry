@@ -108,7 +108,7 @@
             var lastRun = await context.GetLatestRunHistory();
             lastRun.Id.Should().Be(2);
             lastRun.Completed.Should().BeTrue();
-            lastRun.FromDate.Should().Be(lastRunHistory.ToDate.AddDays(1));
+            lastRun.FromDate.Should().Be(lastRunHistory.ToDate);
             lastRun.ToDate.Should().Be(today);
         }
 
