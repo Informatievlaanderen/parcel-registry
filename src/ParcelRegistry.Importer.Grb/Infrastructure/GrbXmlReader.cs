@@ -34,8 +34,8 @@
     {
         protected override bool IsValid(XmlNode featureMemberNode)
         {
-            var versionNode = featureMemberNode.SelectSingleNode(".//agiv:BEWERK", NamespaceManager);
-            return versionNode is { InnerText: "1" };
+            var editNode = featureMemberNode.SelectSingleNode(".//agiv:BEWERK", NamespaceManager);
+            return editNode is { InnerText: "1" };
         }
 
         public override IEnumerable<GrbParcel> Read(string filePath)
