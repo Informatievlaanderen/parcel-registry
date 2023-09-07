@@ -1,3 +1,10 @@
+## [4.31.12](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.11...v4.31.12) (2023-09-07)
+
+
+### Bug Fixes
+
+* **importer:** correct from date to last used date GAWR-5189 ([6e5c37c](https://github.com/informatievlaanderen/parcel-registry/commit/6e5c37c4a1e28e90ebf968744de3d0d76927d4a1))
+
 ## [4.31.11](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.10...v4.31.11) (2023-09-05)
 
 
