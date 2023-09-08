@@ -1,3 +1,5 @@
+## [4.31.14](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.13...v4.31.14) (2023-09-08)
+
 ## [4.31.13](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.12...v4.31.13) (2023-09-08)
 
 ## [4.31.12](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.11...v4.31.12) (2023-09-07)
