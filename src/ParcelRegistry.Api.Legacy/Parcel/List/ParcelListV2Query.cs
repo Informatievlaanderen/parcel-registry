@@ -6,13 +6,14 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
     using Microsoft.EntityFrameworkCore;
     using Convertors;
     using ParcelRegistry.Projections.Legacy;
     using ParcelRegistry.Projections.Legacy.ParcelDetailV2;
 
-    public class ParcelListV2Query : Query<ParcelDetailV2, ParcelFilter>
+    public class ParcelListV2Query : Query<ParcelListV2QueryItem, ParcelFilter>
     {
         private readonly LegacyContext _context;
 
@@ -20,7 +21,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
 
         public ParcelListV2Query(LegacyContext context) => _context = context;
 
-        protected override IQueryable<ParcelDetailV2> Filter(FilteringHeader<ParcelFilter> filtering)
+        protected override IQueryable<ParcelListV2QueryItem> Filter(FilteringHeader<ParcelFilter> filtering)
         {
             var parcels = _context
                 .ParcelDetailV2
@@ -30,7 +31,13 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
 
             if (!filtering.ShouldFilter)
             {
-                return parcels;
+                return parcels
+                    .Select(x => new ParcelListV2QueryItem
+                    {
+                        CaPaKey = x.CaPaKey,
+                        StatusAsString = x.StatusAsString,
+                        VersionTimestampAsDateTimeOffset = x.VersionTimestampAsDateTimeOffset
+                    });
             }
 
             if (!string.IsNullOrEmpty(filtering.Filter.AddressId))
@@ -41,7 +48,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
                 }
                 else
                 {
-                    return new List<ParcelDetailV2>().AsQueryable();
+                    return new List<ParcelListV2QueryItem>().AsQueryable();
                 }
             }
 
@@ -54,11 +61,17 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
                 }
                 else
                 {
-                    return new List<ParcelDetailV2>().AsQueryable();
+                    return new List<ParcelListV2QueryItem>().AsQueryable();
                 }
             }
 
-            return parcels;
+            return parcels
+                .Select(x => new ParcelListV2QueryItem
+                {
+                    CaPaKey = x.CaPaKey,
+                    StatusAsString = x.StatusAsString,
+                    VersionTimestampAsDateTimeOffset = x.VersionTimestampAsDateTimeOffset
+                });;
         }
     }
 
