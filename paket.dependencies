@@ -44,16 +44,18 @@ nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 3.0.0 content: 
 
 nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 1.4.0
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource 8.0.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 8.0.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 8.0.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 8.0.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 8.0.0
-nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 8.0.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 8.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 8.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac 8.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing 8.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac 8.2.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit 8.2.0
 
-nuget Be.Vlaanderen.Basisregisters.CommandHandling 8.0.0
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 8.0.0
-nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 8.0.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling 8.2.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency 8.2.0
+nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 8.2.0
+
+nuget Be.vlaanderen.basisregisters.snapshotverifier 8.2.0
 
 nuget Be.Vlaanderen.Basisregisters.Api 20.0.0
 
