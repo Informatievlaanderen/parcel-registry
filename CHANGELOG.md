@@ -1,3 +1,11 @@
+# [4.32.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.14...v4.32.0) (2023-09-12)
+
+
+### Features
+
+* add snapshot verifier ([342993c](https://github.com/informatievlaanderen/parcel-registry/commit/342993c7582d43a60ff37850cf393a96502dc2f5))
+* don't cache legacy GAWR-5195 ([98d40e5](https://github.com/informatievlaanderen/parcel-registry/commit/98d40e5e7b66f95b74849c13d8930f1894c1f63d))
+
 ## [4.31.14](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.13...v4.31.14) (2023-09-08)
 
 ## [4.31.13](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.12...v4.31.13) (2023-09-08)
