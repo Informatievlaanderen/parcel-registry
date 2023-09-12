@@ -13,7 +13,7 @@ namespace ParcelRegistry.Projections.LastChangedList
     [ConnectedProjectionDescription("Projectie die markeert voor hoeveel percelen de gecachte data nog geüpdated moeten worden.")]
     public class LastChangedListProjections : LastChangedListConnectedProjection
     {
-        private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.Json, AcceptType.Xml, AcceptType.JsonLd };
+        private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.JsonLd };
 
         public LastChangedListProjections()
             : base(SupportedAcceptTypes)
@@ -161,8 +161,6 @@ namespace ParcelRegistry.Projections.LastChangedList
             var shortenedAcceptType = acceptType.ToString().ToLowerInvariant();
             return acceptType switch
             {
-                AcceptType.Json => $"legacy/parcel:{{0}}.{shortenedAcceptType}",
-                AcceptType.Xml => $"legacy/parcel:{{0}}.{shortenedAcceptType}",
                 AcceptType.JsonLd => $"oslo/parcel:{{0}}.{shortenedAcceptType}",
                 _ => throw new NotImplementedException($"Cannot build CacheKey for type {typeof(AcceptType)}")
             };
@@ -172,8 +170,6 @@ namespace ParcelRegistry.Projections.LastChangedList
         {
             return acceptType switch
             {
-                AcceptType.Json => $"/v1/percelen/{{0}}",
-                AcceptType.Xml => $"/v1/percelen/{{0}}",
                 AcceptType.JsonLd => $"/v2/percelen/{{0}}",
                 _ => throw new NotImplementedException($"Cannot build Uri for type {typeof(AcceptType)}")
             };
