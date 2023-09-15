@@ -42,13 +42,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="FilesToProcess\" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <None Update="FilesToProcess\*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="FilesToProcess\" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

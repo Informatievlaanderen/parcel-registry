@@ -135,6 +135,7 @@
 
         public static Polygon ValidPolygon => (Polygon)ValidGmlPolygon.ToGeometry();
         public static Polygon ValidPolygon2 => (Polygon)ValidGmlPolygon2.ToGeometry();
+        public static Polygon ValidPolygon3 => (Polygon)ValidGmlPolygon3.ToGeometry();
         public static Polygon InValidPolygon => (Polygon)InValidGmlPolygon.ToGeometry();
         public static Polygon InvalidNtsPolygon => (Polygon)InValidNTSButValidSqlPolygon.ToGeometry();
     }
