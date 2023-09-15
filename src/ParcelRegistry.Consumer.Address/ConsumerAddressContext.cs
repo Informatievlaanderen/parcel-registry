@@ -57,7 +57,10 @@ namespace ParcelRegistry.Consumer.Address
                 .Where(x => x.Position.Touches(fixedGeometry))
                 .ToList();
 
-            return containsResult.Union(touchesResult).Distinct();
+            return containsResult
+                .Union(touchesResult)
+                .Where(x => new [] { AddressStatus.Proposed, AddressStatus.Current }.Contains(x.Status))
+                .Distinct();
         }
 
         private static ParcelRegistry.Parcel.DataStructures.AddressStatus Map(AddressStatus status)
