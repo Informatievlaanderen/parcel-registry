@@ -1,3 +1,10 @@
+## [4.32.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.32.0...v4.32.1) (2023-09-18)
+
+
+### Bug Fixes
+
+* filter addresses on status after matching within parcel geometry ([b84d56e](https://github.com/informatievlaanderen/parcel-registry/commit/b84d56eb67b48f114d731015288bc6b9fc054599))
+
 # [4.32.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.31.14...v4.32.0) (2023-09-12)
 
 
