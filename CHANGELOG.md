@@ -1,3 +1,10 @@
+## [4.32.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.32.1...v4.32.2) (2023-10-03)
+
+
+### Bug Fixes
+
+* add snapshot verfier release ([ab73324](https://github.com/informatievlaanderen/parcel-registry/commit/ab733245ad5e5cd9be6950610859d098d0f289e8))
+
 ## [4.32.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.32.0...v4.32.1) (2023-09-18)
 
 
