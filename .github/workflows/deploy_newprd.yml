@@ -47,7 +47,9 @@ jobs:
           'parcel-registry-producer-snapshot-oslo',
           'parcel-registry-projections',
           'parcel-registry-projections-backoffice',
-          'parcel-registry-importer-grb' ]
+          'parcel-registry-importer-grb',
+          'parcel-registry-snapshot-verifier'
+          ]
 
     steps:
     - name: CD services

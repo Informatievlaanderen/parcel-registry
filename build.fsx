@@ -72,6 +72,7 @@ Target.create "Publish_Solution" (fun _ ->
     "ParcelRegistry.Api.BackOffice"
     "ParcelRegistry.Api.BackOffice.Abstractions"
     "ParcelRegistry.Api.BackOffice.Handlers.Lambda"
+    "ParcelRegistry.Snapshot.Verifier"
   ] |> List.iter publishSource)
 
 Target.create "Pack_Solution" (fun _ ->
@@ -98,6 +99,7 @@ Target.create "Containerize_ApiBackOffice" (fun _ -> containerize "ParcelRegistr
 Target.create "Containerize_Producer" (fun _ -> containerize "ParcelRegistry.Producer" "producer")
 Target.create "Containerize_ProducerSnapshotOslo" (fun _ -> containerize "ParcelRegistry.Producer.Snapshot.Oslo" "producer-snapshot-oslo")
 Target.create "Containerize_ImporterGrb" (fun _ -> containerize "ParcelRegistry.Importer.Grb" "importer-grb")
+Target.create "Containerize_SnapshotVerifier" (fun _ -> containerize "ParcelRegistry.Snapshot.Verifier" "snapshot-verifier")
 
 Target.create "SetAssemblyVersions" (fun _ -> setVersions "SolutionInfo.cs")
 // --------------------------------------------------------------------------------
