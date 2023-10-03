@@ -248,6 +248,21 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
+  build-snapshot-verifier:
+    name: Build Snapshot Verifier
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    needs: [ set-release-version ]
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
+    with:
+      registry: parcel-registry
+      build-target: Containerize_SnapshotVerifier
+      image-file: pr-snapshot-verifier-image.tar
+      image-name: snapshot-verifier
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Snapshot.Verifier
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
   pack-api-backoffice:
     name: Pack Api BackOffice
     uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
@@ -356,7 +371,9 @@ jobs:
       build-producer-snapshot-oslo,
       build-migrator-parcel,
       build-lambda-backoffice,
-      build-importer-grb ]
+      build-importer-grb,
+      build-snapshot-verifier
+      ]
     outputs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
@@ -713,7 +730,9 @@ jobs:
           'producer',
           'producer-snapshot-oslo',
           'migrator-parcel',
-          'importer-grb' ]
+          'importer-grb',
+          'snapshot-verifier'
+          ]
     steps:
       - name: Configure AWS credentials (Test)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -773,7 +792,9 @@ jobs:
           'producer',
           'producer-snapshot-oslo',
           'migrator-parcel',
-          'importer-grb' ]
+          'importer-grb',
+          'snapshot-verifier'
+          ]
     steps:
       - name: Configure AWS credentials (Staging)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -835,7 +856,9 @@ jobs:
           'producer',
           'producer-snapshot-oslo',
           'migrator-parcel',
-          'importer-grb' ]
+          'importer-grb',
+          'snapshot-verifier'
+          ]
     steps:
       - name: Configure AWS credentials (New Production)
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -974,7 +997,9 @@ jobs:
           'parcel-registry-projections',
           'parcel-registry-producer',
           'parcel-registry-producer-snapshot-oslo',
-          'parcel-registry-importer-grb' ]
+          'parcel-registry-importer-grb',
+          'parcel-registry-snapshot-verifier'
+          ]
 
     steps:
     - name: Deploy services
@@ -1093,7 +1118,9 @@ jobs:
           'parcel-registry-producer-snapshot-oslo',
           'parcel-registry-projections',
           'parcel-registry-projections-backoffice',
-          'parcel-registry-importer-grb' ]
+          'parcel-registry-importer-grb',
+          'parcel-registry-snapshot-verifier'
+          ]
     steps:
     - name: CD services
       env:
@@ -1211,7 +1238,9 @@ jobs:
           'parcel-registry-producer-snapshot-oslo',
           'parcel-registry-projections',
           'parcel-registry-projections-backoffice', 
-          'parcel-registry-importer-grb' ]
+          'parcel-registry-importer-grb',
+          'parcel-registry-snapshot-verifier'
+          ]
     steps:
     - name: CD services
       env:
