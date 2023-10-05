@@ -1,12 +1,10 @@
 CREATE OR REPLACE STREAM IF NOT EXISTS parcel_snapshot_oslo_stream_flatten_grb  
    WITH (KAFKA_TOPIC='parcel.snapshot.oslo.flatten.grb', PARTITIONS=1, VALUE_FORMAT='JSON_SR', KEY_FORMAT='JSON_SR') 
    AS SELECT 
-             REDUCE(SPLIT(URL_EXTRACT_PATH(MESSAGEKEY), '/'), '', (s,x) => x) msgkey,
-             identificator->id AS IDENTIFICATOR, 
-             identificator->objectId AS OBJECTID,
-             identificator->naamruimte AS NAAMRUIMTE,
+             REDUCE(SPLIT(URL_EXTRACT_PATH(MESSAGEKEY), '/'), '', (s,x) => x) ObjectId,
+             identificator->id AS ID,
              identificator->versieId AS VERSIEID,
-             perceelStatus AS PERCEELSTATUS,
+             perceelStatus AS STATUS,
              ARRAY_JOIN(TRANSFORM(adressen, (x) => (x->objectId)), ', ') AS ADRESSENIDS,
              CASE WHEN IDENTIFICATOR->ID is null THEN TRUE ELSE FALSE END REMOVED
    FROM PARCEL_SNAPSHOT_OSLO_STREAM

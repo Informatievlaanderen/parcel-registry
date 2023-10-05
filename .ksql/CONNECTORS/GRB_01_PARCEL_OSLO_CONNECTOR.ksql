@@ -6,12 +6,12 @@ CREATE SINK CONNECTOR `ParcelOsloGrbConnector` with (
     "connector.class"= 'MicrosoftSqlServerSink',
     "name"= 'ParcelOsloGrbConnector',
     "kafka.auth.mode"= 'KAFKA_API_KEY',
-    "kafka.api.key"= 'DZKR6A5UYAZDBARE',
-    "kafka.api.secret"= '***',
-    "connection.host"= 'aiv-beta-grb-basisregisters-db.database.windows.net',
+    "kafka.api.key"= '***', -- clear value
+    "kafka.api.secret"= '***', -- clear value
+    "connection.host"= '***', -- clear value
     "connection.port"= '1433',
     "connection.user"= 'GR',
-    "connection.password"= '***',
+    "connection.password"= '***', -- clear value
     "db.name"= 'BasisRegisters',
     "ssl.mode"= 'require',
     "insert.mode"= 'UPSERT',
