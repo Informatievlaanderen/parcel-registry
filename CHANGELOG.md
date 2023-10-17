@@ -1,3 +1,11 @@
+## [4.32.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.32.2...v4.32.3) (2023-10-17)
+
+
+### Bug Fixes
+
+* change parcel grb stream properties to match dbase columns ([2a89cd6](https://github.com/informatievlaanderen/parcel-registry/commit/2a89cd68c475aff39ae934481091a2f4dc61f3fe))
+* migrate parcel unknown by grb ([096290a](https://github.com/informatievlaanderen/parcel-registry/commit/096290aa30d70c0c7056a537fbe074ce1cb3f799))
+
 ## [4.32.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.32.1...v4.32.2) (2023-10-03)
 
 
