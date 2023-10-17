@@ -16,12 +16,13 @@ namespace ParcelRegistry.Legacy
     {
         public MigrateParcel CreateMigrateCommand(
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
-            ExtendedWkbGeometry extendedWkbGeometry)
+            ExtendedWkbGeometry extendedWkbGeometry,
+            ParcelStatus? parcelStatus = null)
         {
             return new MigrateParcel(
                 ParcelId,
                 CaPaKey,
-                ParcelStatus.Realized, // Migrated parcels cannot be retired as we found a geometry in the GRB list.
+                parcelStatus ?? ParcelStatus.Realized, // Migrated parcels cannot be retired as we found a geometry in the GRB list.
                 IsRemoved,
                 addressPersistentLocalIds,
                 extendedWkbGeometry,

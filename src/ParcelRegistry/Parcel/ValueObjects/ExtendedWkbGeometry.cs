@@ -3,6 +3,9 @@
     using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using NetTopologySuite;
+    using NetTopologySuite.Geometries;
+    using NetTopologySuite.Geometries.Implementation;
     using NetTopologySuite.IO;
     using Newtonsoft.Json;
 
@@ -36,6 +39,17 @@
             {
                 return null;
             }
+        }
+
+        public static ExtendedWkbGeometry CreateDummyForRetiredParcel()
+        {
+            var geometry = new WKTReader(new NtsGeometryServices(
+                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
+                    new PrecisionModel(PrecisionModels.Floating),
+                    SridLambert72))
+                .Read("POLYGON ((0 0,0 1,1 1,1 0,0 0))");
+
+            return CreateEWkb(geometry.AsBinary())!;
         }
     }
 }
