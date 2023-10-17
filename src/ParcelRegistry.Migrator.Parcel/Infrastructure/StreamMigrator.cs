@@ -224,6 +224,11 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                     _logger.LogWarning($"Parcel geometry not found for '{aggregateId}', retiring parcel.");
                 }
 
+                var migrateParcel = legacyParcelAggregate.CreateMigrateCommand(
+                    Array.Empty<AddressPersistentLocalId>(),
+                    ExtendedWkbGeometry.CreateDummyForRetiredParcel(),
+                    Legacy.ParcelStatus.Retired);
+
                 var provenance = new Provenance(
                     SystemClock.Instance.GetCurrentInstant(),
                     Application.ParcelRegistry,
@@ -233,7 +238,8 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure
                     Organisation.DigitaalVlaanderen);
 
                 await DispatchCommand(new RetireParcel(parcelId, provenance), CancellationToken.None);
-                await DispatchCommand(new MarkParcelAsMigrated(parcelId, provenance), CancellationToken.None); //TODO: do we mark it or not?
+                await DispatchCommand(new MarkParcelAsMigrated(parcelId, provenance), CancellationToken.None);
+                await DispatchCommand(migrateParcel, CancellationToken.None);
 
                 await _processedIdsTable.Add(internalId);
                 processedItems.Add(internalId);
