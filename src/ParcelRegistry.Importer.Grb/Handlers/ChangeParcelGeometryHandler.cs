@@ -1,6 +1,5 @@
 ﻿namespace ParcelRegistry.Importer.Grb.Handlers
 {
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -34,7 +33,7 @@
                 .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))
                 .ToList();
 
-            var extendedWkbGeometry = ExtendedWkbGeometry.CreateEWkb(request.GrbParcel.Geometry.ToBinary());
+            var extendedWkbGeometry = ExtendedWkbGeometry.CreateEWkb(request.GrbParcel.Geometry.ToBinary())!;
 
             var command = new ChangeParcelGeometry(
                 new VbrCaPaKey(request.GrbParcel.GrbCaPaKey),

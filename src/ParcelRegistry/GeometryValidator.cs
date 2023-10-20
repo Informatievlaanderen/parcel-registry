@@ -9,7 +9,8 @@
             var validOp =
                 new NetTopologySuite.Operation.Valid.IsValidOp(geometry)
                 {
-                    IsSelfTouchingRingFormingHoleValid = true
+                    IsSelfTouchingRingFormingHoleValid = true,
+                    SelfTouchingRingFormingHoleValid = true
                 };
 
             return validOp.IsValid;

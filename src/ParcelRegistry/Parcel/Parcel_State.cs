@@ -69,20 +69,6 @@ namespace ParcelRegistry.Parcel
             _lastEvent = @event;
         }
 
-        private void When(ParcelAddressWasAttachedV2 @event)
-        {
-            _addressPersistentLocalIds.Add(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-
-            _lastEvent = @event;
-        }
-
-        private void When(ParcelAddressWasDetachedV2 @event)
-        {
-            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
-
-            _lastEvent = @event;
-        }
-
         private void When(ParcelWasImported @event)
         {
             ParcelId = new ParcelId(@event.ParcelId);
@@ -113,6 +99,20 @@ namespace ParcelRegistry.Parcel
         private void When(ParcelGeometryWasChanged @event)
         {
             Geometry = new ExtendedWkbGeometry(@event.ExtendedWkbGeometry);
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelAddressWasAttachedV2 @event)
+        {
+            _addressPersistentLocalIds.Add(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelAddressWasDetachedV2 @event)
+        {
+            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
 
             _lastEvent = @event;
         }
