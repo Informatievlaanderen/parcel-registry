@@ -44,6 +44,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adr", "adr", "{957DE67B-3154-41D8-AC04-2BB1A1F1F445}"
 	ProjectSection(SolutionItems) = preProject
 		docs\adr\0001-record-architecture-decisions.md = docs\adr\0001-record-architecture-decisions.md
+		docs\adr\0002-parcel-import-via-download.md = docs\adr\0002-parcel-import-via-download.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Projections.Syndication", "src\ParcelRegistry.Projections.Syndication\ParcelRegistry.Projections.Syndication.csproj", "{97608EBD-14AE-48CA-A916-F687E3D0462B}"
