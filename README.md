@@ -1,4 +1,4 @@
-# Parcel Registry [![Build Status](https://github.com/Informatievlaanderen/parcel-registry/workflows/CI/badge.svg)](https://github.com/Informatievlaanderen/parcel-registry/actions)
+# Parcel Registry [![Build Status](https://github.com/Informatievlaanderen/parcel-registry/workflows/Build/badge.svg)](https://github.com/Informatievlaanderen/parcel-registry/actions)
 
 ## Goal
 
@@ -132,6 +132,7 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 * [Moq](https://github.com/devlooped/moq) - _The most popular and friendly mocking framework for .NET._ - [BSD](https://choosealicense.com/licenses/bsd-3-clause/)
 * [AWSSDK](https://github.com/aws/aws-sdk-net) - _The official AWS SDK for .NET._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
 * [MediatR](https://github.com/jbogard/MediatR) - _Simple, unambitious mediator implementation in .NET._ - [MIT](https://choosealicense.com/licenses/mit/)
+* [Dapper](https://github.com/DapperLib/Dapper) - _A simple object mapper for .Net._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
 
 ### Tooling
 
