@@ -22,6 +22,30 @@ namespace ParcelRegistry.Parcel
             EventSerializer eventSerializer,
             IProvenanceFactory<Parcel> provenanceFactory)
         {
+            For<AttachAddress>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<AttachAddress, Parcel>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streamId = new ParcelStreamId(message.Command.ParcelId);
+                    var parcel = await parcelRepository().GetAsync(streamId, ct);
+
+                    parcel.AttachAddress(message.Command.AddressPersistentLocalId);
+                });
+
+            For<DetachAddress>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<DetachAddress, Parcel>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streamId = new ParcelStreamId(message.Command.ParcelId);
+                    var parcel = await parcelRepository().GetAsync(streamId, ct);
+
+                    parcel.DetachAddress(message.Command.AddressPersistentLocalId);
+                });
+
             For<DetachAddressBecauseAddressWasRemoved>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
                 .AddEventHash<DetachAddressBecauseAddressWasRemoved, Parcel>(getUnitOfWork)

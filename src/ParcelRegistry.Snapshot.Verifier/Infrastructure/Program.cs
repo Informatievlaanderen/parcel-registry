@@ -23,8 +23,7 @@ namespace ParcelRegistry.Snapshot.Verifier.Infrastructure
     public sealed class Program
     {
         private Program()
-        {
-        }
+        { }
 
         public static async Task Main(string[] args)
         {

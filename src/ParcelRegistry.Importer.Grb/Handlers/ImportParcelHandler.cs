@@ -33,7 +33,7 @@
                 .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))
                 .ToList();
 
-            var extendedWkbGeometry = ExtendedWkbGeometry.CreateEWkb(request.GrbParcel.Geometry.ToBinary());
+            var extendedWkbGeometry = ExtendedWkbGeometry.CreateEWkb(request.GrbParcel.Geometry.ToBinary())!;
 
             var command = new ImportParcel(
                 new VbrCaPaKey(request.GrbParcel.GrbCaPaKey),
