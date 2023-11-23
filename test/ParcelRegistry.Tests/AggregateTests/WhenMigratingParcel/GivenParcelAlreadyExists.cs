@@ -1,16 +1,14 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 {
-    using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Builders;
     using Parcel;
-    using Parcel.Commands;
     using Parcel.Events;
     using Xunit;
     using Xunit.Abstractions;
+    using ParcelStatus = ParcelRegistry.Legacy.ParcelStatus;
 
     public class GivenParcelAlreadyExists : ParcelRegistryTest
     {
@@ -22,14 +20,9 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
         {
             var parcelWasMigrated = Fixture.Create<ParcelWasMigrated>();
 
-            var command = new MigrateParcel(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelRegistry.Legacy.ParcelStatus.Realized,
-                Fixture.Create<bool>(),
-                Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
-                Fixture.Create<Provenance>());
+            var command = new MigrateParcelBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .Build();
 
             Assert(new Scenario()
                 .Given(

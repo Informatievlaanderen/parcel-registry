@@ -1,17 +1,10 @@
 ﻿namespace ParcelRegistry.Tests.AggregateTests.WhenRetiringParcel
 {
-    using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using EventExtensions;
-    using FluentAssertions;
-    using Moq;
+    using Builders;
     using Parcel;
-    using Parcel.Commands;
     using Parcel.Events;
     using Xunit;
     using Xunit.Abstractions;
@@ -29,17 +22,21 @@
             var caPaKey = Fixture.Create<VbrCaPaKey>();
             var parcelId = ParcelId.CreateFor(caPaKey);
 
-            var parcelWasImported = new ParcelWasImported(
-                parcelId,
-                caPaKey,
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            parcelWasImported.SetFixtureProvenance(Fixture);
+            var parcelWasImported = new ParcelWasImportedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .Build();
 
             var attachedAddressPersistentLocalId = Fixture.Create<AddressPersistentLocalId>();
-            var addressWasAttached = new ParcelAddressWasAttachedV2(parcelId, caPaKey, attachedAddressPersistentLocalId);
-            addressWasAttached.SetFixtureProvenance(Fixture);
+            var addressWasAttached = new ParcelAddressWasAttachedV2Builder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .WithAddress(attachedAddressPersistentLocalId)
+                .Build();
 
-            var command = new RetireParcelV2(caPaKey, Fixture.Create<Provenance>());
+            var command = new RetireParcelV2Builder(Fixture)
+                .WithVbrCaPaKey(caPaKey)
+                .Build();
 
             Assert(new Scenario()
                 .Given(new ParcelStreamId(parcelId), parcelWasImported, addressWasAttached)

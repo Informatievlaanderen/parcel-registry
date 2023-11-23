@@ -1,16 +1,13 @@
 ﻿namespace ParcelRegistry.Tests.AggregateTests.WhenChangingParcelGeometry
 {
-    using System.Collections.Generic;
     using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using EventExtensions;
+    using Builders;
     using FluentAssertions;
     using Moq;
     using Parcel;
-    using Parcel.Commands;
     using Parcel.Events;
     using Parcel.Exceptions;
     using Xunit;
@@ -29,17 +26,15 @@
             var caPaKey = Fixture.Create<VbrCaPaKey>();
             var parcelId = ParcelId.CreateFor(caPaKey);
 
-            var parcelWasImported = new ParcelWasImported(
-                parcelId,
-                caPaKey,
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            parcelWasImported.SetFixtureProvenance(Fixture);
+            var parcelWasImported = new ParcelWasImportedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .Build();
 
-            var command = new ChangeParcelGeometry(
-                caPaKey,
-                GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry(),
-                new List<AddressPersistentLocalId>(),
-                Fixture.Create<Provenance>());
+            var command = new ChangeParcelGeometryBuilder(Fixture)
+                .WithVbrCaPaKey(caPaKey)
+                .WithExtendedWkbGeometry(GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry())
+                .Build();
 
             Assert(new Scenario()
                 .Given(new ParcelStreamId(parcelId), parcelWasImported)
@@ -54,37 +49,33 @@
             var caPaKey = Fixture.Create<VbrCaPaKey>();
             var parcelId = ParcelId.CreateFor(caPaKey);
 
-            var parcelWasImported = new ParcelWasImported(
-                parcelId,
-                caPaKey,
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            parcelWasImported.SetFixtureProvenance(Fixture);
+            var parcelWasImported = new ParcelWasImportedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .Build();
 
             var addressPersistentLocalIdToAttach = new AddressPersistentLocalId(1);
             var addressPersistentLocalIdToDoNothing = new AddressPersistentLocalId(2);
             var addressPersistentLocalIdToDetach = new AddressPersistentLocalId(3);
 
-            var toDoNothingParcelAddressWasAttached = new ParcelAddressWasAttachedV2(
-                parcelId,
-                caPaKey,
-                addressPersistentLocalIdToDoNothing);
-            toDoNothingParcelAddressWasAttached.SetFixtureProvenance(Fixture);
+            var toDoNothingParcelAddressWasAttached = new ParcelAddressWasAttachedV2Builder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .WithAddress(addressPersistentLocalIdToDoNothing)
+                .Build();
 
-            var toDetachParcelAddressWasAttached = new ParcelAddressWasAttachedV2(
-                parcelId,
-                caPaKey,
-                addressPersistentLocalIdToDetach);
-            toDetachParcelAddressWasAttached.SetFixtureProvenance(Fixture);
+            var toDetachParcelAddressWasAttached = new ParcelAddressWasAttachedV2Builder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .WithAddress(addressPersistentLocalIdToDetach)
+                .Build();
 
-            var command = new ChangeParcelGeometry(
-                caPaKey,
-                GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry(),
-                new List<AddressPersistentLocalId>()
-                {
-                    addressPersistentLocalIdToAttach,
-                    addressPersistentLocalIdToDoNothing
-                },
-                Fixture.Create<Provenance>());
+            var command = new ChangeParcelGeometryBuilder(Fixture)
+                .WithVbrCaPaKey(caPaKey)
+                .WithExtendedWkbGeometry(GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry())
+                .WithAddress(addressPersistentLocalIdToAttach)
+                .WithAddress(addressPersistentLocalIdToDoNothing)
+                .Build();
 
             Assert(new Scenario()
                 .Given(new ParcelStreamId(parcelId),
@@ -104,22 +95,14 @@
             var caPaKey = Fixture.Create<VbrCaPaKey>();
             var parcelId = ParcelId.CreateFor(caPaKey);
 
-            var extendedWkbGeometry = GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry();
-            var command = new ChangeParcelGeometry(
-                caPaKey,
-                extendedWkbGeometry,
-                new List<AddressPersistentLocalId>(),
-                Fixture.Create<Provenance>());
+            var command = new ChangeParcelGeometryBuilder(Fixture)
+                .WithVbrCaPaKey(caPaKey)
+                .Build();
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                command.ParcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Retired,
-                isRemoved: false,
-                new List<AddressPersistentLocalId>(),
-                extendedWkbGeometry);
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithParcelId(command.ParcelId)
+                .WithStatus(ParcelStatus.Retired)
+                .Build();
 
             Assert(new Scenario()
                 .Given(new ParcelStreamId(parcelId), parcelWasMigrated)
@@ -133,17 +116,15 @@
             var caPaKey = Fixture.Create<VbrCaPaKey>();
             var parcelId = ParcelId.CreateFor(caPaKey);
 
-            var parcelWasImported = new ParcelWasImported(
-                parcelId,
-                caPaKey,
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            parcelWasImported.SetFixtureProvenance(Fixture);
+            var parcelWasImported = new ParcelWasImportedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .Build();
 
-            var command = new ChangeParcelGeometry(
-                caPaKey,
-                GeometryHelpers.GmlPointGeometry.GmlToExtendedWkbGeometry(),
-                new List<AddressPersistentLocalId>(),
-                Fixture.Create<Provenance>());
+            var command = new ChangeParcelGeometryBuilder(Fixture)
+                .WithVbrCaPaKey(caPaKey)
+                .WithExtendedWkbGeometry(GeometryHelpers.GmlPointGeometry.GmlToExtendedWkbGeometry())
+                .Build();
 
             Assert(new Scenario()
                 .Given(new ParcelStreamId(parcelId), parcelWasImported)
@@ -157,14 +138,16 @@
             var parcelId = Fixture.Create<ParcelId>();
             var caPaKey = Fixture.Create<VbrCaPaKey>();
 
-            var parcelWasImported = new ParcelWasImported(
-                parcelId,
-                caPaKey,
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            parcelWasImported.SetFixtureProvenance(Fixture);
+            var parcelWasImported = new ParcelWasImportedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .Build();
 
-            var parcelGeometryWasChanged = new ParcelGeometryWasChanged(parcelId, caPaKey, GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry());
-            parcelGeometryWasChanged.SetFixtureProvenance(Fixture);
+            var parcelGeometryWasChanged = new ParcelGeometryWasChangedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .WithVbrCaPaKey(caPaKey)
+                .WithExtendedWkbGeometry(GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry())
+                .Build();
 
             var parcel = new ParcelFactory(NoSnapshotStrategy.Instance,  new Mock<IAddresses>().Object).Create();
             parcel.Initialize(new object[]

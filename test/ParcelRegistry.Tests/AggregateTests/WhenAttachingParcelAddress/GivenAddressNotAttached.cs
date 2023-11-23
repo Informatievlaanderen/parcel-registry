@@ -1,7 +1,6 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
 {
     using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
     using BackOffice;
@@ -10,16 +9,15 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Builders;
     using Consumer.Address;
     using Fixtures;
     using FluentAssertions;
     using NetTopologySuite.Geometries;
     using Parcel;
-    using Parcel.Commands;
     using Parcel.Events;
     using Xunit;
     using Xunit.Abstractions;
-    using Coordinate = Parcel.Coordinate;
 
     public class GivenAddressNotAttached : ParcelRegistryTest
     {
@@ -35,25 +33,13 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(111);
 
-            var command = new AttachAddress(
-                Fixture.Create<ParcelId>(),
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
+            var command = new AttachAddressBuilder(Fixture)
+                .WithAddress(addressPersistentLocalId)
+                .Build();
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                command.ParcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Realized,
-                isRemoved: false,
-                new List<AddressPersistentLocalId>
-                {
-                    new AddressPersistentLocalId(123),
-                    new AddressPersistentLocalId(456),
-                    new AddressPersistentLocalId(789),
-                },
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .Build();
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
             consumerAddress.AddAddress(
@@ -75,20 +61,10 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
         [Fact]
         public void StateCheck()
         {
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                Fixture.Create<ParcelId>(),
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Realized,
-                isRemoved: false,
-                new List<AddressPersistentLocalId>
-                {
-                    new AddressPersistentLocalId(123),
-                    new AddressPersistentLocalId(456),
-                    new AddressPersistentLocalId(789),
-                },
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .WithAddress(123)
+                .Build();
 
             var addressPersistentLocalId = new AddressPersistentLocalId(111);
             var parcelAddressWasAttachedV2 = new ParcelAddressWasAttachedV2(Fixture.Create<ParcelId>(), new VbrCaPaKey(parcelWasMigrated.CaPaKey), addressPersistentLocalId);
@@ -99,7 +75,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenAttachingParcelAddress
             sut.Initialize(new List<object> { parcelWasMigrated, parcelAddressWasAttachedV2 });
 
             // Assert
-            sut.AddressPersistentLocalIds.Should().HaveCount(4);
+            sut.AddressPersistentLocalIds.Should().HaveCount(2);
             sut.AddressPersistentLocalIds.Should().Contain(addressPersistentLocalId);
             sut.LastEventHash.Should().Be(parcelAddressWasAttachedV2.GetHash());
         }

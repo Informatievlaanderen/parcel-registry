@@ -1,22 +1,19 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 {
-    using System.Collections.Generic;
     using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
-    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Builders;
     using FluentAssertions;
     using NetTopologySuite.Geometries;
     using Parcel;
-    using Parcel.Commands;
     using Parcel.Events;
     using Parcel.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
-    using Coordinate = Parcel.Coordinate;
+    using ParcelStatus = ParcelRegistry.Legacy.ParcelStatus;
 
     public class GivenParcelDoesNotExist : ParcelRegistryTest
     {
@@ -26,14 +23,9 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
         [Fact]
         public void ThenParcelWasMigratedEvent()
         {
-            var command = new MigrateParcel(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelRegistry.Legacy.ParcelStatus.Realized,
-                Fixture.Create<bool>(),
-                Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
-                Fixture.Create<Provenance>());
+            var command = new MigrateParcelBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .Build();
 
             Assert(new Scenario()
                 .GivenNone()
@@ -52,14 +44,9 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
         [Fact]
         public void WithValidMultiPolygon_ThenParcelWasMigratedEvent()
         {
-            var command = new MigrateParcel(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelRegistry.Legacy.ParcelStatus.Realized,
-                Fixture.Create<bool>(),
-                Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ToExtendedWkbGeometry(new MultiPolygon(new[] {GeometryHelpers.ValidPolygon})),
-                Fixture.Create<Provenance>());
+            var command = new MigrateParcelBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .Build();
 
             Assert(new Scenario()
                 .GivenNone()
@@ -78,14 +65,10 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
         [Fact]
         public void WithInvalidPolygon_ThenThrowsPolygonIsInvalidException()
         {
-            var command = new MigrateParcel(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelRegistry.Legacy.ParcelStatus.Realized,
-                Fixture.Create<bool>(),
-                Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.GmlPointGeometry.GmlToExtendedWkbGeometry(),
-                Fixture.Create<Provenance>());
+            var command = new MigrateParcelBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .WithExtendedWkbGeometry(GeometryHelpers.GmlPointGeometry.GmlToExtendedWkbGeometry())
+                .Build();
 
             Assert(new Scenario()
                 .GivenNone()
@@ -96,14 +79,10 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
         [Fact]
         public void WithInValidMultiPolygon_ThenParcelWasMigratedEvent()
         {
-            var command = new MigrateParcel(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelRegistry.Legacy.ParcelStatus.Realized,
-                Fixture.Create<bool>(),
-                Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ToExtendedWkbGeometry(new MultiPolygon(new[] {GeometryHelpers.InValidPolygon})),
-                Fixture.Create<Provenance>());
+            var command = new MigrateParcelBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .WithExtendedWkbGeometry(GeometryHelpers.ToExtendedWkbGeometry(new MultiPolygon(new[] { GeometryHelpers.InValidPolygon })))
+                .Build();
 
             Assert(new Scenario()
                 .GivenNone()
@@ -114,14 +93,9 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
         [Fact]
         public void StateCheck()
         {
-            var command = new MigrateParcel(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelRegistry.Legacy.ParcelStatus.Realized,
-                Fixture.Create<bool>(),
-                Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
-                Fixture.Create<Provenance>());
+            var command = new MigrateParcelBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .Build();
 
             // Act
             var result = Parcel.MigrateParcel(

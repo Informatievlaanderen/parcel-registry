@@ -1,25 +1,22 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddressWasRemoved
 {
     using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
     using BackOffice;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Builders;
     using Consumer.Address;
     using Fixtures;
     using FluentAssertions;
     using NetTopologySuite.Geometries;
     using Parcel;
-    using Parcel.Commands;
     using Parcel.Events;
     using Xunit;
     using Xunit.Abstractions;
-    using Coordinate = Parcel.Coordinate;
 
     public class GivenAddressAttached : ParcelRegistryTest
     {
@@ -35,25 +32,14 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddress
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var command = new DetachAddressBecauseAddressWasRemoved(
-                Fixture.Create<ParcelId>(),
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
+            var command = new DetachAddressBecauseAddressWasRemovedBuilder(Fixture)
+                .WithAddress(addressPersistentLocalId)
+                .Build();
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                command.ParcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Realized,
-                isRemoved: false,
-                new List<AddressPersistentLocalId>
-                {
-                    command.AddressPersistentLocalId,
-                    new AddressPersistentLocalId(456),
-                    new AddressPersistentLocalId(789),
-                },
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithParcelId(command.ParcelId)
+                .WithAddress(addressPersistentLocalId)
+                .Build();
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
             consumerAddress.AddAddress(
@@ -77,30 +63,23 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddress
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                Fixture.Create<ParcelId>(),
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Realized,
-                isRemoved: false,
-                new List<AddressPersistentLocalId>
-                {
-                    addressPersistentLocalId,
-                    new AddressPersistentLocalId(456),
-                    new AddressPersistentLocalId(789),
-                },
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .WithAddress(addressPersistentLocalId)
+                .WithAddress(456)
+                .Build();
 
-            var parcelAddressWasDetachedV2 = new ParcelAddressWasDetachedBecauseAddressWasRemoved(Fixture.Create<ParcelId>(), new VbrCaPaKey(parcelWasMigrated.CaPaKey), addressPersistentLocalId);
-            ((ISetProvenance)parcelAddressWasDetachedV2).SetProvenance(Fixture.Create<Provenance>());
+            var parcelAddressWasDetachedV2 = new ParcelAddressWasDetachedBecauseAddressWasRemovedBuilder(Fixture)
+                .WithAddress(addressPersistentLocalId)
+                .Build();
+
 
             // Act
             var sut = new ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()).Create();
             sut.Initialize(new List<object> { parcelWasMigrated, parcelAddressWasDetachedV2 });
 
             // Assert
-            sut.AddressPersistentLocalIds.Should().HaveCount(2);
+            sut.AddressPersistentLocalIds.Should().HaveCount(1);
             sut.AddressPersistentLocalIds.Should().NotContain(addressPersistentLocalId);
             sut.LastEventHash.Should().Be(parcelAddressWasDetachedV2.GetHash());
         }

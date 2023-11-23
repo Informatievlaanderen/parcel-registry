@@ -5,6 +5,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenRetiringParcel
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Builders;
     using Fixtures;
     using Parcel;
     using Parcel.Commands;
@@ -27,19 +28,14 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenRetiringParcel
         [Fact]
         public void ThenThrowParcelIsRemovedException()
         {
-            var command = new RetireParcelV2(
-                Fixture.Create<VbrCaPaKey>(),
-                Fixture.Create<Provenance>());
+            var command = new RetireParcelV2Builder(Fixture)
+                .Build();
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelId>(),
-                command.ParcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Retired,
-                isRemoved: true,
-                new List<AddressPersistentLocalId>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithParcelId(command.ParcelId)
+                .WithIsRemoved()
+                .WithStatus(ParcelStatus.Retired)
+                .Build();
 
             Assert(new Scenario()
                 .Given(

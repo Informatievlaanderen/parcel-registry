@@ -1,14 +1,9 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddressWasRetired
 {
-    using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
-    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Parcel;
-    using Parcel.Commands;
-    using Parcel.Events;
+    using Builders;
     using Fixtures;
+    using Parcel;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -24,26 +19,13 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddress
         [Fact]
         public void ThenNothing()
         {
-            var addressPersistentLocalId = new AddressPersistentLocalId(123);
+            var command = new DetachAddressBecauseAddressWasRetiredBuilder(Fixture)
+                .WithAddress(1)
+                .Build();
 
-            var command = new DetachAddressBecauseAddressWasRetired(
-                Fixture.Create<ParcelId>(),
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
-
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                command.ParcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Realized,
-                isRemoved: false,
-                new List<AddressPersistentLocalId>
-                {
-                    new AddressPersistentLocalId(456),
-                    new AddressPersistentLocalId(789),
-                },
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithParcelId(command.ParcelId)
+                .Build();
 
             Assert(new Scenario()
                 .Given(
