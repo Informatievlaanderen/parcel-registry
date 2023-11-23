@@ -8,6 +8,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Builders;
     using Fixtures;
     using FluentAssertions;
     using Parcel;
@@ -31,26 +32,17 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
             var previousAddressPersistentLocalId = new AddressPersistentLocalId(1);
             var addressPersistentLocalId = new AddressPersistentLocalId(3);
 
-            var command = new ReplaceAttachedAddressBecauseAddressWasReaddressed(
-                Fixture.Create<ParcelId>(),
-                addressPersistentLocalId,
-                previousAddressPersistentLocalId,
-                Fixture.Create<Provenance>());
+            var command = new ReplaceAttachedAddressBecauseAddressWasReaddressedBuilder(Fixture)
+                .WithNewAddress(addressPersistentLocalId)
+                .WithPreviousAddress(previousAddressPersistentLocalId)
+                .Build();
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                command.ParcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Realized,
-                isRemoved: false,
-                new List<AddressPersistentLocalId>
-                {
-                    previousAddressPersistentLocalId,
-                    new AddressPersistentLocalId(2),
-                    addressPersistentLocalId
-                },
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .WithAddress(previousAddressPersistentLocalId)
+                .WithAddress(2)
+                .WithAddress(addressPersistentLocalId)
+                .Build();
 
             Assert(new Scenario()
                 .Given(
@@ -71,25 +63,16 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReplacingAttachedAddressBecaus
             var previousAddressPersistentLocalId = new AddressPersistentLocalId(1);
             var addressPersistentLocalId = new AddressPersistentLocalId(3);
 
-            var command = new ReplaceAttachedAddressBecauseAddressWasReaddressed(
-                Fixture.Create<ParcelId>(),
-                addressPersistentLocalId,
-                previousAddressPersistentLocalId,
-                Fixture.Create<Provenance>());
+            var command = new ReplaceAttachedAddressBecauseAddressWasReaddressedBuilder(Fixture)
+                .WithNewAddress(addressPersistentLocalId)
+                .WithPreviousAddress(previousAddressPersistentLocalId)
+                .Build();
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                command.ParcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Realized,
-                isRemoved: false,
-                new List<AddressPersistentLocalId>
-                {
-                    new AddressPersistentLocalId(2),
-                    addressPersistentLocalId
-                },
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .WithAddress(2)
+                .WithAddress(addressPersistentLocalId)
+                .Build();
 
             Assert(new Scenario()
                 .Given(

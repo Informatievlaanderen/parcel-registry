@@ -1,23 +1,18 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingParcelAddress
 {
-    using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
     using BackOffice;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Builders;
     using Consumer.Address;
     using Fixtures;
     using NetTopologySuite.Geometries;
     using Parcel;
-    using Parcel.Commands;
-    using Parcel.Events;
     using Parcel.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
-    using Coordinate = Parcel.Coordinate;
 
     public class GivenParcelIsRemoved : ParcelRegistryTest
     {
@@ -33,25 +28,15 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingParcelAddress
         {
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
-            var command = new DetachAddress(
-                Fixture.Create<ParcelId>(),
-                addressPersistentLocalId,
-                Fixture.Create<Provenance>());
+            var command = new DetachAddressBuilder(Fixture)
+                .WithAddress(addressPersistentLocalId)
+                .Build();
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                command.ParcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Retired,
-                isRemoved: true,
-                new List<AddressPersistentLocalId>
-                {
-                    addressPersistentLocalId,
-                    new AddressPersistentLocalId(456),
-                    new AddressPersistentLocalId(789),
-                },
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithStatus(ParcelStatus.Retired)
+                .WithIsRemoved()
+                .WithAddress(addressPersistentLocalId)
+                .Build();
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
             consumerAddress.AddAddress(

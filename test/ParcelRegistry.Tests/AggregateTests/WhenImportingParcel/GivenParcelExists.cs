@@ -6,6 +6,7 @@
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Builders;
     using EventExtensions;
     using Fixtures;
     using FluentAssertions;
@@ -31,18 +32,10 @@
         public void WithRealizedParcel_ThenThrowsParcelAlreadyExistsException()
         {
             var caPaKey = Fixture.Create<VbrCaPaKey>();
-            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(caPaKey);
-            var parcelId = ParcelId.CreateFor(caPaKey);
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                legacyParcelId,
-                parcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Realized,
-                false,
-                Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            parcelWasMigrated.SetFixtureProvenance(Fixture);
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithStatus(ParcelStatus.Realized)
+                .Build();
 
             var command = new ImportParcel(
                 caPaKey,
@@ -60,18 +53,10 @@
         public void WithRetiredParcel_ThenParcelRetirementWasCorrected()
         {
             var caPaKey = Fixture.Create<VbrCaPaKey>();
-            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(caPaKey);
-            var parcelId = ParcelId.CreateFor(caPaKey);
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                legacyParcelId,
-                parcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Retired,
-                false,
-                Fixture.Create<IEnumerable<AddressPersistentLocalId>>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            parcelWasMigrated.SetFixtureProvenance(Fixture);
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithStatus(ParcelStatus.Retired)
+                .Build();
 
             var command = new ImportParcel(
                 caPaKey,
@@ -97,20 +82,20 @@
             var caPaKey = Fixture.Create<VbrCaPaKey>();
             var parcelId = ParcelId.CreateFor(caPaKey);
 
-            var parcelWasImported = new ParcelWasImported(
-                parcelId,
-                caPaKey,
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            parcelWasImported.SetFixtureProvenance(Fixture);
+            var parcelWasImported = new ParcelWasImportedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .Build();
 
-            var parcelWasRetiredV2 = new ParcelWasRetiredV2(parcelId, caPaKey);
-            parcelWasRetiredV2.SetFixtureProvenance(Fixture);
+            var parcelWasRetiredV2 = new ParcelWasRetiredV2Builder(Fixture)
+                .WithParcelId(parcelId)
+                .WithVbrCaPaKey(caPaKey)
+                .Build();
 
-            var parcelRetirementWasCorrected = new ParcelWasCorrectedFromRetiredToRealized(
-                parcelId,
-                caPaKey,
-                GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry());
-            parcelRetirementWasCorrected.SetFixtureProvenance(Fixture);
+            var parcelRetirementWasCorrected = new ParcelWasCorrectedFromRetiredToRealizedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .WithVbrCaPaKey(caPaKey)
+                .WithExtendedWkbGeometry(GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry())
+                .Build();
 
             var parcel = new ParcelFactory(NoSnapshotStrategy.Instance,  new Mock<IAddresses>().Object).Create();
             parcel.Initialize(new object[]

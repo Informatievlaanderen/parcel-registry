@@ -1,12 +1,10 @@
 ﻿namespace ParcelRegistry.Tests.AggregateTests.WhenRetiringParcel
 {
-    using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using EventExtensions;
+    using Builders;
     using FluentAssertions;
     using Moq;
     using Parcel;
@@ -23,30 +21,29 @@
         }
 
         [Fact]
-        public void ThenParcelRetired()
+        public void ThenParcelIsRetired()
         {
             var caPaKey = Fixture.Create<VbrCaPaKey>();
             var parcelId = ParcelId.CreateFor(caPaKey);
 
-            var parcelWasImported = new ParcelWasImported(
-                parcelId,
-                caPaKey,
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            parcelWasImported.SetFixtureProvenance(Fixture);
+            var parcelWasImported = new ParcelWasImportedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .Build();
 
             var firstAddressPersistentLocalId = new AddressPersistentLocalId(1);
-            var firstParcelAddressWasAttached = new ParcelAddressWasAttachedV2(
-                parcelId,
-                caPaKey,
-                firstAddressPersistentLocalId);
-            firstParcelAddressWasAttached.SetFixtureProvenance(Fixture);
+            var firstParcelAddressWasAttached = new ParcelAddressWasAttachedV2Builder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .WithAddress(firstAddressPersistentLocalId)
+                .Build();
 
             var secondAddressPersistentLocalId = new AddressPersistentLocalId(2);
-            var secondParcelAddressWasAttached = new ParcelAddressWasAttachedV2(
-                parcelId,
-                caPaKey,
-                secondAddressPersistentLocalId);
-            secondParcelAddressWasAttached.SetFixtureProvenance(Fixture);
+            var secondParcelAddressWasAttached = new ParcelAddressWasAttachedV2Builder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .WithAddress(secondAddressPersistentLocalId)
+                .Build();
 
             var command = new RetireParcelV2(caPaKey, Fixture.Create<Provenance>());
 
@@ -63,22 +60,17 @@
         }
 
         [Fact]
-        public void WhenAlreadyRetired_ThenNone()
+        public void WithRetiredParcel_ThenNone()
         {
             var caPaKey = Fixture.Create<VbrCaPaKey>();
             var parcelId = ParcelId.CreateFor(caPaKey);
 
             var command = new RetireParcelV2(caPaKey, Fixture.Create<Provenance>());
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                command.ParcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Retired,
-                isRemoved: false,
-                new List<AddressPersistentLocalId>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithParcelId(command.ParcelId)
+                .WithStatus(ParcelStatus.Retired)
+                .Build();
 
             Assert(new Scenario()
                 .Given(new ParcelStreamId(parcelId), parcelWasMigrated)
@@ -92,14 +84,15 @@
             var parcelId = Fixture.Create<ParcelId>();
             var caPaKey = Fixture.Create<VbrCaPaKey>();
 
-            var parcelWasImported = new ParcelWasImported(
-                parcelId,
-                caPaKey,
-                Fixture.Create<ExtendedWkbGeometry>());
-            parcelWasImported.SetFixtureProvenance(Fixture);
+            var parcelWasImported = new ParcelWasImportedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .Build();
 
-            var parcelWasRetiredV2 = new ParcelWasRetiredV2(parcelId, caPaKey);
-            parcelWasRetiredV2.SetFixtureProvenance(Fixture);
+            var parcelWasRetiredV2 = new ParcelWasRetiredV2Builder(Fixture)
+                .WithParcelId(parcelId)
+                .WithVbrCaPaKey(caPaKey)
+                .Build();
 
             var parcel = new ParcelFactory(NoSnapshotStrategy.Instance,  new Mock<IAddresses>().Object).Create();
             parcel.Initialize(new object[]

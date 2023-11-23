@@ -1,14 +1,9 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenChangingParcelGeometry
 {
-    using System;
-    using System.Collections.Generic;
     using Api.BackOffice.Abstractions.Extensions;
-    using AutoFixture;
-    using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Builders;
     using Parcel;
-    using Parcel.Commands;
     using Parcel.Events;
     using Xunit;
     using Xunit.Abstractions;
@@ -21,11 +16,8 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenChangingParcelGeometry
         [Fact]
         public void ThenParcelWasImported()
         {
-            var command = new ChangeParcelGeometry(
-                Fixture.Create<VbrCaPaKey>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
-                new List<AddressPersistentLocalId>(),
-                Fixture.Create<Provenance>());
+            var command = new ChangeParcelGeometryBuilder(Fixture)
+                .Build();
 
             Assert(new Scenario()
                 .Given()

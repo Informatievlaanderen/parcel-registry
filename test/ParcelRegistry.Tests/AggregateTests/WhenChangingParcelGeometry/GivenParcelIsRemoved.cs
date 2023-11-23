@@ -1,19 +1,12 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenChangingParcelGeometry
 {
-    using System.Collections.Generic;
-    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using ParcelRegistry.Api.BackOffice.Abstractions.Extensions;
-    using ParcelRegistry.Parcel;
-    using ParcelRegistry.Parcel.Commands;
-    using ParcelRegistry.Parcel.Events;
-    using ParcelRegistry.Parcel.Exceptions;
-    using ParcelRegistry.Tests.Fixtures;
+    using Builders;
+    using Fixtures;
+    using Parcel;
+    using Parcel.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
-    using ParcelId = ParcelRegistry.Legacy.ParcelId;
-    using ParcelStatus = Parcel.ParcelStatus;
 
     public class GivenParcelIsRemoved : ParcelRegistryTest
     {
@@ -27,21 +20,14 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenChangingParcelGeometry
         [Fact]
         public void ThenThrowParcelIsRemovedException()
         {
-            var command = new ChangeParcelGeometry(
-                Fixture.Create<VbrCaPaKey>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
-                new List<AddressPersistentLocalId>(),
-                Fixture.Create<Provenance>());
+            var command = new ChangeParcelGeometryBuilder(Fixture)
+                .Build();
 
-            var parcelWasMigrated = new ParcelWasMigrated(
-                Fixture.Create<ParcelId>(),
-                command.ParcelId,
-                Fixture.Create<VbrCaPaKey>(),
-                ParcelStatus.Retired,
-                isRemoved: true,
-                new List<AddressPersistentLocalId>(),
-                GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry());
-            ((ISetProvenance)parcelWasMigrated).SetProvenance(Fixture.Create<Provenance>());
+            var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
+                .WithParcelId(command.ParcelId)
+                .WithStatus(ParcelStatus.Retired)
+                .WithIsRemoved()
+                .Build();
 
             Assert(new Scenario()
                 .Given(
