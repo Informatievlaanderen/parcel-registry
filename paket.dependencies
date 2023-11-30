@@ -83,16 +83,16 @@ nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 5.0.3
 
 nuget Be.Vlaanderen.Basisregisters.Crab 3.0.0
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common 20.3.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Notifications 20.3.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 20.3.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 20.3.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import 20.3.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 20.3.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 20.3.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm 20.3.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 20.3.1
-nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 20.3.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common 20.6.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Notifications 20.6.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 20.6.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 20.6.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import 20.6.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 20.6.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 20.6.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm 20.6.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 20.6.1
+nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 20.6.1
 
 nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 4.8.3
 nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 4.8.3
