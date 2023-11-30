@@ -1,0 +1,16 @@
+CREATE OR REPLACE STREAM IF NOT EXISTS parcel_snapshot_oslo_stream_flatten_integrationdb  
+   WITH (KAFKA_TOPIC='parcel.snapshot.oslo.flatten.integrationdb', PARTITIONS=1, VALUE_FORMAT='JSON_SR', KEY_FORMAT='JSON_SR') 
+   AS SELECT 
+      REDUCE(SPLIT(URL_EXTRACT_PATH(MESSAGEKEY), '/'), '', (s,x) => x) CaPaKey,
+
+      PERCEELSTATUS AS "Status",
+      ARRAY_JOIN(TRANSFORM(adressen, (x) => (x->objectId)), ', ') AS "Addresses",
+
+      IDENTIFICATOR->ID as "PuriId",
+      IDENTIFICATOR->NAAMRUIMTE as "Namespace",
+      IDENTIFICATOR->VERSIEID as "VersionString",
+      PARSE_TIMESTAMP(IDENTIFICATOR->VERSIEID, 'yyyy-MM-dd''T''HH:mm:ssXXX', 'UTC') as "VersionTimestamp",
+      CASE WHEN IDENTIFICATOR->ID is null THEN TRUE ELSE FALSE END as "IsRemoved"
+
+   FROM PARCEL_SNAPSHOT_OSLO_STREAM
+   PARTITION BY REDUCE(SPLIT(URL_EXTRACT_PATH(MESSAGEKEY), '/'), '', (s,x) => x);
