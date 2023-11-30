@@ -1,3 +1,10 @@
+## [4.32.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.32.3...v4.32.4) (2023-11-30)
+
+
+### Bug Fixes
+
+* multisurfice serialization ([4437d44](https://github.com/informatievlaanderen/parcel-registry/commit/4437d44c9352fcad12a5f4e778833de0cc420932))
+
 ## [4.32.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.32.2...v4.32.3) (2023-10-17)
 
 
