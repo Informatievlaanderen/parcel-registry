@@ -8,9 +8,6 @@ namespace ParcelRegistry.Api.Legacy.Convertors
         public static PerceelStatus? MapToPerceelStatusSyndication(this ParcelStatus? status)
             => status.HasValue ? MapToPerceelStatus(status.Value) : (PerceelStatus?)null;
 
-        public static PerceelStatus MapToPerceelStatus(this ParcelStatus? status)
-            => MapToPerceelStatus(status ?? ParcelStatus.Realized);
-
         public static PerceelStatus MapToPerceelStatus(this ParcelStatus parcelStatus)
             => parcelStatus == ParcelStatus.Retired
                 ? PerceelStatus.Gehistoreerd

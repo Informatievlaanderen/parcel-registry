@@ -75,6 +75,12 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
         }
     }
 
+    public class ParcelFilter
+    {
+        public string Status { get; set; }
+        public string AddressId { get; set; }
+    }
+
     public class ParcelSortingV2 : ISorting
     {
         public IEnumerable<string> SortableFields { get; } = new[]
