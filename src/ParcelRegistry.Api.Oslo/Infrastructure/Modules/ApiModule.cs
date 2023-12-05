@@ -29,18 +29,10 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            var useProjectionsV2ConfigValue = _configuration.GetSection("FeatureToggles")["UseProjectionsV2"];
-            var useProjectionsV2 = false;
-
-            if (!string.IsNullOrEmpty(useProjectionsV2ConfigValue))
-            {
-                useProjectionsV2 = bool.Parse(useProjectionsV2ConfigValue);
-            }
-
             _services.RegisterModule(new DataDogModule(_configuration));
 
             builder
-                .RegisterModule(new MediatRModule(useProjectionsV2))
+                .RegisterModule(new MediatRModule())
                 .RegisterModule(new LegacyModule(_configuration, _services, _loggerFactory))
                 .RegisterModule(new SyndicationModule(_configuration, _services, _loggerFactory));
 
