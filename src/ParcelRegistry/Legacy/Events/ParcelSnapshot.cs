@@ -10,10 +10,11 @@ namespace ParcelRegistry.Legacy.Events
     using Crab;
     using Newtonsoft.Json;
 
+    [Obsolete("This is a legacy event and should not be used anymore.")]
     [EventName("ParcelSnapshot")]
     [EventSnapshot(nameof(SnapshotContainer) + "<ParcelSnapshot>", typeof(SnapshotContainer))]
     [EventDescription("Snapshot of Parcel")]
-    public class ParcelSnapshot 
+    public class ParcelSnapshot
     {
         public Guid ParcelId { get; }
         public string CaPaKey { get; }

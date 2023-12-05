@@ -5,6 +5,7 @@ namespace ParcelRegistry.Legacy.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
+    [Obsolete("This is a legacy event and should not be used anymore.")]
     [EventTags(EventTag.For.Sync)]
     [EventName("ParcelWasRealized")]
     [EventDescription("Het perceel kreeg status 'gerealiseerd'.")]

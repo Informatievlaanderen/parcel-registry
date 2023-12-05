@@ -1,10 +1,12 @@
 namespace ParcelRegistry.Legacy
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Crab;
     using Events.Crab;
 
+    [Obsolete("This is a legacy class and should not be used anymore.")]
     public class AddressCollection
     {
         private readonly List<AddressId> _addressIds = new List<AddressId>();

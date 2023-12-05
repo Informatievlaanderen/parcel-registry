@@ -5,6 +5,7 @@ namespace ParcelRegistry.Legacy.Commands.Fixes
     using Be.Vlaanderen.Basisregisters.Generators.Guid;
     using Be.Vlaanderen.Basisregisters.Utilities;
 
+    [Obsolete("This is a legacy command and should not be used anymore.")]
     public class FixGrar3581
     {
         private static readonly Guid Namespace = new Guid("f7286c2d-1bec-4555-9154-51dc5d691852");

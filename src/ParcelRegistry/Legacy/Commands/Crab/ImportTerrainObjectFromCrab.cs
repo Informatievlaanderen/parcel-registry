@@ -7,6 +7,7 @@ namespace ParcelRegistry.Legacy.Commands.Crab
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities;
 
+    [Obsolete("This is a legacy command and should not be used anymore.")]
     public class ImportTerrainObjectFromCrab : IHasCrabProvenance
     {
         private static readonly Guid Namespace = new Guid("87a1cf7c-9c7b-4f25-967c-66a9459c9d5e");
