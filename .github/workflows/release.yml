@@ -98,21 +98,6 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
-  build-api-crab-import:
-    name: Build Api CrabImport
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      registry: parcel-registry
-      build-target: Containerize_ApiCrabImport
-      image-file: pr-api-crab-import-image.tar
-      image-name: api-crab-import
-      test-project: ParcelRegistry.Tests
-      build-project: ParcelRegistry.Api.CrabImport
-      semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
   build-api-extract:
     name: Build Api Extract
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
@@ -323,18 +308,6 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
-  pack-api-crab-import:
-    name: Pack Api CrabImport
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      pack-file: Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport
-      test-project: ParcelRegistry.Tests
-      build-project: ParcelRegistry.Api.CrabImport
-      semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
   build-lambda-backoffice:
     name: Build Lambda
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda.yml@main
@@ -357,12 +330,10 @@ jobs:
       pack-api-legacy,
       pack-api-oslo,
       pack-api-extract,
-      pack-api-crab-import,
       build-api-backoffice,
       build-api-legacy,
       build-api-oslo,
       build-api-extract,
-      build-api-crab-import,
       build-projector,
       build-projections-backoffice,
       build-projections-syndication,
@@ -459,13 +430,6 @@ jobs:
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract-${{ needs.set-release-version.outputs.version }}
-        path: dist/nuget/
-
-    - name: Download NuGet Api CrabImport
-      uses: actions/download-artifact@v3
-      continue-on-error: false
-      with:
-        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Run Semantic Release
@@ -629,12 +593,6 @@ jobs:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract-${{ needs.release.outputs.version }}
         path: ~/
 
-    - name: Download NuGet package api-crab-import
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport-${{ needs.release.outputs.version }}
-        path: ~/
-
     - name: Publish packages to NuGet
       shell: bash
       run: |
@@ -643,7 +601,6 @@ jobs:
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.CrabImport.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       env:
         SEMVER: ${{  needs.release.outputs.version }}
         WORKSPACE: ${{ github.workspace }}
@@ -721,7 +678,6 @@ jobs:
           'api-backoffice',
           'api-legacy',
           'api-oslo',
-          'api-crab-import',
           'api-extract',
           'projector',
           'projections-syndication',
@@ -783,7 +739,6 @@ jobs:
           'api-backoffice',
           'api-legacy',
           'api-oslo',
-          'api-crab-import',
           'api-extract',
           'projector',
           'projections-syndication',
@@ -847,7 +802,6 @@ jobs:
           'api-backoffice',
           'api-legacy',
           'api-oslo',
-          'api-crab-import',
           'api-extract',
           'projector',
           'projections-syndication',
@@ -899,46 +853,6 @@ jobs:
           IMAGE: ${{ matrix.image }}
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
-
-
-  push_images_to_production:
-    if: needs.release.outputs.version != 'none'
-    needs: [ release ]
-    name: Push images to Production
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image: [
-          'api-backoffice',
-          'api-legacy',
-          'api-oslo',
-          'api-crab-import',
-          'api-extract',
-          'projector',
-          'projections-syndication',
-          'projections-backoffice',
-          'consumer-address',
-          'producer',
-          'producer-snapshot-oslo',
-          'migrator-parcel' ]
-    steps:
-      - name: Configure AWS credentials (Production)
-        uses: aws-actions/configure-aws-credentials@v1-node16
-        with:
-          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
-          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
-          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-      - name: Login to Amazon ECR (Production)
-        uses: aws-actions/amazon-ecr-login@v1.5.3
-
-      # Download artifact
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        continue-on-error: false
-        with:
-          name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
-          path: ~/
 
       # Load artifact
       - name: Load artifact
@@ -993,7 +907,6 @@ jobs:
       matrix:
         services: [
           'parcel-registry-api',
-          'parcel-registry-import-api',
           'parcel-registry-projections',
           'parcel-registry-producer',
           'parcel-registry-producer-snapshot-oslo',
@@ -1195,126 +1108,6 @@ jobs:
       with:
         channel-id: '#team-dinosaur-dev'
         slack-message: Deployment of parcel-registry to staging has finished
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
-        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
-        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
-
-  deploy_to_newproduction_start_slack:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images_to_newproduction, deploy_to_test_finish_slack, release ]
-    name: Deploy to new production started
-    environment: newprd
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
-      shell: bash
-
-    - name: Notify deployment started
-      uses: slackapi/slack-github-action@v1.23.0
-      with:
-        channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of parcel-registry to new production has started
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
-        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
-        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
-
-  deploy_to_newproduction:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_newproduction_start_slack, release ]
-    name: Deploy to new production
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        services: [
-          'parcel-registry-api',
-          'parcel-registry-backoffice-api',
-          'parcel-registry-consumer-address',
-          'parcel-registry-migrator-parcel',
-          'parcel-registry-producer',
-          'parcel-registry-producer-snapshot-oslo',
-          'parcel-registry-projections',
-          'parcel-registry-projections-backoffice', 
-          'parcel-registry-importer-grb',
-          'parcel-registry-snapshot-verifier'
-          ]
-    steps:
-    - name: CD services
-      env:
-        BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
-        STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
-      uses: informatievlaanderen/awscurl-polling-action/polling-action@main
-      with:
-          environment: acc
-          version: ${{ needs.release.outputs.version }}
-          status-url: $STATUS_URL
-          deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
-          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
-          region: eu-west-1
-          interval: 2
-
-    - name: output CD services
-      shell: bash
-      run: |
-        echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
-        echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
-        echo ${{ steps.awscurl-polling-action.outputs.final-message }}
-
-  deploy_lambda_to_newproduction:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_newproduction, release ]
-    name: Deploy lambda to new production
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: CD Lambda(s) Configure credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
-      with:
-        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_NEWPRD }}
-        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_NEWPRD }}
-        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-    - name: Prepare Lambda(s)
-      shell: bash
-      run: |
-        echo aws s3 cp s3://077849980894-vbr-prd-lam-par-sqsbackoffice/$VERSION/lambda.zip s3://077849980894-vbr-prd-lam-par-sqsbackoffice/lambda.zip --copy-props none
-        aws s3 cp s3://077849980894-vbr-prd-lam-par-sqsbackoffice/$VERSION/lambda.zip s3://077849980894-vbr-prd-lam-par-sqsbackoffice/lambda.zip --copy-props none
-      env:
-        VERSION: ${{ needs.release.outputs.version }}
-
-    - name: Promote Lambda(s)
-      shell: bash
-      run: |
-        echo pulling awscurl docker image
-        docker pull ghcr.io/okigan/awscurl:latest
-        echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "par-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/acc
-        docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "par-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/acc
-      env:
-        ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
-        SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
-        REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
-        PROMOTEURL: ${{ secrets.VBR_AWS_PROMOTE_LAMBDA_BASEURL }}
-
-  deploy_to_newproduction_finish_slack:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_lambda_to_newproduction ]
-    name: Deploy to new production finished
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
-      shell: bash
-
-    - name: Notify deployment finished
-      uses: slackapi/slack-github-action@v1.23.0
-      with:
-        channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of parcel-registry to new production has finished
       env:
         SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
