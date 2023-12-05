@@ -9,13 +9,6 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure.Modules
 
     public class MediatRModule : Module
     {
-        private readonly bool _useProjectionsV2;
-
-        public MediatRModule(bool useProjectionsV2)
-        {
-            _useProjectionsV2 = useProjectionsV2;
-        }
-
         protected override void Load(ContainerBuilder builder)
         {
             builder
@@ -23,18 +16,9 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure.Modules
                 .As<IMediator>()
                 .InstancePerLifetimeScope();
 
-            if (_useProjectionsV2)
-            {
-                builder.RegisterType<ParcelListOsloV2Handler>().AsImplementedInterfaces();
-                builder.RegisterType<ParcelDetailOsloV2Handler>().AsImplementedInterfaces();
-                builder.RegisterType<ParcelCountOsloV2Handler>().AsImplementedInterfaces();
-            }
-            else
-            {
-                builder.RegisterType<ParcelListOsloV1Handler>().AsImplementedInterfaces();
-                builder.RegisterType<ParcelDetailOsloV1Handler>().AsImplementedInterfaces();
-                builder.RegisterType<ParcelCountOsloV1Handler>().AsImplementedInterfaces();
-            }
+            builder.RegisterType<ParcelListOsloV2Handler>().AsImplementedInterfaces();
+            builder.RegisterType<ParcelDetailOsloV2Handler>().AsImplementedInterfaces();
+            builder.RegisterType<ParcelCountOsloV2Handler>().AsImplementedInterfaces();
         }
     }
 }
