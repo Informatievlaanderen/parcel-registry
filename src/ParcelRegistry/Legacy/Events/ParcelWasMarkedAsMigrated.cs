@@ -5,13 +5,14 @@ namespace ParcelRegistry.Legacy.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
+    [Obsolete("This is a legacy event and should not be used anymore.")]
     [EventName("ParcelWasMarkedAsMigrated")]
     [EventDescription("Het perceel werd gemarkeerd als gemigreerd.")]
     public class ParcelWasMarkedAsMigrated : IMessage, IHasProvenance, ISetProvenance
     {
         [EventPropertyDescription("Interne GUID van het perceel.")]
         public Guid ParcelId { get; }
-        
+
         [EventPropertyDescription("Metadata bij het event.")]
         public ProvenanceData Provenance { get; private set; }
 

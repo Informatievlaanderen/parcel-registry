@@ -1,9 +1,11 @@
 namespace ParcelRegistry.Legacy
 {
+    using System;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using ParcelRegistry.Parcel;
 
+    [Obsolete("This is a legacy class and should not be used anymore.")]
     public static class CommandHandlerModules
     {
         public static void Register(ContainerBuilder containerBuilder)

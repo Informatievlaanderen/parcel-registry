@@ -4,6 +4,7 @@ namespace ParcelRegistry.Legacy.Exceptions
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
 
+    [Obsolete("This is a legacy exception and should not be used anymore.")]
     [Serializable]
     public sealed class ParcelRemovedException : DomainException
     {

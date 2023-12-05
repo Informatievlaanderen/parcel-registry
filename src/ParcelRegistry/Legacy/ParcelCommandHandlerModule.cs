@@ -14,6 +14,7 @@ namespace ParcelRegistry.Legacy
     using Commands.Fixes;
     using SqlStreamStore;
 
+    [Obsolete("This is a legacy commandhandler and should not be used anymore.")]
     public sealed class ParcelCommandHandlerModule : CommandHandlerModule
     {
         public ParcelCommandHandlerModule(

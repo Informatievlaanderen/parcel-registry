@@ -6,6 +6,7 @@ using Be.Vlaanderen.Basisregisters.Utilities;
 
 namespace ParcelRegistry.Legacy.Commands
 {
+    [Obsolete("This is a legacy command and should not be used anymore.")]
     public class MarkParcelAsMigrated : IHasCommandProvenance
     {
         private static readonly Guid Namespace = new Guid("1a04e42e-8668-4526-bd89-abaa3bc251b7");

@@ -5,6 +5,7 @@ namespace ParcelRegistry.Legacy
     using Commands.Fixes;
     using NodaTime;
 
+    [Obsolete("This is a legacy provenance factory and should not be used anymore.")]
     public class LegacyProvenanceFactory : CrabProvenanceFactory, IProvenanceFactory<Parcel>
     {
         public bool CanCreateFrom<TCommand>() => typeof(IHasCrabProvenance).IsAssignableFrom(typeof(TCommand));
@@ -25,6 +26,7 @@ namespace ParcelRegistry.Legacy
         }
     }
 
+    [Obsolete("This is a legacy provenance factory and should not be used anymore.")]
     public class FixGrar1475ProvenanceFactory : CrabProvenanceFactory, IProvenanceFactory<Parcel>
     {
         public bool CanCreateFrom<TCommand>() => typeof(FixGrar1475).IsAssignableFrom(typeof(TCommand));
@@ -40,6 +42,7 @@ namespace ParcelRegistry.Legacy
         }
     }
 
+    [Obsolete("This is a legacy provenance factory and should not be used anymore.")]
     public class FixGrar1637ProvenanceFactory : CrabProvenanceFactory, IProvenanceFactory<Parcel>
     {
         public bool CanCreateFrom<TCommand>() => typeof(FixGrar1637).IsAssignableFrom(typeof(TCommand));
@@ -55,6 +58,7 @@ namespace ParcelRegistry.Legacy
         }
     }
 
+    [Obsolete("This is a legacy provenance factory and should not be used anymore.")]
     public class FixGrar3581ProvenanceFactory : CrabProvenanceFactory, IProvenanceFactory<Parcel>
     {
         public bool CanCreateFrom<TCommand>() => typeof(FixGrar3581).IsAssignableFrom(typeof(TCommand));

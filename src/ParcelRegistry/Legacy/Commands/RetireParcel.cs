@@ -6,6 +6,7 @@
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities;
 
+    [Obsolete("This is a legacy command and should not be used anymore.")]
     public class RetireParcel  : IHasCommandProvenance
     {
         private static readonly Guid Namespace = new Guid("877b0c3e-bab7-46e8-a069-2201b4d67f8d");

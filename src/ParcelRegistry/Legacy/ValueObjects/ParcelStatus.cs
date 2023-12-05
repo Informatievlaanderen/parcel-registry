@@ -3,6 +3,7 @@ namespace ParcelRegistry.Legacy
     using System;
     using System.Collections.Generic;
 
+    [Obsolete("This is a legacy valueobject and should not be used anymore.")]
     public struct ParcelStatus
     {
         public static readonly ParcelStatus Realized = new ParcelStatus("Realized");
