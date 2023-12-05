@@ -10,13 +10,6 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure.Modules
 
     public class MediatRModule : Module
     {
-        private readonly bool _useProjectionsV2;
-
-        public MediatRModule(bool useProjectionsV2)
-        {
-            _useProjectionsV2 = useProjectionsV2;
-        }
-
         protected override void Load(ContainerBuilder builder)
         {
             builder
@@ -26,18 +19,9 @@ namespace ParcelRegistry.Api.Legacy.Infrastructure.Modules
 
             builder.RegisterType<SyncHandler>().AsImplementedInterfaces();
 
-            if (_useProjectionsV2)
-            {
-                builder.RegisterType<ParcelDetailV2Handler>().AsImplementedInterfaces();
-                builder.RegisterType<ParcelListV2Handler>().AsImplementedInterfaces();
-                builder.RegisterType<ParcelCountV2Handler>().AsImplementedInterfaces();
-            }
-            else
-            {
-                builder.RegisterType<ParcelDetailV1Handler>().AsImplementedInterfaces();
-                builder.RegisterType<ParcelListV1Handler>().AsImplementedInterfaces();
-                builder.RegisterType<ParcelCountV1Handler>().AsImplementedInterfaces();
-            }
+            builder.RegisterType<ParcelDetailV2Handler>().AsImplementedInterfaces();
+            builder.RegisterType<ParcelListV2Handler>().AsImplementedInterfaces();
+            builder.RegisterType<ParcelCountV2Handler>().AsImplementedInterfaces();
         }
     }
 }

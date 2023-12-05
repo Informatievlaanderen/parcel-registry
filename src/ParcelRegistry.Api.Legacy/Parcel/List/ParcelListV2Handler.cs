@@ -15,14 +15,14 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
     public class ParcelListV2Handler : IRequestHandler<ParcelListRequest, ParcelListResponse?>
     {
         private readonly LegacyContext _context;
-        private readonly IOptions<ResponseOptions> _reponseOptions;
+        private readonly IOptions<ResponseOptions> _responseOptions;
 
         public ParcelListV2Handler(
             LegacyContext context,
-            IOptions<ResponseOptions> reponseOptions)
+            IOptions<ResponseOptions> responseOptions)
         {
             _context = context;
-            _reponseOptions = reponseOptions;
+            _responseOptions = responseOptions;
         }
         public async Task<ParcelListResponse?> Handle(ParcelListRequest request, CancellationToken cancellationToken)
         {
@@ -32,8 +32,8 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
             var parcelListItemResponses = await pagedParcels.Items
                 .Select(m => new ParcelListItemResponse(
                     m.CaPaKey,
-                    _reponseOptions.Value.Naamruimte,
-                    _reponseOptions.Value.DetailUrl,
+                    _responseOptions.Value.Naamruimte,
+                    _responseOptions.Value.DetailUrl,
                     m.Status.MapToPerceelStatus(),
                     m.VersionTimestamp.ToBelgianDateTimeOffset()))
                 .ToListAsync(cancellationToken);
@@ -41,7 +41,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
             return new ParcelListResponse
             {
                 Percelen = parcelListItemResponses,
-                Volgende = pagedParcels.PaginationInfo.BuildVolgendeUri(parcelListItemResponses.Count, _reponseOptions.Value.VolgendeUrl),
+                Volgende = pagedParcels.PaginationInfo.BuildVolgendeUri(parcelListItemResponses.Count, _responseOptions.Value.VolgendeUrl),
                 Sorting = pagedParcels.Sorting,
                 Pagination = pagedParcels.PaginationInfo
             };
