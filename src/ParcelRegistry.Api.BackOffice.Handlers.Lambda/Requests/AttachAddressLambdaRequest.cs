@@ -3,11 +3,10 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using Abstractions.Extensions;
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using Parcel;
     using Parcel.Commands;
 
-    public sealed record AttachAddressLambdaRequest : SqsLambdaRequest, IHasParcelId
+    public sealed record AttachAddressLambdaRequest : ParcelLambdaRequest, IHasParcelId
     {
         public AttachAddressRequest Request { get; }
 
@@ -39,7 +38,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
             return new AttachAddress(
                 new ParcelId(ParcelId),
                 new AddressPersistentLocalId(addressPersistentLocalId),
-                Provenance);
+                CommandProvenance);
         }
     }
 }

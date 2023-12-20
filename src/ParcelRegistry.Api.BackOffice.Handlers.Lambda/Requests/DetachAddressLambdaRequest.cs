@@ -7,7 +7,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
     using Parcel.Commands;
     using Abstractions.Extensions;
 
-    public sealed record DetachAddressLambdaRequest : SqsLambdaRequest, IHasParcelId
+    public sealed record DetachAddressLambdaRequest : ParcelLambdaRequest, IHasParcelId
     {
         public DetachAddressRequest Request { get; }
 
@@ -39,7 +39,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
             return new DetachAddress(
                 new ParcelId(ParcelId),
                 new AddressPersistentLocalId(addressPersistentLocalId),
-                Provenance);
+                CommandProvenance);
         }
     }
 }
