@@ -1,3 +1,16 @@
+# [4.33.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.32.4...v4.33.0) (2024-01-09)
+
+
+### Bug Fixes
+
+* event timestamp ([47470eb](https://github.com/informatievlaanderen/parcel-registry/commit/47470ebbb7d5d3b0fd16c61abdd59f762e82b926))
+
+
+### Features
+
+* add idemepotencekey ksql ([ecdea1c](https://github.com/informatievlaanderen/parcel-registry/commit/ecdea1ce375feb3c05eb8de78ed6e43d16600a69))
+* add integrationdb ksql scripts ([631397a](https://github.com/informatievlaanderen/parcel-registry/commit/631397a650a8e0cd64f13eb27069c666dfba6c1b))
+
 ## [4.32.4](https://github.com/informatievlaanderen/parcel-registry/compare/v4.32.3...v4.32.4) (2023-11-30)
 
 
