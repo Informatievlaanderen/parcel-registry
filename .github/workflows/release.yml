@@ -854,28 +854,6 @@ jobs:
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
-      # Load artifact
-      - name: Load artifact
-        shell: bash
-        run: |
-          echo pr-$IMAGE-image.tar
-          docker image load -i ~/pr-$IMAGE-image.tar
-        env:
-          IMAGE: ${{ matrix.image }}
-
-      - name: Push artifacts to ECR Production
-        shell: bash
-        run: |
-          echo $IMAGE:$SEMVER
-          docker tag $BUILD_DOCKER_REGISTRY_TST/parcel-registry/$IMAGE:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/$IMAGE:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/parcel-registry/$IMAGE:$SEMVER
-        env:
-          BUILD_DOCKER_REGISTRY_TST: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
-          BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
-          IMAGE: ${{ matrix.image }}
-          SEMVER: ${{ needs.release.outputs.version }}
-          WORKSPACE: ${{ github.workspace }}
-
   deploy_to_test_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ push_images_to_test, upload-lambda, release ]
