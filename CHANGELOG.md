@@ -1,3 +1,10 @@
+## [4.33.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.33.0...v4.33.1) (2024-01-09)
+
+
+### Bug Fixes
+
+* command provenance should be set after idempotency check ([71b2649](https://github.com/informatievlaanderen/parcel-registry/commit/71b2649ab9b06aed5bb90e5a46b70c94ebe00e75))
+
 # [4.33.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.32.4...v4.33.0) (2024-01-09)
 
 
