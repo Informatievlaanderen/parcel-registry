@@ -3,6 +3,7 @@ namespace ParcelRegistry.Parcel
     using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using NodaTime;
 
     public class ProvenanceFactory<TAggregateRoot> : IProvenanceFactory<TAggregateRoot>
         where TAggregateRoot : IAggregateRootEntity
@@ -15,7 +16,13 @@ namespace ParcelRegistry.Parcel
                 throw new InvalidOperationException($"Cannot create provenance from {provenanceHolder.GetType().Name}");
             }
 
-            return provenance.Provenance;
+            return new Provenance(
+                SystemClock.Instance.GetCurrentInstant(),
+                provenance.Provenance.Application,
+                provenance.Provenance.Reason,
+                provenance.Provenance.Operator,
+                provenance.Provenance.Modification,
+                provenance.Provenance.Organisation);
         }
     }
 }

@@ -38,7 +38,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
             return new AttachAddress(
                 new ParcelId(ParcelId),
                 new AddressPersistentLocalId(addressPersistentLocalId),
-                CommandProvenance);
+                Provenance);
         }
     }
 }

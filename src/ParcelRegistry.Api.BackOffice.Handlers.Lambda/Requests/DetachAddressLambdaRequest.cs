@@ -1,11 +1,10 @@
 namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
 {
+    using Abstractions.Extensions;
     using Abstractions.Requests;
     using Abstractions.SqsRequests;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Requests;
     using Parcel;
     using Parcel.Commands;
-    using Abstractions.Extensions;
 
     public sealed record DetachAddressLambdaRequest : ParcelLambdaRequest, IHasParcelId
     {
@@ -39,7 +38,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Requests
             return new DetachAddress(
                 new ParcelId(ParcelId),
                 new AddressPersistentLocalId(addressPersistentLocalId),
-                CommandProvenance);
+                Provenance);
         }
     }
 }
