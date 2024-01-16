@@ -28,6 +28,7 @@
     <ProjectReference Include="..\ParcelRegistry.Api.BackOffice.Abstractions\ParcelRegistry.Api.BackOffice.Abstractions.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.Extract\ParcelRegistry.Projections.Extract.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.Legacy\ParcelRegistry.Projections.Legacy.csproj" />
+    <ProjectReference Include="..\ParcelRegistry.Projections.Integration\ParcelRegistry.Projections.Integration.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.LastChangedList\ParcelRegistry.Projections.LastChangedList.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.Syndication\ParcelRegistry.Projections.Syndication.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Projections.BackOffice\ParcelRegistry.Projections.BackOffice.csproj" />
