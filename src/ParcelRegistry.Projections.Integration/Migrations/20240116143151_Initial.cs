@@ -37,7 +37,7 @@ namespace ParcelRegistry.Projections.Integration.Migrations
                     status = table.Column<string>(type: "text", nullable: false),
                     oslo_status = table.Column<string>(type: "text", nullable: false),
                     geometry = table.Column<Geometry>(type: "geometry", nullable: false),
-                    puri_id = table.Column<string>(type: "text", nullable: false),
+                    puri = table.Column<string>(type: "text", nullable: false),
                     @namespace = table.Column<string>(name: "namespace", type: "text", nullable: false),
                     is_removed = table.Column<bool>(type: "boolean", nullable: false),
                     version_as_string = table.Column<string>(type: "text", nullable: false),

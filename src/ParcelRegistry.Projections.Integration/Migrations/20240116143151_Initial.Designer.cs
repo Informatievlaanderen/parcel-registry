@@ -13,7 +13,7 @@ using ParcelRegistry.Projections.Integration;
 namespace ParcelRegistry.Projections.Integration.Migrations
 {
     [DbContext(typeof(IntegrationContext))]
-    [Migration("20240116135340_Initial")]
+    [Migration("20240116143151_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,10 +79,10 @@ namespace ParcelRegistry.Projections.Integration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("oslo_status");
 
-                    b.Property<string>("PuriId")
+                    b.Property<string>("Puri")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("puri_id");
+                        .HasColumnName("puri");
 
                     b.Property<string>("Status")
                         .IsRequired()

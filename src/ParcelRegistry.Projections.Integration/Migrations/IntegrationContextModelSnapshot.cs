@@ -77,10 +77,10 @@ namespace ParcelRegistry.Projections.Integration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("oslo_status");
 
-                    b.Property<string>("PuriId")
+                    b.Property<string>("Puri")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("puri_id");
+                        .HasColumnName("puri");
 
                     b.Property<string>("Status")
                         .IsRequired()

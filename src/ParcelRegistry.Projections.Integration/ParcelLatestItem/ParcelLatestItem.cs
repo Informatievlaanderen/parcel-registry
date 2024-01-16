@@ -19,7 +19,7 @@ namespace ParcelRegistry.Projections.Integration.ParcelLatestItem
         public string OsloStatus { get; set; }
         public Geometry Geometry { get; set; }
 
-        public string PuriId { get; set; }
+        public string Puri { get; set; }
         public string Namespace { get; set; }
 
         public bool IsRemoved { get; set; }
@@ -43,7 +43,7 @@ namespace ParcelRegistry.Projections.Integration.ParcelLatestItem
             string status,
             string osloStatus,
             Geometry geometry,
-            string puriId,
+            string puri,
             string ns,
             bool isRemoved,
             Instant versionTimestamp)
@@ -53,7 +53,7 @@ namespace ParcelRegistry.Projections.Integration.ParcelLatestItem
             Status = status;
             OsloStatus = osloStatus;
             Geometry = geometry;
-            PuriId = puriId;
+            Puri = puri;
             Namespace = ns;
             IsRemoved = isRemoved;
             VersionTimestamp = versionTimestamp;
@@ -94,8 +94,8 @@ namespace ParcelRegistry.Projections.Integration.ParcelLatestItem
                 .IsRequired();
 
             builder
-                .Property(parcel => parcel.PuriId)
-                .HasColumnName("puri_id")
+                .Property(parcel => parcel.Puri)
+                .HasColumnName("puri")
                 .IsRequired();
 
             builder
