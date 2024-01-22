@@ -11,6 +11,7 @@ Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite
 AspNetCore.HealthChecks.SqlServer
 AspNetCore.HealthChecks.NpgSql
 Dapper
+NodaTime
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

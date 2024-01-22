@@ -21,6 +21,9 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Projections.Extract;
     using ParcelRegistry.Projections.Extract.ParcelExtract;
     using ParcelRegistry.Projections.Extract.ParcelLinkExtract;
+    using ParcelRegistry.Projections.Integration;
+    using ParcelRegistry.Projections.Integration.Infrastructure;
+    using ParcelRegistry.Projections.Integration.ParcelLatestItem;
     using ParcelRegistry.Projections.LastChangedList;
     using ParcelRegistry.Projections.Legacy;
     using ParcelRegistry.Projections.Legacy.ParcelDetailV2;
@@ -69,6 +72,9 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
             RegisterLastChangedProjections(builder);
             RegisterExtractV2Projections(builder);
             RegisterLegacyV2Projections(builder);
+
+            if(_configuration.GetSection("Integration").GetValue("Enabled", false))
+                RegisterIntegrationProjections(builder);
         }
 
         private void RegisterExtractV2Projections(ContainerBuilder builder)
@@ -130,6 +136,23 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<ParcelDetailV2Projections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelSyndicationProjections, LegacyContext>(ConnectedProjectionSettings.Default);
+        }
+
+        private void RegisterIntegrationProjections(ContainerBuilder builder)
+        {
+            builder.RegisterModule(
+                new IntegrationModule(
+                    _configuration,
+                    _services,
+                    _loggerFactory));
+
+            builder
+                .RegisterProjectionMigrator<IntegrationContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<ParcelLatestItemProjections, IntegrationContext>(
+                    context => new ParcelLatestItemProjections(context.Resolve<IOptions<IntegrationOptions>>()),
+                    ConnectedProjectionSettings.Default);
         }
     }
 }
