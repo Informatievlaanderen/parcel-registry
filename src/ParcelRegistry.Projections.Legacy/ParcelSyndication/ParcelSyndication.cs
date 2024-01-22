@@ -8,7 +8,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using NodaTime;
     using System;
     using System.Collections.Generic;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using ParcelRegistry.Legacy;
 
     public class ParcelSyndicationItem

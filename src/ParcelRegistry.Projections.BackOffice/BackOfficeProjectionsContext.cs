@@ -1,6 +1,7 @@
 ﻿namespace ParcelRegistry.Projections.BackOffice
 {
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer;
     using Microsoft.EntityFrameworkCore;
     using ParcelRegistry.Infrastructure;
 
@@ -17,7 +18,7 @@
         { }
     }
 
-    public sealed class BackOfficeProjectionsContextMigrationFactory : RunnerDbContextMigrationFactory<BackOfficeProjectionsContext>
+    public sealed class BackOfficeProjectionsContextMigrationFactory : SqlServerRunnerDbContextMigrationFactory<BackOfficeProjectionsContext>
     {
         public BackOfficeProjectionsContextMigrationFactory() : base("BackOfficeProjectionsAdmin", HistoryConfiguration)
         { }

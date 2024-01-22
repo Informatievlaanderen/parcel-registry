@@ -75,6 +75,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Consumer.Add
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Snapshot.Verifier", "src\ParcelRegistry.Snapshot.Verifier\ParcelRegistry.Snapshot.Verifier.csproj", "{B7B93AE2-3DFA-4906-BF5E-EB7B8E766613}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Projections.Integration", "src\ParcelRegistry.Projections.Integration\ParcelRegistry.Projections.Integration.csproj", "{599EC60C-EA63-48FF-A9FC-D1B3050B48F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +175,10 @@ Global
 		{B7B93AE2-3DFA-4906-BF5E-EB7B8E766613}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7B93AE2-3DFA-4906-BF5E-EB7B8E766613}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7B93AE2-3DFA-4906-BF5E-EB7B8E766613}.Release|Any CPU.Build.0 = Release|Any CPU
+		{599EC60C-EA63-48FF-A9FC-D1B3050B48F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{599EC60C-EA63-48FF-A9FC-D1B3050B48F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{599EC60C-EA63-48FF-A9FC-D1B3050B48F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{599EC60C-EA63-48FF-A9FC-D1B3050B48F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -201,6 +207,7 @@ Global
 		{AD4BFFEF-82F0-4525-8B3C-7595C94262D2} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{4945D68A-59E2-47EA-9E5E-CCAC185B23CB} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{B7B93AE2-3DFA-4906-BF5E-EB7B8E766613} = {B483712F-241C-411F-8CC7-D46B3530DF65}
+		{599EC60C-EA63-48FF-A9FC-D1B3050B48F2} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF9223F3-B20E-4F63-A894-F1B3F66280AD}

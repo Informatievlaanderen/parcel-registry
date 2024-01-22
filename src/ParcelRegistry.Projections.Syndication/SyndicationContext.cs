@@ -1,14 +1,14 @@
 namespace ParcelRegistry.Projections.Syndication
 {
+    using System;
+    using System.IO;
+    using Address;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.Extensions.Configuration;
-    using System;
-    using System.IO;
-    using Address;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
 
     public class SyndicationContext : RunnerDbContext<SyndicationContext>
     {

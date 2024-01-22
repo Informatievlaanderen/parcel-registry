@@ -9,8 +9,7 @@ namespace ParcelRegistry.Projections.Legacy
     using System;
     using Microsoft.Data.SqlClient;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.MigrationExtensions;
-    using Microsoft.EntityFrameworkCore.Migrations;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
 
     public class LegacyModule : Module
     {
