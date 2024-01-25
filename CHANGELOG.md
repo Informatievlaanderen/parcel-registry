@@ -1,3 +1,15 @@
+# [4.34.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.33.1...v4.34.0) (2024-01-25)
+
+
+### Bug Fixes
+
+* update release new test without lambda ([70f3458](https://github.com/informatievlaanderen/parcel-registry/commit/70f34584b60095bdb681be77f48dcef75e247f34))
+
+
+### Features
+
+* add integration projections ([a320d61](https://github.com/informatievlaanderen/parcel-registry/commit/a320d61310b493023dd7a572cbc42a2588c14fe6))
+
 ## [4.33.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.33.0...v4.33.1) (2024-01-09)
 
 
