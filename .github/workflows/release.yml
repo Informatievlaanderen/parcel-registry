@@ -885,13 +885,13 @@ jobs:
     strategy:
       matrix:
         services: [
-          'parcelregistryapi',
-          'parcelregistrybackofficeapi',
-          'parcelregistryconsumeraddress',
-          'parcelregistryproducer',
-          'parcelregistryproducersnapshotoslo',
-          'parcelregistryprojections',
-          'parcelregistryprojectionsbackoffice'
+          'parcelapi',
+          'parcelbackofficeapi',
+          'parcelconsumeraddress',
+          'parcelproducer',
+          'parcelproducersnapshotoslo',
+          'parcelprojections',
+          'parcelprojectionsbackoffice'
           ]
     steps:
     - name: Deploy services
@@ -925,8 +925,8 @@ jobs:
     strategy:
       matrix:
         services: [          
-          'parcelregistryimportergrb',
-          'parcelregistrysnapshotverifier'
+          'parcelimportergrb',
+          'parcelsnapshotverifier'
           ]
 
     steps:
