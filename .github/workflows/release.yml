@@ -885,15 +885,14 @@ jobs:
     strategy:
       matrix:
         services: [
-          'parcel-registry-api',
-          'parcel-registry-backoffice-api',
-          'parcel-registry-consumer-address',
-          'parcel-registry-producer',
-          'parcel-registry-producer-snapshot-oslo',
-          'parcel-registry-projections',
-          'parcel-registry-projections-backoffice'
+          'parcelregistryapi',
+          'parcelregistrybackofficeapi',
+          'parcelregistryconsumeraddress',
+          'parcelregistryproducer',
+          'parcelregistryproducersnapshotoslo',
+          'parcelregistryprojections',
+          'parcelregistryprojectionsbackoffice'
           ]
-
     steps:
     - name: Deploy services
       env:
@@ -926,8 +925,8 @@ jobs:
     strategy:
       matrix:
         services: [          
-          'parcel-registry-importer-grb',
-          'parcel-registry-snapshot-verifier'
+          'parcelregistryimportergrb',
+          'parcelregistrysnapshotverifier'
           ]
 
     steps:
@@ -947,7 +946,7 @@ jobs:
           deploy-target: 'ecs_scheduled_task'
           interval: 2
 
-    - name: Deploy services output
+    - name: Deploy tasks output
       shell: bash
       run: |
         echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
