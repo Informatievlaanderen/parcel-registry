@@ -1,3 +1,10 @@
+## [4.34.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.34.0...v4.34.1) (2024-01-25)
+
+
+### Bug Fixes
+
+* deploy pipeline test + bump ([adc84a7](https://github.com/informatievlaanderen/parcel-registry/commit/adc84a7fe898f06d3dccebc72ed5bcb0edfc8e6b))
+
 # [4.34.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.33.1...v4.34.0) (2024-01-25)
 
 
