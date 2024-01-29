@@ -17,10 +17,11 @@
         {
             var logger = loggerFactory.CreateLogger<IntegrationModule>();
             var connectionString = configuration.GetConnectionString("IntegrationProjections");
+            services.AddScoped<IAddressRepository, AddressRepository>(_ => new AddressRepository(connectionString));
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
-                RunOnNpgSqlServer(configuration, services, loggerFactory, connectionString);
+                RunOnNpgSqlServer( services, connectionString);
             else
                 RunInMemoryDb(services, loggerFactory, logger);
 
@@ -34,9 +35,7 @@
         }
 
         private static void RunOnNpgSqlServer(
-            IConfiguration configuration,
             IServiceCollection services,
-            ILoggerFactory loggerFactory,
             string backofficeProjectionsConnectionString)
         {
             services

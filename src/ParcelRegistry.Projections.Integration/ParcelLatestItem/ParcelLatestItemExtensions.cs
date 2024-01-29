@@ -29,13 +29,5 @@
 
         private static ProjectionItemNotFoundException<ParcelLatestItemProjections> DatabaseItemNotFound(Guid parcelId)
             => new ProjectionItemNotFoundException<ParcelLatestItemProjections>(parcelId.ToString("D"));
-
-        public static string ConvertFromParcelStatus(this ParcelStatus status)
-        {
-            if (status == ParcelStatus.Retired)
-                return PerceelStatus.Gehistoreerd.ToString();
-
-            return PerceelStatus.Gerealiseerd.ToString();
-        }
     }
 }
