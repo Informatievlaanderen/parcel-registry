@@ -4,13 +4,16 @@
     using Microsoft.EntityFrameworkCore;
     using ParcelLatestItem;
     using ParcelRegistry.Infrastructure;
+    using ParcelVersion;
 
     public class IntegrationContext : RunnerDbContext<IntegrationContext>
     {
         public override string ProjectionStateSchema => Schema.Integration;
 
         public DbSet<ParcelLatestItem.ParcelLatestItem> ParcelLatestItems => Set<ParcelLatestItem.ParcelLatestItem>();
+        public DbSet<ParcelVersion.ParcelVersion> ParcelVersions => Set<ParcelVersion.ParcelVersion>();
         public DbSet<ParcelLatestItem.ParcelLatestItemAddress> ParcelLatestItemAddresses => Set<ParcelLatestItemAddress>();
+        public DbSet<ParcelVersion.ParcelVersionAddress> ParcelVersionAddresses => Set<ParcelVersionAddress>();
 
         // This needs to be here to please EF
         public IntegrationContext() { }

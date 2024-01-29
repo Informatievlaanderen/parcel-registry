@@ -2,6 +2,7 @@
 {
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Converters;
     using Infrastructure;
     using Microsoft.Extensions.Options;
     using NetTopologySuite.Geometries;
@@ -24,7 +25,7 @@
                         message.Message.CaPaKey,
                         message.Message.ParcelStatus,
                         ParcelStatus.Parse(message.Message.ParcelStatus).ConvertFromParcelStatus(),
-                        MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry),
+                        ParcelMapper.MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry),
                         $"{options.Value.Namespace}/{message.Message.CaPaKey}",
                         options.Value.Namespace,
                         message.Message.IsRemoved,
@@ -50,7 +51,7 @@
                         message.Message.CaPaKey,
                         ParcelStatus.Realized,
                         ParcelStatus.Realized.ConvertFromParcelStatus(),
-                        MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry),
+                        ParcelMapper.MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry),
                         $"{options.Value.Namespace}/{message.Message.CaPaKey}",
                         options.Value.Namespace,
                         false,
@@ -63,7 +64,7 @@
                     message.Message.ParcelId,
                     parcel =>
                     {
-                        parcel.Geometry = MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry);
+                        parcel.Geometry = ParcelMapper.MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry);
                         UpdateVersionTimestamp(parcel, message.Message.Provenance.Timestamp);
                     }, ct);
             });
@@ -76,7 +77,7 @@
                     {
                         parcel.Status = ParcelStatus.Realized;
                         parcel.OsloStatus = ParcelStatus.Realized.ConvertFromParcelStatus();
-                        parcel.Geometry = MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry);
+                        parcel.Geometry = ParcelMapper.MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry);
                         UpdateVersionTimestamp(parcel, message.Message.Provenance.Timestamp);
                     }, ct);
             });
@@ -158,11 +159,5 @@
 
         private static void UpdateVersionTimestamp(ParcelLatestItem parcel, Instant versionTimestamp)
             => parcel.VersionTimestamp = versionTimestamp;
-
-        private static Geometry MapExtendedWkbGeometryToGeometry(string extendedWkbGeometry)
-        {
-            var geometry = WKBReaderFactory.Create().Read(new ExtendedWkbGeometry(extendedWkbGeometry));
-            return geometry;
-        }
     }
 }
