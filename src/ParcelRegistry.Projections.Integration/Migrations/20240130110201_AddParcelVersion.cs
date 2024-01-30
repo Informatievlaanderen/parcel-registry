@@ -42,9 +42,7 @@ namespace ParcelRegistry.Projections.Integration.Migrations
                     position = table.Column<long>(type: "bigint", nullable: false),
                     parcel_id = table.Column<Guid>(type: "uuid", nullable: false),
                     address_persistent_local_id = table.Column<int>(type: "integer", nullable: false),
-                    capakey = table.Column<string>(type: "text", nullable: false),
-                    version_as_string = table.Column<string>(type: "text", nullable: false),
-                    version_timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    capakey = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,12 +109,6 @@ namespace ParcelRegistry.Projections.Integration.Migrations
                 schema: "integration_parcel",
                 table: "parcel_version_addresses",
                 column: "position");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_parcel_version_addresses_version_timestamp",
-                schema: "integration_parcel",
-                table: "parcel_version_addresses",
-                column: "version_timestamp");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

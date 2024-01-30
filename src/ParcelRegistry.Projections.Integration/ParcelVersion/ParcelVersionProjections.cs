@@ -7,7 +7,6 @@
     using Converters;
     using Infrastructure;
     using Legacy.Events;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Parcel;
     using Parcel.Events;
@@ -237,7 +236,7 @@
                         entity.OsloStatus = null;
                     },
                     ct,
-                    renewAddresses: false);
+                    cloneAddresses: false);
             });
 
             When<Envelope<ParcelWasRemoved>>(async (context, message, ct) =>
@@ -247,7 +246,7 @@
                     message,
                     entity => { entity.IsRemoved = true; },
                     ct,
-                    renewAddresses: false);
+                    cloneAddresses: false);
             });
 
             When<Envelope<ParcelWasRetired>>(async (context, message, ct) =>

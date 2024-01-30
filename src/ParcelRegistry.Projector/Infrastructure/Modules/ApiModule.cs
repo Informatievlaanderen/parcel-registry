@@ -70,9 +70,9 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterEventStreamModule(_configuration)
                 .RegisterModule(new ProjectorModule(_configuration));
 
-            // RegisterLastChangedProjections(builder);
-            // RegisterExtractV2Projections(builder);
-            // RegisterLegacyV2Projections(builder);
+            RegisterLastChangedProjections(builder);
+            RegisterExtractV2Projections(builder);
+            RegisterLegacyV2Projections(builder);
 
             if(_configuration.GetSection("Integration").GetValue("Enabled", false))
                 RegisterIntegrationProjections(builder);
@@ -151,9 +151,9 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<IntegrationContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                // .RegisterProjections<ParcelLatestItemProjections, IntegrationContext>(
-                //     context => new ParcelLatestItemProjections(context.Resolve<IOptions<IntegrationOptions>>()),
-                //     ConnectedProjectionSettings.Default)
+                .RegisterProjections<ParcelLatestItemProjections, IntegrationContext>(
+                    context => new ParcelLatestItemProjections(context.Resolve<IOptions<IntegrationOptions>>()),
+                    ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelVersionProjections, IntegrationContext>(
                     context => new ParcelVersionProjections(
                         context.Resolve<IAddressRepository>(),

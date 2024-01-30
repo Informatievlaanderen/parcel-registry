@@ -19,7 +19,7 @@
             Envelope<T> message,
             Action<ParcelVersion> applyEventInfoOn,
             CancellationToken ct,
-            bool renewAddresses = true) where T : IHasProvenance, IMessage
+            bool cloneAddresses = true) where T : IHasProvenance, IMessage
         {
             var parcelVersion = await context.LatestPosition(parcelId, ct);
 
@@ -39,14 +39,13 @@
                 .ParcelVersions
                 .AddAsync(newParcelVersion, ct);
 
-            if (renewAddresses)
+            if (cloneAddresses)
             {
                 var parcelVersionAddresses = await LatestParcelAddress(context, parcelId, parcelVersion.Position, ct);
                 foreach (var parcelVersionAddress in parcelVersionAddresses)
                 {
                     var newParcelAddressVersion = parcelVersionAddress.CloneAndApplyEventInfo(
-                        message.Position,
-                        provenance.Timestamp);
+                        message.Position);
 
                     await context
                         .ParcelVersionAddresses
@@ -84,16 +83,13 @@
                 .Where(x => x.ParcelId == parcelId && x.Position == position)
                 .ToList();
 
-            if (!localAddresses.Any())
-            {
-                return await context
-                    .ParcelVersionAddresses
-                    .Where(x => x.ParcelId == parcelId && x.Position == position)
-                    .OrderByDescending(x => x.Position)
-                    .ToListAsync(cancellationToken: ct);
-            }
+            var dbAddresses = await context
+                .ParcelVersionAddresses
+                .Where(x => x.ParcelId == parcelId && x.Position == position)
+                .OrderByDescending(x => x.Position)
+                .ToListAsync(cancellationToken: ct);
 
-            return localAddresses;
+            return localAddresses.Union(dbAddresses).ToList();
         }
 
 
