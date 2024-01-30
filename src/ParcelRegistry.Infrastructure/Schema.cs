@@ -16,7 +16,6 @@ namespace ParcelRegistry.Infrastructure
         public const string ProducerSnapshotOslo = "ParcelRegistryProducerSnapshotOslo";
         public const string GrbImporter = "GrbImporter";
         public const string Integration = "integration_parcel";
-        public const string IntegrationAddress = "integration_address";
     }
 
     public static class MigrationTables

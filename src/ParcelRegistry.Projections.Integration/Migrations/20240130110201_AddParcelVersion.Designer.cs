@@ -13,7 +13,7 @@ using ParcelRegistry.Projections.Integration;
 namespace ParcelRegistry.Projections.Integration.Migrations
 {
     [DbContext(typeof(IntegrationContext))]
-    [Migration("20240129132029_AddParcelVersion")]
+    [Migration("20240130110201_AddParcelVersion")]
     partial class AddParcelVersion
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,25 +45,6 @@ namespace ParcelRegistry.Projections.Integration.Migrations
                     b.HasKey("Name");
 
                     b.ToTable("ProjectionStates", "integration_parcel");
-                });
-
-            modelBuilder.Entity("ParcelRegistry.Projections.Integration.AddressIdAddressPersistentLocalIdRelation", b =>
-                {
-                    b.Property<Guid>("AddressId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("address_id");
-
-                    b.Property<int>("PersistentLocalId")
-                        .HasColumnType("integer")
-                        .HasColumnName("persistent_local_id");
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("PersistentLocalId");
-
-                    b.ToView("address_id_address_persistent_local_id", "integration_address");
-
-                    b.ToSqlQuery("\r\n                            SELECT\r\n                                address_id,\r\n                                persistent_local_id\r\n                            FROM  integration_address.address_id_address_persistent_local_id");
                 });
 
             modelBuilder.Entity("ParcelRegistry.Projections.Integration.ParcelLatestItem.ParcelLatestItem", b =>
@@ -258,15 +239,6 @@ namespace ParcelRegistry.Projections.Integration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("capakey");
 
-                    b.Property<string>("VersionAsString")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("version_as_string");
-
-                    b.Property<DateTimeOffset>("VersionTimestampAsDateTimeOffset")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("version_timestamp");
-
                     b.HasKey("Position", "ParcelId", "AddressPersistentLocalId");
 
                     b.HasIndex("AddressPersistentLocalId");
@@ -276,8 +248,6 @@ namespace ParcelRegistry.Projections.Integration.Migrations
                     b.HasIndex("ParcelId");
 
                     b.HasIndex("Position");
-
-                    b.HasIndex("VersionTimestampAsDateTimeOffset");
 
                     b.ToTable("parcel_version_addresses", "integration_parcel");
                 });
