@@ -1,3 +1,17 @@
+# [4.35.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.34.2...v4.35.0) (2024-02-02)
+
+
+### Bug Fixes
+
+* add cache validation for lastchangedlist ([ffee5af](https://github.com/informatievlaanderen/parcel-registry/commit/ffee5afd0a6eb41bf32132d53eaf3718877aad17))
+* add objectid to idempotencekey snapshot oslo ([0829bb9](https://github.com/informatievlaanderen/parcel-registry/commit/0829bb94a451a361f14cf04f63c82e3ba2a6bad3))
+* comments ([e8b8614](https://github.com/informatievlaanderen/parcel-registry/commit/e8b8614ee16a7da74b7c1dc3b04db8dfa768df50))
+
+
+### Features
+
+* add parcel version projections integrationdb ([aa7db78](https://github.com/informatievlaanderen/parcel-registry/commit/aa7db78cdd0d544f5fececa700069def06ee55cc))
+
 ## [4.34.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.34.1...v4.34.2) (2024-01-25)
 
 
