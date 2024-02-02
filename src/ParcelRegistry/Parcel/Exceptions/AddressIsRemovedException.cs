@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace ParcelRegistry.Parcel.Exceptions
 {
+    using System;
     using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
 
-    public class AddressIsRemovedException : DomainException
+    [Serializable]
+    public sealed class AddressIsRemovedException : DomainException
     {
         public AddressIsRemovedException()
         { }
