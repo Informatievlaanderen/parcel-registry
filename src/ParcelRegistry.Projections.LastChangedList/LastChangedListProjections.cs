@@ -15,8 +15,8 @@ namespace ParcelRegistry.Projections.LastChangedList
     {
         private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.JsonLd };
 
-        public LastChangedListProjections()
-            : base(SupportedAcceptTypes)
+        public LastChangedListProjections(ICacheValidator cacheValidator)
+            : base(SupportedAcceptTypes, cacheValidator)
         {
             #region Legacy
             When<Envelope<ParcelWasRegistered>>(async (context, message, ct) =>

@@ -8,6 +8,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
@@ -55,6 +56,10 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
             builder
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
+
+            builder.Register(c => new CacheValidator(c.Resolve<LegacyContext>(), typeof(ParcelDetailV2Projections).FullName))
+                .AsSelf()
+                .AsImplementedInterfaces();
 
             builder.Populate(_services);
         }
@@ -119,8 +124,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<DataMigrationContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<LastChangedListProjections, LastChangedListContext>(ConnectedProjectionSettings
-                    .Default);
+                .RegisterProjections<LastChangedListProjections, LastChangedListContext>((c) => new LastChangedListProjections(c.ResolveOptional<ICacheValidator>()), ConnectedProjectionSettings.Default);
         }
 
         private void RegisterLegacyV2Projections(ContainerBuilder builder)
