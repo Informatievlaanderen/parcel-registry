@@ -45,8 +45,7 @@ jobs:
           'parcel-producer',
           'parcel-producer-snapshot-oslo',
           'parcel-projections',
-          'parcel-projections-backoffice',
-          'parcel-importer-grb'
+          'parcel-projections-backoffice'          
           ]
 
     steps:
@@ -83,6 +82,7 @@ jobs:
       matrix:
         services: [
           #'parcel-migrator-parcel',
+          'parcel-importer-grb',
           'parcel-snapshot-verifier'
         ]
 
