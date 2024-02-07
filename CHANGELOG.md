@@ -1,3 +1,15 @@
+# [4.36.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.35.1...v4.36.0) (2024-02-07)
+
+
+### Bug Fixes
+
+* **bump:** new deploy pipeline ([d51bc74](https://github.com/informatievlaanderen/parcel-registry/commit/d51bc745f3df4096de4c2555a25b83476de743f9))
+
+
+### Features
+
+* add parcel backoffice projections ([3e7d7c1](https://github.com/informatievlaanderen/parcel-registry/commit/3e7d7c163378660cb2279fb5c2e38d1e2059e9a7))
+
 ## [4.35.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.35.0...v4.35.1) (2024-02-06)
 
 
