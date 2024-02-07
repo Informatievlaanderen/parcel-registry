@@ -885,13 +885,13 @@ jobs:
     strategy:
       matrix:
         services: [
-          'parcelapi',
-          'parcelbackofficeapi',
-          'parcelconsumeraddress',
-          'parcelproducer',
-          'parcelproducersnapshotoslo',
-          'parcelprojections',
-          'parcelprojectionsbackoffice'
+          'parcel-api',
+          'parcel-backoffice-api',
+          'parcel-consumer-address',
+          'parcel-producer',
+          'parcel-producer-snapshot-oslo',
+          'parcel-projections-',
+          'parcel-projections-backoffice'
           ]
     steps:
     - name: Deploy services
@@ -906,9 +906,10 @@ jobs:
           deploy-url: $BUILD_URL
           access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
           secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          region: eu-west-1
           deploy-target: 'agb_ecs_service'
           interval: 2
+          domain: 'basisregisters'
+          project: 'basisregisters'
 
     - name: Deploy services output
       shell: bash
@@ -925,8 +926,8 @@ jobs:
     strategy:
       matrix:
         services: [          
-          'parcelimportergrb',
-          'parcelsnapshotverifier'
+          'parcel-importer-grb',
+          'parcel-snapshot-verifier'
           ]
 
     steps:
@@ -942,9 +943,10 @@ jobs:
           deploy-url: $BUILD_URL
           access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
           secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          region: eu-west-1
           deploy-target: 'ecs_scheduled_task'
           interval: 2
+          domain: 'basisregisters'
+          project: 'basisregisters'
 
     - name: Deploy tasks output
       shell: bash
