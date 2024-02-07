@@ -890,7 +890,7 @@ jobs:
           'parcel-consumer-address',
           'parcel-producer',
           'parcel-producer-snapshot-oslo',
-          'parcel-projections-',
+          'parcel-projections',
           'parcel-projections-backoffice'
           ]
     steps:
