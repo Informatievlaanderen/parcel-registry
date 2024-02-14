@@ -115,16 +115,6 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _configuration["DataDog:ServiceName"],
                     _services,
                     _loggerFactory));
-
-            builder
-                .RegisterProjectionMigrator<
-                    LastChangedListContextMigrationFactory>(
-                    _configuration,
-                    _loggerFactory)
-                .RegisterProjectionMigrator<DataMigrationContextMigrationFactory>(
-                    _configuration,
-                    _loggerFactory)
-                .RegisterProjections<LastChangedListProjections, LastChangedListContext>((c) => new LastChangedListProjections(c.ResolveOptional<ICacheValidator>()), ConnectedProjectionSettings.Default);
         }
 
         private void RegisterLegacyV2Projections(ContainerBuilder builder)
