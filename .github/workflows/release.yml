@@ -138,8 +138,8 @@ jobs:
       build-target: Containerize_ProjectionsLastChangedList
       image-file: pr-projections-last-changed-list-console-image.tar
       image-name: projections-last-changed-list-console
-      test-project: Parcel.Tests
-      build-project: Parcel.Projections.LastChangedList.Console
+      test-project: ParcelRegistry.Tests
+      build-project: ParcelRegistry.Projections.LastChangedList.Console
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
