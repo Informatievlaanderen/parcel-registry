@@ -1,3 +1,16 @@
+# [4.37.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.36.0...v4.37.0) (2024-02-14)
+
+
+### Bug Fixes
+
+* build ([78fbe57](https://github.com/informatievlaanderen/parcel-registry/commit/78fbe57a3213d4eb37c361461e93e210facbd962))
+* **bump:** ci typo cd test ([eb55a32](https://github.com/informatievlaanderen/parcel-registry/commit/eb55a324b43bcb99f5093c39d84a2ab5b094f2e6))
+
+
+### Features
+
+* add lastchangedlist console ([1dda3b8](https://github.com/informatievlaanderen/parcel-registry/commit/1dda3b895c2695f341587accf6660add5e6da8d0))
+
 # [4.36.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.35.1...v4.36.0) (2024-02-07)
 
 
