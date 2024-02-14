@@ -9,10 +9,11 @@ namespace ParcelRegistry.Projections.LastChangedList
     using Legacy.Events;
     using Parcel.Events;
 
-    [ConnectedProjectionName("Cache markering percelen")]
+    [ConnectedProjectionName(ProjectionName)]
     [ConnectedProjectionDescription("Projectie die markeert voor hoeveel percelen de gecachte data nog geüpdated moeten worden.")]
     public class LastChangedListProjections : LastChangedListConnectedProjection
     {
+        public const string ProjectionName = "Cache markering percelen";
         private static readonly AcceptType[] SupportedAcceptTypes = { AcceptType.JsonLd };
 
         public LastChangedListProjections(ICacheValidator cacheValidator)
