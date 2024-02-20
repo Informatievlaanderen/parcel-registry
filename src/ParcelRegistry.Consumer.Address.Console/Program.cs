@@ -2,6 +2,7 @@ namespace ParcelRegistry.Consumer.Address.Console
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
@@ -108,7 +109,7 @@ namespace ParcelRegistry.Consumer.Address.Console
                     var services = new ServiceCollection();
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
-                    builder.Register(_ =>
+                    builder.Register(c =>
                     {
                         var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
                         var topic = $"{hostContext.Configuration["AddressTopic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
@@ -129,6 +130,19 @@ namespace ParcelRegistry.Consumer.Address.Console
 
                         if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
                         {
+                            var ignoreDataCheck = hostContext.Configuration.GetValue<bool>("IgnoreAddressTopicOffsetDataCheck", false);
+
+                            if (!ignoreDataCheck)
+                            {
+                                using var ctx = c.Resolve<ConsumerAddressContext>();
+
+                                if (ctx.AddressConsumerItems.Any())
+                                {
+                                    throw new InvalidOperationException(
+                                        $"Cannot set Kafka offset to {offset} because {nameof(ctx.AddressConsumerItems)} has data.");
+                                }
+                            }
+
                             consumerOptions.ConfigureOffset(new Offset(result));
                         }
 
