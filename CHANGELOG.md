@@ -1,3 +1,15 @@
+# [4.38.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.37.0...v4.38.0) (2024-02-20)
+
+
+### Bug Fixes
+
+* add consumer offeset start for address ([6c9690a](https://github.com/informatievlaanderen/parcel-registry/commit/6c9690a254dae56c0d3ebc3569e5b265ead61dd0))
+
+
+### Features
+
+* shutdown backoffice projections service when projection is stopped ([82eb515](https://github.com/informatievlaanderen/parcel-registry/commit/82eb515dc9860b127880728d77a950cdd612600d))
+
 # [4.37.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.36.0...v4.37.0) (2024-02-14)
 
 
