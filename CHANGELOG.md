@@ -1,3 +1,10 @@
+# [4.39.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.38.0...v4.39.0) (2024-02-20)
+
+
+### Features
+
+* add ignore data check when set offset ([c0aaf84](https://github.com/informatievlaanderen/parcel-registry/commit/c0aaf849bd0e38e8f6f108a32848b068e446c79c))
+
 # [4.38.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.37.0...v4.38.0) (2024-02-20)
 
 
