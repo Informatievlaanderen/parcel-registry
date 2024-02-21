@@ -487,8 +487,8 @@ jobs:
     - name: Configure AWS credentials (Test)
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
-        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
-        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Login to Amazon ECR (Test)
@@ -498,8 +498,8 @@ jobs:
       shell: bash
       run: |
         echo Push Lambda functions to S3 Test
-        echo aws s3 cp ~/lambda.zip s3://196194905350-vbr-test-lam-par-sqsbackoffice/$SEMVER/lambda.zip
-        aws s3 cp ~/lambda.zip s3://196194905350-vbr-test-lam-par-sqsbackoffice/$SEMVER/lambda.zip
+        echo aws s3 cp ~/lambda.zip s3://s3-vbr-tst-basisregisters-lam-par-sqsbackofficefunction/$SEMVER/lambda.zip
+        aws s3 cp ~/lambda.zip s3://s3-vbr-tst-basisregisters-lam-par-sqsbackofficefunction/$SEMVER/lambda.zip
       env:
         SEMVER: ${{ needs.release.outputs.version }}
 
@@ -540,25 +540,6 @@ jobs:
         aws s3 cp ~/lambda.zip s3://077849980894-vbr-prd-lam-par-sqsbackoffice/$SEMVER/lambda.zip
       env:
         SEMVER: ${{ needs.release.outputs.version }}
-
-    - name: Configure AWS credentials (Production)
-      uses: aws-actions/configure-aws-credentials@v1-node16
-      with:
-        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
-        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
-        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-    - name: Login to Amazon ECR (Production)
-      uses: aws-actions/amazon-ecr-login@v1.5.3
-
-    - name: Push Lambda functions to S3 Production
-      shell: bash
-      run: |
-        echo Push Lambda functions to S3 Production
-        echo aws s3 cp ~/lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-        aws s3 cp ~/lambda.zip s3://s3-vbr-prd-basisregisters-lam-pr-sqsbackofficehandlerfunction/$SEMVER/lambda.zip
-      env:
-       SEMVER: ${{ needs.release.outputs.version }}
 
   publish_to_nuget:
     needs: [ release ]
@@ -983,15 +964,15 @@ jobs:
     - name: CD Lambda(s) Configure credentials
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
-        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
-        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
+        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Prepare Lambda(s)
       shell: bash
       run: |
-        echo aws s3 cp s3://196194905350-vbr-test-lam-par-sqsbackoffice/$VERSION/lambda.zip s3://196194905350-vbr-test-lam-par-sqsbackoffice/lambda.zip --copy-props none
-        aws s3 cp s3://196194905350-vbr-test-lam-par-sqsbackoffice/$VERSION/lambda.zip s3://196194905350-vbr-test-lam-par-sqsbackoffice/lambda.zip --copy-props none
+        echo aws s3 cp s3://s3-vbr-tst-basisregisters-lam-par-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-tst-basisregisters-lam-par-sqsbackofficefunction/lambda.zip --copy-props none
+        aws s3 cp s3://s3-vbr-tst-basisregisters-lam-par-sqsbackofficefunction/$VERSION/lambda.zip s3://s3-vbr-tst-basisregisters-lam-par-sqsbackofficefunction/lambda.zip --copy-props none
       env:
         VERSION: ${{ needs.release.outputs.version }}
 
@@ -1000,13 +981,13 @@ jobs:
       run: |
         echo pulling awscurl docker image
         docker pull ghcr.io/okigan/awscurl:latest
-        echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "pr-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/test
-        docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "pr-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/test
+        echo docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "par-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/tst
+        docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "par-sqsbackofficefunction", "project": "basisregisters", "domain": "basisregisters" }' $PROMOTEURL/tst
       env:
-        ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_TST }}
-        SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_TST }}
+        ACCESS_KEY_ID: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+        SECRET_ACCESS_KEY_ID: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
         REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
-        PROMOTEURL: ${{ secrets.VBR_AWS_PROMOTE_LAMBDA_BASEURL }}
+        PROMOTEURL: ${{ vars.VBR_AWS_PROMOTE_LAMBDA_DEVOPS_BASEURL }}
 
   deploy_to_test_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
