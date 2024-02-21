@@ -1,3 +1,10 @@
+## [4.39.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.39.0...v4.39.1) (2024-02-21)
+
+
+### Bug Fixes
+
+* **bump:** add new lambda pipeline tst ([8921d0b](https://github.com/informatievlaanderen/parcel-registry/commit/8921d0ba35bddbb36b320ff45843b0a53a6f935d))
+
 # [4.39.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.38.0...v4.39.0) (2024-02-20)
 
 
