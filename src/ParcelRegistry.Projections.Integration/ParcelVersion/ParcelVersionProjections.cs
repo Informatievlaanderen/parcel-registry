@@ -33,7 +33,8 @@
                         Namespace = options.Value.Namespace,
                         IsRemoved = message.Message.IsRemoved,
                         VersionTimestamp = message.Message.Provenance.Timestamp,
-                        CreatedOnTimestamp = message.Message.Provenance.Timestamp
+                        CreatedOnTimestamp = message.Message.Provenance.Timestamp,
+                        Type = message.EventName
                     }, ct);
 
                 foreach (var addressPersistentLocalId in message.Message.AddressPersistentLocalIds)
@@ -65,7 +66,8 @@
                         Namespace = options.Value.Namespace,
                         IsRemoved = false,
                         VersionTimestamp = message.Message.Provenance.Timestamp,
-                        CreatedOnTimestamp = message.Message.Provenance.Timestamp
+                        CreatedOnTimestamp = message.Message.Provenance.Timestamp,
+                        Type = message.EventName
                     }, ct);
             });
 
@@ -220,7 +222,8 @@
                             CreatedOnTimestamp = message.Message.Provenance.Timestamp,
                             Puri = $"{options.Value.Namespace}/{caPaKey}",
                             Namespace = options.Value.Namespace,
-                            IsRemoved = false
+                            IsRemoved = false,
+                            Type = message.EventName
                         });
             });
 

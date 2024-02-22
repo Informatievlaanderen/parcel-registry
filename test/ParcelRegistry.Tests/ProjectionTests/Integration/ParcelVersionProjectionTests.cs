@@ -55,7 +55,8 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut.Given(new Envelope<ParcelWasMigrated>(new Envelope(message, metadata)))
@@ -79,6 +80,7 @@
                     parcelVersions.CreatedOnAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
                     parcelVersions.Geometry.Should().BeEquivalentTo(geometry);
+                    parcelVersions.Type.Should().Be("EventName");
 
                     foreach (var addressPersistentLocalId in message.AddressPersistentLocalIds)
                     {
@@ -99,7 +101,8 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut.Given(new Envelope<ParcelWasImported>(new Envelope(message, metadata)))
@@ -123,6 +126,7 @@
                     parcelVersions.CreatedOnAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
                     parcelVersions.Geometry.Should().BeEquivalentTo(geometry);
+                    parcelVersions.Type.Should().Be("EventName");
                 });
         }
 
@@ -140,13 +144,15 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -160,10 +166,11 @@
                     var parcelVersions = await context.ParcelVersions.FindAsync(position + 1, message.ParcelId);
                     parcelVersions.Should().NotBeNull();
 
-                    parcelVersions.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
+                    parcelVersions!.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
                     parcelVersions.Geometry.Should().BeEquivalentTo(geometry);
+                    parcelVersions.Type.Should().Be("EventName");
                 });
         }
 
@@ -176,13 +183,15 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -201,6 +210,7 @@
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
                     parcelVersions.Geometry.Should().BeEquivalentTo(geometry);
+                    parcelVersions.Type.Should().Be("EventName");
                 });
         }
 
@@ -213,13 +223,15 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -235,6 +247,7 @@
                     parcelVersions.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
                 });
         }
 
@@ -249,13 +262,15 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -264,10 +279,14 @@
                     new Envelope<ParcelAddressWasAttachedV2>(new Envelope(message, messageMetadata)))
                 .Then(async context =>
                 {
-                    var parcelVersions =
+                    var parcelVersionAddress =
                         await context.ParcelVersionAddresses.FindAsync(position + 1, message.ParcelId, message.AddressPersistentLocalId);
+                    parcelVersionAddress.Should().NotBeNull();
+                    parcelVersionAddress!.CaPaKey.Should().Be(message.CaPaKey);
+
+                    var parcelVersions = await context.ParcelVersions.FindAsync(position + 1, message.ParcelId);
                     parcelVersions.Should().NotBeNull();
-                    parcelVersions!.CaPaKey.Should().Be(message.CaPaKey);
+                    parcelVersions!.Type.Should().Be("EventName");
                 });
         }
 
@@ -287,18 +306,21 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var attachedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 2 }
+                { Envelope.PositionMetadataKey, position + 2 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -308,20 +330,24 @@
                     new Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(new Envelope(message, messageMetadata)))
                 .Then(async context =>
                 {
-                    var previousParcelVersion1 =
+                    var previousParcelAddressVersion1 =
                         await context.ParcelVersionAddresses.FindAsync(position + 1, message.ParcelId, message.PreviousAddressPersistentLocalId);
-                    previousParcelVersion1.Should().NotBeNull();
-                    var previousParcelVersion2 =
+                    previousParcelAddressVersion1.Should().NotBeNull();
+                    var previousParcelAddressVersion2 =
                         await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, message.PreviousAddressPersistentLocalId);
-                    previousParcelVersion2.Should().BeNull();
+                    previousParcelAddressVersion2.Should().BeNull();
 
-                    var parcelVersion1 =
+                    var parcelAddressVersion1 =
                         await context.ParcelVersionAddresses.FindAsync(position + 1, message.ParcelId, message.NewAddressPersistentLocalId);
-                    parcelVersion1.Should().BeNull();
-                    var parcelVersion2 =
+                    parcelAddressVersion1.Should().BeNull();
+                    var parcelAddressVersion2 =
                         await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, message.NewAddressPersistentLocalId);
-                    parcelVersion2.Should().NotBeNull();
-                    parcelVersion2!.CaPaKey.Should().Be(message.CaPaKey);
+                    parcelAddressVersion2.Should().NotBeNull();
+                    parcelAddressVersion2!.CaPaKey.Should().Be(message.CaPaKey);
+
+                    var parcelVersion = await context.ParcelVersions.FindAsync(position + 2, message.ParcelId);
+                    parcelVersion.Should().NotBeNull();
+                    parcelVersion!.Type.Should().Be("EventName");
                 });
         }
 
@@ -340,18 +366,21 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var attachedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 2 }
+                { Envelope.PositionMetadataKey, position + 2 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
             await Sut
                 .Given(
@@ -367,6 +396,10 @@
                     var currentParcelVersionAddress =
                         await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, message.AddressPersistentLocalId);
                     currentParcelVersionAddress.Should().BeNull();
+
+                    var parcelVersion = await context.ParcelVersions.FindAsync(position + 2, message.ParcelId);
+                    parcelVersion.Should().NotBeNull();
+                    parcelVersion!.Type.Should().Be("EventName");
                 });
         }
 
@@ -384,18 +417,21 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var attachedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 2 }
+                { Envelope.PositionMetadataKey, position + 2 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
             await Sut
                 .Given(
@@ -411,6 +447,10 @@
                     var currentParcelVersionAddress =
                         await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, message.AddressPersistentLocalId);
                     currentParcelVersionAddress.Should().BeNull();
+
+                    var parcelVersion = await context.ParcelVersions.FindAsync(position + 2, message.ParcelId);
+                    parcelVersion.Should().NotBeNull();
+                    parcelVersion!.Type.Should().Be("EventName");
                 });
         }
 
@@ -428,18 +468,21 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var attachedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 2 }
+                { Envelope.PositionMetadataKey, position + 2 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -455,6 +498,10 @@
                     var currentParcelVersionAddress =
                         await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, message.AddressPersistentLocalId);
                     currentParcelVersionAddress.Should().BeNull();
+
+                    var parcelVersion = await context.ParcelVersions.FindAsync(position + 2, message.ParcelId);
+                    parcelVersion.Should().NotBeNull();
+                    parcelVersion!.Type.Should().Be("EventName");
                 });
         }
 
@@ -472,18 +519,21 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var attachedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 2 }
+                { Envelope.PositionMetadataKey, position + 2 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut
@@ -499,6 +549,10 @@
                     var currentParcelVersionAddress =
                         await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, message.AddressPersistentLocalId);
                     currentParcelVersionAddress.Should().BeNull();
+
+                    var parcelVersion = await context.ParcelVersions.FindAsync(position + 2, message.ParcelId);
+                    parcelVersion.Should().NotBeNull();
+                    parcelVersion!.Type.Should().Be("EventName");
                 });
         }
 
@@ -512,7 +566,8 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut.Given(new Envelope<ParcelWasRegistered>(new Envelope(message, metadata)))
@@ -531,6 +586,7 @@
                     parcelVersions.CreatedOnTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelVersions.CreatedOnAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
                 });
         }
 
@@ -547,17 +603,20 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var parcelAddressWasAttachedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 2 }
+                { Envelope.PositionMetadataKey, position + 2 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
@@ -585,6 +644,10 @@
                     var currentParcelVersionAddress =
                         await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, addressPersistentLocalId);
                     currentParcelVersionAddress.Should().BeNull();
+
+                    var parcelVersion = await context.ParcelVersions.FindAsync(position + 2, message.ParcelId);
+                    parcelVersion.Should().NotBeNull();
+                    parcelVersion!.Type.Should().Be("EventName");
                 });
         }
 
@@ -597,12 +660,14 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut.Given(
@@ -616,6 +681,7 @@
                     parcelVersions.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
                 });
         }
 
@@ -628,12 +694,14 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut.Given(
@@ -648,6 +716,7 @@
                     parcelVersions.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
                 });
         }
 
@@ -660,12 +729,14 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut.Given(
@@ -680,6 +751,7 @@
                     parcelVersions.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
                 });
         }
 
@@ -692,12 +764,14 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut.Given(
@@ -712,6 +786,7 @@
                     parcelVersions.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
                 });
         }
 
@@ -724,12 +799,14 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             await Sut.Given(
@@ -744,6 +821,7 @@
                     parcelVersions.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
                 });
         }
 
@@ -761,13 +839,15 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
 
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
@@ -784,6 +864,7 @@
                     parcelVersions.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
 
                     var currentParcelVersionAddress =
                         await context.ParcelVersionAddresses.FindAsync(position + 1, message.ParcelId, addressPersistentLocalId);
@@ -805,17 +886,20 @@
             var metadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position }
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var parcelAddressWasAttachedMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 }
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
             };
             var messageMetadata = new Dictionary<string, object>
             {
                 { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 2 }
+                { Envelope.PositionMetadataKey, position + 2 },
+                { Envelope.EventNameMetadataKey, "EventName"}
             };
 
             addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
@@ -833,6 +917,7 @@
                     parcelVersions.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
 
                     var previousParcelVersionAddress =
                         await context.ParcelVersionAddresses.FindAsync(position + 1, message.ParcelId, addressPersistentLocalId);
