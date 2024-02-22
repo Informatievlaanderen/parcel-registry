@@ -20,6 +20,7 @@
         public string CaPaKey { get; set; }
         public string? Status { get; set; }
         public string? OsloStatus { get; set; }
+        public string Type { get; set; }
         public Geometry? Geometry { get; set; }
 
         public string Puri { get; set; }
@@ -56,8 +57,8 @@
         public ParcelVersion()
         { }
 
-        public ParcelVersion CloneAndApplyEventInfo(
-            long newPosition,
+        public ParcelVersion CloneAndApplyEventInfo(long newPosition,
+            string eventName,
             Instant lastChangedOn,
             Action<ParcelVersion> editFunc)
         {
@@ -68,6 +69,7 @@
                 CaPaKey = CaPaKey,
                 Status = Status,
                 OsloStatus = OsloStatus,
+                Type = eventName,
                 Geometry = Geometry,
                 Puri = Puri,
                 Namespace = Namespace,
@@ -114,6 +116,10 @@
                 .HasColumnName("oslo_status");
 
             builder
+                .Property(parcel => parcel.Type)
+                .HasColumnName("type");
+
+            builder
                 .Property(parcel => parcel.Puri)
                 .HasColumnName("puri")
                 .IsRequired();
@@ -146,6 +152,7 @@
             builder.HasIndex(parcel => parcel.CaPaKey);
             builder.HasIndex(parcel => parcel.Status);
             builder.HasIndex(parcel => parcel.OsloStatus);
+            builder.HasIndex(parcel => parcel.Type);
             builder.HasIndex(parcel => parcel.IsRemoved);
             builder
                 .HasIndex(parcel => parcel.Geometry)

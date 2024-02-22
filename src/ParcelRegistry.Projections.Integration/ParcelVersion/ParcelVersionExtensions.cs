@@ -32,6 +32,7 @@
 
             var newParcelVersion = parcelVersion.CloneAndApplyEventInfo(
                 message.Position,
+                message.EventName,
                 provenance.Timestamp,
                 applyEventInfoOn);
 
