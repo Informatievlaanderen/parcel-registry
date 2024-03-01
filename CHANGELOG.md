@@ -1,3 +1,15 @@
+# [4.40.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.39.1...v4.40.0) (2024-03-01)
+
+
+### Bug Fixes
+
+* add name/description for integration version ([965a8d6](https://github.com/informatievlaanderen/parcel-registry/commit/965a8d641ec211d4b0afbf7f3db25ecb9ca0154e))
+
+
+### Features
+
+* add type to latest versions integration ([34e296c](https://github.com/informatievlaanderen/parcel-registry/commit/34e296c5e87783d9a82639bad1937861d1977157))
+
 ## [4.39.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.39.0...v4.39.1) (2024-02-21)
 
 
