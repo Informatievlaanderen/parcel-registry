@@ -11,6 +11,8 @@
     using Parcel;
     using Parcel.Events;
 
+    [ConnectedProjectionName("Integratie perceel versie")]
+    [ConnectedProjectionDescription("Projectie die de perceel versie data voor de integratie database bijhoudt.")]
     public class ParcelVersionProjections : ConnectedProjection<IntegrationContext>
     {
         public ParcelVersionProjections(
