@@ -1,3 +1,10 @@
+## [4.40.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.40.0...v4.40.1) (2024-03-05)
+
+
+### Bug Fixes
+
+* addressrepository integration db ([3b63134](https://github.com/informatievlaanderen/parcel-registry/commit/3b631340f527f0514c0e0f499162a5d893b4ca5e))
+
 # [4.40.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.39.1...v4.40.0) (2024-03-01)
 
 
