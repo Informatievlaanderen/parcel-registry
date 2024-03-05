@@ -22,11 +22,14 @@
         public async Task<int?> GetAddressPersistentLocalId(Guid addressId)
         {
             await using var connection = new NpgsqlConnection(_connectionString);
-            var sql = @$"SELECT address_id, persistent_local_id
+            var sql = @"SELECT persistent_local_id
 	                    FROM integration_address.address_id_address_persistent_local_id
-	                    WHERE address_id = '{addressId}';";
+	                    WHERE address_id = @AddressId;";
 
-            return await connection.QuerySingleOrDefaultAsync<int?>(sql);
+            return await connection.QuerySingleOrDefaultAsync<int?>(sql, new
+            {
+                AddressId = addressId
+            });
         }
     }
 }
