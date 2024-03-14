@@ -15,12 +15,14 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
           persist-credentials: false
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3.5.1
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
 
     - name: Node version
       shell: bash
@@ -365,12 +367,12 @@ jobs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
           persist-credentials: false
 
     - name: Cache NPM
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       env:
         cache-name: cache-npm
       with:
@@ -384,10 +386,12 @@ jobs:
       shell: bash
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
 
     - name: Setup Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
@@ -414,35 +418,35 @@ jobs:
         pip install requests markdown argparse
 
     - name: Download NuGet Api BackOffice
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Download NuGet Api BackOffice Abstractions
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Download NuGet Api Legacy
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Download NuGet Api Oslo
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Download NuGet Api Extract
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract-${{ needs.set-release-version.outputs.version }}
@@ -478,7 +482,7 @@ jobs:
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
     steps:
     - name: Download Lambda
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       continue-on-error: false
       with:
         name: lambda-backoffice-${{ needs.release.outputs.version }}
@@ -549,10 +553,10 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
 
@@ -561,31 +565,31 @@ jobs:
       run: dotnet --info
 
     - name: Download NuGet package api-backoffice
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice-${{ needs.release.outputs.version }}
         path: ~/
 
     - name: Download NuGet package api-backoffice-abstractions
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions-${{ needs.release.outputs.version }}
         path: ~/
 
     - name: Download NuGet package api-legacy
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy-${{ needs.release.outputs.version }}
         path: ~/
 
     - name: Download NuGet package api-oslo
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo-${{ needs.release.outputs.version }}
         path: ~/
 
     - name: Download NuGet package api-extract
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract-${{ needs.release.outputs.version }}
         path: ~/
@@ -610,14 +614,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
 
       - name: Cache Paket
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-paket
         with:
@@ -627,7 +631,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Cache Python
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-pip
         with:
@@ -635,7 +639,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}
 
       - name: Setup Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
@@ -699,7 +703,7 @@ jobs:
 
       # Download artifact
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: false
         with:
           name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
@@ -763,7 +767,7 @@ jobs:
 
       # Download artifact
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: false
         with:
           name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
@@ -826,7 +830,7 @@ jobs:
 
       # Download artifact
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: false
         with:
           name: ${{ matrix.image }}-${{ needs.release.outputs.version }}
