@@ -313,7 +313,7 @@
 
                 if (addressPersistentLocalId is null)
                 {
-                    throw new InvalidOperationException($"No persistent local id found for {message.Message.AddressId}");
+                    return;
                 }
 
                 var newParcelVersion = await context.CreateNewParcelVersion(
@@ -339,7 +339,7 @@
 
                 if (addressPersistentLocalId is null)
                 {
-                    throw new InvalidOperationException($"No persistent local id found for {message.Message.AddressId}");
+                    return;
                 }
 
                 await context.CreateNewParcelVersion(
