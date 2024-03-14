@@ -1,3 +1,10 @@
+## [4.40.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.40.1...v4.40.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* don't throw when address persistent local id was not found ([b394a6b](https://github.com/informatievlaanderen/parcel-registry/commit/b394a6bc8ce4656248db314dafbe68c4a266d797))
+
 ## [4.40.1](https://github.com/informatievlaanderen/parcel-registry/compare/v4.40.0...v4.40.1) (2024-03-05)
 
 
