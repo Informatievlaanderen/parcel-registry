@@ -62,7 +62,7 @@
             Instant lastChangedOn,
             Action<ParcelVersion> editFunc)
         {
-            var newItem = new ParcelVersion()
+            var newItem = new ParcelVersion
             {
                 Position = newPosition,
                 ParcelId = ParcelId,
