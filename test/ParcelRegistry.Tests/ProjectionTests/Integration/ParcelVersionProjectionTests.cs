@@ -14,8 +14,6 @@
     using Builders;
     using Fixtures;
     using FluentAssertions;
-    using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Moq;
     using Parcel.Events;
@@ -869,6 +867,64 @@
                     var currentParcelVersionAddress =
                         await context.ParcelVersionAddresses.FindAsync(position + 1, message.ParcelId, addressPersistentLocalId);
                     currentParcelVersionAddress.Should().NotBeNull();
+                    currentParcelVersionAddress!.Count.Should().Be(1);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasAttached_WithAlreadyAttached()
+        {
+            var addressId = Guid.NewGuid();
+            var addressPersistentLocalId = 123;
+
+            var firstMessage = _fixture.Create<ParcelAddressWasAttached>()
+                .WithAddressId(new AddressId(addressId));
+            var secondMessage = _fixture.Create<ParcelAddressWasAttached>()
+                .WithAddressId(new AddressId(addressId));
+
+            var position = _fixture.Create<long>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
+            };
+
+            var firstMessageMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, "EventName"}
+            };
+
+            var secondMessageMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, "EventName"}
+            };
+
+            addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
+                .ReturnsAsync(addressPersistentLocalId);
+
+            await Sut.Given(
+                    new Envelope<ParcelWasRegistered>(new Envelope(_fixture.Create<ParcelWasRegistered>(), metadata)),
+                    new Envelope<ParcelAddressWasAttached>(new Envelope(firstMessage, firstMessageMetadata)),
+                    new Envelope<ParcelAddressWasAttached>(new Envelope(secondMessage, secondMessageMetadata)))
+                .Then(async context =>
+                {
+                    var parcelVersions = await context.ParcelVersions.FindAsync(position, secondMessage.ParcelId);
+                    parcelVersions.Should().NotBeNull();
+                    parcelVersions!.IsRemoved.Should().BeFalse();
+                    parcelVersions.VersionTimestamp.Should().Be(secondMessage.Provenance.Timestamp);
+                    parcelVersions.VersionAsString.Should()
+                        .Be(new Rfc3339SerializableDateTimeOffset(secondMessage.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
+
+                    var currentParcelVersionAddress =
+                        await context.ParcelVersionAddresses.FindAsync(position, secondMessage.ParcelId, addressPersistentLocalId);
+                    currentParcelVersionAddress.Should().NotBeNull();
+                    currentParcelVersionAddress!.Count.Should().Be(2);
                 });
         }
 
@@ -926,6 +982,70 @@
                     var currentParcelVersionAddress =
                         await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, addressPersistentLocalId);
                     currentParcelVersionAddress.Should().BeNull();
+                });
+        }
+
+         [Fact]
+        public async Task WhenParcelAddressWasDetached_WithAttachedTwice()
+        {
+            var addressId = Guid.NewGuid();
+            var addressPersistentLocalId = 123;
+
+            var message = _fixture.Create<ParcelAddressWasDetached>()
+                .WithAddressId(new AddressId(addressId));
+            var firstParcelAddressWasAttached = _fixture.Create<ParcelAddressWasAttached>()
+                .WithAddressId(new AddressId(addressId));
+            var secondParcelAddressWasAttached = _fixture.Create<ParcelAddressWasAttached>()
+                .WithAddressId(new AddressId(addressId));
+
+            var position = _fixture.Create<long>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
+            };
+            var firstParcelAddressWasAttachedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
+            };
+            var secondParcelAddressWasAttachedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
+            };
+            var messageMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, "EventName"}
+            };
+
+            addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
+                .ReturnsAsync(addressPersistentLocalId);
+
+            await Sut.Given(
+                    new Envelope<ParcelWasRegistered>(new Envelope(_fixture.Create<ParcelWasRegistered>(), metadata)),
+                    new Envelope<ParcelAddressWasAttached>(new Envelope(firstParcelAddressWasAttached, firstParcelAddressWasAttachedMetadata)),
+                    new Envelope<ParcelAddressWasAttached>(new Envelope(secondParcelAddressWasAttached, secondParcelAddressWasAttachedMetadata)),
+                    new Envelope<ParcelAddressWasDetached>(new Envelope(message, messageMetadata)))
+                .Then(async context =>
+                {
+                    var parcelVersions = await context.ParcelVersions.FindAsync(position, message.ParcelId);
+                    parcelVersions.Should().NotBeNull();
+                    parcelVersions!.IsRemoved.Should().BeFalse();
+                    parcelVersions.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
+                    parcelVersions.VersionAsString.Should()
+                        .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
+                    parcelVersions.Type.Should().Be("EventName");
+
+                    var currentParcelVersionAddress =
+                        await context.ParcelVersionAddresses.FindAsync(position, message.ParcelId, addressPersistentLocalId);
+                    currentParcelVersionAddress.Should().NotBeNull();
+                    currentParcelVersionAddress!.Count.Should().Be(1);
                 });
         }
 

@@ -1,6 +1,5 @@
 ﻿namespace ParcelRegistry.Projections.Integration.ParcelVersion
 {
-    using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -47,8 +46,7 @@
                             message.Position,
                             message.Message.ParcelId,
                             addressPersistentLocalId,
-                            message.Message.CaPaKey,
-                            message.Message.Provenance.Timestamp), ct);
+                            message.Message.CaPaKey), ct);
                 }
             });
 
@@ -119,8 +117,7 @@
                         message.Position,
                         message.Message.ParcelId,
                         message.Message.AddressPersistentLocalId,
-                        message.Message.CaPaKey,
-                        message.Message.Provenance.Timestamp), ct);
+                        message.Message.CaPaKey), ct);
             });
 
             When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (context, message, ct) =>
@@ -143,8 +140,7 @@
                         message.Position,
                         message.Message.ParcelId,
                         message.Message.NewAddressPersistentLocalId,
-                        message.Message.CaPaKey,
-                        message.Message.Provenance.Timestamp), ct);
+                        message.Message.CaPaKey), ct);
             });
 
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
@@ -322,14 +318,26 @@
                     _ => { },
                     ct);
 
-                await context
+                var versionAddress = await context
                     .ParcelVersionAddresses
-                    .AddAsync(new ParcelVersionAddress(
-                        message.Position,
-                        message.Message.ParcelId,
-                        addressPersistentLocalId.Value,
-                        newParcelVersion.CaPaKey,
-                        message.Message.Provenance.Timestamp), ct);
+                    .FindAsync(
+                        new object?[] { message.Position, message.Message.ParcelId, addressPersistentLocalId.Value },
+                        cancellationToken: ct);
+
+                if (versionAddress is not null)
+                {
+                    versionAddress.Count++;
+                }
+                else
+                {
+                    await context
+                        .ParcelVersionAddresses
+                        .AddAsync(new ParcelVersionAddress(
+                            message.Position,
+                            message.Message.ParcelId,
+                            addressPersistentLocalId.Value,
+                            newParcelVersion.CaPaKey), ct);
+                }
             });
 
             When<Envelope<ParcelAddressWasDetached>>(async (context, message, ct) =>
@@ -353,7 +361,19 @@
                         new object?[] { message.Position, message.Message.ParcelId, addressPersistentLocalId.Value },
                         cancellationToken: ct);
 
-                context.ParcelVersionAddresses.Remove(versionAddress);
+                if (versionAddress is null)
+                {
+                    return;
+                }
+
+                if (versionAddress.Count > 1)
+                {
+                    versionAddress.Count--;
+                }
+                else
+                {
+                    context.ParcelVersionAddresses.Remove(versionAddress);
+                }
             });
         }
 
