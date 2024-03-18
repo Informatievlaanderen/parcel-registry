@@ -1,3 +1,10 @@
+## [4.40.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.40.2...v4.40.3) (2024-03-18)
+
+
+### Bug Fixes
+
+* parcel address version with count ([26c3cde](https://github.com/informatievlaanderen/parcel-registry/commit/26c3cde869214defc0b3d293e5ac042e9b108aae))
+
 ## [4.40.2](https://github.com/informatievlaanderen/parcel-registry/compare/v4.40.1...v4.40.2) (2024-03-14)
 
 
