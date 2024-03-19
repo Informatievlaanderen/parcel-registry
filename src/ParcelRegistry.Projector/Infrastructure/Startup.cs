@@ -1,29 +1,29 @@
 namespace ParcelRegistry.Projector.Infrastructure
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading;
+    using Asp.Versioning.ApiExplorer;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.OpenApi.Models;
     using Modules;
     using ParcelRegistry.Projections.Extract;
-    using ParcelRegistry.Projections.Legacy;
-    using System;
-    using System.Linq;
-    using System.Reflection;
-    using Microsoft.OpenApi.Models;
-    using System.Threading;
     using ParcelRegistry.Projections.Integration.Infrastructure;
+    using ParcelRegistry.Projections.Legacy;
 
     /// <summary>Represents the startup process for the application.</summary>
     public class Startup

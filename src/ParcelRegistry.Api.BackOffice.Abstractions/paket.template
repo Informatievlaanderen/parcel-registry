@@ -15,15 +15,15 @@ licenseUrl https://opensource.org/licenses/EUPL-1.2
 description Parcel Registry Api BackOffice Abstractions.
 
 dependencies
-  framework: net6.0
+  framework: net8.0
     Be.Vlaanderen.Basisregisters.Api >= LOCKEDVERSION
     MediatR.Contracts >= LOCKEDVERSION
 
 files
-  ParcelRegistry.Api.BackOffice.Abstractions.dll => lib\net6.0
-  ParcelRegistry.Api.BackOffice.Abstractions.pdb => lib\net6.0
-  ParcelRegistry.Api.BackOffice.Abstractions.xml => lib\net6.0
+  ParcelRegistry.Api.BackOffice.Abstractions.dll => lib\net8.0
+  ParcelRegistry.Api.BackOffice.Abstractions.pdb => lib\net8.0
+  ParcelRegistry.Api.BackOffice.Abstractions.xml => lib\net8.0
   ParcelRegistry.Api.BackOffice.Abstractions.xml => content
 
-  ParcelRegistry.dll => lib\net6.0
-  ParcelRegistry.pdb => lib\net6.0
+  ParcelRegistry.dll => lib\net8.0
+  ParcelRegistry.pdb => lib\net8.0

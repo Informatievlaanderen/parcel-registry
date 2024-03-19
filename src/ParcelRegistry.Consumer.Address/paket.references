@@ -1,5 +1,4 @@
 Be.Vlaanderen.Basisregisters.AggregateSource
-Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration
 Be.Vlaanderen.Basisregisters.GrAr.Contracts
 Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer
 Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector

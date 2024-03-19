@@ -12,9 +12,8 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
-    using Be.Vlaanderen.Basisregisters.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.GrAr.Notifications;
     using Consumer.Address.Infrastructure;
     using Destructurama;
@@ -116,10 +115,10 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                         var topicArn = hostContext.Configuration["TopicArn"];
                         return new NotificationService(snsService, topicArn);
                     });
+                    services.ConfigureConsumerAddress(hostContext.Configuration, loggerFactory, ServiceLifetime.Singleton);
 
-                    services
-                        .RegisterModule(new DataDogModule(hostContext.Configuration))
-                        .ConfigureConsumerAddress(hostContext.Configuration, loggerFactory, ServiceLifetime.Singleton);
+                    builder
+                        .RegisterModule(new DataDogModule(hostContext.Configuration));
 
                     builder
                         .RegisterModule(new CommandHandlingModule(hostContext.Configuration))

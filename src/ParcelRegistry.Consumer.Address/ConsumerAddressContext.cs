@@ -4,7 +4,6 @@ namespace ParcelRegistry.Consumer.Address
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Be.Vlaanderen.Basisregisters.EntityFrameworkCore.EntityTypeConfiguration;
     using System.Reflection;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
@@ -89,7 +88,8 @@ namespace ParcelRegistry.Consumer.Address
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.AddEntityConfigurationsFromAssembly(typeof(ConsumerAddressContext).GetTypeInfo().Assembly);
+            modelBuilder
+                .ApplyConfigurationsFromAssembly(typeof(ConsumerAddressContext).GetTypeInfo().Assembly);
         }
     }
 
