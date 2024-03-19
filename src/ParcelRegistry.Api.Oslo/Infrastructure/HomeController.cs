@@ -1,9 +1,10 @@
 namespace ParcelRegistry.Api.Oslo.Infrastructure
 {
     using System.Reflection;
+    using Asp.Versioning;
+    using Be.Vlaanderen.Basisregisters.Api;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Net.Http.Headers;
-    using Be.Vlaanderen.Basisregisters.Api;
 
     [ApiVersionNeutral]
     [Route("")]

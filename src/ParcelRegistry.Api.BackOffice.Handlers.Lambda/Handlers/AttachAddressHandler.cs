@@ -5,8 +5,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers
     using Abstractions;
     using Abstractions.Validation;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Microsoft.Extensions.Configuration;
@@ -36,7 +35,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers
             _backOfficeContext = backOfficeContext;
         }
 
-        protected override async Task<ETagResponse> InnerHandle(AttachAddressLambdaRequest request, CancellationToken cancellationToken)
+        protected override async Task<object> InnerHandle(AttachAddressLambdaRequest request, CancellationToken cancellationToken)
         {
             var cmd = request.ToCommand();
 

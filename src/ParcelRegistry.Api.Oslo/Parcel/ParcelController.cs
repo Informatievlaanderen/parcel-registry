@@ -1,22 +1,23 @@
 namespace ParcelRegistry.Api.Oslo.Parcel
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
-    using MediatR;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Count;
-    using Detail;
-    using List;
-    using Swashbuckle.AspNetCore.Filters;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using Count;
+    using Detail;
+    using List;
+    using MediatR;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Swashbuckle.AspNetCore.Filters;
+    using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("2.0")]
     [AdvertiseApiVersions("2.0")]

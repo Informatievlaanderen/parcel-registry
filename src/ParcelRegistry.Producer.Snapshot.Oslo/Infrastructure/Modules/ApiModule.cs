@@ -1,12 +1,10 @@
 namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
 {
     using System;
-    using ParcelRegistry.Infrastructure;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Microsoft;
-    using Be.Vlaanderen.Basisregisters.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
@@ -19,6 +17,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using ParcelRegistry.Infrastructure;
 
     public class ApiModule : Module
     {
@@ -38,7 +37,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            _services.RegisterModule(new DataDogModule(_configuration));
+            builder.RegisterModule(new DataDogModule(_configuration));
 
             RegisterProjectionSetup(builder);
 

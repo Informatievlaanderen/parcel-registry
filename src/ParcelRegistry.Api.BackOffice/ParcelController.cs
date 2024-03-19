@@ -3,8 +3,8 @@ namespace ParcelRegistry.Api.BackOffice
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Sqs.Requests;
     using FluentValidation;

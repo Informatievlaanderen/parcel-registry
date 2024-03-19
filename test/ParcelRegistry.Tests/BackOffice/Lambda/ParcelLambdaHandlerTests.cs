@@ -5,9 +5,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using System.Threading;
     using System.Threading.Tasks;
     using Autofac;
-    using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Builders;
@@ -153,7 +152,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 parcels)
         { }
 
-        protected override Task<ETagResponse> InnerHandle(
+        protected override Task<object> InnerHandle(
             AttachAddressLambdaRequest request,
             CancellationToken cancellationToken)
         {
@@ -163,7 +162,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
                 new Dictionary<string, object>(),
                 cancellationToken);
 
-            return Task.FromResult(new ETagResponse("location", "etag"));
+            return Task.FromResult((object) new ETagResponse("location", "etag"));
         }
 
         protected override TicketError? InnerMapDomainException(DomainException exception, AttachAddressLambdaRequest request)
