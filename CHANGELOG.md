@@ -1,3 +1,15 @@
+# [5.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.40.3...v5.0.0) (2024-03-20)
+
+
+### Features
+
+* upgrade dotnet8 ([6f950ce](https://github.com/informatievlaanderen/parcel-registry/commit/6f950ceff37ba9afbe9a7bfaba320ee219c5082d))
+
+
+### BREAKING CHANGES
+
+* upgrade to dotnet8
+
 ## [4.40.3](https://github.com/informatievlaanderen/parcel-registry/compare/v4.40.2...v4.40.3) (2024-03-18)
 
 
