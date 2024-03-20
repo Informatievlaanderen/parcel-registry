@@ -1,3 +1,10 @@
+## [5.0.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.0.0...v5.0.1) (2024-03-20)
+
+
+### Bug Fixes
+
+* push images to prd ([aa3c6cf](https://github.com/informatievlaanderen/parcel-registry/commit/aa3c6cffaf3934655fab99989909e4591d70f545))
+
 # [5.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v4.40.3...v5.0.0) (2024-03-20)
 
 
