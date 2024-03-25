@@ -6,7 +6,8 @@
     [Serializable]
     public class OrderInvalidDateRangeException : Exception
     {
-        public OrderInvalidDateRangeException(string message) : base(message)
+        public OrderInvalidDateRangeException(string message)
+        : base(message)
         { }
 
         private OrderInvalidDateRangeException(SerializationInfo info, StreamingContext context)
