@@ -2,7 +2,6 @@ Microsoft.Extensions.DependencyInjection
 
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
-Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
 Be.Vlaanderen.Basisregisters.GrAr.Contracts
 Be.Vlaanderen.BasisRegisters.MessageHandling.Kafka.Producer
 Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac
@@ -10,6 +9,8 @@ Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer
 Be.Vlaanderen.Basisregisters.Projector
 
 AspNetCore.HealthChecks.SqlServer
+
+Datadog.Trace.Bundle
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

@@ -12,15 +12,12 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.GrAr.Notifications;
     using Consumer.Address.Infrastructure;
     using Destructurama;
     using Download;
     using Handlers;
     using MediatR;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -83,12 +80,9 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                     var loggerFactory = new SerilogLoggerFactory(Log.Logger);
 
                     services
-                        .AddScoped(s => new TraceDbConnection<ImporterContext>(
-                            new SqlConnection(hostContext.Configuration.GetConnectionString("ImporterGrb")),
-                            hostContext.Configuration["DataDog:ServiceName"]))
                         .AddDbContextFactory<ImporterContext>((provider, options) => options
                             .UseLoggerFactory(loggerFactory)
-                            .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ImporterContext>>(), sqlServerOptions => sqlServerOptions
+                            .UseSqlServer(hostContext.Configuration.GetConnectionString("ImporterGrb"), sqlServerOptions => sqlServerOptions
                                 .EnableRetryOnFailure()
                                 .MigrationsHistoryTable(MigrationTables.GrbImporter, Schema.GrbImporter)
                             ));
@@ -116,9 +110,6 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                         return new NotificationService(snsService, topicArn);
                     });
                     services.ConfigureConsumerAddress(hostContext.Configuration, loggerFactory, ServiceLifetime.Singleton);
-
-                    builder
-                        .RegisterModule(new DataDogModule(hostContext.Configuration));
 
                     builder
                         .RegisterModule(new CommandHandlingModule(hostContext.Configuration))

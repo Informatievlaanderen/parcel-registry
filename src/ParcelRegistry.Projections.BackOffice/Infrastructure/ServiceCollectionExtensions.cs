@@ -1,9 +1,7 @@
 ﻿namespace ParcelRegistry.Projections.BackOffice.Infrastructure
 {
     using System;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +21,7 @@
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
             {
-                RunOnSqlServer(configuration, services, loggerFactory, connectionString);
+                RunOnSqlServer(services, loggerFactory, connectionString);
             }
             else
             {
@@ -43,18 +41,14 @@
         }
 
         private static void RunOnSqlServer(
-            IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
             string backOfficeProjectionsConnectionString)
         {
             services
-                .AddScoped(s => new TraceDbConnection<BackOfficeProjectionsContext>(
-                    new SqlConnection(backOfficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
                 .AddDbContext<BackOfficeProjectionsContext>((provider, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<BackOfficeProjectionsContext>>(),
+                    .UseSqlServer(backOfficeProjectionsConnectionString,
                         sqlServerOptions =>
                         {
                             sqlServerOptions.EnableRetryOnFailure();
