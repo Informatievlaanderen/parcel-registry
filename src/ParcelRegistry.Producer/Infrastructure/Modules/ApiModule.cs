@@ -4,9 +4,10 @@ namespace ParcelRegistry.Producer.Infrastructure.Modules
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
@@ -15,10 +16,6 @@ namespace ParcelRegistry.Producer.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using ParcelRegistry.Infrastructure;
-    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
-    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
-    using Producer;
-    using ParcelRegistry;
 
     public class ApiModule : Module
     {
@@ -38,8 +35,6 @@ namespace ParcelRegistry.Producer.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new DataDogModule(_configuration));
-
             RegisterProjectionSetup(builder);
 
             builder

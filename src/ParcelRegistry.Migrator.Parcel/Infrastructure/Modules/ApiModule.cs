@@ -3,7 +3,6 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure.Modules
     using Api.BackOffice.Abstractions;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Consumer.Address.Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -40,7 +39,6 @@ namespace ParcelRegistry.Migrator.Parcel.Infrastructure.Modules
                     , ServiceLifetime.Transient);
 
             builder
-                .RegisterModule(new DataDogModule(_configuration))
                 .RegisterModule(new EditModule(_configuration))
                 .RegisterModule(new BackOfficeModule(_configuration, _services, _loggerFactory));
 

@@ -1,14 +1,12 @@
 namespace ParcelRegistry.Consumer.Address.Infrastructure
 {
     using System;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Parcel;
     using ParcelRegistry.Infrastructure;
-    using ParcelRegistry.Parcel;
 
     public static class ConsumerAddressModule
     {
@@ -24,7 +22,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
             {
-                RunOnSqlServer(configuration, services, serviceLifetime, loggerFactory, connectionString);
+                RunOnSqlServer(services, serviceLifetime, loggerFactory, connectionString);
             }
             else
             {
@@ -36,19 +34,15 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
         }
 
         private static void RunOnSqlServer(
-            IConfiguration configuration,
             IServiceCollection services,
             ServiceLifetime serviceLifetime,
             ILoggerFactory loggerFactory,
             string consumerProjectionsConnectionString)
         {
             services
-                .AddScoped(s => new TraceDbConnection<ConsumerAddressContext>(
-                    new SqlConnection(consumerProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<ConsumerAddressContext>((provider, options) => options
+                .AddDbContext<ConsumerAddressContext>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ConsumerAddressContext>>(), sqlServerOptions =>
+                    .UseSqlServer(consumerProjectionsConnectionString, sqlServerOptions =>
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerAddress, Schema.ConsumerAddress);

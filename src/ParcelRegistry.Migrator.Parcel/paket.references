@@ -5,9 +5,10 @@ Destructurama.JsonNet
 
 Be.Vlaanderen.Basisregisters.AggregateSource
 Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
-Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac
 Be.Vlaanderen.Basisregisters.EventHandling.Autofac
 Be.Vlaanderen.Basisregisters.Projector
+
+Datadog.Trace.Bundle
 
 Serilog
 Serilog.Extensions.Logging

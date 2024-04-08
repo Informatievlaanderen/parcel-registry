@@ -1,7 +1,6 @@
-
 Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
-Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac
-Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore
+
+Datadog.Trace.Bundle
 
 Serilog
 Serilog.Extensions.Logging
@@ -10,12 +9,6 @@ Serilog.Enrichers.Environment
 Serilog.Formatting.Compact
 Serilog.Sinks.Console
 Serilog.Settings.Configuration
-
-Microsoft.Extensions.Configuration
-Microsoft.Extensions.Configuration.CommandLine
-Microsoft.Extensions.Configuration.FileExtensions
-Microsoft.Extensions.Configuration.EnvironmentVariables
-Microsoft.Extensions.Configuration.Json
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

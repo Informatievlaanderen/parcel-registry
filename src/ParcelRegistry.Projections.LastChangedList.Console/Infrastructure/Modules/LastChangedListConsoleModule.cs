@@ -4,7 +4,6 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
@@ -36,8 +35,6 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new DataDogModule(_configuration));
-
             RegisterProjectionSetup(builder);
 
             builder
@@ -66,7 +63,7 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
             var logger = _loggerFactory.CreateLogger<LastChangedListConsoleModule>();
             var connectionString = _configuration.GetConnectionString("LastChangedList");
 
-            builder.RegisterModule(new Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList.LastChangedListModule(connectionString, _configuration["DataDog:ServiceName"], _services, _loggerFactory));
+            builder.RegisterModule(new LastChangedListModule(connectionString, _services, _loggerFactory));
 
             logger.LogInformation(
                 "Added {Context} to services:" +

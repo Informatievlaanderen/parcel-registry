@@ -19,6 +19,8 @@ nuget AWSSDK.Extensions.NETCore.Setup 3.7.300
 
 nuget AsyncEnumerator 4.0.2
 
+nuget Datadog.Trace.Bundle 2.49.0
+
 nuget Destructurama.JsonNet 3.0.0
 
 nuget MediatR 12.2.0
@@ -37,7 +39,7 @@ nuget Npgsql.EntityFrameworkCore.PostgreSQL.Design 2.0.0-preview1
 nuget Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite 8.0.2
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 7.2.0
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 7.2.5
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 4.0.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
 nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 2.0.0
@@ -55,7 +57,7 @@ nuget Be.Vlaanderen.Basisregisters.CommandHandling.SqlStreamStore 9.0.1
 
 nuget Be.Vlaanderen.Basisregisters.SnapshotVerifier 9.0.1
 
-nuget Be.Vlaanderen.Basisregisters.Api 21.0.0
+nuget Be.Vlaanderen.Basisregisters.Api 23.1.0
 
 nuget Be.Vlaanderen.Basisregisters.Aws.DistributedMutex 4.0.1
 nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 4.0.0
@@ -63,34 +65,30 @@ nuget Be.Vlaanderen.Basisregisters.Aws.Lambda 4.0.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling 5.0.0
 nuget Be.Vlaanderen.Basisregisters.EventHandling.Autofac 5.0.0
 
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 13.0.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 13.0.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 13.0.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 13.0.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer 13.0.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql 13.0.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 13.0.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 13.0.0
-nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 13.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList 14.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore 14.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac 14.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner 14.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer 14.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql 14.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing 14.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit 14.0.0
+nuget Be.Vlaanderen.Basisregisters.ProjectionHandling.Syndication 14.0.0
 
-nuget Be.Vlaanderen.Basisregisters.Projector 14.0.0
-
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 6.0.0
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.AspNetCore 6.0.0
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.SqlStreamStore 6.0.0
+nuget Be.Vlaanderen.Basisregisters.Projector 15.0.0
 
 nuget Be.Vlaanderen.Basisregisters.Crab 4.0.0
 
-nuget Be.Vlaanderen.Basisregisters.GrAr.Common 21.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Notifications 21.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 21.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 21.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Import 21.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 21.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 21.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm 21.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 21.0.0
-nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 21.0.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Common 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Notifications 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Contracts 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Edit 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Import 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Legacy 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 21.1.0
+nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 21.1.0
 
 nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 5.0.1
 nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 5.0.1

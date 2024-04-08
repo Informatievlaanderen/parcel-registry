@@ -1,15 +1,13 @@
 namespace ParcelRegistry.Projections.Legacy
 {
+    using System;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using System;
-    using Microsoft.Data.SqlClient;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
 
     public class LegacyModule : Module
     {
@@ -23,7 +21,7 @@ namespace ParcelRegistry.Projections.Legacy
 
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
-                RunOnSqlServer(configuration, services, loggerFactory, connectionString);
+                RunOnSqlServer(services, loggerFactory, connectionString);
             else
                 RunInMemoryDb(services, loggerFactory, logger);
 
@@ -37,18 +35,14 @@ namespace ParcelRegistry.Projections.Legacy
         }
 
         private static void RunOnSqlServer(
-            IConfiguration configuration,
             IServiceCollection services,
             ILoggerFactory loggerFactory,
             string backofficeProjectionsConnectionString)
         {
             services
-                .AddScoped(s => new TraceDbConnection<LegacyContext>(
-                    new SqlConnection(backofficeProjectionsConnectionString),
-                    configuration["DataDog:ServiceName"]))
-                .AddDbContext<LegacyContext>((provider, options) => options
+                .AddDbContext<LegacyContext>((_, options) => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<LegacyContext>>(), sqlServerOptions =>
+                    .UseSqlServer(backofficeProjectionsConnectionString, sqlServerOptions =>
                     {
                         sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.Legacy, Schema.Legacy);

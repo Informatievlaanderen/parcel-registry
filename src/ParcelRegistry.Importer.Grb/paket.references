@@ -6,6 +6,8 @@ NetTopologySuite
 Be.Vlaanderen.Basisregisters.Auth.AcmIdm
 Be.Vlaanderen.Basisregisters.GrAr.Notifications
 
+Datadog.Trace.Bundle
+
 MediatR.Contracts
 
 SourceLink.Embed.AllSourceFiles

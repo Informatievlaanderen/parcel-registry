@@ -10,9 +10,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.Lambda;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
-    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Infrastructure;
     using Consumer.Address.Infrastructure;
     using Infrastructure;
@@ -74,7 +72,6 @@ namespace ParcelRegistry.Api.BackOffice.Handlers.Lambda
             services.ConfigureConsumerAddress(configuration, loggerFactory);
 
             builder
-                .RegisterModule(new DataDogModule(configuration))
                 .RegisterModule(new EditModule(configuration))
                 .RegisterModule(new BackOfficeModule(configuration, services, loggerFactory))
                 .RegisterSnapshotModule(configuration);

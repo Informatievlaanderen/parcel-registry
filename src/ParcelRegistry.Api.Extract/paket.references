@@ -2,7 +2,8 @@ AspNetCore.HealthChecks.SqlServer
 
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.GrAr.Extracts
-Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac
+
+Datadog.Trace.Bundle
 
 MediatR
 
