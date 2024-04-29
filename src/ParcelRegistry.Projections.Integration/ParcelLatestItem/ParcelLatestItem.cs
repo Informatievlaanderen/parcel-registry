@@ -123,6 +123,7 @@ namespace ParcelRegistry.Projections.Integration.ParcelLatestItem
             builder.HasIndex(parcel => parcel.Status);
             builder.HasIndex(parcel => parcel.OsloStatus);
             builder.HasIndex(parcel => parcel.IsRemoved);
+            builder.HasIndex(x => new { x.IsRemoved, x.Status });
             builder
                 .HasIndex(parcel => parcel.Geometry)
                 .HasMethod("GIST");
