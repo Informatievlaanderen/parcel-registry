@@ -1,3 +1,10 @@
+# [5.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.0.4...v5.1.0) (2024-04-29)
+
+
+### Features
+
+* add combined index isremoved and status on integration projections ([0344aad](https://github.com/informatievlaanderen/parcel-registry/commit/0344aad11875cb1a7e15a893969f7499ef707226))
+
 ## [5.0.4](https://github.com/informatievlaanderen/parcel-registry/compare/v5.0.3...v5.0.4) (2024-04-09)
 
 ## [5.0.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.0.2...v5.0.3) (2024-03-25)
