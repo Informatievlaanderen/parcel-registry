@@ -211,7 +211,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
             var relations = backOfficeContext.ParcelAddressRelations
                 .AsNoTracking()
                 .Where(x =>
-                    x.AddressPersistentLocalId == new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId))
+                    x.AddressPersistentLocalId == readdressedAddress.SourceAddressPersistentLocalId)
                 .ToList();
 
             foreach (var relation in relations)
@@ -239,7 +239,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
             await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
             var relations = backOfficeContext.ParcelAddressRelations
                 .AsNoTracking()
-                .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
+                .Where(x => x.AddressPersistentLocalId == addressPersistentLocalId)
                 .ToList();
 
             foreach (var relation in relations)
@@ -263,7 +263,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
             await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
             var relations = backOfficeContext.ParcelAddressRelations
                     .AsNoTracking()
-                    .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
+                    .Where(x => x.AddressPersistentLocalId == addressPersistentLocalId)
                     .ToList();
 
             foreach (var relation in relations)
@@ -287,7 +287,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
             await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
             var relations = backOfficeContext.ParcelAddressRelations
                 .AsNoTracking()
-                .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(addressPersistentLocalId))
+                .Where(x => x.AddressPersistentLocalId == addressPersistentLocalId)
                 .ToList();
 
             foreach (var relation in relations)
