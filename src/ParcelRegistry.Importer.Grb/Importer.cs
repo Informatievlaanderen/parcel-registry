@@ -57,8 +57,6 @@
                 var parcelsRequests = _requestMapper.Map(files);
 
                 var groupedParcels = parcelsRequests
-                    .OrderBy(x => x.GrbParcel.VersionDate)
-                    .ThenBy(x => x.GrbParcel.Version)
                     .GroupBy(y => y.GrbParcel.GrbCaPaKey);
 
                 await ProcessRecords(stoppingToken, groupedParcels);
@@ -94,7 +92,11 @@
         {
             foreach (var parcelRequests in groupedParcels)
             {
-                foreach (var request in parcelRequests)
+                var orderedRequests = parcelRequests
+                    .OrderBy(x => x.GrbParcel.VersionDate)
+                    .ThenBy(x => x.GrbParcel.Version);
+
+                foreach (var request in orderedRequests)
                 {
                     await using var context = await _importerContext.CreateDbContextAsync(stoppingToken);
 
