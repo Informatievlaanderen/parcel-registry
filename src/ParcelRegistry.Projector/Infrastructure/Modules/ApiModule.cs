@@ -26,6 +26,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Projections.Legacy;
     using ParcelRegistry.Projections.Legacy.ParcelDetailV2;
     using ParcelRegistry.Projections.Legacy.ParcelSyndication;
+    using ParcelDetailWithCountV2Projections = ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2.ParcelDetailV2Projections;
 
     public class ApiModule : Module
     {
@@ -123,6 +124,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ParcelDetailV2Projections, LegacyContext>(ConnectedProjectionSettings.Default)
+                .RegisterProjections<ParcelDetailWithCountV2Projections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelSyndicationProjections, LegacyContext>(ConnectedProjectionSettings.Default);
         }
 

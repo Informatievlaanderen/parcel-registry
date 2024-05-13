@@ -140,17 +140,8 @@ namespace ParcelRegistry.Parcel
 
         private void When(ParcelAddressWasReplacedBecauseAddressWasReaddressed @event)
         {
-            var previousAddressPersistentLocalId = new AddressPersistentLocalId(@event.PreviousAddressPersistentLocalId);
-            if (_addressPersistentLocalIds.Contains(previousAddressPersistentLocalId))
-            {
-                _addressPersistentLocalIds.Remove(previousAddressPersistentLocalId);
-            }
-
-            var addressPersistentLocalId = new AddressPersistentLocalId(@event.NewAddressPersistentLocalId);
-            if (!_addressPersistentLocalIds.Contains(addressPersistentLocalId))
-            {
-                _addressPersistentLocalIds.Add(addressPersistentLocalId);
-            }
+            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.PreviousAddressPersistentLocalId));
+            _addressPersistentLocalIds.Add(new AddressPersistentLocalId(@event.NewAddressPersistentLocalId));
 
             _lastEvent = @event;
         }

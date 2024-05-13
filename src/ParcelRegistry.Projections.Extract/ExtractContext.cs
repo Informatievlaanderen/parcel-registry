@@ -13,6 +13,7 @@ namespace ParcelRegistry.Projections.Extract
         public DbSet<ParcelExtractItem> ParcelExtract { get; set; }
         public DbSet<ParcelExtractItemV2> ParcelExtractV2 { get; set; }
         public DbSet<ParcelLinkExtractItem> ParcelLinkExtract { get; set; }
+        public DbSet<ParcelLinkExtractWithCount.ParcelLinkExtractItem> ParcelLinkExtractWithCount { get; set; }
 
         // This needs to be here to please EF
         public ExtractContext() { }

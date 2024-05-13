@@ -70,7 +70,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
             }
         }
 
-        private async Task<ParcelAddressRelation?> FindParcelAddressRelation(
+        public async Task<ParcelAddressRelation?> FindParcelAddressRelation(
             ParcelId parcelId,
             AddressPersistentLocalId addressPersistentLocalId,
             CancellationToken cancellationToken)
@@ -92,6 +92,9 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
             modelBuilder.Entity<ParcelAddressRelation>()
                 .Property(x => x.ParcelId)
                 .ValueGeneratedNever();
+            modelBuilder.Entity<ParcelAddressRelation>()
+                .Property(x => x.Count)
+                .HasDefaultValue(1);
 
             modelBuilder.Entity<ParcelAddressRelation>()
                 .HasIndex(x => x.AddressPersistentLocalId);
@@ -105,6 +108,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
     {
         public Guid ParcelId { get; set; }
         public int AddressPersistentLocalId { get; set; }
+        public int Count { get; set; }
 
         private ParcelAddressRelation()
         { }
@@ -113,6 +117,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
         {
             ParcelId = parcelId;
             AddressPersistentLocalId = addressPersistentLocalId;
+            Count = 1;
         }
     }
 

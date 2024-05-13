@@ -6,6 +6,9 @@ namespace ParcelRegistry.Projections.Legacy
     using ParcelDetail;
     using ParcelDetailV2;
     using ParcelSyndication;
+    using ParcelDetailAddressWithCountV2 = ParcelDetailWithCountV2.ParcelDetailAddressV2;
+    using ParcelDetailWithCount = ParcelDetailWithCountV2.ParcelDetailV2;
+
 
     public class LegacyContext : RunnerDbContext<LegacyContext>
     {
@@ -15,9 +18,11 @@ namespace ParcelRegistry.Projections.Legacy
 
         public DbSet<ParcelDetail.ParcelDetail> ParcelDetail { get; set; }
         public DbSet<ParcelDetailV2.ParcelDetailV2> ParcelDetailV2 { get; set; }
+        public DbSet<ParcelDetailWithCount> ParcelDetailWithCountV2 { get; set; }
 
         public DbSet<ParcelDetailAddress> ParcelAddresses { get; set; }
         public DbSet<ParcelDetailAddressV2> ParcelAddressesV2 { get; set; }
+        public DbSet<ParcelDetailAddressWithCountV2> ParcelAddressesWithCountV2 { get; set; }
 
         public DbSet<ParcelSyndicationItem> ParcelSyndication { get; set; }
 
