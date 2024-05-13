@@ -94,7 +94,11 @@
         {
             foreach (var parcelRequests in groupedParcels)
             {
-                foreach (var request in parcelRequests)
+                var orderedRequests = parcelRequests
+                    .OrderBy(x => x.GrbParcel.VersionDate)
+                    .ThenBy(x => x.GrbParcel.Version);
+
+                foreach (var request in orderedRequests)
                 {
                     await using var context = await _importerContext.CreateDbContextAsync(stoppingToken);
 
