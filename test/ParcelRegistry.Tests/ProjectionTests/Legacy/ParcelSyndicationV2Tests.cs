@@ -4,22 +4,22 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using System.Linq;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions.Extensions;
-    using Parcel.Events;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using EventExtensions;
-    using FluentAssertions;
     using Fixtures;
-    using NetTopologySuite.IO;
+    using FluentAssertions;
     using Parcel;
+    using Parcel.Events;
     using Projections.Legacy.ParcelSyndication;
     using Xunit;
+    using ParcelId = Parcel.ParcelId;
+    using ParcelStatus = ParcelRegistry.Legacy.ParcelStatus;
 
     public class ParcelSyndicationV2Tests : ParcelLegacyProjectionTest<ParcelSyndicationProjections>
     {
@@ -55,7 +55,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
                     parcelSyndicationItem.Should().NotBeNull();
                     parcelSyndicationItem!.CaPaKey.Should().Be(message.CaPaKey);
-                    parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Parse(message.ParcelStatus));
+                    parcelSyndicationItem.Status.Should().Be(ParcelStatus.Parse(message.ParcelStatus));
                     parcelSyndicationItem.AddressPersistentLocalIds.Should().BeEquivalentTo(message.AddressPersistentLocalIds);
                     parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelWasMigrated));
                     parcelSyndicationItem.ExtendedWkbGeometry.Should().BeEquivalentTo(message.ExtendedWkbGeometry.ToByteArray());
@@ -85,7 +85,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(position);
                     parcelSyndicationItem.Should().NotBeNull();
                     parcelSyndicationItem!.CaPaKey.Should().Be(message.CaPaKey);
-                    parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Realized);
+                    parcelSyndicationItem.Status.Should().Be(ParcelStatus.Realized);
                     parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelWasImported));
                     parcelSyndicationItem.ExtendedWkbGeometry.Should().BeEquivalentTo(message.ExtendedWkbGeometry.ToByteArray());
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
@@ -109,7 +109,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(2L);
                     parcelSyndicationItem.Should().NotBeNull();
                     parcelSyndicationItem!.CaPaKey.Should().Be(parcelWasRetiredV2.CaPaKey);
-                    parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Retired);
+                    parcelSyndicationItem.Status.Should().Be(ParcelStatus.Retired);
                     parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelWasRetiredV2));
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
                     parcelSyndicationItem.LastChangedOn.Should().Be(parcelWasRetiredV2.Provenance.Timestamp);
@@ -167,7 +167,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelSyndicationItem.ChangeType.Should().Be(nameof(ParcelWasCorrectedFromRetiredToRealized));
                     parcelSyndicationItem.ExtendedWkbGeometry.Should().BeEquivalentTo(GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry().ToString().ToByteArray());
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
-                    parcelSyndicationItem.Status.Should().Be(ParcelRegistry.Legacy.ParcelStatus.Realized);
+                    parcelSyndicationItem.Status.Should().Be(ParcelStatus.Realized);
                     parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasImported.Provenance.Timestamp);
                     parcelSyndicationItem.LastChangedOn.Should().Be(@event.Provenance.Timestamp);
                 });
