@@ -27,11 +27,11 @@
     using ParcelId = Parcel.ParcelId;
     using ParcelStatus = Parcel.ParcelStatus;
 
-    public class ParcelVersionProjectionTests : IntegrationProjectionTest<ParcelVersionProjections>
+    public partial class ParcelVersionProjectionTests : IntegrationProjectionTest<ParcelVersionProjections>
     {
         private readonly Fixture _fixture;
         private const string Namespace = "https://data.vlaanderen.be/id/perceel";
-        private Mock<IAddressRepository> addressRepository;
+        private Mock<IAddressRepository> _addressRepository;
 
         public ParcelVersionProjectionTests()
         {
@@ -42,7 +42,7 @@
             _fixture.Customize(new WithParcelStatus());
             _fixture.Customize(new WithExtendedWkbGeometryPolygon());
 
-            addressRepository = new Mock<IAddressRepository>();
+            _addressRepository = new Mock<IAddressRepository>();
         }
 
         [Fact]
@@ -86,7 +86,7 @@
                             .ParcelVersionAddresses
                             .FindAsync(position, message.ParcelId, addressPersistentLocalId);
                         parcelVersions.Should().NotBeNull();
-                        parcelVersions!.CaPaKey.Should().Be(message.CaPaKey);
+                        parcelVersions.CaPaKey.Should().Be(message.CaPaKey);
                     }
                 });
         }
@@ -285,67 +285,6 @@
                     var parcelVersions = await context.ParcelVersions.FindAsync(position + 1, message.ParcelId);
                     parcelVersions.Should().NotBeNull();
                     parcelVersions!.Type.Should().Be("EventName");
-                });
-        }
-
-        [Fact]
-        public async Task WhenParcelAddressWasReplacedBecauseAddressWasReaddressed()
-        {
-            var attached = _fixture.Create<ParcelAddressWasAttachedV2>();
-            var message = new ParcelAddressWasReplacedBecauseAddressWasReaddressedBuilder(_fixture)
-                .WithParcelId(new ParcelId(attached.ParcelId))
-                .WithVbrCaPaKey(new VbrCaPaKey(attached.CaPaKey))
-                .WithPreviousAddress(attached.AddressPersistentLocalId)
-                .WithNewAddress(attached.AddressPersistentLocalId + 1)
-                .Build();
-
-            var parcelWasImported = _fixture.Create<ParcelWasImported>();
-            var position = _fixture.Create<long>();
-            var metadata = new Dictionary<string, object>
-            {
-                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position },
-                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
-            };
-            var attachedMetadata = new Dictionary<string, object>
-            {
-                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 1 },
-                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
-            };
-
-            var messageMetadata = new Dictionary<string, object>
-            {
-                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
-                { Envelope.PositionMetadataKey, position + 2 },
-                { Envelope.EventNameMetadataKey, "EventName"}
-            };
-
-            await Sut
-                .Given(
-                    new Envelope<ParcelWasImported>(new Envelope(parcelWasImported, metadata)),
-                    new Envelope<ParcelAddressWasAttachedV2>(new Envelope(attached, attachedMetadata)),
-                    new Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(new Envelope(message, messageMetadata)))
-                .Then(async context =>
-                {
-                    var previousParcelAddressVersion1 =
-                        await context.ParcelVersionAddresses.FindAsync(position + 1, message.ParcelId, message.PreviousAddressPersistentLocalId);
-                    previousParcelAddressVersion1.Should().NotBeNull();
-                    var previousParcelAddressVersion2 =
-                        await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, message.PreviousAddressPersistentLocalId);
-                    previousParcelAddressVersion2.Should().BeNull();
-
-                    var parcelAddressVersion1 =
-                        await context.ParcelVersionAddresses.FindAsync(position + 1, message.ParcelId, message.NewAddressPersistentLocalId);
-                    parcelAddressVersion1.Should().BeNull();
-                    var parcelAddressVersion2 =
-                        await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, message.NewAddressPersistentLocalId);
-                    parcelAddressVersion2.Should().NotBeNull();
-                    parcelAddressVersion2!.CaPaKey.Should().Be(message.CaPaKey);
-
-                    var parcelVersion = await context.ParcelVersions.FindAsync(position + 2, message.ParcelId);
-                    parcelVersion.Should().NotBeNull();
-                    parcelVersion!.Type.Should().Be("EventName");
                 });
         }
 
@@ -617,7 +556,7 @@
                 { Envelope.EventNameMetadataKey, "EventName"}
             };
 
-            addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
+            _addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
                 .ReturnsAsync(addressPersistentLocalId);
 
             await Sut.Given(
@@ -848,7 +787,7 @@
                 { Envelope.EventNameMetadataKey, "EventName"}
             };
 
-            addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
+            _addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
                 .ReturnsAsync(addressPersistentLocalId);
 
             await Sut.Given(
@@ -904,7 +843,7 @@
                 { Envelope.EventNameMetadataKey, "EventName"}
             };
 
-            addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
+            _addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
                 .ReturnsAsync(addressPersistentLocalId);
 
             await Sut.Given(
@@ -958,7 +897,7 @@
                 { Envelope.EventNameMetadataKey, "EventName"}
             };
 
-            addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
+            _addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
                 .ReturnsAsync(addressPersistentLocalId);
 
             await Sut.Given(
@@ -1024,7 +963,7 @@
                 { Envelope.EventNameMetadataKey, "EventName"}
             };
 
-            addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
+            _addressRepository.Setup(x => x.GetAddressPersistentLocalId(addressId))
                 .ReturnsAsync(addressPersistentLocalId);
 
             await Sut.Given(
@@ -1052,6 +991,6 @@
         #endregion
 
         protected override ParcelVersionProjections CreateProjection()
-            => new(addressRepository.Object ,new OptionsWrapper<IntegrationOptions>(new IntegrationOptions { Namespace = Namespace }));
+            => new(_addressRepository.Object ,new OptionsWrapper<IntegrationOptions>(new IntegrationOptions { Namespace = Namespace }));
     }
 }
