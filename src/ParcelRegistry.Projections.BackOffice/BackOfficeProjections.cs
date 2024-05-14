@@ -71,15 +71,40 @@
             When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (_, message, cancellationToken) =>
             {
                 await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
-                await backOfficeContext.RemoveIdempotentParcelAddressRelation(
+
+                var previousAddress = await backOfficeContext.FindParcelAddressRelation(
                     new ParcelId(message.Message.ParcelId),
                     new AddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId),
                     cancellationToken);
 
-                await backOfficeContext.AddIdempotentParcelAddressRelation(
+                if (previousAddress is not null && previousAddress.Count == 1)
+                {
+                    await backOfficeContext.RemoveIdempotentParcelAddressRelation(
+                        new ParcelId(message.Message.ParcelId),
+                        new AddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId),
+                        cancellationToken);
+                }
+                else if (previousAddress is not null)
+                {
+                    previousAddress.Count -= 1;
+                }
+
+                var newAddress = await backOfficeContext.FindParcelAddressRelation(
                     new ParcelId(message.Message.ParcelId),
                     new AddressPersistentLocalId(message.Message.NewAddressPersistentLocalId),
                     cancellationToken);
+
+                if (newAddress is null)
+                {
+                    await backOfficeContext.AddIdempotentParcelAddressRelation(
+                        new ParcelId(message.Message.ParcelId),
+                        new AddressPersistentLocalId(message.Message.NewAddressPersistentLocalId),
+                        cancellationToken);
+                }
+                else
+                {
+                    newAddress.Count += 1;
+                }
             });
         }
     }

@@ -26,6 +26,8 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Projections.Legacy;
     using ParcelRegistry.Projections.Legacy.ParcelDetailV2;
     using ParcelRegistry.Projections.Legacy.ParcelSyndication;
+    using ParcelDetailWithCountV2Projections = ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2.ParcelDetailV2Projections;
+    using ParcelLinkExtractWithCountProjections = ParcelRegistry.Projections.Extract.ParcelLinkExtractWithCount.ParcelLinkExtractProjections;
 
     public class ApiModule : Module
     {
@@ -51,7 +53,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
 
-            builder.Register(c => new CacheValidator(c.Resolve<LegacyContext>(), typeof(ParcelDetailV2Projections).FullName))
+            builder.Register(c => new CacheValidator(c.Resolve<LegacyContext>(), typeof(ParcelDetailV2Projections).FullName!))
                 .AsSelf()
                 .AsImplementedInterfaces();
 
@@ -98,6 +100,11 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     context => new ParcelLinkExtractProjections(
                         context.Resolve<IOptions<ExtractConfig>>(),
                         DbaseCodePage.Western_European_ANSI.ToEncoding()),
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<ParcelLinkExtractWithCountProjections, ExtractContext>(
+                    context => new ParcelLinkExtractWithCountProjections(
+                        context.Resolve<IOptions<ExtractConfig>>(),
+                        DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default);
         }
 
@@ -105,7 +112,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
         {
             builder.RegisterModule(
                 new ParcelLastChangedListModule(
-                    _configuration.GetConnectionString("LastChangedList"),
+                    _configuration.GetConnectionString("LastChangedList")!,
                     _services,
                     _loggerFactory));
         }
@@ -123,6 +130,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ParcelDetailV2Projections, LegacyContext>(ConnectedProjectionSettings.Default)
+                .RegisterProjections<ParcelDetailWithCountV2Projections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelSyndicationProjections, LegacyContext>(ConnectedProjectionSettings.Default);
         }
 

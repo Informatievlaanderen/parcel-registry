@@ -223,10 +223,12 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     FromProvenance(provenance));
 
                 await commandHandler.Handle(command, ct);
-                await backOfficeContext.RemoveIdempotentParcelAddressRelation(
-                    command.ParcelId, new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId), ct);
-                await backOfficeContext.AddIdempotentParcelAddressRelation(
-                    command.ParcelId, new AddressPersistentLocalId(readdressedAddress.DestinationAddressPersistentLocalId), ct);
+
+                // This should only be handled by the back office projections to prevent conflicts. Else a relation is added or removed twice.
+                // await backOfficeContext.RemoveIdempotentParcelAddressRelation(
+                //     command.ParcelId, new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId), ct);
+                // await backOfficeContext.AddIdempotentParcelAddressRelation(
+                //     command.ParcelId, new AddressPersistentLocalId(readdressedAddress.DestinationAddressPersistentLocalId), ct);
             }
         }
 

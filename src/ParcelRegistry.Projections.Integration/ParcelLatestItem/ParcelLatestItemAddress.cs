@@ -10,12 +10,14 @@ namespace ParcelRegistry.Projections.Integration.ParcelLatestItem
         public Guid ParcelId { get; set; }
         public int AddressPersistentLocalId { get; set; }
         public string CaPaKey { get; set; }
+        public int Count { get; set; }
 
         public ParcelLatestItemAddress(Guid parcelId, int addressPersistentLocalId, string caPaKey)
         {
             ParcelId = parcelId;
             AddressPersistentLocalId = addressPersistentLocalId;
             CaPaKey = caPaKey;
+            Count = 1;
         }
 
         // Needed for EF
@@ -42,6 +44,9 @@ namespace ParcelRegistry.Projections.Integration.ParcelLatestItem
             builder.Property(e => e.CaPaKey)
                 .HasColumnName("capakey")
                 .IsRequired();
+
+            builder.Property(e => e.Count)
+                .HasDefaultValue(1);
 
             builder.HasIndex(x => x.ParcelId);
             builder.HasIndex(x => x.AddressPersistentLocalId);

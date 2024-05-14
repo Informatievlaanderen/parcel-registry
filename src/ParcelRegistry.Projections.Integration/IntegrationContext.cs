@@ -12,8 +12,8 @@
 
         public DbSet<ParcelLatestItem.ParcelLatestItem> ParcelLatestItems => Set<ParcelLatestItem.ParcelLatestItem>();
         public DbSet<ParcelVersion.ParcelVersion> ParcelVersions => Set<ParcelVersion.ParcelVersion>();
-        public DbSet<ParcelLatestItem.ParcelLatestItemAddress> ParcelLatestItemAddresses => Set<ParcelLatestItemAddress>();
-        public DbSet<ParcelVersion.ParcelVersionAddress> ParcelVersionAddresses => Set<ParcelVersionAddress>();
+        public DbSet<ParcelLatestItemAddress> ParcelLatestItemAddresses => Set<ParcelLatestItemAddress>();
+        public DbSet<ParcelVersionAddress> ParcelVersionAddresses => Set<ParcelVersionAddress>();
 
         // This needs to be here to please EF
         public IntegrationContext() { }

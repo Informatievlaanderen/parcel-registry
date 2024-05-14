@@ -16,7 +16,7 @@
     using Projections.Integration.ParcelLatestItem;
     using Xunit;
 
-    public class ParcelLatestItemProjectionTests : IntegrationProjectionTest<ParcelLatestItemProjections>
+    public partial class ParcelLatestItemProjectionTests : IntegrationProjectionTest<ParcelLatestItemProjections>
     {
         private readonly Fixture _fixture;
         private const string Namespace = "https://data.vlaanderen.be/id/perceel";
@@ -60,7 +60,7 @@
                             .ParcelLatestItemAddresses
                             .FindAsync(message.ParcelId, addressPersistentLocalId);
                         latestItem.Should().NotBeNull();
-                        latestItem!.CaPaKey.Should().Be(message.CaPaKey);
+                        latestItem.CaPaKey.Should().Be(message.CaPaKey);
                     }
                 });
         }
@@ -108,7 +108,7 @@
 
                     var latestItem = await context.ParcelLatestItems.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();
-                    latestItem.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
+                    latestItem!.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     latestItem.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
                     latestItem.Geometry.Should().BeEquivalentTo(geometry);
@@ -167,29 +167,6 @@
                 .Then(async context =>
                 {
                     var latestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
-                    latestItem.Should().NotBeNull();
-                    latestItem!.CaPaKey.Should().Be(message.CaPaKey);
-                });
-        }
-
-        [Fact]
-        public async Task WhenParcelAddressWasReplacedBecauseAddressWasReaddressed()
-        {
-            var attached = _fixture.Create<ParcelAddressWasAttachedV2>();
-            var message = new ParcelAddressWasReplacedBecauseAddressWasReaddressed(
-                new ParcelId(attached.ParcelId),
-                new VbrCaPaKey(attached.CaPaKey),
-                new AddressPersistentLocalId(attached.AddressPersistentLocalId + 1),
-                new AddressPersistentLocalId(attached.AddressPersistentLocalId));
-
-            await Sut
-                .Given(_fixture.Create<ParcelWasImported>(), attached, message)
-                .Then(async context =>
-                {
-                    var previousLatestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.PreviousAddressPersistentLocalId);
-                    previousLatestItem.Should().BeNull();
-
-                    var latestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.NewAddressPersistentLocalId);
                     latestItem.Should().NotBeNull();
                     latestItem!.CaPaKey.Should().Be(message.CaPaKey);
                 });

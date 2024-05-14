@@ -5,7 +5,6 @@
     using Converters;
     using Infrastructure;
     using Microsoft.Extensions.Options;
-    using NetTopologySuite.Geometries;
     using NodaTime;
     using Parcel;
     using Parcel.Events;
@@ -106,18 +105,36 @@
 
             When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (context, message, ct) =>
             {
-                var latestItemAddress = await context
+                var previousAddress = await context
                     .ParcelLatestItemAddresses
-                    .FindAsync(new object?[] { message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId }, cancellationToken: ct);
+                    .FindAsync([message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId], cancellationToken: ct);
 
-                context.ParcelLatestItemAddresses.Remove(latestItemAddress);
+                if (previousAddress is not null && previousAddress.Count == 1)
+                {
+                    context.ParcelLatestItemAddresses.Remove(previousAddress);
+                }
+                else if (previousAddress is not null)
+                {
+                    previousAddress.Count -= 1;
+                }
 
-                await context
+                var newAddress = await context
                     .ParcelLatestItemAddresses
-                    .AddAsync(new ParcelLatestItemAddress(
-                        message.Message.ParcelId,
-                        message.Message.NewAddressPersistentLocalId,
-                        message.Message.CaPaKey), ct);
+                    .FindAsync([message.Message.ParcelId, message.Message.NewAddressPersistentLocalId], cancellationToken: ct);
+
+                if (newAddress is null)
+                {
+                    await context
+                        .ParcelLatestItemAddresses
+                        .AddAsync(new ParcelLatestItemAddress(
+                            message.Message.ParcelId,
+                            message.Message.NewAddressPersistentLocalId,
+                            message.Message.CaPaKey), ct);
+                }
+                else
+                {
+                    newAddress.Count += 1;
+                }
             });
 
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>

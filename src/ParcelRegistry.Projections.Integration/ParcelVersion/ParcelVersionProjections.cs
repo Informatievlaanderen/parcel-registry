@@ -127,20 +127,37 @@
                     message,
                     _ => { }, ct);
 
-                var versionAddress = await context
+                var previousAddress = await context
                     .ParcelVersionAddresses
-                    .FindAsync(new object?[] { message.Position, message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId },
-                        cancellationToken: ct);
+                    .FindAsync([message.Position, message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId], cancellationToken: ct);
 
-                context.ParcelVersionAddresses.Remove(versionAddress);
+                if (previousAddress is not null && previousAddress.Count == 1)
+                {
+                    context.ParcelVersionAddresses.Remove(previousAddress);
+                }
+                else if (previousAddress is not null)
+                {
+                    previousAddress.Count -= 1;
+                }
 
-                await context
+                var newAddress = await context
                     .ParcelVersionAddresses
-                    .AddAsync(new ParcelVersionAddress(
-                        message.Position,
-                        message.Message.ParcelId,
-                        message.Message.NewAddressPersistentLocalId,
-                        message.Message.CaPaKey), ct);
+                    .FindAsync([message.Position, message.Message.ParcelId, message.Message.NewAddressPersistentLocalId], cancellationToken: ct);
+
+                if (newAddress is null)
+                {
+                    await context
+                        .ParcelVersionAddresses
+                        .AddAsync(new ParcelVersionAddress(
+                            message.Position,
+                            message.Message.ParcelId,
+                            message.Message.NewAddressPersistentLocalId,
+                            message.Message.CaPaKey), ct);
+                }
+                else
+                {
+                    newAddress.Count += 1;
+                }
             });
 
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>

@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.BackOffice.Abstractions;
     using AutoFixture;
     using Fixtures;
     using FluentAssertions;
@@ -12,10 +13,10 @@
     using Tests.BackOffice;
     using Xunit;
 
-    public class ParcelBackOfficeProjectionsTests : ParcelBackOfficeProjectionsTest
+    public partial class ParcelBackOfficeProjectionsTests : ParcelBackOfficeProjectionsTest
     {
         private readonly Fixture _fixture;
-        private readonly FakeBackOfficeContext _fakeBackOfficeContext;
+        private readonly FakeBackOfficeContext _backOfficeContext;
 
         public ParcelBackOfficeProjectionsTests()
         {
@@ -23,11 +24,11 @@
             _fixture.Customize(new InfrastructureCustomization());
             _fixture.Customize(new WithParcelStatus());
 
-            _fakeBackOfficeContext =
-                new FakeBackOfficeContextFactory(dispose: false).CreateDbContext(Array.Empty<string>());
+            _backOfficeContext =
+                new FakeBackOfficeContextFactory(dispose: false).CreateDbContext([]);
             BackOfficeContextMock
                 .Setup(x => x.CreateDbContextAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(_fakeBackOfficeContext);
+                .ReturnsAsync(_backOfficeContext);
         }
 
         [Fact]
@@ -41,12 +42,12 @@
                 {
                     foreach (var addressPersistentLocalId in parcelWasMigrated.AddressPersistentLocalIds)
                     {
-                        var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                        var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                             parcelWasMigrated.ParcelId, addressPersistentLocalId);
 
                         result.Should().NotBeNull();
                         result!.ParcelId.Should().Be(parcelWasMigrated.ParcelId);
-                        result!.AddressPersistentLocalId.Should().Be(addressPersistentLocalId);
+                        result.AddressPersistentLocalId.Should().Be(addressPersistentLocalId);
                     }
                 });
         }
@@ -60,12 +61,12 @@
                 .Given(parcelAddressWasAttachedV2)
                 .Then(async _ =>
                 {
-                    var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                         parcelAddressWasAttachedV2.ParcelId, parcelAddressWasAttachedV2.AddressPersistentLocalId);
 
                     result.Should().NotBeNull();
                     result!.ParcelId.Should().Be(parcelAddressWasAttachedV2.ParcelId);
-                    result!.AddressPersistentLocalId.Should().Be(parcelAddressWasAttachedV2.AddressPersistentLocalId);
+                    result.AddressPersistentLocalId.Should().Be(parcelAddressWasAttachedV2.AddressPersistentLocalId);
                 });
         }
 
@@ -74,16 +75,15 @@
         {
             var parcelAddressWasAttachedV2 = _fixture.Create<ParcelAddressWasAttachedV2>();
 
-            var expectedRelation = await _fakeBackOfficeContext.AddIdempotentParcelAddressRelation(
-                new ParcelId(parcelAddressWasAttachedV2.ParcelId),
-                new AddressPersistentLocalId(parcelAddressWasAttachedV2.AddressPersistentLocalId),
-                CancellationToken.None);
+            var expectedRelation = await AddRelation(
+                parcelAddressWasAttachedV2.ParcelId,
+                parcelAddressWasAttachedV2.AddressPersistentLocalId);
 
             await Sut
                 .Given(parcelAddressWasAttachedV2)
                 .Then(async _ =>
                 {
-                    var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                         parcelAddressWasAttachedV2.ParcelId, parcelAddressWasAttachedV2.AddressPersistentLocalId);
 
                     result.Should().NotBeNull();
@@ -92,20 +92,19 @@
         }
 
         [Fact]
-        public async Task GivenParcelAddressWasDetachedV2_ThenRelationIsRemovedAdded()
+        public async Task GivenParcelAddressWasDetachedV2_ThenRelationIsRemoved()
         {
             var parcelAddressWasDetachedV2 = _fixture.Create<ParcelAddressWasDetachedV2>();
 
-            await _fakeBackOfficeContext.AddIdempotentParcelAddressRelation(
-                new ParcelId(parcelAddressWasDetachedV2.ParcelId),
-                new AddressPersistentLocalId(parcelAddressWasDetachedV2.AddressPersistentLocalId),
-                CancellationToken.None);
+            await AddRelation(
+                parcelAddressWasDetachedV2.ParcelId,
+                parcelAddressWasDetachedV2.AddressPersistentLocalId);
 
             await Sut
                 .Given(parcelAddressWasDetachedV2)
                 .Then(async _ =>
                 {
-                    var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                         parcelAddressWasDetachedV2.ParcelId, parcelAddressWasDetachedV2.AddressPersistentLocalId);
 
                     result.Should().BeNull();
@@ -121,7 +120,7 @@
                 .Given(parcelAddressWasDetachedV2)
                 .Then(async _ =>
                 {
-                    var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                         parcelAddressWasDetachedV2.ParcelId, parcelAddressWasDetachedV2.AddressPersistentLocalId);
 
                     result.Should().BeNull();
@@ -129,20 +128,19 @@
         }
 
         [Fact]
-        public async Task GivenParcelAddressWasDetachedBecauseAddressWasRejected_ThenRelationIsRemovedAdded()
+        public async Task GivenParcelAddressWasDetachedBecauseAddressWasRejected_ThenRelationIsRemoved()
         {
             var parcelAddressWasDetachedBecauseAddressWasRejected = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRejected>();
 
-            await _fakeBackOfficeContext.AddIdempotentParcelAddressRelation(
-                new ParcelId(parcelAddressWasDetachedBecauseAddressWasRejected.ParcelId),
-                new AddressPersistentLocalId(parcelAddressWasDetachedBecauseAddressWasRejected.AddressPersistentLocalId),
-                CancellationToken.None);
+            await AddRelation(
+                parcelAddressWasDetachedBecauseAddressWasRejected.ParcelId,
+                parcelAddressWasDetachedBecauseAddressWasRejected.AddressPersistentLocalId);
 
             await Sut
                 .Given(parcelAddressWasDetachedBecauseAddressWasRejected)
                 .Then(async _ =>
                 {
-                    var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                         parcelAddressWasDetachedBecauseAddressWasRejected.ParcelId,
                         parcelAddressWasDetachedBecauseAddressWasRejected.AddressPersistentLocalId);
 
@@ -159,7 +157,7 @@
                 .Given(parcelAddressWasDetachedBecauseAddressWasRejected)
                 .Then(async _ =>
                 {
-                    var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                         parcelAddressWasDetachedBecauseAddressWasRejected.ParcelId,
                         parcelAddressWasDetachedBecauseAddressWasRejected.AddressPersistentLocalId);
 
@@ -168,20 +166,19 @@
         }
 
         [Fact]
-        public async Task GivenParcelAddressWasDetachedBecauseAddressWasRetired_ThenRelationIsRemovedAdded()
+        public async Task GivenParcelAddressWasDetachedBecauseAddressWasRetired_ThenRelationIsRemoved()
         {
             var parcelAddressWasDetachedBecauseAddressWasRetired = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRetired>();
 
-            await _fakeBackOfficeContext.AddIdempotentParcelAddressRelation(
-                new ParcelId(parcelAddressWasDetachedBecauseAddressWasRetired.ParcelId),
-                new AddressPersistentLocalId(parcelAddressWasDetachedBecauseAddressWasRetired.AddressPersistentLocalId),
-                CancellationToken.None);
+            await AddRelation(
+                parcelAddressWasDetachedBecauseAddressWasRetired.ParcelId,
+                parcelAddressWasDetachedBecauseAddressWasRetired.AddressPersistentLocalId);
 
             await Sut
                 .Given(parcelAddressWasDetachedBecauseAddressWasRetired)
                 .Then(async _ =>
                 {
-                    var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                         parcelAddressWasDetachedBecauseAddressWasRetired.ParcelId,
                         parcelAddressWasDetachedBecauseAddressWasRetired.AddressPersistentLocalId);
 
@@ -198,7 +195,7 @@
                 .Given(parcelAddressWasDetachedBecauseAddressWasRetired)
                 .Then(async _ =>
                 {
-                    var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                         parcelAddressWasDetachedBecauseAddressWasRetired.ParcelId,
                         parcelAddressWasDetachedBecauseAddressWasRetired.AddressPersistentLocalId);
 
@@ -207,20 +204,19 @@
         }
 
         [Fact]
-        public async Task GivenParcelAddressWasDetachedBecauseAddressWasRemoved_ThenRelationIsRemovedAdded()
+        public async Task GivenParcelAddressWasDetachedBecauseAddressWasRemoved_ThenRelationIsRemoved()
         {
             var parcelAddressWasDetachedBecauseAddressWasRemoved = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRemoved>();
 
-            await _fakeBackOfficeContext.AddIdempotentParcelAddressRelation(
-                new ParcelId(parcelAddressWasDetachedBecauseAddressWasRemoved.ParcelId),
-                new AddressPersistentLocalId(parcelAddressWasDetachedBecauseAddressWasRemoved.AddressPersistentLocalId),
-                CancellationToken.None);
+            await AddRelation(
+                parcelAddressWasDetachedBecauseAddressWasRemoved.ParcelId,
+                parcelAddressWasDetachedBecauseAddressWasRemoved.AddressPersistentLocalId);
 
             await Sut
                 .Given(parcelAddressWasDetachedBecauseAddressWasRemoved)
                 .Then(async _ =>
                 {
-                    var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                         parcelAddressWasDetachedBecauseAddressWasRemoved.ParcelId,
                         parcelAddressWasDetachedBecauseAddressWasRemoved.AddressPersistentLocalId);
 
@@ -237,7 +233,7 @@
                 .Given(parcelAddressWasDetachedBecauseAddressWasRemoved)
                 .Then(async _ =>
                 {
-                    var result = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
                         parcelAddressWasDetachedBecauseAddressWasRemoved.ParcelId,
                         parcelAddressWasDetachedBecauseAddressWasRemoved.AddressPersistentLocalId);
 
@@ -245,32 +241,12 @@
                 });
         }
 
-        [Fact]
-        public async Task GivenParcelAddressWasReplacedBecauseAddressWasReaddressed_ThenRelationIsReplaced()
+        private async Task<ParcelAddressRelation> AddRelation(Guid parcelId, int addressPersistentLocalId)
         {
-            var @event = _fixture.Create<ParcelAddressWasReplacedBecauseAddressWasReaddressed>();
-
-            await _fakeBackOfficeContext.AddIdempotentParcelAddressRelation(
-                new ParcelId(@event.ParcelId),
-                new AddressPersistentLocalId(@event.PreviousAddressPersistentLocalId),
+            return await _backOfficeContext.AddIdempotentParcelAddressRelation(
+                new ParcelId(parcelId),
+                new AddressPersistentLocalId(addressPersistentLocalId),
                 CancellationToken.None);
-
-            await Sut
-                .Given(@event)
-                .Then(async _ =>
-                {
-                    var previous = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
-                        @event.ParcelId,
-                        @event.PreviousAddressPersistentLocalId);
-
-                    previous.Should().BeNull();
-
-                    var current = await _fakeBackOfficeContext.ParcelAddressRelations.FindAsync(
-                        @event.ParcelId,
-                        @event.NewAddressPersistentLocalId);
-
-                    current.Should().NotBeNull();
-                });
         }
     }
 }
