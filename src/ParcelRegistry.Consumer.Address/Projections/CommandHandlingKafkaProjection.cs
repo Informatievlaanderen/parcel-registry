@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Consumer.Address.Projections
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -159,6 +160,59 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     ct);
             });
 
+            When<StreetNameWasReaddressed>(async (commandHandler, message, ct) =>
+            {
+                await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
+
+                var readdresses = message.ReaddressedHouseNumbers
+                    .Select(x => new ReaddressData(
+                        new AddressPersistentLocalId(x.ReaddressedHouseNumber.SourceAddressPersistentLocalId),
+                        new AddressPersistentLocalId(x.ReaddressedHouseNumber.DestinationAddressPersistentLocalId)))
+                    .Concat(
+                        message.ReaddressedHouseNumbers
+                            .SelectMany(x => x.ReaddressedBoxNumbers)
+                            .Select(boxNumberAddress => new ReaddressData(
+                                new AddressPersistentLocalId(boxNumberAddress.SourceAddressPersistentLocalId),
+                                new AddressPersistentLocalId(boxNumberAddress.DestinationAddressPersistentLocalId))))
+                    .ToList();
+                /*
+                 * We krijgen allemaal adres ids: bron en doel adressen
+                 * Met alle bronadressen zoeken we alle unieke percelen op
+                 * Stuur naar ieder perceel alle herkoppelingen
+                 */
+                var parcels = new Dictionary<Guid, List<ReaddressData>>();
+                foreach (var readdress in readdresses)
+                {
+                    var relations = backOfficeContext.ParcelAddressRelations
+                        .AsNoTracking()
+                        .Where(x =>
+                            x.AddressPersistentLocalId == readdress.SourceAddressPersistentLocalId)
+                        .ToList();
+
+                    foreach (var parcelAddressRelation in relations)
+                    {
+                        if (parcels.TryGetValue(parcelAddressRelation.ParcelId, out var addresses))
+                        {
+                            addresses.Add(readdress);
+                        }
+                        else
+                        {
+                            parcels[parcelAddressRelation.ParcelId] = [readdress];
+                        }
+                    }
+                }
+
+                foreach (var parcel in parcels)
+                {
+                    var command = new ReaddressAddresses(
+                        new ParcelId(parcel.Key),
+                        parcel.Value,
+                        FromProvenance(message.Provenance));
+
+                    await commandHandler.Handle(command, ct);
+                }
+            });
+
             When<AddressHouseNumberWasReaddressed>(async (commandHandler, message, ct) =>
             {
                 await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
@@ -264,9 +318,9 @@ namespace ParcelRegistry.Consumer.Address.Projections
         {
             await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
             var relations = backOfficeContext.ParcelAddressRelations
-                    .AsNoTracking()
-                    .Where(x => x.AddressPersistentLocalId == addressPersistentLocalId)
-                    .ToList();
+                .AsNoTracking()
+                .Where(x => x.AddressPersistentLocalId == addressPersistentLocalId)
+                .ToList();
 
             foreach (var relation in relations)
             {
