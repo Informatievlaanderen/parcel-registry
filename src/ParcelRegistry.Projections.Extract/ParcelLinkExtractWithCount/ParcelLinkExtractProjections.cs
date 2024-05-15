@@ -7,7 +7,6 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtractWithCount
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using Microsoft.Extensions.Options;
     using Parcel.Events;
 
     [ConnectedProjectionName("Extract perceelkoppelingen met adres")]
@@ -18,7 +17,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtractWithCount
 
         private readonly Encoding _encoding;
 
-        public ParcelLinkExtractProjections(IOptions<ExtractConfig> extractConfig, Encoding encoding)
+        public ParcelLinkExtractProjections(Encoding encoding)
         {
             _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
@@ -128,6 +127,33 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtractWithCount
                 else
                 {
                     newAddress.Count += 1;
+                }
+            });
+
+            When<Envelope<ParcelAddressesWereReaddressed>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
+                {
+                    var relation = await context
+                        .ParcelLinkExtractWithCount
+                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
+
+                    if (relation is not null)
+                    {
+                        context.ParcelLinkExtractWithCount.Remove(relation);
+                    }
+                }
+
+                foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
+                {
+                    var relation = await context
+                        .ParcelLinkExtractWithCount
+                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
+
+                    if (relation is not null)
+                    {
+                        await context.ParcelLinkExtractWithCount.AddAsync(relation, ct);
+                    }
                 }
             });
         }

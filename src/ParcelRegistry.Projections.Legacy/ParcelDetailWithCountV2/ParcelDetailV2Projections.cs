@@ -211,6 +211,45 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2
                     ct);
             });
 
+            When<Envelope<ParcelAddressesWereReaddressed>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelDetail(
+                    message.Message.ParcelId,
+                    entity =>
+                    {
+                        context.Entry(entity).Collection(x => x.Addresses).Load();
+
+
+                        foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
+                        {
+                            var relation = entity.Addresses.SingleOrDefault(parcelAddress =>
+                                parcelAddress.AddressPersistentLocalId == addressPersistentLocalId
+                                && parcelAddress.ParcelId == message.Message.ParcelId);
+
+                            if (relation is not null)
+                            {
+                                entity.Addresses.Remove(relation);
+                            }
+                        }
+
+                        foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
+                        {
+                            var relation = entity.Addresses.SingleOrDefault(parcelAddress =>
+                                parcelAddress.AddressPersistentLocalId == addressPersistentLocalId
+                                && parcelAddress.ParcelId == message.Message.ParcelId);
+
+                            if (relation is not null)
+                            {
+                                entity.Addresses.Add(new ParcelDetailAddressV2(message.Message.ParcelId, addressPersistentLocalId));
+                            }
+                        }
+
+                        UpdateHash(entity, message);
+                        UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
             When<Envelope<ParcelWasImported>>(async (context, message, ct) =>
             {
                 var (geometryType, gml) = ToGml(message.Message.ExtendedWkbGeometry);

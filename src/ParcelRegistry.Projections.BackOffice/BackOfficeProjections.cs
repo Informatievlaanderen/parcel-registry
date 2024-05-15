@@ -106,6 +106,43 @@
                     newAddress.Count += 1;
                 }
             });
+
+            When<Envelope<ParcelAddressesWereReaddressed>>(async (_, message, cancellationToken) =>
+            {
+                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
+
+                foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
+                {
+                    var relation = await backOfficeContext.FindParcelAddressRelation(
+                        new ParcelId(message.Message.ParcelId),
+                        new AddressPersistentLocalId(addressPersistentLocalId),
+                        cancellationToken);
+
+                    if (relation is not null)
+                    {
+                        await backOfficeContext.RemoveIdempotentParcelAddressRelation(
+                            new ParcelId(message.Message.ParcelId),
+                            new AddressPersistentLocalId(addressPersistentLocalId),
+                            cancellationToken);
+                    }
+                }
+
+                foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
+                {
+                    var relation = await backOfficeContext.FindParcelAddressRelation(
+                        new ParcelId(message.Message.ParcelId),
+                        new AddressPersistentLocalId(addressPersistentLocalId),
+                        cancellationToken);
+
+                    if (relation is null)
+                    {
+                        await backOfficeContext.AddIdempotentParcelAddressRelation(
+                            new ParcelId(message.Message.ParcelId),
+                            new AddressPersistentLocalId(addressPersistentLocalId),
+                            cancellationToken);
+                    }
+                }
+            });
         }
     }
 }
