@@ -240,38 +240,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     ct);
             });
         }
-
-        private async Task ReplaceBecauseOfReaddress(
-            CommandHandler commandHandler,
-            BackOfficeContext backOfficeContext,
-            ReaddressedAddressData readdressedAddress,
-            Contracts.Provenance provenance,
-            CancellationToken ct)
-        {
-            var relations = backOfficeContext.ParcelAddressRelations
-                .AsNoTracking()
-                .Where(x =>
-                    x.AddressPersistentLocalId == readdressedAddress.SourceAddressPersistentLocalId)
-                .ToList();
-
-            foreach (var relation in relations)
-            {
-                var command = new ReplaceAttachedAddressBecauseAddressWasReaddressed(
-                    new ParcelId(relation.ParcelId),
-                    newAddressPersistentLocalId: new AddressPersistentLocalId(readdressedAddress.DestinationAddressPersistentLocalId),
-                    previousAddressPersistentLocalId: new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId),
-                    FromProvenance(provenance));
-
-                await commandHandler.Handle(command, ct);
-
-                // This should only be handled by the back office projections to prevent conflicts. Else a relation is added or removed twice.
-                // await backOfficeContext.RemoveIdempotentParcelAddressRelation(
-                //     command.ParcelId, new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId), ct);
-                // await backOfficeContext.AddIdempotentParcelAddressRelation(
-                //     command.ParcelId, new AddressPersistentLocalId(readdressedAddress.DestinationAddressPersistentLocalId), ct);
-            }
-        }
-
+        
         private async Task DetachBecauseRemoved(
             CommandHandler commandHandler,
             AddressPersistentLocalId addressPersistentLocalId,

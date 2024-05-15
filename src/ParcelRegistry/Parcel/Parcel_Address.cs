@@ -1,6 +1,8 @@
-﻿namespace ParcelRegistry.Parcel
+namespace ParcelRegistry.Parcel
 {
+    using System.Collections.Generic;
     using System.Linq;
+    using Commands;
     using DataStructures;
     using Events;
     using Exceptions;
@@ -85,21 +87,53 @@
             ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRetired(ParcelId, CaPaKey, addressPersistentLocalId));
         }
 
-        public void ReplaceAttachedAddressBecauseAddressWasReaddressed(
-            AddressPersistentLocalId addressPersistentLocalId,
-            AddressPersistentLocalId previousAddressPersistentLocalId)
+        //public void ReplaceAttachedAddressBecauseAddressWasReaddressed(
+        //    AddressPersistentLocalId addressPersistentLocalId,
+        //    AddressPersistentLocalId previousAddressPersistentLocalId)
+        //{
+        //    if (AddressPersistentLocalIds.Contains(addressPersistentLocalId)
+        //        && !AddressPersistentLocalIds.Contains(previousAddressPersistentLocalId))
+        //    {
+        //        return;
+        //    }
+
+        //    ApplyChange(new ParcelAddressWasReplacedBecauseAddressWasReaddressed(
+        //        ParcelId,
+        //        CaPaKey,
+        //        addressPersistentLocalId,
+        //        previousAddressPersistentLocalId));
+        //}
+
+        public void ReplaceAttachedAddressesBecauseAddressesWereReaddressed(
+            IReadOnlyList<ReaddressData> readdresses)
         {
-            if (AddressPersistentLocalIds.Contains(addressPersistentLocalId)
-                && !AddressPersistentLocalIds.Contains(previousAddressPersistentLocalId))
+            var addressPersistentLocalIdsToAttach = readdresses
+                .Select(x => x.DestinationAddressPersistentLocalId)
+                .Except(readdresses.Select(x => x.SourceAddressPersistentLocalId))
+                .Except(AddressPersistentLocalIds)
+                .ToList();
+            var addressPersistentLocalIdsToDetach = readdresses
+                .Select(x => x.SourceAddressPersistentLocalId)
+                .Except(readdresses.Select(x => x.DestinationAddressPersistentLocalId))
+                .Where(AddressPersistentLocalIds.Contains)
+                .ToList();
+            // replace event: de readdresses waarvan hun Source of DestinationAddressId in geen ander readdress wordt gebruikt?
+            
+            foreach (var addressPersistentLocalId in addressPersistentLocalIdsToDetach)
             {
-                return;
+                ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasReaddressed(
+                    ParcelId,
+                    CaPaKey,
+                    addressPersistentLocalId));
             }
 
-            ApplyChange(new ParcelAddressWasReplacedBecauseAddressWasReaddressed(
-                ParcelId,
-                CaPaKey,
-                addressPersistentLocalId,
-                previousAddressPersistentLocalId));
+            foreach (var addressPersistentLocalId in addressPersistentLocalIdsToAttach)
+            {
+                ApplyChange(new ParcelAddressWasAttachedBecauseAddressWasReaddressed(
+                    ParcelId,
+                    CaPaKey,
+                    addressPersistentLocalId));
+            }
         }
     }
 }

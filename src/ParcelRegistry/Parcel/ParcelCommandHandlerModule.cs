@@ -10,7 +10,6 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Commands;
     using Exceptions;
-    using Legacy.Commands;
     using SqlStreamStore;
 
     public sealed class ParcelCommandHandlerModule : CommandHandlerModule

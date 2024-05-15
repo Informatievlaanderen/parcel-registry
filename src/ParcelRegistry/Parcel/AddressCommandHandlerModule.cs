@@ -82,18 +82,30 @@ namespace ParcelRegistry.Parcel
                     parcel.DetachAddressBecauseAddressWasRetired(message.Command.AddressPersistentLocalId);
                 });
 
-            For<ReplaceAttachedAddressBecauseAddressWasReaddressed>()
+            //For<ReplaceAttachedAddressBecauseAddressWasReaddressed>()
+            //    .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+            //    .AddEventHash<ReplaceAttachedAddressBecauseAddressWasReaddressed, Parcel>(getUnitOfWork)
+            //    .AddProvenance(getUnitOfWork, provenanceFactory)
+            //    .Handle(async (message, ct) =>
+            //    {
+            //        var streamId = new ParcelStreamId(message.Command.ParcelId);
+            //        var parcel = await parcelRepository().GetAsync(streamId, ct);
+
+            //        parcel.ReplaceAttachedAddressBecauseAddressWasReaddressed(
+            //            message.Command.NewAddressPersistentLocalId,
+            //            message.Command.PreviousAddressPersistentLocalId);
+            //    });
+
+            For<ReaddressAddresses>()
                 .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
-                .AddEventHash<ReplaceAttachedAddressBecauseAddressWasReaddressed, Parcel>(getUnitOfWork)
+                .AddEventHash<ReaddressAddresses, Parcel>(getUnitOfWork)
                 .AddProvenance(getUnitOfWork, provenanceFactory)
                 .Handle(async (message, ct) =>
                 {
                     var streamId = new ParcelStreamId(message.Command.ParcelId);
                     var parcel = await parcelRepository().GetAsync(streamId, ct);
 
-                    parcel.ReplaceAttachedAddressBecauseAddressWasReaddressed(
-                        message.Command.NewAddressPersistentLocalId,
-                        message.Command.PreviousAddressPersistentLocalId);
+                    parcel.ReplaceAttachedAddressesBecauseAddressesWereReaddressed(message.Command.Readdresses);
                 });
         }
     }
