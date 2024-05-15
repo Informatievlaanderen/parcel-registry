@@ -1,7 +1,6 @@
 namespace ParcelRegistry.Consumer.Address.Projections
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -175,40 +174,27 @@ namespace ParcelRegistry.Consumer.Address.Projections
                                 new AddressPersistentLocalId(boxNumberAddress.SourceAddressPersistentLocalId),
                                 new AddressPersistentLocalId(boxNumberAddress.DestinationAddressPersistentLocalId))))
                     .ToList();
-                /*
-                 * We krijgen allemaal adres ids: bron en doel adressen
-                 * Met alle bronadressen zoeken we alle unieke percelen op
-                 * Stuur naar ieder perceel alle herkoppelingen
-                 */
-                var parcels = new Dictionary<Guid, List<ReaddressData>>();
-                foreach (var readdress in readdresses)
+
+                var sourceAddressPersistentLocalIds = readdresses
+                    .Select(x => (int)x.SourceAddressPersistentLocalId)
+                    .ToList();
+
+                var parcelAddressRelations = await backOfficeContext.ParcelAddressRelations
+                    .AsNoTracking()
+                    .Where(x => sourceAddressPersistentLocalIds.Contains(x.AddressPersistentLocalId))
+                    .ToListAsync(cancellationToken: ct);
+
+                var commands = parcelAddressRelations
+                    .GroupBy(
+                        relation => relation.ParcelId,
+                        relation => readdresses.Where(x => x.SourceAddressPersistentLocalId == relation.AddressPersistentLocalId))
+                    .Select(x => new ReaddressAddresses(
+                        new ParcelId(x.Key),
+                        x.SelectMany(a => a),
+                        FromProvenance(message.Provenance)));
+
+                foreach (var command in commands)
                 {
-                    var relations = backOfficeContext.ParcelAddressRelations
-                        .AsNoTracking()
-                        .Where(x =>
-                            x.AddressPersistentLocalId == readdress.SourceAddressPersistentLocalId)
-                        .ToList();
-
-                    foreach (var parcelAddressRelation in relations)
-                    {
-                        if (parcels.TryGetValue(parcelAddressRelation.ParcelId, out var addresses))
-                        {
-                            addresses.Add(readdress);
-                        }
-                        else
-                        {
-                            parcels[parcelAddressRelation.ParcelId] = [readdress];
-                        }
-                    }
-                }
-
-                foreach (var parcel in parcels)
-                {
-                    var command = new ReaddressAddresses(
-                        new ParcelId(parcel.Key),
-                        parcel.Value,
-                        FromProvenance(message.Provenance));
-
                     await commandHandler.Handle(command, ct);
                 }
             });

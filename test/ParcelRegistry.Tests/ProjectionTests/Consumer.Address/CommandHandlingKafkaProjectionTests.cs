@@ -1,7 +1,7 @@
 namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
 {
     using System;
-    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
@@ -32,7 +32,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             Fixture.Customize(new InfrastructureCustomization());
 
             _mockCommandHandler = new Mock<FakeCommandHandler>();
-            _fakeBackOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext(Array.Empty<string>());
+            _fakeBackOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext([]);
         }
 
         [Fact]
@@ -63,12 +63,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(addressPersistentLocalId,addressPersistentLocalId);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -101,12 +103,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(addressPersistentLocalId, addressPersistentLocalId);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -139,12 +143,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(addressPersistentLocalId, addressPersistentLocalId);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -179,17 +185,18 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(addressPersistentLocalId, addressPersistentLocalId);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None),
-                    Times.Never);
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None),
-                    Times.Never);
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None),
-                    Times.Never);
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Never);
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Never);
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Never);
                 await Task.CompletedTask;
             });
         }
@@ -197,11 +204,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecauseAddressWasRemoved()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRemovedV2(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -209,24 +216,26 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
-             await Then(async _ =>
-                {
-                    _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Exactly(2));
-                    await Task.CompletedTask;
-                });
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Exactly(2));
+                await Task.CompletedTask;
+            });
         }
 
         [Fact]
         public async Task DetachAddressBecauseAddressWasRemovedBecauseHouseNumberWasRemoved()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRemovedBecauseHouseNumberWasRemoved(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -234,24 +243,26 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
-             await Then(async _ =>
-                {
-                    _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Exactly(2));
-                    await Task.CompletedTask;
-                });
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Exactly(2));
+                await Task.CompletedTask;
+            });
         }
 
         [Fact]
         public async Task DetachAddressBecauseAddressWasRejected()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRejected(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -259,12 +270,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -272,11 +285,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecauseHouseNumberWasRejected()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRejectedBecauseHouseNumberWasRejected(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -284,12 +297,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -297,11 +312,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecause_AddressWasRejectedBecauseHouseNumberWasRejected()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRejectedBecauseHouseNumberWasRejected(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -309,12 +324,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -322,11 +339,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecause_AddressWasRejectedBecauseHouseNumberWasRetired()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRejectedBecauseHouseNumberWasRetired(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -334,12 +351,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -347,11 +366,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecause_AddressWasRejectedBecauseStreetNameWasRetired()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRejectedBecauseStreetNameWasRetired(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -359,12 +378,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -372,11 +393,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecauseAddressWasRetiredV2()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRetiredV2(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -384,12 +405,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -397,11 +420,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecauseHouseNumberWasRetired()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRetiredBecauseHouseNumberWasRetired(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -409,12 +432,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -422,11 +447,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecauseStreetNameWasRejected()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRetiredBecauseStreetNameWasRejected(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -434,12 +459,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -447,11 +474,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecauseStreetNameWasRetired()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRetiredBecauseStreetNameWasRetired(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -459,12 +486,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -472,11 +501,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressFromBuildingUnitBecauseStreetNameWasRemoved()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRemovedBecauseStreetNameWasRemoved(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -484,12 +513,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(addressIntId, addressIntId);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRemoved>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -517,7 +548,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     "Entry",
                     "ExtendedWkbGeometry",
                     true),
-                new []
+                new[]
                 {
                     new ReaddressedAddressData(
                         sourceBoxNumberAddressPersistentLocalId,
@@ -539,8 +570,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(sourceAddressPersistentLocalId);
-            AddRelations(sourceBoxNumberAddressPersistentLocalId);
+            AddParcelAddressRelations(sourceAddressPersistentLocalId);
+            AddParcelAddressRelations(sourceBoxNumberAddressPersistentLocalId);
 
             Given(@event);
             await Then(async _ =>
@@ -550,11 +581,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Times.Exactly(2));
 
                 _mockCommandHandler.Verify(x =>
-                    x.Handle(
-                        It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
-                            y.NewAddressPersistentLocalId == destinationAddressPersistentLocalId
-                            && y.PreviousAddressPersistentLocalId == sourceAddressPersistentLocalId),
-                        CancellationToken.None),
+                        x.Handle(
+                            It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
+                                y.NewAddressPersistentLocalId == destinationAddressPersistentLocalId
+                                && y.PreviousAddressPersistentLocalId == sourceAddressPersistentLocalId),
+                            CancellationToken.None),
                     Times.Exactly(1));
                 _mockCommandHandler.Verify(x =>
                         x.Handle(
@@ -571,11 +602,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecauseAddressWasRejectedBecauseOfReaddress()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRejectedBecauseOfReaddress(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -583,12 +614,14 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
@@ -596,11 +629,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task DetachAddressBecauseAddressWasRetiredBecauseOfReaddress()
         {
-            var addressIntId = 456;
+            var addressPersistentLocalId = 456;
 
             var @event = new AddressWasRetiredBecauseOfReaddress(
                 123,
-                addressIntId,
+                addressPersistentLocalId,
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
                     Application.ParcelRegistry.ToString(),
@@ -608,23 +641,120 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Organisation.Aiv.ToString(),
                     "test"));
 
-            AddRelations(456, 456);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [addressPersistentLocalId]);
 
             Given(@event);
             await Then(async _ =>
             {
-                _mockCommandHandler.Verify(x => x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
+                _mockCommandHandler.Verify(x =>
+                    x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
         }
 
-        private void AddRelations(params int[] addressInts)
+        [Fact]
+        public async Task AttachAndDetachAddressesWhenStreetNameWasReaddressed()
         {
-            foreach (var addressInt in addressInts)
+            var parcelOneId = Fixture.Create<ParcelId>();
+            var parcelTwoId = Fixture.Create<ParcelId>();
+
+            var sourceAddressPersistentLocalIdOne = 1;
+            var sourceAddressPersistentLocalIdTwo = 2;
+            var sourceAddressPersistentLocalIdThree = 5;
+            var destinationAddressPersistentLocalIdOne = 10;
+            var destinationAddressPersistentLocalIdTwo = 11;
+            var destinationAddressPersistentLocalIdThree = 12;
+
+            var parcelOneAddressPersistentLocalIds = new[] { sourceAddressPersistentLocalIdOne, sourceAddressPersistentLocalIdTwo, 3 };
+            var parcelTwoAddressPersistentLocalIds = new[] { 4, sourceAddressPersistentLocalIdThree };
+
+            AddParcelAddressRelations(parcelOneId, parcelOneAddressPersistentLocalIds);
+            AddParcelAddressRelations(parcelTwoId, parcelTwoAddressPersistentLocalIds);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [6, 7, 8]);
+
+            var @event = new StreetNameWasReaddressed(
+                Fixture.Create<int>(),
+                new[]
+                {
+                    new AddressHouseNumberReaddressedData(
+                        destinationAddressPersistentLocalIdOne,
+                        CreateReaddressedAddressData(sourceAddressPersistentLocalIdOne, destinationAddressPersistentLocalIdOne),
+                        new[]
+                        {
+                            CreateReaddressedAddressData(sourceAddressPersistentLocalIdTwo, destinationAddressPersistentLocalIdTwo)
+                        }),
+                    new AddressHouseNumberReaddressedData(
+                        destinationAddressPersistentLocalIdThree,
+                        CreateReaddressedAddressData(sourceAddressPersistentLocalIdThree, destinationAddressPersistentLocalIdThree),
+                        Array.Empty<ReaddressedAddressData>()),
+                },
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test")
+            );
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x =>
+                        x.Handle(
+                            It.Is<ReaddressAddresses>(y =>
+                                y.ParcelId == parcelOneId
+                                && y.Readdresses.Count == 2
+                                && y.Readdresses.Any(z =>
+                                    z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdOne
+                                    && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdOne)
+                                && y.Readdresses.Any(z => z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdTwo
+                                                          && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdTwo)),
+                            CancellationToken.None),
+                    Times.Once);
+                _mockCommandHandler.Verify(x =>
+                        x.Handle(
+                            It.Is<ReaddressAddresses>(y =>
+                                y.ParcelId == parcelTwoId
+                                && y.Readdresses.Count == 1
+                                && y.Readdresses.Any(z =>
+                                    z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdThree
+                                    && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdThree)),
+                            CancellationToken.None),
+                    Times.Once);
+                await Task.CompletedTask;
+            });
+        }
+
+        private ReaddressedAddressData CreateReaddressedAddressData(
+            int sourceAddressPersistentLocalIdOne,
+            int destinationAddressPersistentLocalIdOne)
+        {
+            return new ReaddressedAddressData(
+                sourceAddressPersistentLocalIdOne,
+                destinationAddressPersistentLocalIdOne,
+                Fixture.Create<bool>(),
+                Fixture.Create<string>(),
+                Fixture.Create<string>(),
+                Fixture.Create<string>(),
+                Fixture.Create<string>(),
+                Fixture.Create<string>(),
+                Fixture.Create<string>(),
+                Fixture.Create<string>(),
+                Fixture.Create<bool>());
+        }
+
+        private void AddParcelAddressRelations(params int[] addressPersistentLocalIds)
+        {
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), addressPersistentLocalIds);
+        }
+
+        private void AddParcelAddressRelations(ParcelId parcelId, int[] addressPersistentLocalIds)
+        {
+            foreach (var addressPersistentLocalId in addressPersistentLocalIds)
             {
                 _fakeBackOfficeContext.ParcelAddressRelations.Add(
-                    new ParcelAddressRelation(Fixture.Create<ParcelId>(),
-                        new AddressPersistentLocalId(addressInt)));
+                    new ParcelAddressRelation(parcelId, new AddressPersistentLocalId(addressPersistentLocalId)));
             }
 
             _fakeBackOfficeContext.SaveChanges();

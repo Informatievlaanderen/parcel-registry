@@ -11,16 +11,16 @@
     {
         private static readonly Guid Namespace = new Guid("646d3ef7-6cbc-4b33-b75f-e5d72e48c356");
         public ParcelId ParcelId { get; }
-        public IReadOnlyList<ReaddressData> Addresses { get; }
+        public IReadOnlyList<ReaddressData> Readdresses { get; }
         public Provenance Provenance { get; }
 
         public ReaddressAddresses(
             ParcelId parcelId,
-            IEnumerable<ReaddressData> addresses,
+            IEnumerable<ReaddressData> readdresses,
             Provenance provenance)
         {
             ParcelId = parcelId;
-            Addresses = addresses.ToList();
+            Readdresses = readdresses.ToList();
             Provenance = provenance;
         }
 
@@ -34,7 +34,7 @@
         {
             yield return ParcelId;
 
-            foreach (var address in Addresses)
+            foreach (var address in Readdresses)
             {
                 yield return address.SourceAddressPersistentLocalId;
                 yield return address.DestinationAddressPersistentLocalId;
