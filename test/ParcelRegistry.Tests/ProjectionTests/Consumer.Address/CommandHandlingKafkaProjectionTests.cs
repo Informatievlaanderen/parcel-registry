@@ -710,8 +710,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                                 && y.Readdresses.Any(z =>
                                     z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdOne
                                     && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdOne)
-                                && y.Readdresses.Any(z => z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdTwo
-                                                          && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdTwo)),
+                                && y.Readdresses.Any(z =>
+                                    z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdTwo
+                                    && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdTwo)),
                             CancellationToken.None),
                     Times.Once);
                 _mockCommandHandler.Verify(x =>

@@ -184,7 +184,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     .Where(x => sourceAddressPersistentLocalIds.Contains(x.AddressPersistentLocalId))
                     .ToListAsync(cancellationToken: ct);
 
-                var commands = parcelAddressRelations
+                var commandByParcels = parcelAddressRelations
                     .GroupBy(
                         relation => relation.ParcelId,
                         relation => readdresses.Where(x => x.SourceAddressPersistentLocalId == relation.AddressPersistentLocalId))
@@ -193,7 +193,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
                         x.SelectMany(a => a),
                         FromProvenance(message.Provenance)));
 
-                foreach (var command in commands)
+                foreach (var command in commandByParcels)
                 {
                     await commandHandler.Handle(command, ct);
                 }
@@ -230,7 +230,6 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     ct);
             });
 
-
             When<AddressWasRetiredBecauseOfReaddress>(async (commandHandler, message, ct) =>
             {
                 await DetachBecauseRetired(
@@ -240,7 +239,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     ct);
             });
         }
-        
+
         private async Task DetachBecauseRemoved(
             CommandHandler commandHandler,
             AddressPersistentLocalId addressPersistentLocalId,

@@ -105,7 +105,7 @@ namespace ParcelRegistry.Parcel
                     var streamId = new ParcelStreamId(message.Command.ParcelId);
                     var parcel = await parcelRepository().GetAsync(streamId, ct);
 
-                    parcel.ReplaceAttachedAddressesBecauseAddressesWereReaddressed(message.Command.Readdresses);
+                    parcel.ReaddressAddresses(message.Command.Readdresses);
                 });
         }
     }
