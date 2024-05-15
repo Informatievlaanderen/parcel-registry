@@ -199,28 +199,6 @@ namespace ParcelRegistry.Consumer.Address.Projections
                 }
             });
 
-            // When<AddressHouseNumberWasReaddressed>(async (commandHandler, message, ct) =>
-            // {
-            //     await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
-            //
-            //     await ReplaceBecauseOfReaddress(
-            //         commandHandler,
-            //         backOfficeContext,
-            //         message.ReaddressedHouseNumber,
-            //         message.Provenance,
-            //         ct);
-            //
-            //     foreach (var readdressedBoxNumber in message.ReaddressedBoxNumbers)
-            //     {
-            //         await ReplaceBecauseOfReaddress(
-            //             commandHandler,
-            //             backOfficeContext,
-            //             readdressedBoxNumber,
-            //             message.Provenance,
-            //             ct);
-            //     }
-            // });
-
             When<AddressWasRejectedBecauseOfReaddress>(async (commandHandler, message, ct) =>
             {
                 await DetachBecauseRejected(

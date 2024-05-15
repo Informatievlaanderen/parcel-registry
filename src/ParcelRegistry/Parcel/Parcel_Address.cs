@@ -87,23 +87,6 @@ namespace ParcelRegistry.Parcel
             ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRetired(ParcelId, CaPaKey, addressPersistentLocalId));
         }
 
-        //public void ReplaceAttachedAddressBecauseAddressWasReaddressed(
-        //    AddressPersistentLocalId addressPersistentLocalId,
-        //    AddressPersistentLocalId previousAddressPersistentLocalId)
-        //{
-        //    if (AddressPersistentLocalIds.Contains(addressPersistentLocalId)
-        //        && !AddressPersistentLocalIds.Contains(previousAddressPersistentLocalId))
-        //    {
-        //        return;
-        //    }
-
-        //    ApplyChange(new ParcelAddressWasReplacedBecauseAddressWasReaddressed(
-        //        ParcelId,
-        //        CaPaKey,
-        //        addressPersistentLocalId,
-        //        previousAddressPersistentLocalId));
-        //}
-
         public void ReaddressAddresses(
             IReadOnlyList<ReaddressData> readdresses)
         {
