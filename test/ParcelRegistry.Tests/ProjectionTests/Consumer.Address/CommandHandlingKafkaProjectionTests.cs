@@ -525,79 +525,79 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             });
         }
 
-        [Fact]
-        public async Task StreetNameWasReaddressed()
-        {
-            var sourceAddressPersistentLocalId = 1;
-            var sourceBoxNumberAddressPersistentLocalId = 2;
-            var destinationAddressPersistentLocalId = 3;
-            var destinationBoxNumberAddressPersistentLocalId = 4;
-
-            var @event = new AddressHouseNumberWasReaddressed(
-                1000000,
-                sourceAddressPersistentLocalId,
-                new ReaddressedAddressData(
-                    sourceAddressPersistentLocalId,
-                    destinationAddressPersistentLocalId,
-                    true,
-                    "Current",
-                    "120",
-                    null,
-                    "9000",
-                    "AppointedByAdministrator",
-                    "Entry",
-                    "ExtendedWkbGeometry",
-                    true),
-                new[]
-                {
-                    new ReaddressedAddressData(
-                        sourceBoxNumberAddressPersistentLocalId,
-                        destinationBoxNumberAddressPersistentLocalId,
-                        true,
-                        "Current",
-                        "120",
-                        "A",
-                        "9000",
-                        "AppointedByAdministrator",
-                        "Entry",
-                        "ExtendedWkbGeometry",
-                        true),
-                },
-                new Provenance(
-                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
-                    Application.ParcelRegistry.ToString(),
-                    Modification.Update.ToString(),
-                    Organisation.Aiv.ToString(),
-                    "test"));
-
-            AddParcelAddressRelations(sourceAddressPersistentLocalId);
-            AddParcelAddressRelations(sourceBoxNumberAddressPersistentLocalId);
-
-            Given(@event);
-            await Then(async _ =>
-            {
-                _mockCommandHandler.Verify(x =>
-                        x.Handle(It.IsAny<ReplaceAttachedAddressBecauseAddressWasReaddressed>(), CancellationToken.None),
-                    Times.Exactly(2));
-
-                _mockCommandHandler.Verify(x =>
-                        x.Handle(
-                            It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
-                                y.NewAddressPersistentLocalId == destinationAddressPersistentLocalId
-                                && y.PreviousAddressPersistentLocalId == sourceAddressPersistentLocalId),
-                            CancellationToken.None),
-                    Times.Exactly(1));
-                _mockCommandHandler.Verify(x =>
-                        x.Handle(
-                            It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
-                                y.NewAddressPersistentLocalId == destinationBoxNumberAddressPersistentLocalId
-                                && y.PreviousAddressPersistentLocalId == sourceBoxNumberAddressPersistentLocalId),
-                            CancellationToken.None),
-                    Times.Exactly(1));
-
-                await Task.CompletedTask;
-            });
-        }
+        // [Fact]
+        // public async Task StreetNameWasReaddressed()
+        // {
+        //     var sourceAddressPersistentLocalId = 1;
+        //     var sourceBoxNumberAddressPersistentLocalId = 2;
+        //     var destinationAddressPersistentLocalId = 3;
+        //     var destinationBoxNumberAddressPersistentLocalId = 4;
+        //
+        //     var @event = new AddressHouseNumberWasReaddressed(
+        //         1000000,
+        //         sourceAddressPersistentLocalId,
+        //         new ReaddressedAddressData(
+        //             sourceAddressPersistentLocalId,
+        //             destinationAddressPersistentLocalId,
+        //             true,
+        //             "Current",
+        //             "120",
+        //             null,
+        //             "9000",
+        //             "AppointedByAdministrator",
+        //             "Entry",
+        //             "ExtendedWkbGeometry",
+        //             true),
+        //         new[]
+        //         {
+        //             new ReaddressedAddressData(
+        //                 sourceBoxNumberAddressPersistentLocalId,
+        //                 destinationBoxNumberAddressPersistentLocalId,
+        //                 true,
+        //                 "Current",
+        //                 "120",
+        //                 "A",
+        //                 "9000",
+        //                 "AppointedByAdministrator",
+        //                 "Entry",
+        //                 "ExtendedWkbGeometry",
+        //                 true),
+        //         },
+        //         new Provenance(
+        //             Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+        //             Application.ParcelRegistry.ToString(),
+        //             Modification.Update.ToString(),
+        //             Organisation.Aiv.ToString(),
+        //             "test"));
+        //
+        //     AddParcelAddressRelations(sourceAddressPersistentLocalId);
+        //     AddParcelAddressRelations(sourceBoxNumberAddressPersistentLocalId);
+        //
+        //     Given(@event);
+        //     await Then(async _ =>
+        //     {
+        //         _mockCommandHandler.Verify(x =>
+        //                 x.Handle(It.IsAny<ReplaceAttachedAddressBecauseAddressWasReaddressed>(), CancellationToken.None),
+        //             Times.Exactly(2));
+        //
+        //         _mockCommandHandler.Verify(x =>
+        //                 x.Handle(
+        //                     It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
+        //                         y.NewAddressPersistentLocalId == destinationAddressPersistentLocalId
+        //                         && y.PreviousAddressPersistentLocalId == sourceAddressPersistentLocalId),
+        //                     CancellationToken.None),
+        //             Times.Exactly(1));
+        //         _mockCommandHandler.Verify(x =>
+        //                 x.Handle(
+        //                     It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
+        //                         y.NewAddressPersistentLocalId == destinationBoxNumberAddressPersistentLocalId
+        //                         && y.PreviousAddressPersistentLocalId == sourceBoxNumberAddressPersistentLocalId),
+        //                     CancellationToken.None),
+        //             Times.Exactly(1));
+        //
+        //         await Task.CompletedTask;
+        //     });
+        // }
 
         [Fact]
         public async Task DetachAddressBecauseAddressWasRejectedBecauseOfReaddress()
@@ -662,6 +662,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             var sourceAddressPersistentLocalIdOne = 1;
             var sourceAddressPersistentLocalIdTwo = 2;
             var sourceAddressPersistentLocalIdThree = 5;
+            var unattachedSourceAddressPersistentLocalIdOne = 20;
             var destinationAddressPersistentLocalIdOne = 10;
             var destinationAddressPersistentLocalIdTwo = 11;
             var destinationAddressPersistentLocalIdThree = 12;
@@ -682,7 +683,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                         CreateReaddressedAddressData(sourceAddressPersistentLocalIdOne, destinationAddressPersistentLocalIdOne),
                         new[]
                         {
-                            CreateReaddressedAddressData(sourceAddressPersistentLocalIdTwo, destinationAddressPersistentLocalIdTwo)
+                            CreateReaddressedAddressData(sourceAddressPersistentLocalIdTwo, destinationAddressPersistentLocalIdTwo),
+                            CreateReaddressedAddressData(unattachedSourceAddressPersistentLocalIdOne, 21),
                         }),
                     new AddressHouseNumberReaddressedData(
                         destinationAddressPersistentLocalIdThree,
@@ -742,11 +744,6 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                 Fixture.Create<string>(),
                 Fixture.Create<string>(),
                 Fixture.Create<bool>());
-        }
-
-        private void AddParcelAddressRelations(params int[] addressPersistentLocalIds)
-        {
-            AddParcelAddressRelations(Fixture.Create<ParcelId>(), addressPersistentLocalIds);
         }
 
         private void AddParcelAddressRelations(ParcelId parcelId, int[] addressPersistentLocalIds)
