@@ -5,10 +5,11 @@ namespace Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events
     using System.Linq;
     using System.Reflection;
     using System.Runtime.CompilerServices;
-    using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
+    using AggregateSource;
+    using EventHandling;
     using FluentAssertions;
     using Newtonsoft.Json;
+    using ParcelRegistry.Parcel.Events;
     using Xunit;
 
     /// <summary>
@@ -36,7 +37,9 @@ namespace Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events
 
             _eventTypes = domainAssembly
                 .GetTypes()
-                .Where(t => t.IsClass && t.Namespace != null && IsEventNamespace(t) && IsNotCompilerGenerated(t));
+                .Where(t =>
+                    t.IsClass && t.Namespace != null && IsEventNamespace(t) && IsNotCompilerGenerated(t)
+                    && t != typeof(AddressRegistryReaddress));
         }
 
         [Fact]

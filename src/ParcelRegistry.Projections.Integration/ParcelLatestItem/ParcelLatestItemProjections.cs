@@ -157,9 +157,14 @@
                         .ParcelLatestItemAddresses
                         .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
 
-                    if (relation is not null)
+                    if (relation is null)
                     {
-                        await context.ParcelLatestItemAddresses.AddAsync(relation, ct);
+                        await context.ParcelLatestItemAddresses.AddAsync(
+                            new ParcelLatestItemAddress(
+                                message.Message.ParcelId,
+                                addressPersistentLocalId,
+                                message.Message.CaPaKey),
+                            ct);
                     }
                 }
             });

@@ -185,9 +185,15 @@
                         .ParcelVersionAddresses
                         .FindAsync([message.Position, message.Message.ParcelId, addressPersistentLocalId], ct);
 
-                    if (relation is not null)
+                    if (relation is null)
                     {
-                        await context.ParcelVersionAddresses.AddAsync(relation, ct);
+                        await context.ParcelVersionAddresses.AddAsync(
+                            new ParcelVersionAddress(
+                                message.Position,
+                                message.Message.ParcelId,
+                                addressPersistentLocalId,
+                                message.Message.CaPaKey),
+                            ct);
                     }
                 }
             });

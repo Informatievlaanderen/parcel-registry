@@ -238,7 +238,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2
                                 parcelAddress.AddressPersistentLocalId == addressPersistentLocalId
                                 && parcelAddress.ParcelId == message.Message.ParcelId);
 
-                            if (relation is not null)
+                            if (relation is null)
                             {
                                 entity.Addresses.Add(new ParcelDetailAddressV2(message.Message.ParcelId, addressPersistentLocalId));
                             }

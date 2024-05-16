@@ -49,7 +49,7 @@ namespace ParcelRegistry.Parcel.Events
         }
 
         [JsonConstructor]
-        public ParcelAddressesWereReaddressed(
+        private ParcelAddressesWereReaddressed(
             Guid parcelId,
             string caPaKey,
             IEnumerable<int> attachedAddressPersistentLocalIds,
@@ -80,15 +80,20 @@ namespace ParcelRegistry.Parcel.Events
         public string GetHash() => this.ToEventHash(EventName);
     }
 
-    public class AddressRegistryReaddress
+    public sealed class AddressRegistryReaddress
     {
+        [EventPropertyDescription("Objectidentificator van het bronadres.")]
         public int SourceAddressPersistentLocalId { get; }
+
+        [EventPropertyDescription("Objectidentificator van het doeladres.")]
         public int DestinationAddressPersistentLocalId { get; }
 
         public AddressRegistryReaddress(
             ReaddressData readdressData)
-            : this((int)readdressData.SourceAddressPersistentLocalId, readdressData.DestinationAddressPersistentLocalId)
-        { }
+        {
+            SourceAddressPersistentLocalId = readdressData.SourceAddressPersistentLocalId;
+            DestinationAddressPersistentLocalId = readdressData.DestinationAddressPersistentLocalId;
+        }
 
         [JsonConstructor]
         private AddressRegistryReaddress(

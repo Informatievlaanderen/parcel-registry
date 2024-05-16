@@ -4,7 +4,10 @@
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
     using AutoFixture;
+    using Builders;
+    using Fixtures;
     using FluentAssertions;
+    using Parcel;
     using Parcel.Events;
     using Xunit;
 
@@ -86,6 +89,52 @@
                         @event.NewAddressPersistentLocalId);
                     newAddressParcelRelation.Should().NotBeNull();
                     newAddressParcelRelation!.Count.Should().Be(2);
+                });
+        }
+
+        [Fact]
+        public async Task GivenParcelAddressesWereReaddressed_ThenAddressesAreAttachedAndDetached()
+        {
+            _fixture.Customize(new WithFixedParcelId());
+
+            var attachedAddressPersistentLocalIds = new[] { 1, 2, 3 };
+            var detachedAddressPersistentLocalIds = new[] { 4, 5, 6 };
+
+            var eventBuilder = new ParcelAddressesWereReaddressedBuilder(_fixture);
+
+            foreach (var addressPersistentLocalId in attachedAddressPersistentLocalIds)
+            {
+                eventBuilder.WithAttachedAddress(addressPersistentLocalId);
+            }
+
+            foreach (var addressPersistentLocalId in detachedAddressPersistentLocalIds)
+            {
+                await AddRelation(_fixture.Create<ParcelId>(), addressPersistentLocalId);
+                eventBuilder.WithDetachedAddress(addressPersistentLocalId);
+            }
+
+            var @event = eventBuilder.Build();
+
+            await Sut
+                .Given(@event)
+                .Then(async _ =>
+                {
+                    foreach (var addressPersistentLocalId in attachedAddressPersistentLocalIds)
+                    {
+                        var parcelAddressRelation = await _backOfficeContext.ParcelAddressRelations.FindAsync(
+                            @event.ParcelId,
+                            addressPersistentLocalId);
+                        parcelAddressRelation.Should().NotBeNull();
+                        parcelAddressRelation!.Count.Should().Be(1);
+                    }
+
+                    foreach (var addressPersistentLocalId in detachedAddressPersistentLocalIds)
+                    {
+                        var parcelAddressRelation = await _backOfficeContext.ParcelAddressRelations.FindAsync(
+                            @event.ParcelId,
+                            addressPersistentLocalId);
+                        parcelAddressRelation.Should().BeNull();
+                    }
                 });
         }
     }
