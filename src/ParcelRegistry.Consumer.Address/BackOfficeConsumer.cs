@@ -10,6 +10,7 @@ namespace ParcelRegistry.Consumer.Address
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Parcel;
     using Projections;
 
     public sealed class BackOfficeConsumer : BackgroundService
@@ -17,6 +18,7 @@ namespace ParcelRegistry.Consumer.Address
         private readonly ILifetimeScope _lifetimeScope;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IDbContextFactory<BackOfficeContext> _backOfficeContextFactory;
+        private readonly IParcels _parcels;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IIdempotentConsumer<ConsumerAddressContext> _kafkaIdemIdompotencyConsumer;
         private readonly ILogger<BackOfficeConsumer> _logger;
@@ -25,12 +27,14 @@ namespace ParcelRegistry.Consumer.Address
             ILifetimeScope lifetimeScope,
             IHostApplicationLifetime hostApplicationLifetime,
             IDbContextFactory<BackOfficeContext> backOfficeContextFactory,
+            IParcels parcels,
             ILoggerFactory loggerFactory,
             IIdempotentConsumer<ConsumerAddressContext> kafkaIdemIdompotencyConsumer)
         {
             _lifetimeScope = lifetimeScope;
             _hostApplicationLifetime = hostApplicationLifetime;
             _backOfficeContextFactory = backOfficeContextFactory;
+            _parcels = parcels;
             _loggerFactory = loggerFactory;
             _kafkaIdemIdompotencyConsumer = kafkaIdemIdompotencyConsumer;
 
@@ -45,7 +49,7 @@ namespace ParcelRegistry.Consumer.Address
 
             var commandHandlingProjector = new ConnectedProjector<CommandHandler>(
                 Resolve.WhenEqualToHandlerMessageType(
-                    new CommandHandlingKafkaProjection(_backOfficeContextFactory).Handlers));
+                    new CommandHandlingKafkaProjection(_backOfficeContextFactory, _parcels).Handlers));
 
             var commandHandler = new CommandHandler(_lifetimeScope, _loggerFactory);
 

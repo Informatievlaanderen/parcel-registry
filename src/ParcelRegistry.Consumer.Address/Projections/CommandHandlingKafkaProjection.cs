@@ -19,7 +19,9 @@ namespace ParcelRegistry.Consumer.Address.Projections
     {
         private readonly IDbContextFactory<BackOfficeContext> _backOfficeContextFactory;
 
-        public CommandHandlingKafkaProjection(IDbContextFactory<BackOfficeContext> backOfficeContextFactory)
+        public CommandHandlingKafkaProjection(
+            IDbContextFactory<BackOfficeContext> backOfficeContextFactory,
+            IParcels parcels)
         {
             _backOfficeContextFactory = backOfficeContextFactory;
 
@@ -179,23 +181,50 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     .Select(x => (int)x.SourceAddressPersistentLocalId)
                     .ToList();
 
-                var parcelAddressRelations = await backOfficeContext.ParcelAddressRelations
+                var sourceAddressParcelRelations = await backOfficeContext.ParcelAddressRelations
                     .AsNoTracking()
                     .Where(x => sourceAddressPersistentLocalIds.Contains(x.AddressPersistentLocalId))
                     .ToListAsync(cancellationToken: ct);
 
-                var commandByParcels = parcelAddressRelations
+                var commandByParcels = sourceAddressParcelRelations
                     .GroupBy(
                         relation => relation.ParcelId,
                         relation => readdresses.Where(x => x.SourceAddressPersistentLocalId == relation.AddressPersistentLocalId))
                     .Select(x => new ReaddressAddresses(
                         new ParcelId(x.Key),
                         x.SelectMany(a => a),
-                        FromProvenance(message.Provenance)));
+                        FromProvenance(message.Provenance)))
+                    .ToList();
 
                 foreach (var command in commandByParcels)
                 {
                     await commandHandler.Handle(command, ct);
+                }
+
+                foreach (var parcelId in commandByParcels.Select(x => x.ParcelId))
+                {
+                    var parcel = await parcels.GetAsync(new ParcelStreamId(parcelId), ct);
+
+                    var backOfficeAddresses = (await backOfficeContext.ParcelAddressRelations
+                        .AsNoTracking()
+                        .Where(x => x.ParcelId == parcelId)
+                        .Select(x => x.AddressPersistentLocalId)
+                        .ToListAsync(cancellationToken: ct))
+                        .Select(x => new AddressPersistentLocalId(x))
+                        .ToList();
+
+                    var addressesToRemove = backOfficeAddresses.Except(parcel.AddressPersistentLocalIds).ToList();
+                    var addressesToAdd = parcel.AddressPersistentLocalIds.Except(backOfficeAddresses).ToList();
+
+                    foreach (var addressPersistentLocalId in addressesToRemove)
+                    {
+                        await backOfficeContext.RemoveIdempotentParcelAddressRelation(parcelId, addressPersistentLocalId, ct);
+                    }
+
+                    foreach (var addressPersistentLocalId in addressesToAdd)
+                    {
+                        await backOfficeContext.AddIdempotentParcelAddressRelation(parcelId, addressPersistentLocalId, ct);
+                    }
                 }
             });
 

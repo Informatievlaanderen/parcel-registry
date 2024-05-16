@@ -1,13 +1,17 @@
 namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
+    using Autofac;
     using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using EventExtensions;
     using Fixtures;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging.Abstractions;
@@ -15,6 +19,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     using NodaTime;
     using Parcel;
     using Parcel.Commands;
+    using Parcel.Events;
     using ParcelRegistry.Consumer.Address;
     using ParcelRegistry.Consumer.Address.Projections;
     using Tests.BackOffice;
@@ -26,6 +31,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     {
         private readonly FakeBackOfficeContext _fakeBackOfficeContext;
         private readonly Mock<FakeCommandHandler> _mockCommandHandler;
+        private readonly Mock<IParcels> _parcels;
 
         public CommandHandlingKafkaProjectionTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -33,6 +39,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
 
             _mockCommandHandler = new Mock<FakeCommandHandler>();
             _fakeBackOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext([]);
+            _parcels = new Mock<IParcels>();
         }
 
         [Fact]
@@ -674,6 +681,38 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             AddParcelAddressRelations(parcelTwoId, parcelTwoAddressPersistentLocalIds);
             AddParcelAddressRelations(Fixture.Create<ParcelId>(), [6, 7, 8]);
 
+            var events = new List<object>();
+            foreach (var addressPersistentLocalId in parcelOneAddressPersistentLocalIds)
+            {
+                var parcelAddressWasAttached = new ParcelAddressWasAttachedV2(
+                    parcelOneId, Fixture.Create<VbrCaPaKey>(), new AddressPersistentLocalId(addressPersistentLocalId));
+                parcelAddressWasAttached.SetFixtureProvenance(Fixture);
+                events.Add(parcelAddressWasAttached);
+            }
+
+            var parcelOne = new ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()).Create();
+            parcelOne.Initialize(events);
+
+            _parcels
+                .Setup(x => x.GetAsync(new ParcelStreamId(parcelOneId), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(parcelOne);
+
+            events.Clear();
+            foreach (var addressPersistentLocalId in parcelTwoAddressPersistentLocalIds)
+            {
+                var parcelAddressWasAttached = new ParcelAddressWasAttachedV2(
+                    parcelTwoId, Fixture.Create<VbrCaPaKey>(), new AddressPersistentLocalId(addressPersistentLocalId));
+                parcelAddressWasAttached.SetFixtureProvenance(Fixture);
+                events.Add(parcelAddressWasAttached);
+            }
+
+            var parcelTwo = new ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()).Create();
+            parcelTwo.Initialize(events);
+
+            _parcels
+                .Setup(x => x.GetAsync(new ParcelStreamId(parcelTwoId), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(parcelTwo);
+
             var @event = new StreetNameWasReaddressed(
                 Fixture.Create<int>(),
                 new[]
@@ -725,6 +764,12 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                                     && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdThree)),
                             CancellationToken.None),
                     Times.Once);
+
+                foreach (var addressPersistentLocalId in new[] { sourceAddressPersistentLocalIdOne, sourceAddressPersistentLocalIdTwo, sourceAddressPersistentLocalIdThree})
+                {
+                    // Todo
+                }
+
                 await Task.CompletedTask;
             });
         }
@@ -769,7 +814,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             factoryMock
                 .Setup(x => x.CreateDbContextAsync(CancellationToken.None))
                 .Returns(Task.FromResult<BackOfficeContext>(_fakeBackOfficeContext));
-            return new CommandHandlingKafkaProjection(factoryMock.Object);
+            return new CommandHandlingKafkaProjection(factoryMock.Object, _parcels.Object);
         }
     }
 
