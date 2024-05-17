@@ -84,7 +84,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(x =>
-                        x.Handle(
+                        x.HandleIdempotent(
                             It.Is<ReaddressAddresses>(y =>
                                 y.ParcelId == parcelOneId
                                 && y.Readdresses.Count == 2
@@ -97,7 +97,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                             CancellationToken.None),
                     Times.Once);
                 _mockCommandHandler.Verify(x =>
-                        x.Handle(
+                        x.HandleIdempotent(
                             It.Is<ReaddressAddresses>(y =>
                                 y.ParcelId == parcelTwoId
                                 && y.Readdresses.Count == 1

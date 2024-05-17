@@ -9,11 +9,11 @@ namespace ParcelRegistry.Consumer.Address.Console
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Destructurama;
-    using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +25,7 @@ namespace ParcelRegistry.Consumer.Address.Console
     using Serilog;
     using Serilog.Debugging;
     using Serilog.Extensions.Logging;
+    using MigrationsHelper = Infrastructure.MigrationsHelper;
 
     public sealed class Program
     {
@@ -144,6 +145,18 @@ namespace ParcelRegistry.Consumer.Address.Console
                         .RegisterType<IdempotentConsumer<ConsumerAddressContext>>()
                         .As<IIdempotentConsumer<ConsumerAddressContext>>()
                         .SingleInstance();
+
+                    services.ConfigureIdempotency(
+                        hostContext.Configuration.GetSection(IdempotencyConfiguration.Section)
+                            .Get<IdempotencyConfiguration>()!.ConnectionString!,
+                        new IdempotencyMigrationsTableInfo(Schema.Import),
+                        new IdempotencyTableInfo(Schema.Import),
+                        loggerFactory);
+
+                    builder.RegisterType<IdempotentCommandHandler>()
+                        .As<IIdempotentCommandHandler>()
+                        .AsSelf()
+                        .InstancePerLifetimeScope();
 
                     builder
                         .RegisterModule(new EditModule(hostContext.Configuration))

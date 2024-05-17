@@ -5,6 +5,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using System.Threading;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -198,9 +199,18 @@ namespace ParcelRegistry.Consumer.Address.Projections
 
                 foreach (var command in commandByParcels)
                 {
-                    await commandHandler.Handle(command, ct);
+                    try
+                    {
+                        await commandHandler.HandleIdempotent(command, ct);
+                    }
+                    catch (IdempotencyException)
+                    {
+                        // do nothing
+                    }
                 }
 
+                await backOfficeContext.Database.BeginTransactionAsync();
+                
                 foreach (var parcelId in commandByParcels.Select(x => x.ParcelId))
                 {
                     var parcel = await parcels.GetAsync(new ParcelStreamId(parcelId), ct);
@@ -226,6 +236,8 @@ namespace ParcelRegistry.Consumer.Address.Projections
                         await backOfficeContext.AddIdempotentParcelAddressRelation(parcelId, addressPersistentLocalId, ct);
                     }
                 }
+
+                await backOfficeContext.Database.CommitTransactionAsync();
             });
 
             When<AddressWasRejectedBecauseOfReaddress>(async (commandHandler, message, ct) =>

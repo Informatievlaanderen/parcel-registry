@@ -1,5 +1,6 @@
-﻿namespace ParcelRegistry.Projections.BackOffice
+namespace ParcelRegistry.Projections.BackOffice
 {
+    using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -107,41 +108,10 @@
                 }
             });
 
-            When<Envelope<ParcelAddressesWereReaddressed>>(async (_, message, cancellationToken) =>
+            When<Envelope<ParcelAddressesWereReaddressed>>((_, message, cancellationToken) =>
             {
-                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
-
-                foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
-                {
-                    var relation = await backOfficeContext.FindParcelAddressRelation(
-                        new ParcelId(message.Message.ParcelId),
-                        new AddressPersistentLocalId(addressPersistentLocalId),
-                        cancellationToken);
-
-                    if (relation is not null)
-                    {
-                        await backOfficeContext.RemoveIdempotentParcelAddressRelation(
-                            new ParcelId(message.Message.ParcelId),
-                            new AddressPersistentLocalId(addressPersistentLocalId),
-                            cancellationToken);
-                    }
-                }
-
-                foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
-                {
-                    var relation = await backOfficeContext.FindParcelAddressRelation(
-                        new ParcelId(message.Message.ParcelId),
-                        new AddressPersistentLocalId(addressPersistentLocalId),
-                        cancellationToken);
-
-                    if (relation is null)
-                    {
-                        await backOfficeContext.AddIdempotentParcelAddressRelation(
-                            new ParcelId(message.Message.ParcelId),
-                            new AddressPersistentLocalId(addressPersistentLocalId),
-                            cancellationToken);
-                    }
-                }
+                // Do nothing
+                return Task.CompletedTask;
             });
         }
     }
