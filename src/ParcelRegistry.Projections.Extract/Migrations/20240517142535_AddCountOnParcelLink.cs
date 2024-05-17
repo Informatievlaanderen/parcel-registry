@@ -11,17 +11,6 @@ namespace ParcelRegistry.Projections.Extract.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_ProjectionStates",
-                schema: "ParcelRegistryExtract",
-                table: "ProjectionStates");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_ProjectionStates",
-                schema: "ParcelRegistryExtract",
-                table: "ProjectionStates",
-                column: "Name");
-
             migrationBuilder.CreateTable(
                 name: "ParcelLinksWithCount",
                 schema: "ParcelRegistryExtract",
@@ -65,18 +54,6 @@ namespace ParcelRegistry.Projections.Extract.Migrations
             migrationBuilder.DropTable(
                 name: "ParcelLinksWithCount",
                 schema: "ParcelRegistryExtract");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_ProjectionStates",
-                schema: "ParcelRegistryExtract",
-                table: "ProjectionStates");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_ProjectionStates",
-                schema: "ParcelRegistryExtract",
-                table: "ProjectionStates",
-                column: "Name")
-                .Annotation("SqlServer:Clustered", true);
         }
     }
 }
