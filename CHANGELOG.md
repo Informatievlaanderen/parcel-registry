@@ -1,3 +1,16 @@
+# [5.2.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.1.0...v5.2.0) (2024-05-17)
+
+
+### Bug Fixes
+
+* **importer:** order within each group ([e3d332e](https://github.com/informatievlaanderen/parcel-registry/commit/e3d332eea0ddaec65ae18a70093de517e3768405))
+* **readdress:** parcel address relation count GAWR-6428 ([5d3764e](https://github.com/informatievlaanderen/parcel-registry/commit/5d3764e263a004e6e6e888462377b0d472e6a1a4))
+
+
+### Features
+
+* consume StreetNameWasReaddressed ([cccd9a2](https://github.com/informatievlaanderen/parcel-registry/commit/cccd9a27d7350e533696297ee8b61b8ce01c7197))
+
 # [5.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.0.4...v5.1.0) (2024-04-29)
 
 
