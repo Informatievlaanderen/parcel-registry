@@ -22,8 +22,6 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
 
     public partial class CommandHandlingKafkaProjectionTests
     {
-
-
         [Fact]
         public async Task AttachAndDetachAddressesWhenStreetNameWasReaddressed()
         {
@@ -45,42 +43,16 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                 new[] { destinationAddressPersistentLocalIdOne, destinationAddressPersistentLocalIdTwo, 3 };
             var parcelTwoExpectedAddressPersistentLocalIds = new[] { 4, destinationAddressPersistentLocalIdThree };
 
+            // Setup BackofficeContext
             AddParcelAddressRelations(parcelOneId, parcelOneAddressPersistentLocalIds);
             AddParcelAddressRelations(parcelTwoId, parcelTwoAddressPersistentLocalIds);
             AddParcelAddressRelations(Fixture.Create<ParcelId>(), [6, 7, 8]);
 
-            var events = new List<object>();
-            foreach (var addressPersistentLocalId in parcelOneExpectedAddressPersistentLocalIds)
-            {
-                var parcelAddressWasAttached = new ParcelAddressWasAttachedV2(
-                    parcelOneId, Fixture.Create<VbrCaPaKey>(), new AddressPersistentLocalId(addressPersistentLocalId));
-                parcelAddressWasAttached.SetFixtureProvenance(Fixture);
-                events.Add(parcelAddressWasAttached);
-            }
+            // Setup domain
+            SetupParcelWithAddresses(parcelOneId, parcelOneExpectedAddressPersistentLocalIds);
+            SetupParcelWithAddresses(parcelTwoId, parcelTwoExpectedAddressPersistentLocalIds);
 
-            var parcelOne = new ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()).Create();
-            parcelOne.Initialize(events);
-
-            _parcels
-                .Setup(x => x.GetAsync(new ParcelStreamId(parcelOneId), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(parcelOne);
-
-            events.Clear();
-            foreach (var addressPersistentLocalId in parcelTwoExpectedAddressPersistentLocalIds)
-            {
-                var parcelAddressWasAttached = new ParcelAddressWasAttachedV2(
-                    parcelTwoId, Fixture.Create<VbrCaPaKey>(), new AddressPersistentLocalId(addressPersistentLocalId));
-                parcelAddressWasAttached.SetFixtureProvenance(Fixture);
-                events.Add(parcelAddressWasAttached);
-            }
-
-            var parcelTwo = new ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()).Create();
-            parcelTwo.Initialize(events);
-
-            _parcels
-                .Setup(x => x.GetAsync(new ParcelStreamId(parcelTwoId), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(parcelTwo);
-
+            // Act
             var @event = new StreetNameWasReaddressed(
                 Fixture.Create<int>(),
                 new[]
@@ -96,7 +68,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     new AddressHouseNumberReaddressedData(
                         destinationAddressPersistentLocalIdThree,
                         CreateReaddressedAddressData(sourceAddressPersistentLocalIdThree, destinationAddressPersistentLocalIdThree),
-                        Array.Empty<ReaddressedAddressData>()),
+                        [])
                 },
                 new Provenance(
                     Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
@@ -107,6 +79,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             );
 
             Given(@event);
+
+            // Assert
             await Then(async _ =>
             {
                 _mockCommandHandler.Verify(x =>
@@ -132,6 +106,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                                     && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdThree)),
                             CancellationToken.None),
                     Times.Once);
+
+                _mockCommandHandler.Invocations.Count.Should().Be(2);
 
                 var parcelOneRelations = _fakeBackOfficeContext.ParcelAddressRelations
                     .Where(x => x.ParcelId == parcelOneId)
@@ -159,6 +135,25 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
 
                 await Task.CompletedTask;
             });
+        }
+
+        private void SetupParcelWithAddresses(ParcelId parcelId, IEnumerable<int> addressPersistentLocalIds)
+        {
+            var parcel = new ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()).Create();
+            var events = addressPersistentLocalIds
+                .Select(addressPersistentLocalId =>
+                {
+                    var parcelAddressWasAttached = new ParcelAddressWasAttachedV2(
+                        parcelId, Fixture.Create<VbrCaPaKey>(), new AddressPersistentLocalId(addressPersistentLocalId));
+                    parcelAddressWasAttached.SetFixtureProvenance(Fixture);
+                    return parcelAddressWasAttached;
+                })
+                .ToList();
+            parcel.Initialize(events);
+
+            _parcels
+                .Setup(x => x.GetAsync(new ParcelStreamId(parcelId), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(parcel);
         }
 
         private ReaddressedAddressData CreateReaddressedAddressData(
