@@ -13,6 +13,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using EventExtensions;
     using Fixtures;
+    using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
@@ -27,7 +28,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     using Xunit.Abstractions;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.Provenance;
 
-    public sealed class CommandHandlingKafkaProjectionTests : KafkaProjectionTest<CommandHandler, CommandHandlingKafkaProjection>
+    public partial class CommandHandlingKafkaProjectionTests : KafkaProjectionTest<CommandHandler, CommandHandlingKafkaProjection>
     {
         private readonly FakeBackOfficeContext _fakeBackOfficeContext;
         private readonly Mock<FakeCommandHandler> _mockCommandHandler;
@@ -38,7 +39,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             Fixture.Customize(new InfrastructureCustomization());
 
             _mockCommandHandler = new Mock<FakeCommandHandler>();
-            _fakeBackOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext([]);
+            _fakeBackOfficeContext = new FakeBackOfficeContextFactory(dispose: false).CreateDbContext([]);
             _parcels = new Mock<IParcels>();
         }
 
@@ -532,80 +533,6 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             });
         }
 
-        // [Fact]
-        // public async Task StreetNameWasReaddressed()
-        // {
-        //     var sourceAddressPersistentLocalId = 1;
-        //     var sourceBoxNumberAddressPersistentLocalId = 2;
-        //     var destinationAddressPersistentLocalId = 3;
-        //     var destinationBoxNumberAddressPersistentLocalId = 4;
-        //
-        //     var @event = new AddressHouseNumberWasReaddressed(
-        //         1000000,
-        //         sourceAddressPersistentLocalId,
-        //         new ReaddressedAddressData(
-        //             sourceAddressPersistentLocalId,
-        //             destinationAddressPersistentLocalId,
-        //             true,
-        //             "Current",
-        //             "120",
-        //             null,
-        //             "9000",
-        //             "AppointedByAdministrator",
-        //             "Entry",
-        //             "ExtendedWkbGeometry",
-        //             true),
-        //         new[]
-        //         {
-        //             new ReaddressedAddressData(
-        //                 sourceBoxNumberAddressPersistentLocalId,
-        //                 destinationBoxNumberAddressPersistentLocalId,
-        //                 true,
-        //                 "Current",
-        //                 "120",
-        //                 "A",
-        //                 "9000",
-        //                 "AppointedByAdministrator",
-        //                 "Entry",
-        //                 "ExtendedWkbGeometry",
-        //                 true),
-        //         },
-        //         new Provenance(
-        //             Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
-        //             Application.ParcelRegistry.ToString(),
-        //             Modification.Update.ToString(),
-        //             Organisation.Aiv.ToString(),
-        //             "test"));
-        //
-        //     AddParcelAddressRelations(sourceAddressPersistentLocalId);
-        //     AddParcelAddressRelations(sourceBoxNumberAddressPersistentLocalId);
-        //
-        //     Given(@event);
-        //     await Then(async _ =>
-        //     {
-        //         _mockCommandHandler.Verify(x =>
-        //                 x.Handle(It.IsAny<ReplaceAttachedAddressBecauseAddressWasReaddressed>(), CancellationToken.None),
-        //             Times.Exactly(2));
-        //
-        //         _mockCommandHandler.Verify(x =>
-        //                 x.Handle(
-        //                     It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
-        //                         y.NewAddressPersistentLocalId == destinationAddressPersistentLocalId
-        //                         && y.PreviousAddressPersistentLocalId == sourceAddressPersistentLocalId),
-        //                     CancellationToken.None),
-        //             Times.Exactly(1));
-        //         _mockCommandHandler.Verify(x =>
-        //                 x.Handle(
-        //                     It.Is<ReplaceAttachedAddressBecauseAddressWasReaddressed>(y =>
-        //                         y.NewAddressPersistentLocalId == destinationBoxNumberAddressPersistentLocalId
-        //                         && y.PreviousAddressPersistentLocalId == sourceBoxNumberAddressPersistentLocalId),
-        //                     CancellationToken.None),
-        //             Times.Exactly(1));
-        //
-        //         await Task.CompletedTask;
-        //     });
-        // }
-
         [Fact]
         public async Task DetachAddressBecauseAddressWasRejectedBecauseOfReaddress()
         {
@@ -658,138 +585,6 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
                 await Task.CompletedTask;
             });
-        }
-
-        [Fact]
-        public async Task AttachAndDetachAddressesWhenStreetNameWasReaddressed()
-        {
-            var parcelOneId = Fixture.Create<ParcelId>();
-            var parcelTwoId = Fixture.Create<ParcelId>();
-
-            var sourceAddressPersistentLocalIdOne = 1;
-            var sourceAddressPersistentLocalIdTwo = 2;
-            var sourceAddressPersistentLocalIdThree = 5;
-            var unattachedSourceAddressPersistentLocalIdOne = 20;
-            var destinationAddressPersistentLocalIdOne = 10;
-            var destinationAddressPersistentLocalIdTwo = 11;
-            var destinationAddressPersistentLocalIdThree = 12;
-
-            var parcelOneAddressPersistentLocalIds = new[] { sourceAddressPersistentLocalIdOne, sourceAddressPersistentLocalIdTwo, 3 };
-            var parcelTwoAddressPersistentLocalIds = new[] { 4, sourceAddressPersistentLocalIdThree };
-
-            AddParcelAddressRelations(parcelOneId, parcelOneAddressPersistentLocalIds);
-            AddParcelAddressRelations(parcelTwoId, parcelTwoAddressPersistentLocalIds);
-            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [6, 7, 8]);
-
-            var events = new List<object>();
-            foreach (var addressPersistentLocalId in parcelOneAddressPersistentLocalIds)
-            {
-                var parcelAddressWasAttached = new ParcelAddressWasAttachedV2(
-                    parcelOneId, Fixture.Create<VbrCaPaKey>(), new AddressPersistentLocalId(addressPersistentLocalId));
-                parcelAddressWasAttached.SetFixtureProvenance(Fixture);
-                events.Add(parcelAddressWasAttached);
-            }
-
-            var parcelOne = new ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()).Create();
-            parcelOne.Initialize(events);
-
-            _parcels
-                .Setup(x => x.GetAsync(new ParcelStreamId(parcelOneId), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(parcelOne);
-
-            events.Clear();
-            foreach (var addressPersistentLocalId in parcelTwoAddressPersistentLocalIds)
-            {
-                var parcelAddressWasAttached = new ParcelAddressWasAttachedV2(
-                    parcelTwoId, Fixture.Create<VbrCaPaKey>(), new AddressPersistentLocalId(addressPersistentLocalId));
-                parcelAddressWasAttached.SetFixtureProvenance(Fixture);
-                events.Add(parcelAddressWasAttached);
-            }
-
-            var parcelTwo = new ParcelFactory(NoSnapshotStrategy.Instance, Container.Resolve<IAddresses>()).Create();
-            parcelTwo.Initialize(events);
-
-            _parcels
-                .Setup(x => x.GetAsync(new ParcelStreamId(parcelTwoId), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(parcelTwo);
-
-            var @event = new StreetNameWasReaddressed(
-                Fixture.Create<int>(),
-                new[]
-                {
-                    new AddressHouseNumberReaddressedData(
-                        destinationAddressPersistentLocalIdOne,
-                        CreateReaddressedAddressData(sourceAddressPersistentLocalIdOne, destinationAddressPersistentLocalIdOne),
-                        new[]
-                        {
-                            CreateReaddressedAddressData(sourceAddressPersistentLocalIdTwo, destinationAddressPersistentLocalIdTwo),
-                            CreateReaddressedAddressData(unattachedSourceAddressPersistentLocalIdOne, 21),
-                        }),
-                    new AddressHouseNumberReaddressedData(
-                        destinationAddressPersistentLocalIdThree,
-                        CreateReaddressedAddressData(sourceAddressPersistentLocalIdThree, destinationAddressPersistentLocalIdThree),
-                        Array.Empty<ReaddressedAddressData>()),
-                },
-                new Provenance(
-                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
-                    Application.ParcelRegistry.ToString(),
-                    Modification.Update.ToString(),
-                    Organisation.Aiv.ToString(),
-                    "test")
-            );
-
-            Given(@event);
-            await Then(async _ =>
-            {
-                _mockCommandHandler.Verify(x =>
-                        x.Handle(
-                            It.Is<ReaddressAddresses>(y =>
-                                y.ParcelId == parcelOneId
-                                && y.Readdresses.Count == 2
-                                && y.Readdresses.Any(z =>
-                                    z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdOne
-                                    && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdOne)
-                                && y.Readdresses.Any(z =>
-                                    z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdTwo
-                                    && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdTwo)),
-                            CancellationToken.None),
-                    Times.Once);
-                _mockCommandHandler.Verify(x =>
-                        x.Handle(
-                            It.Is<ReaddressAddresses>(y =>
-                                y.ParcelId == parcelTwoId
-                                && y.Readdresses.Count == 1
-                                && y.Readdresses.Any(z =>
-                                    z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdThree
-                                    && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdThree)),
-                            CancellationToken.None),
-                    Times.Once);
-
-                foreach (var addressPersistentLocalId in new[] { sourceAddressPersistentLocalIdOne, sourceAddressPersistentLocalIdTwo, sourceAddressPersistentLocalIdThree})
-                {
-                    // Todo
-                }
-
-                await Task.CompletedTask;
-            });
-        }
-
-        private ReaddressedAddressData CreateReaddressedAddressData(
-            int sourceAddressPersistentLocalIdOne,
-            int destinationAddressPersistentLocalIdOne)
-        {
-            return new ReaddressedAddressData(
-                sourceAddressPersistentLocalIdOne,
-                destinationAddressPersistentLocalIdOne,
-                Fixture.Create<bool>(),
-                Fixture.Create<string>(),
-                Fixture.Create<string>(),
-                Fixture.Create<string>(),
-                Fixture.Create<string>(),
-                Fixture.Create<string>(),
-                Fixture.Create<string>(),
-                Fixture.Create<string>(),
-                Fixture.Create<bool>());
         }
 
         private void AddParcelAddressRelations(ParcelId parcelId, int[] addressPersistentLocalIds)
