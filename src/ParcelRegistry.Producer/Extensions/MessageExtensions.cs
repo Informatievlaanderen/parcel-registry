@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Producer.Extensions
 {
+    using System.Linq;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.ParcelRegistry;
     using Legacy = Legacy.Events;
@@ -62,6 +63,16 @@ namespace ParcelRegistry.Producer.Extensions
                 message.CaPaKey,
                 message.NewAddressPersistentLocalId,
                 message.PreviousAddressPersistentLocalId,
+                message.Provenance.ToContract());
+
+        public static Contracts.ParcelAddressesWereReaddressed ToContract(this ParcelAggregate.ParcelAddressesWereReaddressed message) =>
+            new Contracts.ParcelAddressesWereReaddressed(
+                message.ParcelId.ToString("D"),
+                message.CaPaKey,
+                message.AttachedAddressPersistentLocalIds,
+                message.DetachedAddressPersistentLocalIds,
+                message.AddressRegistryReaddresses.Select(x =>
+                    new Contracts.AddressRegistryReaddress(x.SourceAddressPersistentLocalId, x.SourceAddressPersistentLocalId)),
                 message.Provenance.ToContract());
 
         public static Contracts.ParcelWasMigrated ToContract(this ParcelAggregate.ParcelWasMigrated message) =>

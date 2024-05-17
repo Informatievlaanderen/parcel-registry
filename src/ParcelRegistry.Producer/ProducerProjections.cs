@@ -106,6 +106,11 @@ namespace ParcelRegistry.Producer
                await Produce(message.Message.ParcelId, message.Message.ToContract(), message.Position, ct);
             });
 
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<ParcelDomain.ParcelAddressesWereReaddressed>>(async (_, message, ct) =>
+            {
+               await Produce(message.Message.ParcelId, message.Message.ToContract(), message.Position, ct);
+            });
+
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<ParcelDomain.ParcelWasMigrated>>(async (_, message, ct) =>
             {
                await Produce(message.Message.ParcelId, message.Message.ToContract(), message.Position, ct);

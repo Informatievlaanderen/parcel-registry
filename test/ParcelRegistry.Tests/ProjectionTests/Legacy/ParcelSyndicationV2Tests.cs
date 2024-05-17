@@ -11,6 +11,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Builders;
     using EventExtensions;
     using Fixtures;
     using FluentAssertions;
@@ -23,7 +24,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
 
     public class ParcelSyndicationV2Tests : ParcelLegacyProjectionTest<ParcelSyndicationProjections>
     {
-        private readonly Fixture? _fixture;
+        private readonly Fixture _fixture;
 
         public ParcelSyndicationV2Tests()
         {
@@ -294,6 +295,91 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
                     parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);
                     parcelSyndicationItem.LastChangedOn.Should().Be(@event.Provenance.Timestamp);
+                });
+        }
+
+        [Fact]
+        public async Task GivenParcelAddressesWereReaddressed_ThenAddressesAreAttachedAndDetached()
+        {
+            _fixture.Customizations.Add(new WithUniqueInteger());
+
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var firstParcelAddressWasAttachedV2 = _fixture.Create<ParcelAddressWasAttachedV2>();
+            var secondParcelAddressWasAttachedV2 = _fixture.Create<ParcelAddressWasAttachedV2>();
+
+            var attachedAddressPersistentLocalIds = new[]
+            {
+                _fixture.Create<int>(),
+                _fixture.Create<int>()
+            };
+            var detachedAddressPersistentLocalIds = new[]
+            {
+                firstParcelAddressWasAttachedV2.AddressPersistentLocalId,
+                secondParcelAddressWasAttachedV2.AddressPersistentLocalId
+            };
+
+            var eventBuilder = new ParcelAddressesWereReaddressedBuilder(_fixture);
+
+            foreach (var addressPersistentLocalId in attachedAddressPersistentLocalIds)
+            {
+                eventBuilder.WithAttachedAddress(addressPersistentLocalId);
+            }
+
+            foreach (var addressPersistentLocalId in detachedAddressPersistentLocalIds)
+            {
+                eventBuilder.WithDetachedAddress(addressPersistentLocalId);
+            }
+
+            var @event = eventBuilder.Build();
+
+            var position = _fixture.Create<long>();
+            var parcelWasImportedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasImported.GetHash() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelWasImported) },
+            };
+            var firstParcelAddressWasAttachedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasImported.GetHash() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelAddressWasAttachedV2) },
+            };
+            var secondParcelAddressWasAttachedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasImported.GetHash() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelAddressWasAttachedV2) },
+            };
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasImported.GetHash() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelAddressesWereReaddressed) },
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<ParcelWasImported>(new Envelope(parcelWasImported, parcelWasImportedMetadata)),
+                    new Envelope<ParcelAddressWasAttachedV2>(
+                        new Envelope(firstParcelAddressWasAttachedV2, firstParcelAddressWasAttachedMetadata)),
+                    new Envelope<ParcelAddressWasAttachedV2>(
+                        new Envelope(secondParcelAddressWasAttachedV2, secondParcelAddressWasAttachedMetadata)),
+                    new Envelope<ParcelAddressesWereReaddressed>(new Envelope(@event, eventMetadata)))
+                .Then(async context =>
+                {
+                    var parcelSyndicationItem = await context.ParcelSyndication.FindAsync(position);
+                    parcelSyndicationItem.Should().NotBeNull();
+
+                    foreach (var addressPersistentLocalId in attachedAddressPersistentLocalIds)
+                    {
+                        parcelSyndicationItem!.AddressPersistentLocalIds.Should().Contain(addressPersistentLocalId);
+                    }
+
+                    foreach (var addressPersistentLocalId in detachedAddressPersistentLocalIds)
+                    {
+                        parcelSyndicationItem!.AddressPersistentLocalIds.Should().NotContain(addressPersistentLocalId);
+                    }
                 });
         }
 

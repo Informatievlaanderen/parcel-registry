@@ -1,5 +1,6 @@
-﻿namespace ParcelRegistry.Projections.BackOffice
+namespace ParcelRegistry.Projections.BackOffice
 {
+    using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -105,6 +106,12 @@
                 {
                     newAddress.Count += 1;
                 }
+            });
+
+            When<Envelope<ParcelAddressesWereReaddressed>>((_, message, cancellationToken) =>
+            {
+                // Do nothing
+                return Task.CompletedTask;
             });
         }
     }

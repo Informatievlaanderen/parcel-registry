@@ -5,7 +5,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
-    using NetTopologySuite.IO;
     using Parcel;
     using Parcel.Events;
     using ParcelRegistry.Legacy.Events;
@@ -270,6 +269,26 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     {
                         x.RemoveAddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId);
                         x.AddAddressPersistentLocalId(message.Message.NewAddressPersistentLocalId);
+                    },
+                    ct);
+            });
+
+            When<Envelope<ParcelAddressesWereReaddressed>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x =>
+                    {
+                        foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
+                        {
+                            x.RemoveAddressPersistentLocalId(addressPersistentLocalId);
+                        }
+
+                        foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
+                        {
+                            x.AddAddressPersistentLocalId(addressPersistentLocalId);
+                        }
                     },
                     ct);
             });

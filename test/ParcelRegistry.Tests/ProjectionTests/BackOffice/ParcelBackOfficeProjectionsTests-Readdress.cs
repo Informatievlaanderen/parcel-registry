@@ -1,10 +1,13 @@
-﻿namespace ParcelRegistry.Tests.ProjectionTests.BackOffice
+namespace ParcelRegistry.Tests.ProjectionTests.BackOffice
 {
     using System.Threading;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
     using AutoFixture;
+    using Builders;
+    using Fixtures;
     using FluentAssertions;
+    using Parcel;
     using Parcel.Events;
     using Xunit;
 

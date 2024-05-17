@@ -1,6 +1,8 @@
-﻿namespace ParcelRegistry.Parcel
+namespace ParcelRegistry.Parcel
 {
+    using System.Collections.Generic;
     using System.Linq;
+    using Commands;
     using DataStructures;
     using Events;
     using Exceptions;
@@ -85,21 +87,32 @@
             ApplyChange(new ParcelAddressWasDetachedBecauseAddressWasRetired(ParcelId, CaPaKey, addressPersistentLocalId));
         }
 
-        public void ReplaceAttachedAddressBecauseAddressWasReaddressed(
-            AddressPersistentLocalId addressPersistentLocalId,
-            AddressPersistentLocalId previousAddressPersistentLocalId)
+        public void ReaddressAddresses(
+            IReadOnlyList<ReaddressData> readdresses)
         {
-            if (AddressPersistentLocalIds.Contains(addressPersistentLocalId)
-                && !AddressPersistentLocalIds.Contains(previousAddressPersistentLocalId))
+            var addressPersistentLocalIdsToAttach = readdresses
+                .Select(x => x.DestinationAddressPersistentLocalId)
+                .Except(readdresses.Select(x => x.SourceAddressPersistentLocalId))
+                .Except(AddressPersistentLocalIds)
+                .ToList();
+
+            var addressPersistentLocalIdsToDetach = readdresses
+                .Select(x => x.SourceAddressPersistentLocalId)
+                .Except(readdresses.Select(x => x.DestinationAddressPersistentLocalId))
+                .Where(AddressPersistentLocalIds.Contains)
+                .ToList();
+
+            if (!addressPersistentLocalIdsToAttach.Any() && !addressPersistentLocalIdsToDetach.Any())
             {
                 return;
             }
 
-            ApplyChange(new ParcelAddressWasReplacedBecauseAddressWasReaddressed(
+            ApplyChange(new ParcelAddressesWereReaddressed(
                 ParcelId,
                 CaPaKey,
-                addressPersistentLocalId,
-                previousAddressPersistentLocalId));
+                addressPersistentLocalIdsToAttach,
+                addressPersistentLocalIdsToDetach,
+                readdresses.Select(x => new AddressRegistryReaddress(x))));
         }
     }
 }

@@ -5,6 +5,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using System.Threading;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
+    using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -19,7 +20,9 @@ namespace ParcelRegistry.Consumer.Address.Projections
     {
         private readonly IDbContextFactory<BackOfficeContext> _backOfficeContextFactory;
 
-        public CommandHandlingKafkaProjection(IDbContextFactory<BackOfficeContext> backOfficeContextFactory)
+        public CommandHandlingKafkaProjection(
+            IDbContextFactory<BackOfficeContext> backOfficeContextFactory,
+            IParcels parcels)
         {
             _backOfficeContextFactory = backOfficeContextFactory;
 
@@ -159,26 +162,82 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     ct);
             });
 
-            When<AddressHouseNumberWasReaddressed>(async (commandHandler, message, ct) =>
+            When<StreetNameWasReaddressed>(async (commandHandler, message, ct) =>
             {
                 await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
 
-                await ReplaceBecauseOfReaddress(
-                    commandHandler,
-                    backOfficeContext,
-                    message.ReaddressedHouseNumber,
-                    message.Provenance,
-                    ct);
+                var readdresses = message.ReaddressedHouseNumbers
+                    .Select(x => new ReaddressData(
+                        new AddressPersistentLocalId(x.ReaddressedHouseNumber.SourceAddressPersistentLocalId),
+                        new AddressPersistentLocalId(x.ReaddressedHouseNumber.DestinationAddressPersistentLocalId)))
+                    .Concat(
+                        message.ReaddressedHouseNumbers
+                            .SelectMany(x => x.ReaddressedBoxNumbers)
+                            .Select(boxNumberAddress => new ReaddressData(
+                                new AddressPersistentLocalId(boxNumberAddress.SourceAddressPersistentLocalId),
+                                new AddressPersistentLocalId(boxNumberAddress.DestinationAddressPersistentLocalId))))
+                    .ToList();
 
-                foreach (var readdressedBoxNumber in message.ReaddressedBoxNumbers)
+                var sourceAddressPersistentLocalIds = readdresses
+                    .Select(x => (int)x.SourceAddressPersistentLocalId)
+                    .ToList();
+
+                var sourceAddressParcelRelations = await backOfficeContext.ParcelAddressRelations
+                    .AsNoTracking()
+                    .Where(x => sourceAddressPersistentLocalIds.Contains(x.AddressPersistentLocalId))
+                    .ToListAsync(cancellationToken: ct);
+
+                var commandByParcels = sourceAddressParcelRelations
+                    .GroupBy(
+                        relation => relation.ParcelId,
+                        relation => readdresses.Where(x => x.SourceAddressPersistentLocalId == relation.AddressPersistentLocalId))
+                    .Select(x => new ReaddressAddresses(
+                        new ParcelId(x.Key),
+                        x.SelectMany(a => a),
+                        FromProvenance(message.Provenance)))
+                    .ToList();
+
+                foreach (var command in commandByParcels)
                 {
-                    await ReplaceBecauseOfReaddress(
-                        commandHandler,
-                        backOfficeContext,
-                        readdressedBoxNumber,
-                        message.Provenance,
-                        ct);
+                    try
+                    {
+                        await commandHandler.HandleIdempotent(command, ct);
+                    }
+                    catch (IdempotencyException)
+                    {
+                        // do nothing
+                    }
                 }
+
+                await backOfficeContext.Database.BeginTransactionAsync();
+                
+                foreach (var parcelId in commandByParcels.Select(x => x.ParcelId))
+                {
+                    var parcel = await parcels.GetAsync(new ParcelStreamId(parcelId), ct);
+
+                    var backOfficeAddresses = (await backOfficeContext.ParcelAddressRelations
+                        .AsNoTracking()
+                        .Where(x => x.ParcelId == parcelId)
+                        .Select(x => x.AddressPersistentLocalId)
+                        .ToListAsync(cancellationToken: ct))
+                        .Select(x => new AddressPersistentLocalId(x))
+                        .ToList();
+
+                    var addressesToRemove = backOfficeAddresses.Except(parcel.AddressPersistentLocalIds).ToList();
+                    var addressesToAdd = parcel.AddressPersistentLocalIds.Except(backOfficeAddresses).ToList();
+
+                    foreach (var addressPersistentLocalId in addressesToRemove)
+                    {
+                        await backOfficeContext.RemoveIdempotentParcelAddressRelation(parcelId, addressPersistentLocalId, ct);
+                    }
+
+                    foreach (var addressPersistentLocalId in addressesToAdd)
+                    {
+                        await backOfficeContext.AddIdempotentParcelAddressRelation(parcelId, addressPersistentLocalId, ct);
+                    }
+                }
+
+                await backOfficeContext.Database.CommitTransactionAsync();
             });
 
             When<AddressWasRejectedBecauseOfReaddress>(async (commandHandler, message, ct) =>
@@ -190,7 +249,6 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     ct);
             });
 
-
             When<AddressWasRetiredBecauseOfReaddress>(async (commandHandler, message, ct) =>
             {
                 await DetachBecauseRetired(
@@ -199,37 +257,6 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     message.Provenance,
                     ct);
             });
-        }
-
-        private async Task ReplaceBecauseOfReaddress(
-            CommandHandler commandHandler,
-            BackOfficeContext backOfficeContext,
-            ReaddressedAddressData readdressedAddress,
-            Contracts.Provenance provenance,
-            CancellationToken ct)
-        {
-            var relations = backOfficeContext.ParcelAddressRelations
-                .AsNoTracking()
-                .Where(x =>
-                    x.AddressPersistentLocalId == readdressedAddress.SourceAddressPersistentLocalId)
-                .ToList();
-
-            foreach (var relation in relations)
-            {
-                var command = new ReplaceAttachedAddressBecauseAddressWasReaddressed(
-                    new ParcelId(relation.ParcelId),
-                    newAddressPersistentLocalId: new AddressPersistentLocalId(readdressedAddress.DestinationAddressPersistentLocalId),
-                    previousAddressPersistentLocalId: new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId),
-                    FromProvenance(provenance));
-
-                await commandHandler.Handle(command, ct);
-
-                // This should only be handled by the back office projections to prevent conflicts. Else a relation is added or removed twice.
-                // await backOfficeContext.RemoveIdempotentParcelAddressRelation(
-                //     command.ParcelId, new AddressPersistentLocalId(readdressedAddress.SourceAddressPersistentLocalId), ct);
-                // await backOfficeContext.AddIdempotentParcelAddressRelation(
-                //     command.ParcelId, new AddressPersistentLocalId(readdressedAddress.DestinationAddressPersistentLocalId), ct);
-            }
         }
 
         private async Task DetachBecauseRemoved(
@@ -264,9 +291,9 @@ namespace ParcelRegistry.Consumer.Address.Projections
         {
             await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
             var relations = backOfficeContext.ParcelAddressRelations
-                    .AsNoTracking()
-                    .Where(x => x.AddressPersistentLocalId == addressPersistentLocalId)
-                    .ToList();
+                .AsNoTracking()
+                .Where(x => x.AddressPersistentLocalId == addressPersistentLocalId)
+                .ToList();
 
             foreach (var relation in relations)
             {

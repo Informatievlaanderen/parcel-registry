@@ -2,6 +2,8 @@
 {
     using System.Threading.Tasks;
     using AutoFixture;
+    using Builders;
+    using Fixtures;
     using FluentAssertions;
     using Parcel;
     using Parcel.Events;
@@ -110,6 +112,68 @@
                     newRelation.Should().NotBeNull();
                     newRelation!.CaPaKey.Should().Be(@event.CaPaKey);
                     newRelation.Count.Should().Be(2);
+                });
+        }
+
+        [Fact]
+        public async Task GivenParcelAddressesWereReaddressed_ThenAddressesAreAttachedAndDetached()
+        {
+            _fixture.Customizations.Add(new WithUniqueInteger());
+
+            var firstParcelAddressWasAttachedV2 = _fixture.Create<ParcelAddressWasAttachedV2>();
+            var secondParcelAddressWasAttachedV2 = _fixture.Create<ParcelAddressWasAttachedV2>();
+
+            var attachedAddressPersistentLocalIds = new[]
+            {
+                _fixture.Create<int>(),
+                _fixture.Create<int>()
+            };
+            var detachedAddressPersistentLocalIds = new[]
+            {
+                firstParcelAddressWasAttachedV2.AddressPersistentLocalId,
+                secondParcelAddressWasAttachedV2.AddressPersistentLocalId
+            };
+
+            var eventBuilder = new ParcelAddressesWereReaddressedBuilder(_fixture);
+
+            foreach (var addressPersistentLocalId in attachedAddressPersistentLocalIds)
+            {
+                eventBuilder.WithAttachedAddress(addressPersistentLocalId);
+            }
+
+            foreach (var addressPersistentLocalId in detachedAddressPersistentLocalIds)
+            {
+                eventBuilder.WithDetachedAddress(addressPersistentLocalId);
+            }
+
+            var @event = eventBuilder.Build();
+
+            await Sut
+                .Given(
+                    _fixture.Create<ParcelWasImported>(),
+                    firstParcelAddressWasAttachedV2,
+                    secondParcelAddressWasAttachedV2,
+                    @event)
+                .Then(async context =>
+                {
+                    foreach (var addressPersistentLocalId in attachedAddressPersistentLocalIds)
+                    {
+                        var parcelAddressRelation = await context.ParcelLatestItemAddresses.FindAsync(
+                            @event.ParcelId,
+                            addressPersistentLocalId);
+
+                        parcelAddressRelation.Should().NotBeNull();
+                        parcelAddressRelation!.Count.Should().Be(1);
+                    }
+
+                    foreach (var addressPersistentLocalId in detachedAddressPersistentLocalIds)
+                    {
+                        var parcelAddressRelation = await context.ParcelLatestItemAddresses.FindAsync(
+                            @event.ParcelId,
+                            addressPersistentLocalId);
+
+                        parcelAddressRelation.Should().BeNull();
+                    }
                 });
         }
     }

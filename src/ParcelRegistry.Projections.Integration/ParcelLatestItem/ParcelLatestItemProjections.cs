@@ -137,6 +137,38 @@
                 }
             });
 
+            When<Envelope<ParcelAddressesWereReaddressed>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
+                {
+                    var relation = await context
+                        .ParcelLatestItemAddresses
+                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
+
+                    if (relation is not null)
+                    {
+                        context.ParcelLatestItemAddresses.Remove(relation);
+                    }
+                }
+
+                foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
+                {
+                    var relation = await context
+                        .ParcelLatestItemAddresses
+                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
+
+                    if (relation is null)
+                    {
+                        await context.ParcelLatestItemAddresses.AddAsync(
+                            new ParcelLatestItemAddress(
+                                message.Message.ParcelId,
+                                addressPersistentLocalId,
+                                message.Message.CaPaKey),
+                            ct);
+                    }
+                }
+            });
+
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
             {
                 var latestItemAddress = await context

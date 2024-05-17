@@ -102,9 +102,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                         DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelLinkExtractWithCountProjections, ExtractContext>(
-                    context => new ParcelLinkExtractWithCountProjections(
-                        context.Resolve<IOptions<ExtractConfig>>(),
-                        DbaseCodePage.Western_European_ANSI.ToEncoding()),
+                    context => new ParcelLinkExtractWithCountProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default);
         }
 

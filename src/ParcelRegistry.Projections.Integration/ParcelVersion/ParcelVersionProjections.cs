@@ -160,6 +160,44 @@
                 }
             });
 
+            When<Envelope<ParcelAddressesWereReaddressed>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelVersion(
+                    message.Message.ParcelId,
+                    message,
+                    _ => { }, ct);
+
+                foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
+                {
+                    var relation = await context
+                        .ParcelVersionAddresses
+                        .FindAsync([message.Position, message.Message.ParcelId, addressPersistentLocalId], ct);
+
+                    if (relation is not null)
+                    {
+                        context.ParcelVersionAddresses.Remove(relation);
+                    }
+                }
+
+                foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
+                {
+                    var relation = await context
+                        .ParcelVersionAddresses
+                        .FindAsync([message.Position, message.Message.ParcelId, addressPersistentLocalId], ct);
+
+                    if (relation is null)
+                    {
+                        await context.ParcelVersionAddresses.AddAsync(
+                            new ParcelVersionAddress(
+                                message.Position,
+                                message.Message.ParcelId,
+                                addressPersistentLocalId,
+                                message.Message.CaPaKey),
+                            ct);
+                    }
+                }
+            });
+
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
             {
                 await context.CreateNewParcelVersion(
