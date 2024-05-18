@@ -45,7 +45,7 @@ namespace ParcelRegistry.Parcel.Events
             CaPaKey = vbrCaPaKey;
             AttachedAddressPersistentLocalIds = attachedAddressPersistentLocalIds.Select(x => (int)x).ToList();
             DetachedAddressPersistentLocalIds = detachedAddressPersistentLocalIds.Select(x => (int)x).ToList();
-            AddressRegistryReaddresses = addressRegistryReaddresses;
+            AddressRegistryReaddresses = addressRegistryReaddresses.ToList();
         }
 
         [JsonConstructor]
