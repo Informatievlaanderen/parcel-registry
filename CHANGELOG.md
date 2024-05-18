@@ -1,3 +1,10 @@
+## [5.2.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.2.0...v5.2.1) (2024-05-18)
+
+
+### Bug Fixes
+
+* add missing migrations ([689b186](https://github.com/informatievlaanderen/parcel-registry/commit/689b186c033e0db7a5ea7942f1eb8957b6a1efb2))
+
 # [5.2.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.1.0...v5.2.0) (2024-05-17)
 
 
