@@ -1,3 +1,10 @@
+## [5.2.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.2.2...v5.2.3) (2024-05-22)
+
+
+### Bug Fixes
+
+* set command time out on backoffice context ([c068be4](https://github.com/informatievlaanderen/parcel-registry/commit/c068be494270a002234387ea0333e9e25ac87219))
+
 ## [5.2.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.2.1...v5.2.2) (2024-05-22)
 
 
