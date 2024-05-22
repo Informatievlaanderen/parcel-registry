@@ -72,7 +72,9 @@ namespace ParcelRegistry.Producer.Extensions
                 message.AttachedAddressPersistentLocalIds,
                 message.DetachedAddressPersistentLocalIds,
                 message.AddressRegistryReaddresses.Select(x =>
-                    new Contracts.AddressRegistryReaddress(x.SourceAddressPersistentLocalId, x.SourceAddressPersistentLocalId)),
+                    new Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common.AddressRegistryReaddress(
+                        x.SourceAddressPersistentLocalId,
+                        x.SourceAddressPersistentLocalId)),
                 message.Provenance.ToContract());
 
         public static Contracts.ParcelWasMigrated ToContract(this ParcelAggregate.ParcelWasMigrated message) =>
