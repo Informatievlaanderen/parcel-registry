@@ -16,7 +16,8 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
         public BackOfficeContext() { }
 
         public BackOfficeContext(DbContextOptions<BackOfficeContext> options)
-            : base(options) { }
+            : base(options)
+        { }
 
         public DbSet<ParcelAddressRelation> ParcelAddressRelations { get; set; }
 
