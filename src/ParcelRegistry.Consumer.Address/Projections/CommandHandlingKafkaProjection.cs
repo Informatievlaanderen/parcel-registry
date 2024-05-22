@@ -209,8 +209,8 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     }
                 }
 
-                await backOfficeContext.Database.BeginTransactionAsync();
-                
+                await backOfficeContext.Database.BeginTransactionAsync(ct);
+
                 foreach (var parcelId in commandByParcels.Select(x => x.ParcelId))
                 {
                     var parcel = await parcels.GetAsync(new ParcelStreamId(parcelId), ct);
@@ -237,7 +237,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     }
                 }
 
-                await backOfficeContext.Database.CommitTransactionAsync();
+                await backOfficeContext.Database.CommitTransactionAsync(ct);
             });
 
             When<AddressWasRejectedBecauseOfReaddress>(async (commandHandler, message, ct) =>

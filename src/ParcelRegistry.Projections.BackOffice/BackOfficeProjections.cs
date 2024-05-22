@@ -80,10 +80,7 @@ namespace ParcelRegistry.Projections.BackOffice
 
                 if (previousAddress is not null && previousAddress.Count == 1)
                 {
-                    await backOfficeContext.RemoveIdempotentParcelAddressRelation(
-                        new ParcelId(message.Message.ParcelId),
-                        new AddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId),
-                        cancellationToken);
+                    backOfficeContext.ParcelAddressRelations.Remove(previousAddress);
                 }
                 else if (previousAddress is not null)
                 {
@@ -97,22 +94,19 @@ namespace ParcelRegistry.Projections.BackOffice
 
                 if (newAddress is null)
                 {
-                    await backOfficeContext.AddIdempotentParcelAddressRelation(
-                        new ParcelId(message.Message.ParcelId),
-                        new AddressPersistentLocalId(message.Message.NewAddressPersistentLocalId),
+                    await backOfficeContext.ParcelAddressRelations.AddAsync(
+                        new ParcelAddressRelation(message.Message.ParcelId, message.Message.NewAddressPersistentLocalId),
                         cancellationToken);
                 }
                 else
                 {
                     newAddress.Count += 1;
                 }
+
+                await backOfficeContext.SaveChangesAsync(cancellationToken);
             });
 
-            When<Envelope<ParcelAddressesWereReaddressed>>((_, message, cancellationToken) =>
-            {
-                // Do nothing
-                return Task.CompletedTask;
-            });
+            When<Envelope<ParcelAddressesWereReaddressed>>((_, _, _) => Task.CompletedTask);
         }
     }
 }
