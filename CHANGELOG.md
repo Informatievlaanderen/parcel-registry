@@ -1,3 +1,11 @@
+## [5.2.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.2.1...v5.2.2) (2024-05-22)
+
+
+### Bug Fixes
+
+* bump grar.contracts ([6112454](https://github.com/informatievlaanderen/parcel-registry/commit/6112454ed91912f22126eb01755393c7b07cc59e))
+* old readdress event should be handled in a single transaction ([ee7ca00](https://github.com/informatievlaanderen/parcel-registry/commit/ee7ca00ea4ff39aff7b6b9e3f2b076445914e8d1))
+
 ## [5.2.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.2.0...v5.2.1) (2024-05-18)
 
 
