@@ -21,6 +21,8 @@ namespace ParcelRegistry.Projections.BackOffice
                         new ParcelId(message.Message.ParcelId),
                         new AddressPersistentLocalId(addressPersistentLocalId),
                         cancellationToken);
+
+                    await backOfficeContext.SaveChangesAsync(cancellationToken);
                 }
             });
 
@@ -31,6 +33,8 @@ namespace ParcelRegistry.Projections.BackOffice
                     new ParcelId(message.Message.ParcelId),
                     new AddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     cancellationToken);
+
+                await backOfficeContext.SaveChangesAsync(cancellationToken);
             });
 
             When<Envelope<ParcelAddressWasDetachedV2>>(async (_, message, cancellationToken) =>
@@ -40,6 +44,8 @@ namespace ParcelRegistry.Projections.BackOffice
                     new ParcelId(message.Message.ParcelId),
                     new AddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     cancellationToken);
+
+                await backOfficeContext.SaveChangesAsync(cancellationToken);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRejected>>(async (_, message, cancellationToken) =>
@@ -49,6 +55,8 @@ namespace ParcelRegistry.Projections.BackOffice
                     new ParcelId(message.Message.ParcelId),
                     new AddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     cancellationToken);
+
+                await backOfficeContext.SaveChangesAsync(cancellationToken);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRetired>>(async (_, message, cancellationToken) =>
@@ -58,6 +66,8 @@ namespace ParcelRegistry.Projections.BackOffice
                     new ParcelId(message.Message.ParcelId),
                     new AddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     cancellationToken);
+
+                await backOfficeContext.SaveChangesAsync(cancellationToken);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRemoved>>(async (_, message, cancellationToken) =>
@@ -67,6 +77,8 @@ namespace ParcelRegistry.Projections.BackOffice
                     new ParcelId(message.Message.ParcelId),
                     new AddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     cancellationToken);
+
+                await backOfficeContext.SaveChangesAsync(cancellationToken);
             });
 
             When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (_, message, cancellationToken) =>
