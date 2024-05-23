@@ -53,6 +53,7 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure
             }
 
             using var migrator = new BackOfficeContext(migratorOptions.Options);
+            migrator.Database.SetCommandTimeout(10 * 60);
             migrator.Database.Migrate();
         }
     }

@@ -19,7 +19,7 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
             : base(options)
         {
             Database.SetCommandTimeout(10 * 60);
-        }
+        } 
 
         public DbSet<ParcelAddressRelation> ParcelAddressRelations { get; set; }
 
