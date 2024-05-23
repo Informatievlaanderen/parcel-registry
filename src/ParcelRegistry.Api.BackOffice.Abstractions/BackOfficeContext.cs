@@ -18,7 +18,6 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
         public BackOfficeContext(DbContextOptions<BackOfficeContext> options)
             : base(options)
         {
-            Database.SetCommandTimeout(10 * 60);
         } 
 
         public DbSet<ParcelAddressRelation> ParcelAddressRelations { get; set; }
