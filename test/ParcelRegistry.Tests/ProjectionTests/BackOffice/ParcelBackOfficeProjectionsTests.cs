@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Tests.ProjectionTests.BackOffice
+namespace ParcelRegistry.Tests.ProjectionTests.BackOffice
 {
     using System;
     using System.Threading;
@@ -37,7 +37,7 @@
             var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
 
             await Sut
-                .Given(parcelWasMigrated)
+                .Given(BuildEnvelope(parcelWasMigrated))
                 .Then(async _ =>
                 {
                     foreach (var addressPersistentLocalId in parcelWasMigrated.AddressPersistentLocalIds)
@@ -58,7 +58,7 @@
             var parcelAddressWasAttachedV2 = _fixture.Create<ParcelAddressWasAttachedV2>();
 
             await Sut
-                .Given(parcelAddressWasAttachedV2)
+                .Given(BuildEnvelope(parcelAddressWasAttachedV2))
                 .Then(async _ =>
                 {
                     var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -80,7 +80,7 @@
                 parcelAddressWasAttachedV2.AddressPersistentLocalId);
 
             await Sut
-                .Given(parcelAddressWasAttachedV2)
+                .Given(BuildEnvelope(parcelAddressWasAttachedV2))
                 .Then(async _ =>
                 {
                     var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -101,7 +101,7 @@
                 parcelAddressWasDetachedV2.AddressPersistentLocalId);
 
             await Sut
-                .Given(parcelAddressWasDetachedV2)
+                .Given(BuildEnvelope(parcelAddressWasDetachedV2))
                 .Then(async _ =>
                 {
                     var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -117,7 +117,7 @@
             var parcelAddressWasDetachedV2 = _fixture.Create<ParcelAddressWasDetachedV2>();
 
             await Sut
-                .Given(parcelAddressWasDetachedV2)
+                .Given(BuildEnvelope(parcelAddressWasDetachedV2))
                 .Then(async _ =>
                 {
                     var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -137,7 +137,7 @@
                 parcelAddressWasDetachedBecauseAddressWasRejected.AddressPersistentLocalId);
 
             await Sut
-                .Given(parcelAddressWasDetachedBecauseAddressWasRejected)
+                .Given(BuildEnvelope(parcelAddressWasDetachedBecauseAddressWasRejected))
                 .Then(async _ =>
                 {
                     var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -154,7 +154,7 @@
             var parcelAddressWasDetachedBecauseAddressWasRejected = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRejected>();
 
             await Sut
-                .Given(parcelAddressWasDetachedBecauseAddressWasRejected)
+                .Given(BuildEnvelope(parcelAddressWasDetachedBecauseAddressWasRejected))
                 .Then(async _ =>
                 {
                     var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -175,7 +175,7 @@
                 parcelAddressWasDetachedBecauseAddressWasRetired.AddressPersistentLocalId);
 
             await Sut
-                .Given(parcelAddressWasDetachedBecauseAddressWasRetired)
+                .Given(BuildEnvelope(parcelAddressWasDetachedBecauseAddressWasRetired))
                 .Then(async _ =>
                 {
                     var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -192,7 +192,7 @@
             var parcelAddressWasDetachedBecauseAddressWasRetired = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRetired>();
 
             await Sut
-                .Given(parcelAddressWasDetachedBecauseAddressWasRetired)
+                .Given(BuildEnvelope(parcelAddressWasDetachedBecauseAddressWasRetired))
                 .Then(async _ =>
                 {
                     var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -213,7 +213,7 @@
                 parcelAddressWasDetachedBecauseAddressWasRemoved.AddressPersistentLocalId);
 
             await Sut
-                .Given(parcelAddressWasDetachedBecauseAddressWasRemoved)
+                .Given(BuildEnvelope(parcelAddressWasDetachedBecauseAddressWasRemoved))
                 .Then(async _ =>
                 {
                     var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -230,7 +230,7 @@
             var parcelAddressWasDetachedBecauseAddressWasRemoved = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRemoved>();
 
             await Sut
-                .Given(parcelAddressWasDetachedBecauseAddressWasRemoved)
+                .Given(BuildEnvelope(parcelAddressWasDetachedBecauseAddressWasRemoved))
                 .Then(async _ =>
                 {
                     var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(

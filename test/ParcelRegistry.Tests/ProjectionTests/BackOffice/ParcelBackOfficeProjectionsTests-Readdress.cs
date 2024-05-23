@@ -21,7 +21,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.BackOffice
             await AddRelation(@event.ParcelId, @event.PreviousAddressPersistentLocalId);
 
             await Sut
-                .Given(@event)
+                .Given(BuildEnvelope(@event))
                 .Then(async _ =>
                 {
                     var previousParcelAddressRelation = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -50,7 +50,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.BackOffice
             await _backOfficeContext.SaveChangesAsync(CancellationToken.None);
 
             await Sut
-                .Given(@event)
+                .Given(BuildEnvelope(@event))
                 .Then(async _ =>
                 {
                     var previousParcelAddressRelation = await _backOfficeContext.ParcelAddressRelations.FindAsync(
@@ -76,7 +76,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.BackOffice
             await AddRelation(@event.ParcelId, @event.NewAddressPersistentLocalId);
 
             await Sut
-                .Given(@event)
+                .Given(BuildEnvelope(@event))
                 .Then(async _ =>
                 {
                     var previousParcelAddressRelation = await _backOfficeContext.ParcelAddressRelations.FindAsync(
