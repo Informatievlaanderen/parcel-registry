@@ -1,3 +1,11 @@
+## [5.2.4](https://github.com/informatievlaanderen/parcel-registry/compare/v5.2.3...v5.2.4) (2024-05-24)
+
+
+### Bug Fixes
+
+* add delay to BackOfficeProjection handlers ([#777](https://github.com/informatievlaanderen/parcel-registry/issues/777)) ([8f99281](https://github.com/informatievlaanderen/parcel-registry/commit/8f9928183dd9f6ca34ecab6a61582e24fafcc534))
+* **ci:** add new stg pipeline ([f4a76b6](https://github.com/informatievlaanderen/parcel-registry/commit/f4a76b623e44dec9b00876fda306486303eae386))
+
 ## [5.2.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.2.2...v5.2.3) (2024-05-22)
 
 
