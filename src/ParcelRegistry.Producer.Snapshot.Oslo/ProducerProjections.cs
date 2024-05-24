@@ -4,6 +4,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using AllStream.Events;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
@@ -18,9 +19,27 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
 
         private readonly IProducer _producer;
 
-        public ProducerProjections(IProducer producer, ISnapshotManager snapshotManager)
+        public ProducerProjections(
+            IProducer producer,
+            ISnapshotManager snapshotManager,
+            IOsloProxy osloProxy)
         {
             _producer = producer;
+
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<ParcelOsloSnapshotsWereRequested>>(async (_, message, ct) =>
+            {
+                foreach (var caPaKey in message.Message.ParcelIdsWithCapaKey.Values)
+                {
+                    if (ct.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                    await FindAndProduce(async () =>
+                            await osloProxy.GetSnapshot(caPaKey, ct),
+                        message.Position,
+                        ct);
+                }
+            });
 
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<ParcelWasMigrated>>(async (_, message, ct) =>
             {

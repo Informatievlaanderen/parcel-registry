@@ -7,7 +7,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers
     using Parcel;
     using TicketingService.Abstractions;
 
-    public class AttachAddressHandler : SqsHandler<AttachAddressSqsRequest>
+    public sealed class AttachAddressHandler : SqsHandler<AttachAddressSqsRequest>
     {
         public const string Action = "AttachAddressParcel";
 

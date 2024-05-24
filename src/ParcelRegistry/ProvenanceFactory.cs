@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Parcel
+namespace ParcelRegistry
 {
     using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
