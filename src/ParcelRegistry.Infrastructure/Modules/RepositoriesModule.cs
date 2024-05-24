@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Infrastructure.Modules
 {
+    using AllStream;
     using Autofac;
     using Parcel;
     using Repositories;
@@ -16,6 +17,10 @@ namespace ParcelRegistry.Infrastructure.Modules
             builder
                 .RegisterType<Parcels>()
                 .As<IParcels>();
+
+            builder
+                .RegisterType<AllStreamRepository>()
+                .As<IAllStreamRepository>();
         }
     }
 }

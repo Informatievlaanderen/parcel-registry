@@ -1,10 +1,9 @@
 namespace ParcelRegistry.Infrastructure.Modules
 {
-    using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.CommandHandling;
+    using Legacy;
     using Microsoft.Extensions.Configuration;
-    using Parcel;
 
     public class CommandHandlingModule : Module
     {
@@ -17,8 +16,9 @@ namespace ParcelRegistry.Infrastructure.Modules
         {
             builder.RegisterModule(new AggregateSourceModule(_configuration));
 
-            Legacy.CommandHandlerModules.Register(builder);
             CommandHandlerModules.Register(builder);
+            ParcelRegistry.Parcel.CommandHandlerModules.Register(builder);
+            AllStream.CommandHandlerModules.Register(builder);
 
             builder
                 .RegisterType<CommandHandlerResolver>()

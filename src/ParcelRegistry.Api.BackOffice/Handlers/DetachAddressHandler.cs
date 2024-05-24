@@ -7,7 +7,7 @@ namespace ParcelRegistry.Api.BackOffice.Handlers
     using Parcel;
     using TicketingService.Abstractions;
 
-    public class DetachAddressHandler : SqsHandler<DetachAddressSqsRequest>
+    public sealed class DetachAddressHandler : SqsHandler<DetachAddressSqsRequest>
     {
         public const string Action = "DetachAddressParcel";
 
