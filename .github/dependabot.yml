@@ -45,12 +45,6 @@ updates:
   rebase-strategy: "disabled"
 
 - package-ecosystem: docker
-  directory: "/src/ParcelRegistry.Projections.Syndication"
-  schedule:
-    interval: weekly
-  rebase-strategy: "disabled"
-
-- package-ecosystem: docker
   directory: "/src/ParcelRegistry.Projector"
   schedule:
     interval: weekly
