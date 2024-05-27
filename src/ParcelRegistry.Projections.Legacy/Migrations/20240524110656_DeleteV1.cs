@@ -11,6 +11,8 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql($@"DROP VIEW [{Infrastructure.Schema.Legacy}].[vw_ParcelDetailListCount]");
+
             migrationBuilder.DropTable(
                 name: "ParcelAddresses",
                 schema: "ParcelRegistryLegacy");
