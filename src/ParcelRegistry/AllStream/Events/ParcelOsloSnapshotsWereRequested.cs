@@ -30,8 +30,6 @@ namespace ParcelRegistry.AllStream.Events
 
         [JsonConstructor]
         private ParcelOsloSnapshotsWereRequested(
-            Guid parcelId,
-            string caPaKey,
             IDictionary<Guid, string> parcelIdsWithCapaKey,
             ProvenanceData provenance)
             : this(
