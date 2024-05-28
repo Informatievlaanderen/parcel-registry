@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Api.Extract.Extracts
+namespace ParcelRegistry.Api.Extract.Extracts
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -14,7 +14,7 @@
         public static IEnumerable<ExtractFile> CreateParcelFiles(ExtractContext context)
         {
             var extractItems = context
-                .ParcelLinkExtract
+                .ParcelLinkExtractWithCount
                 .AsNoTracking();
 
             var parcelProjectionState = context

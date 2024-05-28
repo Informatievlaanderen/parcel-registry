@@ -5,10 +5,8 @@ namespace ParcelRegistry.Projections.Legacy
     using Microsoft.EntityFrameworkCore;
     using ParcelDetailV2;
     using ParcelSyndication;
-    using ParcelDetailAddressWithCountV2 = ParcelDetailWithCountV2.ParcelDetailAddressV2;
     using ParcelDetailWithCount = ParcelDetailWithCountV2.ParcelDetailV2;
-
-
+    
     public class LegacyContext : RunnerDbContext<LegacyContext>
     {
         public override string ProjectionStateSchema => Schema.Legacy;
@@ -16,9 +14,6 @@ namespace ParcelRegistry.Projections.Legacy
 
         public DbSet<ParcelDetailV2.ParcelDetailV2> ParcelDetailV2 { get; set; }
         public DbSet<ParcelDetailWithCount> ParcelDetailWithCountV2 { get; set; }
-
-        public DbSet<ParcelDetailAddressV2> ParcelAddressesV2 { get; set; }
-        public DbSet<ParcelDetailAddressWithCountV2> ParcelAddressesWithCountV2 { get; set; }
 
         public DbSet<ParcelSyndicationItem> ParcelSyndication { get; set; }
 

@@ -30,7 +30,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Detail
         {
             var parcel =
                 await _context
-                    .ParcelDetailV2
+                    .ParcelDetailWithCountV2
                     .Include(x => x.Addresses)
                     .AsNoTracking()
                     .SingleOrDefaultAsync(item => item.CaPaKey == request.CaPaKey, cancellationToken);
