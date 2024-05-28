@@ -10,7 +10,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
     using Convertors;
     using Microsoft.EntityFrameworkCore;
     using Projections.Legacy;
-    using Projections.Legacy.ParcelDetailV2;
+    using Projections.Legacy.ParcelDetailWithCountV2;
 
     public class ParcelListOsloV2Query : Query<ParcelListV2QueryItem, ParcelFilter>
     {
@@ -23,7 +23,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
         protected override IQueryable<ParcelListV2QueryItem> Filter(FilteringHeader<ParcelFilter> filtering)
         {
             var parcels = _context
-                .ParcelDetailV2
+                .ParcelDetailWithCountV2
                 .AsNoTracking()
                 .OrderBy(x => x.CaPaKey)
                 .Where(x => !x.Removed);

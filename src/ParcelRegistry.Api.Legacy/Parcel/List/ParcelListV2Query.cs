@@ -6,12 +6,11 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
     using Be.Vlaanderen.Basisregisters.Api.Search;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
-    using Microsoft.EntityFrameworkCore;
     using Convertors;
+    using Microsoft.EntityFrameworkCore;
     using ParcelRegistry.Projections.Legacy;
-    using ParcelRegistry.Projections.Legacy.ParcelDetailV2;
+    using ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2;
 
     public class ParcelListV2Query : Query<ParcelListV2QueryItem, ParcelFilter>
     {
@@ -24,7 +23,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
         protected override IQueryable<ParcelListV2QueryItem> Filter(FilteringHeader<ParcelFilter> filtering)
         {
             var parcels = _context
-                .ParcelDetailV2
+                .ParcelDetailWithCountV2
                 .AsNoTracking()
                 .OrderBy(x => x.CaPaKey)
                 .Where(x => !x.Removed);
