@@ -30,18 +30,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         [Fact]
         public async Task AddressMigratedToStreetName_AddsAddress()
         {
-            var addressStatus = Fixture
-                .Build<AddressStatus>()
-                .FromFactory(() =>
-                {
-                    var statuses = new List<AddressStatus>
-                    {
-                        AddressStatus.Current, AddressStatus.Proposed, AddressStatus.Rejected, AddressStatus.Retired
-                    };
-
-                    return statuses[new Random(Fixture.Create<int>()).Next(0, statuses.Count - 1)];
-                })
-                .Create();
+            var addressStatus = GetRandomAddressStatus();
 
             var addressWasMigratedToStreetName = Fixture
                 .Build<AddressWasMigratedToStreetName>()
@@ -729,6 +718,51 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         }
 
         [Fact]
+        public async Task AddressRemovalWasCorrected_UpdatesTheEntireAddress()
+        {
+            var addressWasProposedV2 = CreateAddressWasProposedV2();
+            var addressWasRemovedV2 = Fixture.Build<AddressWasRemovedV2>()
+                .FromFactory(() => new AddressWasRemovedV2(
+                    addressWasProposedV2.StreetNamePersistentLocalId,
+                    addressWasProposedV2.AddressPersistentLocalId,
+                    Fixture.Create<Provenance>()))
+                .Create();
+            var addressRemovalWasCorrected = Fixture.Build<AddressRemovalWasCorrected>()
+                .FromFactory(() => new AddressRemovalWasCorrected(
+                    addressWasProposedV2.StreetNamePersistentLocalId,
+                    addressWasProposedV2.AddressPersistentLocalId,
+                    GetRandomAddressStatus(),
+                    Fixture.Create<string>(),
+                    Fixture.Create<string>(),
+                    Fixture.Create<string>(),
+                    Fixture.Create<string>(),
+                    Fixture.Create<ExtendedWkbGeometry>().ToString(),
+                    Fixture.Create<bool>(),
+                    Fixture.Create<string>(),
+                    Fixture.Create<int?>(),
+                    Fixture.Create<Provenance>()
+                    ))
+                .Create();
+
+            Given(addressWasProposedV2, addressWasRemovedV2, addressRemovalWasCorrected);
+
+            await Then(async context =>
+            {
+                var address =
+                    await context.AddressConsumerItems.FindAsync(
+                        addressWasProposedV2.AddressPersistentLocalId);
+
+                address.Should().NotBeNull();
+                address!.Status.Should().Be(AddressStatus.Parse(addressRemovalWasCorrected.Status));
+                address.GeometryMethod.Should().Be(addressRemovalWasCorrected.GeometryMethod);
+                address.GeometrySpecification.Should().Be(addressRemovalWasCorrected.GeometrySpecification);
+                address.Position.Should().Be(
+                    (Point)_wkbReader.Read(addressRemovalWasCorrected.ExtendedWkbGeometry.ToByteArray()));
+                address.IsRemoved.Should().BeFalse();
+            });
+        }
+
+        [Fact]
         public async Task AddressWasRemovedBecauseHouseNumberWasRemoved_UpdatesStatusAddress()
         {
             var addressWasProposedV2 = CreateAddressWasProposedV2();
@@ -830,6 +864,23 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                     Fixture.Create<ExtendedWkbGeometry>().ToString(),
                     Fixture.Create<Provenance>()))
                 .Create();
+        }
+
+        private AddressStatus GetRandomAddressStatus()
+        {
+            var addressStatus = Fixture
+                .Build<AddressStatus>()
+                .FromFactory(() =>
+                {
+                    var statuses = new List<AddressStatus>
+                    {
+                        AddressStatus.Current, AddressStatus.Proposed, AddressStatus.Rejected, AddressStatus.Retired
+                    };
+
+                    return statuses[new Random(Fixture.Create<int>()).Next(0, statuses.Count - 1)];
+                })
+                .Create();
+            return addressStatus;
         }
 
         protected override ConsumerAddressContext CreateContext()
