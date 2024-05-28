@@ -26,9 +26,6 @@ files
 
   ParcelRegistry.Projections.Legacy.dll => lib\net8.0
   ParcelRegistry.Projections.Legacy.pdb => lib\net8.0
-
-  ParcelRegistry.Projections.Syndication.dll => lib\net8.0
-  ParcelRegistry.Projections.Syndication.pdb => lib\net8.0
-  
+ 
   ParcelRegistry.dll => lib\net8.0
   ParcelRegistry.pdb => lib\net8.0
