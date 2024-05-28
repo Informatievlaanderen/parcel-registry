@@ -1,3 +1,18 @@
+# [5.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.2.4...v5.3.0) (2024-05-28)
+
+
+### Bug Fixes
+
+* drop vw_ParcelDetailListCount ([660c9b9](https://github.com/informatievlaanderen/parcel-registry/commit/660c9b9edecd3ab39444a4b1a1e3f1a69e136f30))
+* json constructor ParcelOsloSnapshotsWereRequested ([06a2dc9](https://github.com/informatievlaanderen/parcel-registry/commit/06a2dc9ab490874c7780719718da25e7093b8e1b))
+
+
+### Features
+
+* consume AddressRemovalWasCorrected ([f68cb5b](https://github.com/informatievlaanderen/parcel-registry/commit/f68cb5b666eee35a2ae776db171f0d078127e0e7))
+* create oslo snapshots ([1a47eea](https://github.com/informatievlaanderen/parcel-registry/commit/1a47eea51052df1169debaee44c4146b48bee8ee))
+* delete syndication project ([aa169c9](https://github.com/informatievlaanderen/parcel-registry/commit/aa169c9fca010a170bc5d494a266fb65c22f5e41))
+
 ## [5.2.4](https://github.com/informatievlaanderen/parcel-registry/compare/v5.2.3...v5.2.4) (2024-05-24)
 
 
