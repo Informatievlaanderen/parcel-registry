@@ -1,19 +1,13 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenRetiringParcel
 {
-    using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Builders;
     using Fixtures;
     using Parcel;
-    using Parcel.Commands;
-    using Parcel.Events;
     using Parcel.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
-    using ParcelId = ParcelRegistry.Legacy.ParcelId;
     using ParcelStatus = Parcel.ParcelStatus;
 
     public class GivenParcelIsRemoved : ParcelRegistryTest

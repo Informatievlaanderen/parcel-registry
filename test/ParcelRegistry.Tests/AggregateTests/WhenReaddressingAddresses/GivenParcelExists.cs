@@ -194,8 +194,11 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenReaddressingAddresses
             var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
                 .WithStatus(ParcelStatus.Realized)
                 .WithAddress(sourceAddressPersistentLocalId)
+                .WithAddress(sourceAddressPersistentLocalId)
                 .WithAddress(otherAddressPersistentLocalId)
                 .Build();
+
+            parcelWasMigrated.AddressPersistentLocalIds.Count(x => x == sourceAddressPersistentLocalId).Should().Be(2);
 
             var @event = new ParcelAddressesWereReaddressed(
                 Fixture.Create<ParcelId>(),

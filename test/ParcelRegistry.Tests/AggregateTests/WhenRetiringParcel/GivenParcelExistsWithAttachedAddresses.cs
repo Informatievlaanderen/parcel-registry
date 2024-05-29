@@ -1,4 +1,4 @@
-﻿namespace ParcelRegistry.Tests.AggregateTests.WhenRetiringParcel
+namespace ParcelRegistry.Tests.AggregateTests.WhenRetiringParcel
 {
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource;

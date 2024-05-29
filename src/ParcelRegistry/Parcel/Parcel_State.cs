@@ -113,28 +113,28 @@ namespace ParcelRegistry.Parcel
 
         private void When(ParcelAddressWasDetachedV2 @event)
         {
-            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            _addressPersistentLocalIds.RemoveAll(x => x == new AddressPersistentLocalId(@event.AddressPersistentLocalId));
 
             _lastEvent = @event;
         }
 
         private void When(ParcelAddressWasDetachedBecauseAddressWasRemoved @event)
         {
-            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            _addressPersistentLocalIds.RemoveAll(x => x == new AddressPersistentLocalId(@event.AddressPersistentLocalId));
 
             _lastEvent = @event;
         }
 
         private void When(ParcelAddressWasDetachedBecauseAddressWasRejected @event)
         {
-            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            _addressPersistentLocalIds.RemoveAll(x => x == new AddressPersistentLocalId(@event.AddressPersistentLocalId));
 
             _lastEvent = @event;
         }
 
         private void When(ParcelAddressWasDetachedBecauseAddressWasRetired @event)
         {
-            _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(@event.AddressPersistentLocalId));
+            _addressPersistentLocalIds.RemoveAll(x => x == new AddressPersistentLocalId(@event.AddressPersistentLocalId));
 
             _lastEvent = @event;
         }
@@ -151,7 +151,7 @@ namespace ParcelRegistry.Parcel
         {
             foreach (var addressPersistentLocalId in @event.DetachedAddressPersistentLocalIds)
             {
-                _addressPersistentLocalIds.Remove(new AddressPersistentLocalId(addressPersistentLocalId));
+                _addressPersistentLocalIds.RemoveAll(x => x == new AddressPersistentLocalId(addressPersistentLocalId));
             }
 
             foreach (var addressPersistentLocalId in @event.AttachedAddressPersistentLocalIds)

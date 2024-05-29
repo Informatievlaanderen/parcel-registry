@@ -1,6 +1,7 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddressWasRemoved
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Autofac;
     using AutoFixture;
     using BackOffice;
@@ -66,8 +67,11 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenDetachingAddressBecauseAddress
             var parcelWasMigrated = new ParcelWasMigratedBuilder(Fixture)
                 .WithStatus(ParcelStatus.Realized)
                 .WithAddress(addressPersistentLocalId)
+                .WithAddress(addressPersistentLocalId)
                 .WithAddress(456)
                 .Build();
+
+            parcelWasMigrated.AddressPersistentLocalIds.Count(x => x == addressPersistentLocalId).Should().Be(2);
 
             var parcelAddressWasDetachedV2 = new ParcelAddressWasDetachedBecauseAddressWasRemovedBuilder(Fixture)
                 .WithAddress(addressPersistentLocalId)
