@@ -1,3 +1,10 @@
+## [5.3.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.3.1...v5.3.2) (2024-05-29)
+
+
+### Bug Fixes
+
+* remove all duplicate address links when detaching ([#785](https://github.com/informatievlaanderen/parcel-registry/issues/785)) ([8bccf09](https://github.com/informatievlaanderen/parcel-registry/commit/8bccf09eb3c8e42ae2356a27599bd87d02a3a00b))
+
 ## [5.3.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.3.0...v5.3.1) (2024-05-28)
 
 # [5.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.2.4...v5.3.0) (2024-05-28)
