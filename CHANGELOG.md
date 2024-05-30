@@ -1,3 +1,10 @@
+## [5.3.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.3.2...v5.3.3) (2024-05-30)
+
+
+### Bug Fixes
+
+* last changed list should wait for new WithCount projection ([df4e800](https://github.com/informatievlaanderen/parcel-registry/commit/df4e800351acd2adf0fcb94aef0d5c60f279004d))
+
 ## [5.3.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.3.1...v5.3.2) (2024-05-29)
 
 
