@@ -7,7 +7,6 @@ namespace ParcelRegistry.Infrastructure
         public const string Import = "ParcelRegistryImport";
         public const string Legacy = "ParcelRegistryLegacy";
         public const string Extract = "ParcelRegistryExtract";
-        public const string Syndication = "ParcelRegistrySyndication";
         public const string ConsumerAddress = "ParcelRegistryConsumerAddress";
         public const string BackOffice = "ParcelRegistryBackOffice";
         public const string BackOfficeProjections = "ParcelRegistryBackOfficeProjections";
@@ -23,7 +22,6 @@ namespace ParcelRegistry.Infrastructure
         public const string Legacy = "__EFMigrationsHistoryLegacy";
         public const string Extract = "__EFMigrationsHistoryExtract";
         public const string RedisDataMigration = "__EFMigrationsHistoryDataMigration";
-        public const string Syndication = "__EFMigrationsHistorySyndication";
         public const string ConsumerAddress = "__EFMigrationsHistoryConsumerAddress";
         public const string BackOffice = "__EFMigrationsHistoryBackOffice";
         public const string BackOfficeProjections = "__EFMigrationsHistoryBackOfficeProjections";

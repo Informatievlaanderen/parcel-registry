@@ -11,11 +11,12 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
     using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
-    using ParcelRegistry.Infrastructure;
+    using Legacy.ParcelDetailWithCountV2;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using LastChangedListContextMigrationFactory = LastChangedList.LastChangedListContextMigrationFactory;
+    using ParcelRegistry.Infrastructure;
+    using LastChangedListContextMigrationFactory = LastChangedListContextMigrationFactory;
 
     public class LastChangedListConsoleModule : Module
     {
@@ -61,7 +62,7 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
         private void RegisterProjections(ContainerBuilder builder)
         {
             var logger = _loggerFactory.CreateLogger<LastChangedListConsoleModule>();
-            var connectionString = _configuration.GetConnectionString("LastChangedList");
+            var connectionString = _configuration.GetConnectionString("LastChangedList")!;
 
             builder.RegisterModule(new LastChangedListModule(connectionString, _services, _loggerFactory));
 
@@ -73,10 +74,10 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
                 "\tTableName: {TableName}",
                 nameof(LastChangedListContext), LastChangedListContext.Schema, LastChangedListContext.MigrationsHistoryTable);
 
-            builder.Register(c =>
+            builder.Register(_ =>
                     new LastChangedListParcelCacheValidator(
-                        _configuration.GetConnectionString("LegacyProjections"),
-                        "ParcelRegistry.Projections.Legacy.ParcelDetailV2.ParcelDetailV2Projections"))
+                        _configuration.GetConnectionString("LegacyProjections")!,
+                        ParcelDetailV2Configuration.ProjectionStateName))
                 .AsSelf();
 
             builder

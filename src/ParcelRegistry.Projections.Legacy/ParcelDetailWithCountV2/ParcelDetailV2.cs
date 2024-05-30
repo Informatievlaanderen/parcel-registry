@@ -66,6 +66,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2
     public class ParcelDetailV2Configuration : IEntityTypeConfiguration<ParcelDetailV2>
     {
         internal const string TableName = "ParcelDetailsWithCountV2";
+        public static readonly string ProjectionStateName = typeof(ParcelDetailV2Projections).FullName!;
 
         public void Configure(EntityTypeBuilder<ParcelDetailV2> builder)
         {
