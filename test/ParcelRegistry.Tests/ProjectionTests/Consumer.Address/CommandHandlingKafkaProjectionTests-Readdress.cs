@@ -93,7 +93,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                                     && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdOne)
                                 && y.Readdresses.Any(z =>
                                     z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdTwo
-                                    && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdTwo)),
+                                    && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdTwo)
+                                && y.Provenance.Timestamp.ToString() == @event.Provenance.Timestamp
+                            ),
                             CancellationToken.None),
                     Times.Once);
                 _mockCommandHandler.Verify(x =>
@@ -103,7 +105,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
                                 && y.Readdresses.Count == 1
                                 && y.Readdresses.Any(z =>
                                     z.SourceAddressPersistentLocalId == sourceAddressPersistentLocalIdThree
-                                    && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdThree)),
+                                    && z.DestinationAddressPersistentLocalId == destinationAddressPersistentLocalIdThree)
+                                && y.Provenance.Timestamp.ToString() == @event.Provenance.Timestamp
+                            ),
                             CancellationToken.None),
                     Times.Once);
 

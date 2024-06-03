@@ -11,6 +11,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Microsoft.EntityFrameworkCore;
     using NodaTime;
+    using NodaTime.Text;
     using Parcel;
     using Parcel.Commands;
     using Contracts = Be.Vlaanderen.Basisregisters.GrAr.Contracts.Common;
@@ -333,7 +334,7 @@ namespace ParcelRegistry.Consumer.Address.Projections
 
         private static Provenance FromProvenance(Contracts.Provenance provenance) =>
             new Provenance(
-                SystemClock.Instance.GetCurrentInstant(),
+                InstantPattern.General.Parse(provenance.Timestamp).Value,
                 Enum.Parse<Application>(Application.AddressRegistry.ToString()),
                 new Reason(provenance.Reason),
                 new Operator(string.Empty),
