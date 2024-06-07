@@ -10,9 +10,8 @@ namespace ParcelRegistry.Projections.Extract
     {
         public override string ProjectionStateSchema => Schema.Extract;
 
-        public DbSet<ParcelExtractItemV2> ParcelExtractV2 { get; set; }
+        public DbSet<ParcelExtractItem> ParcelExtract { get; set; }
         public DbSet<ParcelLinkExtractItem> ParcelLinkExtract { get; set; }
-        public DbSet<ParcelLinkExtractWithCount.ParcelLinkExtractItem> ParcelLinkExtractWithCount { get; set; }
 
         // This needs to be here to please EF
         public ExtractContext() { }

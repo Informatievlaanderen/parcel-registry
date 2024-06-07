@@ -14,13 +14,13 @@ namespace ParcelRegistry.Api.Extract.Extracts
         public static IEnumerable<ExtractFile> CreateParcelFiles(ExtractContext context)
         {
             var extractItems = context
-                .ParcelExtractV2
+                .ParcelExtract
                 .AsNoTracking();
 
             var parcelProjectionState = context
                 .ProjectionStates
                 .AsNoTracking()
-                .Single(m => m.Name == typeof(ParcelExtractV2Projections).FullName);
+                .Single(m => m.Name == typeof(ParcelExtractProjections).FullName);
             var extractMetadata = new Dictionary<string,string>
             {
                 { ExtractMetadataKeys.LatestEventId, parcelProjectionState.Position.ToString()}
