@@ -70,21 +70,6 @@ jobs:
       dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
-  build-api-legacy:
-    name: Build Api Legacy
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/parcel-registry
-      image-file: pr-api-legacy-image.tar
-      image-name: api-legacy
-      test-project: ParcelRegistry.Tests
-      build-project: ParcelRegistry.Api.Legacy
-      semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
-    secrets: inherit
-
   build-api-oslo:
     name: Build Api Oslo
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
@@ -262,19 +247,6 @@ jobs:
       dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
-  pack-api-legacy:
-    name: Pack Api Legacy
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      pack-file: Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy
-      test-project: ParcelRegistry.Tests
-      build-project: ParcelRegistry.Api.Legacy
-      semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
-    secrets: inherit
-
   pack-api-oslo:
     name: Pack Api Oslo
     uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
@@ -321,11 +293,9 @@ jobs:
     needs: [ set-release-version,
       #pack-api-backoffice,
       pack-api-backoffice-abstractions,
-      pack-api-legacy,
       pack-api-oslo,
       pack-api-extract,
       build-api-backoffice,
-      build-api-legacy,
       build-api-oslo,
       build-api-extract,
       build-projector,
@@ -404,13 +374,6 @@ jobs:
       continue-on-error: false
       with:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions-${{ needs.set-release-version.outputs.version }}
-        path: dist/nuget/
-
-    - name: Download NuGet Api Legacy
-      uses: actions/download-artifact@v4
-      continue-on-error: false
-      with:
-        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
     - name: Download NuGet Api Oslo
@@ -560,12 +523,6 @@ jobs:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions-${{ needs.release.outputs.version }}
         path: ~/
 
-    - name: Download NuGet package api-legacy
-      uses: actions/download-artifact@v4
-      with:
-        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy-${{ needs.release.outputs.version }}
-        path: ~/
-
     - name: Download NuGet package api-oslo
       uses: actions/download-artifact@v4
       with:
@@ -583,7 +540,6 @@ jobs:
       # dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       run: |
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Legacy.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       env:
@@ -661,7 +617,6 @@ jobs:
       matrix:
         image: [
           'api-backoffice',
-          'api-legacy',
           'api-oslo',
           'api-extract',
           'projector',
