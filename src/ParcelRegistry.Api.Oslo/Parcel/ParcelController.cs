@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Api.Oslo.Parcel
 {
+    using System.Net.Mime;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
@@ -17,6 +18,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Swashbuckle.AspNetCore.Filters;
+    using Sync;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [ApiVersion("2.0")]
@@ -109,6 +111,29 @@ namespace ParcelRegistry.Api.Oslo.Parcel
             var pagination = new NoPaginationRequest();
 
             return Ok(await _mediator.Send(new ParcelCountOsloRequest(filtering, sorting, pagination), cancellationToken));
+        }
+
+        /// <summary>
+        /// Vraag een lijst met wijzigingen van percelen op.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("sync")]
+        [Produces("text/xml")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParcelSyndicationResponseExamples))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(BadRequestResponseExamples))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        public async Task<IActionResult> Sync(CancellationToken cancellationToken = default)
+        {
+            return new ContentResult
+            {
+                Content = await _mediator.Send(new SyncRequest(Request), cancellationToken),
+                ContentType = MediaTypeNames.Text.Xml,
+                StatusCode = StatusCodes.Status200OK
+            };
         }
     }
 }

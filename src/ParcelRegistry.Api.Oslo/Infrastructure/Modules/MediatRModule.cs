@@ -5,6 +5,7 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure.Modules
     using Parcel.Count;
     using Parcel.Detail;
     using Parcel.List;
+    using Parcel.Sync;
     using Module = Autofac.Module;
 
     public class MediatRModule : Module
@@ -19,6 +20,7 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure.Modules
             builder.RegisterType<ParcelListOsloV2Handler>().AsImplementedInterfaces();
             builder.RegisterType<ParcelDetailOsloV2Handler>().AsImplementedInterfaces();
             builder.RegisterType<ParcelCountOsloV2Handler>().AsImplementedInterfaces();
+            builder.RegisterType<SyncHandler>().AsImplementedInterfaces();
         }
     }
 }
