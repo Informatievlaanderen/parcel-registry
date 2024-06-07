@@ -5,18 +5,18 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-    public class ParcelExtractItemV2
+    public class ParcelExtractItem
     {
         public Guid ParcelId { get; set; }
         public string CaPaKey { get; set; }
         public byte[]? DbaseRecord { get; set; }
     }
 
-    public class ParcelExtractItemV2Configuration : IEntityTypeConfiguration<ParcelExtractItemV2>
+    public class ParcelExtractItemConfiguration : IEntityTypeConfiguration<ParcelExtractItem>
     {
-        private const string TableName = "ParcelV2";
+        private const string TableName = "Parcels";
 
-        public void Configure(EntityTypeBuilder<ParcelExtractItemV2> builder)
+        public void Configure(EntityTypeBuilder<ParcelExtractItem> builder)
         {
             builder.ToTable(TableName, Schema.Extract)
                 .HasKey(p => p.ParcelId)

@@ -4,11 +4,10 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
-    using Microsoft.Extensions.Options;
-    using Parcel.Events;
+    using ParcelRegistry.Parcel.Events;
 
     [ConnectedProjectionName("Extract perceelkoppelingen met adres")]
     [ConnectedProjectionDescription("Projectie die de perceel koppelingen data voor het adreskoppelingen extract voorziet.")]
@@ -18,7 +17,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
 
         private readonly Encoding _encoding;
 
-        public ParcelLinkExtractProjections(IOptions<ExtractConfig> extractConfig, Encoding encoding)
+        public ParcelLinkExtractProjections(Encoding encoding)
         {
             _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
@@ -38,6 +37,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
                             ParcelId = message.Message.ParcelId,
                             CaPaKey = message.Message.CaPaKey,
                             AddressPersistentLocalId = addressPersistentLocalId,
+                            Count = 1,
                             DbaseRecord = new ParcelLinkDbaseRecord
                             {
                                 objecttype = { Value = ParcelObjectType },
@@ -57,6 +57,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
                         ParcelId = message.Message.ParcelId,
                         CaPaKey = message.Message.CaPaKey,
                         AddressPersistentLocalId = message.Message.AddressPersistentLocalId,
+                        Count = 1,
                         DbaseRecord = new ParcelLinkDbaseRecord
                         {
                             objecttype = { Value = ParcelObjectType },
@@ -88,22 +89,72 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
 
             When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (context, message, ct) =>
             {
-                await RemoveParcelLink(context, message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId, ct);
-
-                await context
+                var previousAddress = await context
                     .ParcelLinkExtract
-                    .AddAsync(new ParcelLinkExtractItem
-                    {
-                        ParcelId = message.Message.ParcelId,
-                        CaPaKey = message.Message.CaPaKey,
-                        AddressPersistentLocalId = message.Message.NewAddressPersistentLocalId,
-                        DbaseRecord = new ParcelLinkDbaseRecord
+                    .FindAsync(new object?[] { message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId }, ct);
+
+                if (previousAddress is not null && previousAddress.Count == 1)
+                {
+                    context.ParcelLinkExtract.Remove(previousAddress);
+                }
+                else if (previousAddress is not null)
+                {
+                    previousAddress.Count -= 1;
+                }
+
+                var newAddress = await context
+                    .ParcelLinkExtract
+                    .FindAsync(new object?[] { message.Message.ParcelId, message.Message.NewAddressPersistentLocalId }, ct);
+
+                if (newAddress is null)
+                {
+                    await context
+                        .ParcelLinkExtract
+                        .AddAsync(new ParcelLinkExtractItem
                         {
-                            objecttype = { Value = ParcelObjectType },
-                            adresobjid = { Value = message.Message.CaPaKey },
-                            adresid = { Value = message.Message.NewAddressPersistentLocalId }
-                        }.ToBytes(_encoding)
-                    }, ct);
+                            ParcelId = message.Message.ParcelId,
+                            CaPaKey = message.Message.CaPaKey,
+                            AddressPersistentLocalId = message.Message.NewAddressPersistentLocalId,
+                            Count = 1,
+                            DbaseRecord = new ParcelLinkDbaseRecord
+                            {
+                                objecttype = { Value = ParcelObjectType },
+                                adresobjid = { Value = message.Message.CaPaKey },
+                                adresid = { Value = message.Message.NewAddressPersistentLocalId }
+                            }.ToBytes(_encoding)
+                        }, ct);
+                }
+                else
+                {
+                    newAddress.Count += 1;
+                }
+            });
+
+            When<Envelope<ParcelAddressesWereReaddressed>>(async (context, message, ct) =>
+            {
+                foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
+                {
+                    var relation = await context
+                        .ParcelLinkExtract
+                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
+
+                    if (relation is not null)
+                    {
+                        context.ParcelLinkExtract.Remove(relation);
+                    }
+                }
+
+                foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
+                {
+                    var relation = await context
+                        .ParcelLinkExtract
+                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
+
+                    if (relation is not null)
+                    {
+                        await context.ParcelLinkExtract.AddAsync(relation, ct);
+                    }
+                }
             });
         }
 
@@ -117,7 +168,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
                 .ParcelLinkExtract
                 .FindAsync(new object?[] { parcelId, addressPersistentLocalId }, ct);
 
-            context.Remove(linkExtractItem);
+            context.Remove(linkExtractItem!);
         }
     }
 }

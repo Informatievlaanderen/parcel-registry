@@ -17,7 +17,6 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Projections.Extract;
     using ParcelRegistry.Projections.Extract.ParcelExtract;
-    using ParcelRegistry.Projections.Extract.ParcelLinkExtract;
     using ParcelRegistry.Projections.Integration;
     using ParcelRegistry.Projections.Integration.Infrastructure;
     using ParcelRegistry.Projections.Integration.ParcelLatestItem;
@@ -26,7 +25,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Projections.Legacy;
     using ParcelRegistry.Projections.Legacy.ParcelDetail;
     using ParcelRegistry.Projections.Legacy.ParcelSyndication;
-    using ParcelLinkExtractWithCountProjections = ParcelRegistry.Projections.Extract.ParcelLinkExtractWithCount.ParcelLinkExtractProjections;
+    using ParcelLinkExtractWithCountProjections = ParcelRegistry.Projections.Extract.ParcelLinkExtract.ParcelLinkExtractProjections;
 
     public class ApiModule : Module
     {
@@ -86,13 +85,8 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<ExtractContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<ParcelExtractV2Projections, ExtractContext>(
-                    context => new ParcelExtractV2Projections(
-                        context.Resolve<IOptions<ExtractConfig>>(),
-                        DbaseCodePage.Western_European_ANSI.ToEncoding()),
-                    ConnectedProjectionSettings.Default)
-                .RegisterProjections<ParcelLinkExtractProjections, ExtractContext>(
-                    context => new ParcelLinkExtractProjections(
+                .RegisterProjections<ParcelExtractProjections, ExtractContext>(
+                    context => new ParcelExtractProjections(
                         context.Resolve<IOptions<ExtractConfig>>(),
                         DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default)

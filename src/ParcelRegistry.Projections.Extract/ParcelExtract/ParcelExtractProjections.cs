@@ -15,21 +15,21 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
 
     [ConnectedProjectionName("Extract percelen")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor het percelen extract voorziet.")]
-    public class ParcelExtractV2Projections : ConnectedProjection<ExtractContext>
+    public class ParcelExtractProjections : ConnectedProjection<ExtractContext>
     {
         private const string Realized = "Gerealiseerd";
         private const string Retired = "Gehistoreerd";
         private readonly Encoding _encoding;
 
-        public ParcelExtractV2Projections(IOptions<ExtractConfig> extractConfig, Encoding encoding)
+        public ParcelExtractProjections(IOptions<ExtractConfig> extractConfig, Encoding encoding)
         {
             _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
 
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
                 await context
-                    .ParcelExtractV2
-                    .AddAsync(new ParcelExtractItemV2
+                    .ParcelExtract
+                    .AddAsync(new ParcelExtractItem
                     {
                         ParcelId = message.Message.ParcelId,
                         CaPaKey = message.Message.CaPaKey,
@@ -112,8 +112,8 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
             When<Envelope<ParcelWasImported>>(async (context, message, ct) =>
             {
                 await context
-                    .ParcelExtractV2
-                    .AddAsync(new ParcelExtractItemV2
+                    .ParcelExtract
+                    .AddAsync(new ParcelExtractItem
                     {
                         ParcelId = message.Message.ParcelId,
                         CaPaKey = message.Message.CaPaKey,
@@ -163,7 +163,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
             });
         }
 
-        private void SetDelete(ParcelExtractItemV2 parcel)
+        private void SetDelete(ParcelExtractItem parcel)
             => UpdateRecord(parcel, record => record.IsDeleted = true);
 
         private static readonly IDictionary<ParcelStatus, string> StatusMapping = new Dictionary<ParcelStatus, string>
@@ -179,13 +179,13 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                 : throw new ArgumentOutOfRangeException(nameof(parcelStatus), parcelStatus, null);
         }
 
-        private void UpdateStatus(ParcelExtractItemV2 parcel, string status)
+        private void UpdateStatus(ParcelExtractItem parcel, string status)
             => UpdateRecord(parcel, record => record.status.Value = status);
 
-        private void UpdateVersie(ParcelExtractItemV2 parcel, Instant version)
+        private void UpdateVersie(ParcelExtractItem parcel, Instant version)
             => UpdateRecord(parcel, record => record.versieid.SetValue(version.ToBelgianDateTimeOffset()));
 
-        private void UpdateRecord(ParcelExtractItemV2 parcel, Action<ParcelDbaseRecord> updateFunc)
+        private void UpdateRecord(ParcelExtractItem parcel, Action<ParcelDbaseRecord> updateFunc)
         {
             if (parcel.DbaseRecord is not null)
             {
