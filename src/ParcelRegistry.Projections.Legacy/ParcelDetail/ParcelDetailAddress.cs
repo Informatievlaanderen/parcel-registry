@@ -1,16 +1,16 @@
-namespace ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2
+namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 {
     using System;
-    using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using ParcelRegistry.Infrastructure;
 
-    public class ParcelDetailAddressV2
+    public class ParcelDetailAddress
     {
-        private ParcelDetailAddressV2()
+        private ParcelDetailAddress()
         { }
 
-        public ParcelDetailAddressV2(Guid parcelId, int persistentLocalId)
+        public ParcelDetailAddress(Guid parcelId, int persistentLocalId)
         {
             ParcelId = parcelId;
             AddressPersistentLocalId = persistentLocalId;
@@ -22,11 +22,11 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2
         public int Count { get; set; }
     }
 
-    public class ParcelDetailAddressV2Configuration : IEntityTypeConfiguration<ParcelDetailAddressV2>
+    public class ParcelDetailAddressV2Configuration : IEntityTypeConfiguration<ParcelDetailAddress>
     {
-        private const string TableName = "ParcelAddressesWithCountV2";
+        private const string TableName = "ParcelDetailAddresses";
 
-        public void Configure(EntityTypeBuilder<ParcelDetailAddressV2> b)
+        public void Configure(EntityTypeBuilder<ParcelDetailAddress> b)
         {
             b.ToTable(TableName, Schema.Legacy)
                 .HasKey(p => new { p.ParcelId, p.AddressPersistentLocalId })

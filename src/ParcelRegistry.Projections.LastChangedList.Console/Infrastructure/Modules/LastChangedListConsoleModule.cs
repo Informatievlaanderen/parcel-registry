@@ -11,7 +11,7 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
     using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
-    using Legacy.ParcelDetailWithCountV2;
+    using Legacy.ParcelDetail;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -77,7 +77,7 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
             builder.Register(_ =>
                     new LastChangedListParcelCacheValidator(
                         _configuration.GetConnectionString("LegacyProjections")!,
-                        ParcelDetailV2Configuration.ProjectionStateName))
+                        ParcelDetailConfiguration.ProjectionStateName))
                 .AsSelf();
 
             builder

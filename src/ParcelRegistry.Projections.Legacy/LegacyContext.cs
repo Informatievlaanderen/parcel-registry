@@ -3,17 +3,13 @@ namespace ParcelRegistry.Projections.Legacy
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
-    using ParcelDetailV2;
     using ParcelSyndication;
-    using ParcelDetailWithCount = ParcelDetailWithCountV2.ParcelDetailV2;
-    
+
     public class LegacyContext : RunnerDbContext<LegacyContext>
     {
         public override string ProjectionStateSchema => Schema.Legacy;
         internal const string ParcelDetailV2ListCountName = "vw_ParcelDetailV2ListCount";
-
-        public DbSet<ParcelDetailV2.ParcelDetailV2> ParcelDetailV2 { get; set; }
-        public DbSet<ParcelDetailWithCount> ParcelDetailWithCountV2 { get; set; }
+        public DbSet<ParcelDetail.ParcelDetail> ParcelDetailWithCountV2 { get; set; }
 
         public DbSet<ParcelSyndicationItem> ParcelSyndication { get; set; }
 
@@ -34,5 +30,10 @@ namespace ParcelRegistry.Projections.Legacy
                 .HasNoKey()
                 .ToView(ParcelDetailV2ListCountName, Schema.Legacy);
         }
+    }
+
+    public class ParcelDetailV2ListViewCount
+    {
+        public long Count { get; set; }
     }
 }
