@@ -10,7 +10,7 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
     using Convertors;
     using Microsoft.EntityFrameworkCore;
     using ParcelRegistry.Projections.Legacy;
-    using ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2;
+    using Projections.Legacy.ParcelDetail;
 
     public class ParcelListV2Query : Query<ParcelListV2QueryItem, ParcelFilter>
     {
@@ -84,9 +84,9 @@ namespace ParcelRegistry.Api.Legacy.Parcel.List
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(ParcelDetailV2.CaPaKey),
+            nameof(ParcelDetail.CaPaKey),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(ParcelDetailV2.CaPaKey), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new SortingHeader(nameof(ParcelDetail.CaPaKey), SortOrder.Ascending);
     }
 }

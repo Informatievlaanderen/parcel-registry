@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
+namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 {
     using System;
     using System.Collections.Generic;
@@ -11,14 +11,13 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using NetTopologySuite.Geometries;
-    using NetTopologySuite.IO;
     using NodaTime;
     using Parcel;
     using Parcel.Events;
 
     [ConnectedProjectionName("API endpoint detail/lijst percelen")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor het percelen detail & lijst voorziet.")]
-    public class ParcelDetailV2Projections : ConnectedProjection<LegacyContext>
+    public class ParcelDetailProjections : ConnectedProjection<LegacyContext>
     {
         private string MapGeometryType(OgcGeometryType ogcGeometryType)
         {
@@ -31,7 +30,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             };
         }
 
-        public ParcelDetailV2Projections()
+        public ParcelDetailProjections()
         {
             var wkbReader = WKBReaderFactory.Create();
 
@@ -46,11 +45,11 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             {
                 var (geometryType, gml) = ToGml(message.Message.ExtendedWkbGeometry);
 
-                var item = new ParcelDetailV2(
+                var item = new ParcelDetail(
                     message.Message.ParcelId,
                     message.Message.CaPaKey,
                     ParcelStatus.Parse(message.Message.ParcelStatus),
-                    message.Message.AddressPersistentLocalIds.Select(x => new ParcelDetailAddressV2(message.Message.ParcelId, x)),
+                    message.Message.AddressPersistentLocalIds.Select(x => new ParcelDetailAddress(message.Message.ParcelId, x)),
                     gml,
                     geometryType,
                     message.Message.IsRemoved,
@@ -59,7 +58,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                 UpdateHash(item, message);
 
                 await context
-                    .ParcelDetailV2
+                    .ParcelDetailWithCountV2
                     .AddAsync(item, ct);
             });
 
@@ -75,7 +74,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                                 parcelAddress.AddressPersistentLocalId == message.Message.AddressPersistentLocalId
                                 && parcelAddress.ParcelId == message.Message.ParcelId))
                         {
-                            entity.Addresses.Add(new ParcelDetailAddressV2(message.Message.ParcelId, message.Message.AddressPersistentLocalId));
+                            entity.Addresses.Add(new ParcelDetailAddress(message.Message.ParcelId, message.Message.AddressPersistentLocalId));
                         }
 
                         UpdateHash(entity, message);
@@ -180,19 +179,69 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                     {
                         context.Entry(entity).Collection(x => x.Addresses).Load();
 
-                        var addressToRemove = entity.Addresses.SingleOrDefault(parcelAddress =>
+                        var previousAddress = entity.Addresses.SingleOrDefault(parcelAddress =>
                             parcelAddress.AddressPersistentLocalId == message.Message.PreviousAddressPersistentLocalId
                             && parcelAddress.ParcelId == message.Message.ParcelId);
-                        if (addressToRemove is not null)
+
+                        if (previousAddress is not null && previousAddress.Count == 1)
                         {
-                            entity.Addresses.Remove(addressToRemove);
+                            entity.Addresses.Remove(previousAddress);
+                        }
+                        else if (previousAddress is not null)
+                        {
+                            previousAddress.Count -= 1;
                         }
 
-                        if (!entity.Addresses.Any(parcelAddress =>
-                                parcelAddress.AddressPersistentLocalId == message.Message.NewAddressPersistentLocalId
-                                && parcelAddress.ParcelId == message.Message.ParcelId))
+                        var newAddress = entity.Addresses.SingleOrDefault(parcelAddress =>
+                            parcelAddress.AddressPersistentLocalId == message.Message.NewAddressPersistentLocalId
+                            && parcelAddress.ParcelId == message.Message.ParcelId);
+
+                        if (newAddress is null)
                         {
-                            entity.Addresses.Add(new ParcelDetailAddressV2(message.Message.ParcelId, message.Message.NewAddressPersistentLocalId));
+                            entity.Addresses.Add(new ParcelDetailAddress(message.Message.ParcelId, message.Message.NewAddressPersistentLocalId));
+                        }
+                        else
+                        {
+                            newAddress.Count += 1;
+                        }
+
+                        UpdateHash(entity, message);
+                        UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<ParcelAddressesWereReaddressed>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelDetail(
+                    message.Message.ParcelId,
+                    entity =>
+                    {
+                        context.Entry(entity).Collection(x => x.Addresses).Load();
+
+
+                        foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
+                        {
+                            var relation = entity.Addresses.SingleOrDefault(parcelAddress =>
+                                parcelAddress.AddressPersistentLocalId == addressPersistentLocalId
+                                && parcelAddress.ParcelId == message.Message.ParcelId);
+
+                            if (relation is not null)
+                            {
+                                entity.Addresses.Remove(relation);
+                            }
+                        }
+
+                        foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
+                        {
+                            var relation = entity.Addresses.SingleOrDefault(parcelAddress =>
+                                parcelAddress.AddressPersistentLocalId == addressPersistentLocalId
+                                && parcelAddress.ParcelId == message.Message.ParcelId);
+
+                            if (relation is null)
+                            {
+                                entity.Addresses.Add(new ParcelDetailAddress(message.Message.ParcelId, addressPersistentLocalId));
+                            }
                         }
 
                         UpdateHash(entity, message);
@@ -205,11 +254,11 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             {
                 var (geometryType, gml) = ToGml(message.Message.ExtendedWkbGeometry);
 
-                var item = new ParcelDetailV2(
+                var item = new ParcelDetail(
                     message.Message.ParcelId,
                     message.Message.CaPaKey,
                     ParcelStatus.Realized,
-                    new List<ParcelDetailAddressV2>(),
+                    new List<ParcelDetailAddress>(),
                     gml,
                     geometryType,
                     false,
@@ -218,7 +267,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
                 UpdateHash(item, message);
 
                 await context
-                    .ParcelDetailV2
+                    .ParcelDetailWithCountV2
                     .AddAsync(item, ct);
             });
 
@@ -271,7 +320,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             });
         }
 
-        private static void UpdateHash<T>(ParcelDetailV2 entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage
+        private static void UpdateHash<T>(ParcelDetail entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage
         {
             if (!wrappedEvent.Metadata.ContainsKey(AddEventHashPipe.HashMetadataKey))
             {
@@ -281,7 +330,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             entity.LastEventHash = wrappedEvent.Metadata[AddEventHashPipe.HashMetadataKey].ToString()!;
         }
 
-        private static void UpdateVersionTimestamp(ParcelDetailV2 item, Instant versionTimestamp)
+        private static void UpdateVersionTimestamp(ParcelDetail item, Instant versionTimestamp)
             => item.VersionTimestamp = versionTimestamp;
     }
 }

@@ -24,9 +24,8 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Projections.Integration.ParcelVersion;
     using ParcelRegistry.Projections.LastChangedList;
     using ParcelRegistry.Projections.Legacy;
-    using ParcelRegistry.Projections.Legacy.ParcelDetailV2;
+    using ParcelRegistry.Projections.Legacy.ParcelDetail;
     using ParcelRegistry.Projections.Legacy.ParcelSyndication;
-    using ParcelDetailWithCountV2Projections = ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2.ParcelDetailV2Projections;
     using ParcelLinkExtractWithCountProjections = ParcelRegistry.Projections.Extract.ParcelLinkExtractWithCount.ParcelLinkExtractProjections;
 
     public class ApiModule : Module
@@ -52,10 +51,6 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
             builder
                 .RegisterType<ProblemDetailsHelper>()
                 .AsSelf();
-
-            builder.Register(c => new CacheValidator(c.Resolve<LegacyContext>(), typeof(ParcelDetailV2Projections).FullName!))
-                .AsSelf()
-                .AsImplementedInterfaces();
 
             builder.Populate(_services);
         }
@@ -102,7 +97,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                         DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelLinkExtractWithCountProjections, ExtractContext>(
-                    context => new ParcelLinkExtractWithCountProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()),
+                    _ => new ParcelLinkExtractWithCountProjections(DbaseCodePage.Western_European_ANSI.ToEncoding()),
                     ConnectedProjectionSettings.Default);
         }
 
@@ -127,8 +122,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<LegacyContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<ParcelDetailV2Projections, LegacyContext>(ConnectedProjectionSettings.Default)
-                .RegisterProjections<ParcelDetailWithCountV2Projections, LegacyContext>(ConnectedProjectionSettings.Default)
+                .RegisterProjections<ParcelDetailProjections, LegacyContext>(ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelSyndicationProjections, LegacyContext>(ConnectedProjectionSettings.Default);
         }
 

@@ -17,10 +17,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using FluentAssertions;
     using Parcel;
     using Parcel.Events;
-    using Projections.Legacy.ParcelDetailWithCountV2;
+    using Projections.Legacy.ParcelDetail;
     using Xunit;
 
-    public partial class ParcelDetailItemV2Tests : ParcelLegacyProjectionTest<ParcelDetailV2Projections>
+    public partial class ParcelDetailItemV2Tests : ParcelLegacyProjectionTest<ParcelDetailProjections>
     {
         private readonly Fixture _fixture;
 
@@ -59,7 +59,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelDetailV2.GmlType.Should().Be("Polygon");
                     parcelDetailV2.Addresses.Should().BeEquivalentTo(
                         message.AddressPersistentLocalIds.Select(x =>
-                            new ParcelDetailAddressV2(message.ParcelId, x)));
+                            new ParcelDetailAddress(message.ParcelId, x)));
                     parcelDetailV2.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(message.GetHash());
                 });
@@ -193,7 +193,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelDetailV2!.Addresses.Should().BeEquivalentTo(
                         message.AddressPersistentLocalIds
                             .Concat(new[] { addressWasAttached.AddressPersistentLocalId })
-                            .Select(x => new ParcelDetailAddressV2(addressWasAttached.ParcelId, x)));
+                            .Select(x => new ParcelDetailAddress(addressWasAttached.ParcelId, x)));
                     parcelDetailV2.VersionTimestamp.Should().Be(addressWasAttached.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(addressWasAttached.GetHash());
                 });
@@ -243,7 +243,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
             }));
         }
 
-        protected override ParcelDetailV2Projections CreateProjection()
-            => new ParcelDetailV2Projections();
+        protected override ParcelDetailProjections CreateProjection()
+            => new ParcelDetailProjections();
     }
 }

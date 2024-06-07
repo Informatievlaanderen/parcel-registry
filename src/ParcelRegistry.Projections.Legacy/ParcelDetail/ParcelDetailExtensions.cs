@@ -1,20 +1,20 @@
-namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
+namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
 
-    public static class ParcelDetailV2Extensions
+    public static class ParcelDetailExtensions
     {
-        public static async Task<ParcelDetailV2> FindAndUpdateParcelDetail(
+        public static async Task<ParcelDetail> FindAndUpdateParcelDetail(
             this LegacyContext context,
             Guid parcelId,
-            Action<ParcelDetailV2> updateFunc,
+            Action<ParcelDetail> updateFunc,
             CancellationToken ct)
         {
             var parcel = await context
-                .ParcelDetailV2 
+                .ParcelDetailWithCountV2
                 .FindAsync(parcelId, cancellationToken: ct);
 
             if (parcel == null)
@@ -24,7 +24,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailV2
             return parcel;
         }
 
-        private static ProjectionItemNotFoundException<ParcelDetailV2Projections> DatabaseItemNotFound(Guid parcelId)
-            => new ProjectionItemNotFoundException<ParcelDetailV2Projections>(parcelId.ToString("D"));
+        private static ProjectionItemNotFoundException<ParcelDetailProjections> DatabaseItemNotFound(Guid parcelId)
+            => new ProjectionItemNotFoundException<ParcelDetailProjections>(parcelId.ToString("D"));
     }
 }

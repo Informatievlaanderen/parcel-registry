@@ -1,4 +1,4 @@
-namespace ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2
+namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 {
     using System;
     using System.Collections.Generic;
@@ -9,18 +9,18 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2
     using NodaTime;
     using Parcel;
 
-    public class ParcelDetailV2
+    public class ParcelDetail
     {
-        private ParcelDetailV2()
+        private ParcelDetail()
         {
-            Addresses = new List<ParcelDetailAddressV2>();
+            Addresses = new List<ParcelDetailAddress>();
         }
 
-        public ParcelDetailV2(
+        public ParcelDetail(
             Guid parcelId,
             string caPaKey,
             ParcelStatus status,
-            IEnumerable<ParcelDetailAddressV2> addresses,
+            IEnumerable<ParcelDetailAddress> addresses,
             string gml,
             string gmlType,
             bool removed,
@@ -50,7 +50,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2
 
         public string GmlType { get; set; }
 
-        public virtual List<ParcelDetailAddressV2> Addresses { get; set; }
+        public virtual List<ParcelDetailAddress> Addresses { get; set; }
 
         public bool Removed { get; set; }
         public string LastEventHash { get; set; } = string.Empty;
@@ -63,12 +63,12 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2
         }
     }
 
-    public class ParcelDetailV2Configuration : IEntityTypeConfiguration<ParcelDetailV2>
+    public class ParcelDetailConfiguration : IEntityTypeConfiguration<ParcelDetail>
     {
-        internal const string TableName = "ParcelDetailsWithCountV2";
-        public static readonly string ProjectionStateName = typeof(ParcelDetailV2Projections).FullName!;
+        internal const string TableName = "ParcelDetails";
+        public static readonly string ProjectionStateName = typeof(ParcelDetailProjections).FullName!;
 
-        public void Configure(EntityTypeBuilder<ParcelDetailV2> builder)
+        public void Configure(EntityTypeBuilder<ParcelDetail> builder)
         {
             builder.ToTable(TableName, Schema.Legacy)
                 .HasKey(p => p.ParcelId)

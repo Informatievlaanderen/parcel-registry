@@ -20,7 +20,7 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
             WITH SCHEMABINDING
             AS
             SELECT COUNT_BIG(*) as Count
-            FROM [{Infrastructure.Schema.Legacy}].[{ParcelDetailV2.ParcelDetailV2Configuration.TableName}]
+            FROM [{Infrastructure.Schema.Legacy}].[ParcelDetailsV2]
             WHERE [Removed] = 0");
 
             migrationBuilder.Sql($@"CREATE UNIQUE CLUSTERED INDEX IX_{LegacyContext.ParcelDetailV2ListCountName} ON [{Infrastructure.Schema.Legacy}].[{LegacyContext.ParcelDetailV2ListCountName}] (Count)");
