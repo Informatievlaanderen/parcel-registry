@@ -14,7 +14,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
             CancellationToken ct)
         {
             var parcel = await context
-                .ParcelDetailWithCountV2
+                .ParcelDetails
                 .FindAsync(parcelId, cancellationToken: ct);
 
             if (parcel == null)

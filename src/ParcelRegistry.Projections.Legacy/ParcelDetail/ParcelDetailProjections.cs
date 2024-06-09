@@ -58,7 +58,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                 UpdateHash(item, message);
 
                 await context
-                    .ParcelDetailWithCountV2
+                    .ParcelDetails
                     .AddAsync(item, ct);
             });
 
@@ -267,7 +267,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                 UpdateHash(item, message);
 
                 await context
-                    .ParcelDetailWithCountV2
+                    .ParcelDetails
                     .AddAsync(item, ct);
             });
 

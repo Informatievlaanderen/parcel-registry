@@ -50,7 +50,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 {
                     var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
 
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync(message.ParcelId);
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(message.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
                     parcelDetailV2!.CaPaKey.Should().Be(message.CaPaKey);
                     parcelDetailV2.Status.Should().Be(ParcelStatus.Parse(message.ParcelStatus));
@@ -81,7 +81,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 {
                     var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
 
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync(message.ParcelId);
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(message.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
                     parcelDetailV2!.CaPaKey.Should().Be(message.CaPaKey);
                     parcelDetailV2.Status.Should().Be(ParcelStatus.Realized);
@@ -106,7 +106,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     CreateEnvelope(parcelWasRetiredV2))
                 .Then(async context =>
                 {
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync(parcelWasRetiredV2.ParcelId);
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(parcelWasRetiredV2.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
                     parcelDetailV2!.CaPaKey.Should().Be(parcelWasRetiredV2.CaPaKey);
                     parcelDetailV2.Status.Should().Be(ParcelStatus.Retired);
@@ -131,7 +131,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     CreateEnvelope(parcelGeometryWasChanged))
                 .Then(async context =>
                 {
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync((Guid)_fixture.Create<ParcelId>());
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync((Guid)_fixture.Create<ParcelId>());
                     parcelDetailV2.Should().NotBeNull();
                     parcelDetailV2!.Gml.Should().Be(GeometryHelpers.ValidGmlPolygon);
                     parcelDetailV2.GmlType.Should().Be("Polygon");
@@ -157,7 +157,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     CreateEnvelope(@event))
                 .Then(async context =>
                 {
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync((Guid)_fixture.Create<ParcelId>());
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync((Guid)_fixture.Create<ParcelId>());
                     parcelDetailV2.Should().NotBeNull();
                     parcelDetailV2!.Gml.Should().Be(GeometryHelpers.ValidGmlPolygon);
                     parcelDetailV2.GmlType.Should().Be("Polygon");
@@ -188,7 +188,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     new Envelope<ParcelAddressWasAttachedV2>(new Envelope(addressWasAttached, metadata2)))
                 .Then(async context =>
                 {
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync(message.ParcelId);
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(message.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
                     parcelDetailV2!.Addresses.Should().BeEquivalentTo(
                         message.AddressPersistentLocalIds
@@ -224,7 +224,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     new Envelope<ParcelAddressWasDetachedV2>(new Envelope(addressWasDetached, metadata2)))
                 .Then(async context =>
                 {
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync(parcelWasMigrated.ParcelId);
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(parcelWasMigrated.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
                     parcelDetailV2!.Addresses.Select(x => x.AddressPersistentLocalId).Should()
                         .NotContain(addressWasDetached.AddressPersistentLocalId);
