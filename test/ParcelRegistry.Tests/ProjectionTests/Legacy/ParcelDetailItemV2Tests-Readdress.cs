@@ -44,7 +44,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     new Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(new Envelope(@event, eventMetadata)))
                 .Then(async context =>
                 {
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync(parcelWasImported.ParcelId);
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(parcelWasImported.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
 
                     var previousRelation = parcelDetailV2!.Addresses
@@ -101,7 +101,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     new Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(new Envelope(@event, eventMetadata)))
                 .Then(async context =>
                 {
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync(parcelWasImported.ParcelId);
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(parcelWasImported.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
 
                     var previousRelation = parcelDetailV2!.Addresses
@@ -157,7 +157,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     new Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(new Envelope(@event, eventMetadata)))
                 .Then(async context =>
                 {
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync(parcelWasImported.ParcelId);
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(parcelWasImported.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
 
                     var previousRelation = parcelDetailV2!.Addresses
@@ -235,7 +235,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     new Envelope<ParcelAddressesWereReaddressed>(new Envelope(@event, eventMetadata)))
                 .Then(async context =>
                 {
-                    var parcelDetailV2 = await context.ParcelDetailWithCountV2.FindAsync(parcelWasImported.ParcelId);
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(parcelWasImported.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
 
                     foreach (var addressPersistentLocalId in attachedAddressPersistentLocalIds)

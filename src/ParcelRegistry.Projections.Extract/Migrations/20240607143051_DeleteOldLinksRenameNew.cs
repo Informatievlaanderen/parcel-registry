@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ParcelRegistry.Projections.Extract.Migrations
 {
+    using Infrastructure;
+    using Microsoft.EntityFrameworkCore;
+
     /// <inheritdoc />
     public partial class DeleteOldLinksRenameNew : Migration
     {
@@ -76,6 +79,11 @@ namespace ParcelRegistry.Projections.Extract.Migrations
                 newName: "IX_Parcels_CaPaKey",
                 schema: "ParcelRegistryExtract",
                 table: "Parcels");
+
+            migrationBuilder.Sql(
+                $"DELETE FROM [{Schema.Extract}].[ProjectionStates] WHERE [Name] in ('ParcelRegistry.Projections.Extract.ParcelExtract.ParcelExtractProjections', 'ParcelRegistry.Projections.Extract.ParcelLinkExtract.ParcelLinkExtractProjections')");
+            migrationBuilder.Sql($"UPDATE [{Schema.Extract}].[ProjectionStates] SET [Name] = 'ParcelRegistry.Projections.Extract.ParcelLinkExtract.ParcelLinkExtractProjections' WHERE [Name] = 'ParcelRegistry.Projections.Extract.ParcelLinkExtractWithCount.ParcelLinkExtractProjections'");
+            migrationBuilder.Sql($"UPDATE [{Schema.Extract}].[ProjectionStates] SET [Name] = 'ParcelRegistry.Projections.Extract.ParcelExtract.ParcelExtractProjections' WHERE [Name] = 'ParcelRegistry.Projections.Extract.ParcelExtract.ParcelExtractV2Projections'");
         }
 
         /// <inheritdoc />
@@ -184,6 +192,9 @@ namespace ParcelRegistry.Projections.Extract.Migrations
                 schema: "ParcelRegistryExtract",
                 table: "ParcelLinks",
                 column: "ParcelId");
+
+            migrationBuilder.Sql($"UPDATE [{Schema.Extract}].[ProjectionStates] SET [Name] = 'ParcelRegistry.Projections.Extract.ParcelLinkExtractWithCount.ParcelLinkExtractProjections' WHERE [Name] = 'ParcelRegistry.Projections.Extract.ParcelLinkExtract.ParcelLinkExtractProjections'");
+            migrationBuilder.Sql($"UPDATE [{Schema.Extract}].[ProjectionStates] SET [Name] = 'ParcelRegistry.Projections.Extract.ParcelExtract.ParcelExtractV2Projections' WHERE [Name] = 'ParcelRegistry.Projections.Extract.ParcelExtract.ParcelExtractProjections'");
         }
     }
 }

@@ -16,14 +16,14 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
                 nullable: true);
 
             migrationBuilder.Sql($@"
-            CREATE VIEW [{Infrastructure.Schema.Legacy}].[{LegacyContext.ParcelDetailV2ListCountName}]
+            CREATE VIEW [{Infrastructure.Schema.Legacy}].[vw_ParcelDetailV2ListCount]
             WITH SCHEMABINDING
             AS
             SELECT COUNT_BIG(*) as Count
             FROM [{Infrastructure.Schema.Legacy}].[ParcelDetailsV2]
             WHERE [Removed] = 0");
 
-            migrationBuilder.Sql($@"CREATE UNIQUE CLUSTERED INDEX IX_{LegacyContext.ParcelDetailV2ListCountName} ON [{Infrastructure.Schema.Legacy}].[{LegacyContext.ParcelDetailV2ListCountName}] (Count)");
+            migrationBuilder.Sql($@"CREATE UNIQUE CLUSTERED INDEX IX_vw_ParcelDetailV2ListCount ON [{Infrastructure.Schema.Legacy}].[vw_ParcelDetailV2ListCount] (Count)");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -33,8 +33,8 @@ namespace ParcelRegistry.Projections.Legacy.Migrations
                 schema: "ParcelRegistryLegacy",
                 table: "ParcelSyndication");
 
-            migrationBuilder.Sql($@"DROP INDEX [IX_{LegacyContext.ParcelDetailV2ListCountName}] ON [{Infrastructure.Schema.Legacy}].[{LegacyContext.ParcelDetailV2ListCountName}]");
-            migrationBuilder.Sql($@"DROP VIEW [{Infrastructure.Schema.Legacy}].[{LegacyContext.ParcelDetailV2ListCountName}]");
+            migrationBuilder.Sql($@"DROP INDEX [IX_{LegacyContext.ParcelDetailListCountName}] ON [{Infrastructure.Schema.Legacy}].[vw_ParcelDetailV2ListCount]");
+            migrationBuilder.Sql($@"DROP VIEW [{Infrastructure.Schema.Legacy}].[vw_ParcelDetailV2ListCount]");
         }
     }
 }

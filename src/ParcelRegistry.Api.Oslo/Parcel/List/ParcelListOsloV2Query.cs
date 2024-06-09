@@ -23,7 +23,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
         protected override IQueryable<ParcelListV2QueryItem> Filter(FilteringHeader<ParcelFilter> filtering)
         {
             var parcels = _context
-                .ParcelDetailWithCountV2
+                .ParcelDetails
                 .AsNoTracking()
                 .OrderBy(x => x.CaPaKey)
                 .Where(x => !x.Removed);

@@ -29,7 +29,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Count
                             .Items
                             .CountAsync(cancellationToken)
                         : Convert.ToInt32(_context
-                            .ParcelDetailV2ListViewCount
+                            .ParcelDetailListViewCount
                             .First()
                             .Count)
             };
