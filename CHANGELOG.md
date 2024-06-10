@@ -1,3 +1,18 @@
+# [5.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.3.3...v5.4.0) (2024-06-10)
+
+
+### Bug Fixes
+
+* keep event provenance timestamp for new commands ([b8e81b3](https://github.com/informatievlaanderen/parcel-registry/commit/b8e81b399d5c24364785fc0e694f1843cac590b8))
+
+
+### Features
+
+* add add sync to oslo ([db7052d](https://github.com/informatievlaanderen/parcel-registry/commit/db7052dc32cb72352f8c7b0e78490b0114a919b8))
+* cleanup old tables rename new ([fa63b39](https://github.com/informatievlaanderen/parcel-registry/commit/fa63b393d9a994a7f099e76a74ccf4068e141eb0))
+* **extract:** cleanup old tables rename new ([66b5a4c](https://github.com/informatievlaanderen/parcel-registry/commit/66b5a4cb3531cbc9e84a4f9d13ef45ab53864643))
+* remove api legacy ([9ce94da](https://github.com/informatievlaanderen/parcel-registry/commit/9ce94da63a4cad7c3e5749c2337834783f605d20))
+
 ## [5.3.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.3.2...v5.3.3) (2024-05-30)
 
 
