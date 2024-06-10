@@ -120,7 +120,7 @@ WHERE [Removed] = 0");
 
             migrationBuilder.Sql($@"CREATE UNIQUE CLUSTERED INDEX IX_{LegacyContext.ParcelDetailListCountName} ON [{Infrastructure.Schema.Legacy}].[{LegacyContext.ParcelDetailListCountName}] (Count)");
 
-            migrationBuilder.Sql($"DELETE FROM [{Infrastructure.Schema.Legacy}].[ProjectionStates] WHERE [Name] = 'ParcelRegistry.Projections.Legacy.ParcelDetailV2.ParcelDetailV2Projections'");
+            migrationBuilder.Sql($"DELETE FROM [{Infrastructure.Schema.Legacy}].[ProjectionStates] WHERE [Name] in ('ParcelRegistry.Projections.Legacy.ParcelDetailV2.ParcelDetailV2Projections', 'ParcelRegistry.Projections.Legacy.ParcelDetail.ParcelDetailProjections')");
             migrationBuilder.Sql($"UPDATE [{Infrastructure.Schema.Legacy}].[ProjectionStates] SET [Name] = 'ParcelRegistry.Projections.Legacy.ParcelDetail.ParcelDetailProjections' WHERE [Name] = 'ParcelRegistry.Projections.Legacy.ParcelDetailWithCountV2.ParcelDetailV2Projections'");
         }
 
