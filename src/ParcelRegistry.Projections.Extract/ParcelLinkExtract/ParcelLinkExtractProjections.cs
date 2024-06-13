@@ -7,6 +7,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Microsoft.EntityFrameworkCore;
     using ParcelRegistry.Parcel.Events;
 
     [ConnectedProjectionName("Extract perceelkoppelingen met adres")]
@@ -106,7 +107,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
                     .ParcelLinkExtract
                     .FindAsync(new object?[] { message.Message.ParcelId, message.Message.NewAddressPersistentLocalId }, ct);
 
-                if (newAddress is null)
+                if (newAddress is null || context.Entry(newAddress).State == EntityState.Deleted)
                 {
                     await context
                         .ParcelLinkExtract

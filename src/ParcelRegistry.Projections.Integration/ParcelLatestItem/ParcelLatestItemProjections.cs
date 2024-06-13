@@ -4,6 +4,7 @@
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Converters;
     using Infrastructure;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using NodaTime;
     using Parcel;
@@ -122,7 +123,7 @@
                     .ParcelLatestItemAddresses
                     .FindAsync([message.Message.ParcelId, message.Message.NewAddressPersistentLocalId], cancellationToken: ct);
 
-                if (newAddress is null)
+                if (newAddress is null || context.Entry(newAddress).State == EntityState.Deleted)
                 {
                     await context
                         .ParcelLatestItemAddresses
