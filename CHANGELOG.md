@@ -1,3 +1,10 @@
+## [5.4.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.4.0...v5.4.1) (2024-06-13)
+
+
+### Bug Fixes
+
+* extract + integration addresses with count ([157b99e](https://github.com/informatievlaanderen/parcel-registry/commit/157b99e32ce92e76b75338ef54e3c702111c2280))
+
 # [5.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.3.3...v5.4.0) (2024-06-10)
 
 
