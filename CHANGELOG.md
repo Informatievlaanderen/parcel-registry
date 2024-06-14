@@ -1,3 +1,10 @@
+## [5.4.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.4.1...v5.4.2) (2024-06-14)
+
+
+### Bug Fixes
+
+* use v2 for sync endpoints in oslo ([b010b99](https://github.com/informatievlaanderen/parcel-registry/commit/b010b999a1b0532a9cc58f757ded1c26ea753b99))
+
 ## [5.4.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.4.0...v5.4.1) (2024-06-13)
 
 
