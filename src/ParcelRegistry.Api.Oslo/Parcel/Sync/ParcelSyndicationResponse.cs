@@ -207,7 +207,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
     {
         private const string RawXml = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <feed xmlns=""http://www.w3.org/2005/Atom"">
-    <id>https://api.basisregisters.vlaanderen.be/v1/feeds/percelen.atom</id>
+    <id>https://api.basisregisters.vlaanderen.be/v2/feeds/percelen.atom</id>
     <title>Basisregisters Vlaanderen - feed 'percelen'</title>
     <subtitle>Deze Atom feed geeft leestoegang tot events op de resource 'percelen'.</subtitle>
     <generator uri=""https://basisregisters.vlaanderen.be"" version=""2.3.16.3"">Basisregisters Vlaanderen</generator>
@@ -217,11 +217,11 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
         <name>Digitaal Vlaanderen</name>
         <email>digitaal.vlaanderen@vlaanderen.be</email>
     </author>
-    <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/percelen"" rel=""self"" />
-    <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/percelen.atom"" rel=""alternate"" type=""application/atom+xml"" />
-    <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/percelen.xml"" rel=""alternate"" type=""application/xml"" />
+    <link href=""https://api.basisregisters.vlaanderen.be/v2/feeds/percelen"" rel=""self"" />
+    <link href=""https://api.basisregisters.vlaanderen.be/v2/feeds/percelen.atom"" rel=""alternate"" type=""application/atom+xml"" />
+    <link href=""https://api.basisregisters.vlaanderen.be/v2/feeds/percelen.xml"" rel=""alternate"" type=""application/xml"" />
     <link href=""https://docs.basisregisters.vlaanderen.be/"" rel=""related"" />
-    <link href=""https://api.basisregisters.vlaanderen.be/v1/feeds/percelen?from=2&amp;limit=100&amp;embed=event,object"" rel=""next"" />
+    <link href=""https://api.basisregisters.vlaanderen.be/v2/feeds/percelen?from=2&amp;limit=100&amp;embed=event,object"" rel=""next"" />
     <entry>
         <id>0</id>
         <title>ParcelWasRegistered-0</title>
