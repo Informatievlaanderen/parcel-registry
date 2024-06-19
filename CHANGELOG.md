@@ -1,3 +1,10 @@
+## [5.4.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.4.2...v5.4.3) (2024-06-19)
+
+
+### Bug Fixes
+
+* **ci:** new lambda deploy tst+stg ([43016bf](https://github.com/informatievlaanderen/parcel-registry/commit/43016bfef17007753f376e8e0e9b6602a7ab0e9b))
+
 ## [5.4.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.4.1...v5.4.2) (2024-06-14)
 
 
