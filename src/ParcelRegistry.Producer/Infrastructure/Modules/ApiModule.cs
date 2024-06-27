@@ -81,25 +81,6 @@ namespace ParcelRegistry.Producer.Infrastructure.Modules
                 .RegisterProjectionMigrator<ProducerContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<ProducerProjections, ProducerContext>(() =>
-                {
-                    var topic = $"{_configuration[ProducerProjections.TopicKey]}" ?? throw new ArgumentException($"Configuration has no value for {ProducerProjections.TopicKey}");
-                    var producerOptions = new ProducerOptions(
-                        new BootstrapServers(bootstrapServers),
-                        new Topic(topic),
-                        true,
-                        EventsJsonSerializerSettingsProvider.CreateSerializerSettings())
-                        .ConfigureEnableIdempotence();
-                    if (!string.IsNullOrEmpty(saslUserName)
-                        && !string.IsNullOrEmpty(saslPassword))
-                    {
-                        producerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
-                            saslUserName,
-                            saslPassword));
-                    }
-
-                    return new ProducerProjections(new Producer(producerOptions));
-                }, connectedProjectionSettings)
                 .RegisterProjections<ProducerMigrateProjections, ProducerContext>(() =>
                 {
                     var topic = $"{_configuration[ProducerMigrateProjections.TopicKey]}" ?? throw new ArgumentException($"Configuration has no value for {ProducerMigrateProjections.TopicKey}");
