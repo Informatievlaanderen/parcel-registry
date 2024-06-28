@@ -1,3 +1,15 @@
+# [5.5.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.4.3...v5.5.0) (2024-06-28)
+
+
+### Bug Fixes
+
+* **consumer:** disable retry because transactions are used ([eafd445](https://github.com/informatievlaanderen/parcel-registry/commit/eafd44536d587496cf02ce5bf9ec94bacafaec38))
+
+
+### Features
+
+* remove unneeded producer ([e28e6ea](https://github.com/informatievlaanderen/parcel-registry/commit/e28e6ea1c298166559e149d6e5081e9f0f80aa6a))
+
 ## [5.4.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.4.2...v5.4.3) (2024-06-19)
 
 
