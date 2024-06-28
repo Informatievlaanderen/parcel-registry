@@ -44,7 +44,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
                     .UseLoggerFactory(loggerFactory)
                     .UseSqlServer(consumerProjectionsConnectionString, sqlServerOptions =>
                     {
-                        sqlServerOptions.EnableRetryOnFailure();
+                        //sqlServerOptions.EnableRetryOnFailure();
                         sqlServerOptions.MigrationsHistoryTable(MigrationTables.ConsumerAddress, Schema.ConsumerAddress);
                         sqlServerOptions.UseNetTopologySuite();
                         sqlServerOptions.CommandTimeout(120);
