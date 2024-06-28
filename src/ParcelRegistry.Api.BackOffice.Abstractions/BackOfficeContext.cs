@@ -18,14 +18,15 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
         public BackOfficeContext(DbContextOptions<BackOfficeContext> options)
             : base(options)
         {
-        } 
+        }
 
         public DbSet<ParcelAddressRelation> ParcelAddressRelations { get; set; }
 
         public async Task<ParcelAddressRelation> AddIdempotentParcelAddressRelation(
             ParcelId parcelId,
             AddressPersistentLocalId addressPersistentLocalId,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            bool saveChanges = true)
         {
             var relation = await FindParcelAddressRelation(parcelId, addressPersistentLocalId, cancellationToken);
             if (relation is not null)
@@ -62,7 +63,8 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
         public async Task RemoveIdempotentParcelAddressRelation(
             ParcelId parcelId,
             AddressPersistentLocalId addressPersistentLocalId,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            bool saveChanges = true)
         {
             var relation = await FindParcelAddressRelation(parcelId, addressPersistentLocalId, cancellationToken);
             if (relation is not null)
