@@ -38,7 +38,11 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
             {
                 relation = new ParcelAddressRelation(parcelId, addressPersistentLocalId);
                 await ParcelAddressRelations.AddAsync(relation, cancellationToken);
-                await SaveChangesAsync(cancellationToken);
+
+                if (saveChanges)
+                {
+                    await SaveChangesAsync(cancellationToken);
+                }
             }
             catch(DbUpdateException exception)
             {
@@ -70,7 +74,11 @@ namespace ParcelRegistry.Api.BackOffice.Abstractions
             if (relation is not null)
             {
                 ParcelAddressRelations.Remove(relation);
-                await SaveChangesAsync(cancellationToken);
+
+                if (saveChanges)
+                {
+                    await SaveChangesAsync(cancellationToken);
+                }
             }
         }
 
