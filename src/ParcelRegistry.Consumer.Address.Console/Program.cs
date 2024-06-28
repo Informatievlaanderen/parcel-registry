@@ -79,7 +79,7 @@ namespace ParcelRegistry.Consumer.Address.Console
                         .AddDbContextFactory<BackOfficeContext>((_, options) => options
                             .UseLoggerFactory(loggerFactory)
                             .UseSqlServer(hostContext.Configuration.GetConnectionString("BackOffice"), sqlServerOptions => sqlServerOptions
-                                //.EnableRetryOnFailure()
+                                .EnableRetryOnFailure()
                                 .MigrationsHistoryTable(MigrationTables.BackOffice, Schema.BackOffice)
                             ));
 

@@ -10,7 +10,6 @@ namespace ParcelRegistry.Consumer.Address.Projections
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Microsoft.EntityFrameworkCore;
-    using NodaTime;
     using NodaTime.Text;
     using Parcel;
     using Parcel.Commands;
@@ -210,8 +209,6 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     }
                 }
 
-                await backOfficeContext.Database.BeginTransactionAsync(ct);
-
                 foreach (var parcelId in commandByParcels.Select(x => x.ParcelId))
                 {
                     var parcel = await parcels.GetAsync(new ParcelStreamId(parcelId), ct);
@@ -229,16 +226,16 @@ namespace ParcelRegistry.Consumer.Address.Projections
 
                     foreach (var addressPersistentLocalId in addressesToRemove)
                     {
-                        await backOfficeContext.RemoveIdempotentParcelAddressRelation(parcelId, addressPersistentLocalId, ct);
+                        await backOfficeContext.RemoveIdempotentParcelAddressRelation(parcelId, addressPersistentLocalId, ct, saveChanges: false);
                     }
 
                     foreach (var addressPersistentLocalId in addressesToAdd)
                     {
-                        await backOfficeContext.AddIdempotentParcelAddressRelation(parcelId, addressPersistentLocalId, ct);
+                        await backOfficeContext.AddIdempotentParcelAddressRelation(parcelId, addressPersistentLocalId, ct, saveChanges: false);
                     }
                 }
 
-                await backOfficeContext.Database.CommitTransactionAsync(ct);
+                await backOfficeContext.SaveChangesAsync(ct);
             });
 
             When<AddressWasRejectedBecauseOfReaddress>(async (commandHandler, message, ct) =>
