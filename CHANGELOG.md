@@ -1,3 +1,10 @@
+## [5.5.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.5.0...v5.5.1) (2024-06-28)
+
+
+### Bug Fixes
+
+* **consumer:** disable backoffice retry for transaction ([10d49ac](https://github.com/informatievlaanderen/parcel-registry/commit/10d49acf1c93b4d4759ef8041fd9cd3f038a916d))
+
 # [5.5.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.4.3...v5.5.0) (2024-06-28)
 
 
