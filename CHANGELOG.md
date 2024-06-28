@@ -1,3 +1,10 @@
+## [5.5.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.5.1...v5.5.2) (2024-06-28)
+
+
+### Bug Fixes
+
+* don't use user transaction, but use ef savechanges instead ([8b73e81](https://github.com/informatievlaanderen/parcel-registry/commit/8b73e81769c463968254daa5b8c003c519f1721d))
+
 ## [5.5.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.5.0...v5.5.1) (2024-06-28)
 
 
