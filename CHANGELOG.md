@@ -1,3 +1,10 @@
+## [5.5.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.5.2...v5.5.3) (2024-06-28)
+
+
+### Bug Fixes
+
+* conditionally save changes ([8c0eb7c](https://github.com/informatievlaanderen/parcel-registry/commit/8c0eb7cec4c064fa2112e2c021cbb79937f57ae1))
+
 ## [5.5.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.5.1...v5.5.2) (2024-06-28)
 
 
