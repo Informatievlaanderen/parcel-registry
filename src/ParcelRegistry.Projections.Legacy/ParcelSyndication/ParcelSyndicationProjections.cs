@@ -231,7 +231,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     message,
                     x =>
                     {
-                        x.RemoveAddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId);
+                        x.RemoveAllAddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId);
                         x.AddAddressPersistentLocalId(message.Message.NewAddressPersistentLocalId);
                     },
                     ct);
@@ -242,7 +242,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 await context.CreateNewParcelSyndicationItem(
                     message.Message.ParcelId,
                     message,
-                    x => x.RemoveAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    x => x.RemoveAllAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     ct);
             });
 
@@ -251,7 +251,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 await context.CreateNewParcelSyndicationItem(
                     message.Message.ParcelId,
                     message,
-                    x => x.RemoveAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    x => x.RemoveAllAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     ct);
             });
 
@@ -260,7 +260,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 await context.CreateNewParcelSyndicationItem(
                     message.Message.ParcelId,
                     message,
-                    x => x.RemoveAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    x => x.RemoveAllAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     ct);
             });
 
@@ -269,7 +269,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                 await context.CreateNewParcelSyndicationItem(
                     message.Message.ParcelId,
                     message,
-                    x => x.RemoveAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
+                    x => x.RemoveAllAddressPersistentLocalId(message.Message.AddressPersistentLocalId),
                     ct);
             });
 
@@ -295,7 +295,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     {
                         foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
                         {
-                            x.RemoveAddressPersistentLocalId(addressPersistentLocalId);
+                            x.RemoveAllAddressPersistentLocalId(addressPersistentLocalId);
                         }
 
                         foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
