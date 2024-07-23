@@ -93,6 +93,18 @@ namespace ParcelRegistry.Parcel
 
                     parcel.ReaddressAddresses(message.Command.Readdresses);
                 });
+
+            For<ReplaceParcelAddressBecauseOfMunicipalityMerger>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<ReplaceParcelAddressBecauseOfMunicipalityMerger, Parcel>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streamId = new ParcelStreamId(message.Command.ParcelId);
+                    var parcel = await parcelRepository().GetAsync(streamId, ct);
+
+                    parcel.ReplaceAddressBecauseOfMunicipalityMerger(message.Command.NewAddressPersistentLocalId, message.Command.PreviousAddressPersistentLocalId);
+                });
         }
     }
 }

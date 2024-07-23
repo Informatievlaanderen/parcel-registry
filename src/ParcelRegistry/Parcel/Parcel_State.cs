@@ -24,6 +24,7 @@ namespace ParcelRegistry.Parcel
         public bool IsRemoved { get; private set; }
 
         public string LastEventHash => _lastEvent is null ? _lastSnapshotEventHash : _lastEvent.GetHash();
+
         public ProvenanceData LastProvenanceData =>
             _lastEvent is null ? _lastSnapshotProvenance : _lastEvent.Provenance;
 
@@ -49,6 +50,7 @@ namespace ParcelRegistry.Parcel
             Register<ParcelAddressWasDetachedBecauseAddressWasRetired>(When);
             Register<ParcelAddressWasReplacedBecauseAddressWasReaddressed>(When);
             Register<ParcelAddressesWereReaddressed>(When);
+            Register<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>(When);
 
             Register<ParcelSnapshotV2>(When);
         }
@@ -157,6 +159,19 @@ namespace ParcelRegistry.Parcel
             foreach (var addressPersistentLocalId in @event.AttachedAddressPersistentLocalIds)
             {
                 _addressPersistentLocalIds.Add(new AddressPersistentLocalId(addressPersistentLocalId));
+            }
+
+            _lastEvent = @event;
+        }
+
+        private void When(ParcelAddressWasReplacedBecauseOfMunicipalityMerger @event)
+        {
+            _addressPersistentLocalIds.RemoveAll(x => x == new AddressPersistentLocalId(@event.PreviousAddressPersistentLocalId));
+
+            var newAddressPersistentLocalId = new AddressPersistentLocalId(@event.NewAddressPersistentLocalId);
+            if (!_addressPersistentLocalIds.Contains(newAddressPersistentLocalId))
+            {
+                _addressPersistentLocalIds.Add(new AddressPersistentLocalId(@event.NewAddressPersistentLocalId));
             }
 
             _lastEvent = @event;
