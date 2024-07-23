@@ -1,17 +1,13 @@
 namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
-    using Autofac;
     using AutoFixture;
-    using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Contracts.AddressRegistry;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using EventExtensions;
     using Fixtures;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
@@ -20,7 +16,6 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
     using NodaTime;
     using Parcel;
     using Parcel.Commands;
-    using Parcel.Events;
     using ParcelRegistry.Consumer.Address;
     using ParcelRegistry.Consumer.Address.Projections;
     using Tests.BackOffice;
@@ -583,6 +578,88 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
             {
                 _mockCommandHandler.Verify(x =>
                     x.Handle(It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None), Times.Exactly(2));
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public async Task ReplaceParcelAddressBecauseOfMunicipalityMerger_AddressWasRejectedBecauseOfMunicipalityMerger()
+        {
+            var oldAddressPersistentLocalId = 1;
+            var newAddressPersistentLocalId = 2;
+
+            var @event = new AddressWasRejectedBecauseOfMunicipalityMerger(
+                Fixture.Create<int>(),
+                oldAddressPersistentLocalId,
+                newAddressPersistentLocalId,
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [oldAddressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [oldAddressPersistentLocalId]);
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x => x.Handle(
+                        It.IsAny<ReplaceParcelAddressBecauseOfMunicipalityMerger>(), CancellationToken.None),
+                    Times.Exactly(2));
+
+                var oldAddressRelations = _fakeBackOfficeContext.ParcelAddressRelations
+                    .Where(x => x.AddressPersistentLocalId == oldAddressPersistentLocalId)
+                    .ToList();
+
+                var newAddressRelations = _fakeBackOfficeContext.ParcelAddressRelations
+                    .Where(x => x.AddressPersistentLocalId == newAddressPersistentLocalId)
+                    .ToList();
+
+                oldAddressRelations.Should().BeEmpty();
+                newAddressRelations.Should().HaveCount(2);
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public async Task ReplaceParcelAddressBecauseOfMunicipalityMerger_AddressWasRetiredBecauseOfMunicipalityMerger()
+        {
+            var oldAddressPersistentLocalId = 1;
+            var newAddressPersistentLocalId = 2;
+
+            var @event = new AddressWasRetiredBecauseOfMunicipalityMerger(
+                Fixture.Create<int>(),
+                oldAddressPersistentLocalId,
+                newAddressPersistentLocalId,
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [oldAddressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [oldAddressPersistentLocalId]);
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x => x.Handle(
+                        It.IsAny<ReplaceParcelAddressBecauseOfMunicipalityMerger>(), CancellationToken.None),
+                    Times.Exactly(2));
+
+                var oldAddressRelations = _fakeBackOfficeContext.ParcelAddressRelations
+                    .Where(x => x.AddressPersistentLocalId == oldAddressPersistentLocalId)
+                    .ToList();
+
+                var newAddressRelations = _fakeBackOfficeContext.ParcelAddressRelations
+                    .Where(x => x.AddressPersistentLocalId == newAddressPersistentLocalId)
+                    .ToList();
+
+                oldAddressRelations.Should().BeEmpty();
+                newAddressRelations.Should().HaveCount(2);
                 await Task.CompletedTask;
             });
         }
