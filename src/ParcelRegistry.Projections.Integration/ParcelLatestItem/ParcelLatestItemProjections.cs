@@ -99,24 +99,13 @@
 
             When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
             {
-                await context
-                    .ParcelLatestItemAddresses
-                    .AddAsync(new ParcelLatestItemAddress(
-                        message.Message.ParcelId,
-                        message.Message.AddressPersistentLocalId,
-                        message.Message.CaPaKey), ct);
+                await AddParcelAddress(context, message.Message.ParcelId, message.Message.CaPaKey, message.Message.AddressPersistentLocalId, ct);
             });
 
             When<Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
                 await RemoveParcelAddress(context, message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId, ct);
-
-                await context
-                    .ParcelLatestItemAddresses
-                    .AddAsync(new ParcelLatestItemAddress(
-                        message.Message.ParcelId,
-                        message.Message.NewAddressPersistentLocalId,
-                        message.Message.CaPaKey), ct);
+                await AddParcelAddress(context, message.Message.ParcelId, message.Message.CaPaKey, message.Message.NewAddressPersistentLocalId, ct);
             });
 
             When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (context, message, ct) =>
@@ -162,19 +151,7 @@
 
                 foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
                 {
-                    var relation = await context
-                        .ParcelLatestItemAddresses
-                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
-
-                    if (relation is null)
-                    {
-                        await context.ParcelLatestItemAddresses.AddAsync(
-                            new ParcelLatestItemAddress(
-                                message.Message.ParcelId,
-                                addressPersistentLocalId,
-                                message.Message.CaPaKey),
-                            ct);
-                    }
+                    await AddParcelAddress(context, message.Message.ParcelId, message.Message.CaPaKey, addressPersistentLocalId, ct);
                 }
             });
 
@@ -212,6 +189,28 @@
             if (latestItemAddress is not null)
             {
                 context.ParcelLatestItemAddresses.Remove(latestItemAddress);
+            }
+        }
+
+        private static async Task AddParcelAddress(
+            IntegrationContext context,
+            Guid parcelId,
+            string caPaKey,
+            int addressPersistentLocalId,
+            CancellationToken ct)
+        {
+            var newAddress = await context
+                .ParcelLatestItemAddresses
+                .FindAsync([parcelId, addressPersistentLocalId], cancellationToken: ct);
+
+            if (newAddress is null || context.Entry(newAddress).State == EntityState.Deleted)
+            {
+                await context
+                    .ParcelLatestItemAddresses
+                    .AddAsync(new ParcelLatestItemAddress(
+                        parcelId,
+                        addressPersistentLocalId,
+                        caPaKey), ct);
             }
         }
 
