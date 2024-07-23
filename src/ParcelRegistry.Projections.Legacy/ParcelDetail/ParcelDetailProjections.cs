@@ -3,6 +3,8 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
@@ -68,14 +70,22 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     message.Message.ParcelId,
                     entity =>
                     {
-                        context.Entry(entity).Collection(x => x.Addresses).Load();
+                        AddParcelAddress(context, entity, message.Message.AddressPersistentLocalId);
 
-                        if (!entity.Addresses.Any(parcelAddress =>
-                                parcelAddress.AddressPersistentLocalId == message.Message.AddressPersistentLocalId
-                                && parcelAddress.ParcelId == message.Message.ParcelId))
-                        {
-                            entity.Addresses.Add(new ParcelDetailAddress(message.Message.ParcelId, message.Message.AddressPersistentLocalId));
-                        }
+                        UpdateHash(entity, message);
+                        UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
+            When<Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelDetail(
+                    message.Message.ParcelId,
+                    entity =>
+                    {
+                        RemoveParcelAddress(context, entity, message.Message.PreviousAddressPersistentLocalId);
+                        AddParcelAddress(context, entity, message.Message.NewAddressPersistentLocalId);
 
                         UpdateHash(entity, message);
                         UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
@@ -89,15 +99,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     message.Message.ParcelId,
                     entity =>
                     {
-                        context.Entry(entity).Collection(x => x.Addresses).Load();
-
-                        var addressToRemove = entity.Addresses.SingleOrDefault(parcelAddress =>
-                            parcelAddress.AddressPersistentLocalId == message.Message.AddressPersistentLocalId
-                            && parcelAddress.ParcelId == message.Message.ParcelId);
-                        if (addressToRemove is not null)
-                        {
-                            entity.Addresses.Remove(addressToRemove);
-                        }
+                        RemoveParcelAddress(context, entity, message.Message.AddressPersistentLocalId);
 
                         UpdateHash(entity, message);
                         UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
@@ -111,15 +113,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     message.Message.ParcelId,
                     entity =>
                     {
-                        context.Entry(entity).Collection(x => x.Addresses).Load();
-
-                        var addressToRemove = entity.Addresses.SingleOrDefault(parcelAddress =>
-                            parcelAddress.AddressPersistentLocalId == message.Message.AddressPersistentLocalId
-                            && parcelAddress.ParcelId == message.Message.ParcelId);
-                        if (addressToRemove is not null)
-                        {
-                            entity.Addresses.Remove(addressToRemove);
-                        }
+                        RemoveParcelAddress(context, entity, message.Message.AddressPersistentLocalId);
 
                         UpdateHash(entity, message);
                         UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
@@ -133,15 +127,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     message.Message.ParcelId,
                     entity =>
                     {
-                        context.Entry(entity).Collection(x => x.Addresses).Load();
-
-                        var addressToRemove = entity.Addresses.SingleOrDefault(parcelAddress =>
-                            parcelAddress.AddressPersistentLocalId == message.Message.AddressPersistentLocalId
-                            && parcelAddress.ParcelId == message.Message.ParcelId);
-                        if (addressToRemove is not null)
-                        {
-                            entity.Addresses.Remove(addressToRemove);
-                        }
+                        RemoveParcelAddress(context, entity, message.Message.AddressPersistentLocalId);
 
                         UpdateHash(entity, message);
                         UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
@@ -155,15 +141,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     message.Message.ParcelId,
                     entity =>
                     {
-                        context.Entry(entity).Collection(x => x.Addresses).Load();
-
-                        var addressToRemove = entity.Addresses.SingleOrDefault(parcelAddress =>
-                            parcelAddress.AddressPersistentLocalId == message.Message.AddressPersistentLocalId
-                            && parcelAddress.ParcelId == message.Message.ParcelId);
-                        if (addressToRemove is not null)
-                        {
-                            entity.Addresses.Remove(addressToRemove);
-                        }
+                        RemoveParcelAddress(context, entity, message.Message.AddressPersistentLocalId);
 
                         UpdateHash(entity, message);
                         UpdateVersionTimestamp(entity, message.Message.Provenance.Timestamp);
@@ -217,31 +195,14 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     message.Message.ParcelId,
                     entity =>
                     {
-                        context.Entry(entity).Collection(x => x.Addresses).Load();
-
-
                         foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
                         {
-                            var relation = entity.Addresses.SingleOrDefault(parcelAddress =>
-                                parcelAddress.AddressPersistentLocalId == addressPersistentLocalId
-                                && parcelAddress.ParcelId == message.Message.ParcelId);
-
-                            if (relation is not null)
-                            {
-                                entity.Addresses.Remove(relation);
-                            }
+                            RemoveParcelAddress(context, entity, addressPersistentLocalId);
                         }
 
                         foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
                         {
-                            var relation = entity.Addresses.SingleOrDefault(parcelAddress =>
-                                parcelAddress.AddressPersistentLocalId == addressPersistentLocalId
-                                && parcelAddress.ParcelId == message.Message.ParcelId);
-
-                            if (relation is null)
-                            {
-                                entity.Addresses.Add(new ParcelDetailAddress(message.Message.ParcelId, addressPersistentLocalId));
-                            }
+                            AddParcelAddress(context, entity, addressPersistentLocalId);
                         }
 
                         UpdateHash(entity, message);
@@ -318,6 +279,37 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     },
                     ct);
             });
+        }
+
+        private static void RemoveParcelAddress(
+            LegacyContext context,
+            ParcelDetail entity,
+            int addressPersistentLocalId)
+        {
+            context.Entry(entity).Collection(x => x.Addresses).Load();
+
+            var addressToRemove = entity.Addresses.SingleOrDefault(parcelAddress =>
+                parcelAddress.AddressPersistentLocalId == addressPersistentLocalId
+                && parcelAddress.ParcelId == entity.ParcelId);
+            if (addressToRemove is not null)
+            {
+                entity.Addresses.Remove(addressToRemove);
+            }
+        }
+
+        private static void AddParcelAddress(
+            LegacyContext context,
+            ParcelDetail entity,
+            int addressPersistentLocalId)
+        {
+            context.Entry(entity).Collection(x => x.Addresses).Load();
+
+            if (!entity.Addresses.Any(parcelAddress =>
+                    parcelAddress.AddressPersistentLocalId == addressPersistentLocalId
+                    && parcelAddress.ParcelId == entity.ParcelId))
+            {
+                entity.Addresses.Add(new ParcelDetailAddress(entity.ParcelId, addressPersistentLocalId));
+            }
         }
 
         private static void UpdateHash<T>(ParcelDetail entity, Envelope<T> wrappedEvent) where T : IHaveHash, IMessage

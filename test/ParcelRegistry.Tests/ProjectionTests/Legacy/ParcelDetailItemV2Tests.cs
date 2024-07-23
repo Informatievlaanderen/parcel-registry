@@ -13,6 +13,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using Builders;
     using Fixtures;
     using FluentAssertions;
     using Parcel;
@@ -230,6 +231,44 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                         .NotContain(addressWasDetached.AddressPersistentLocalId);
                     parcelDetailV2.VersionTimestamp.Should().Be(addressWasDetached.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(addressWasDetached.GetHash());
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasReplacedBecauseOfMunicipalityMerger()
+        {
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var migratedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasMigrated.GetHash() }
+            };
+
+            var addressWasReplaced = new ParcelAddressWasReplacedBecauseOfMunicipalityMergerBuilder(_fixture)
+                .WithParcelId(new ParcelId(parcelWasMigrated.ParcelId))
+                .WithVbrCaPaKey(new VbrCaPaKey(parcelWasMigrated.CaPaKey))
+                .WithPreviousAddress(new AddressPersistentLocalId(parcelWasMigrated.AddressPersistentLocalIds.First()))
+                .WithNewAddress(new AddressPersistentLocalId(parcelWasMigrated.AddressPersistentLocalIds.Max(x => x) + 1))
+                .Build();
+            var replacedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, addressWasReplaced.GetHash() }
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<ParcelWasMigrated>(new Envelope(parcelWasMigrated, migratedMetadata)),
+                    new Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>(new Envelope(addressWasReplaced, replacedMetadata)))
+                .Then(async context =>
+                {
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(parcelWasMigrated.ParcelId);
+                    parcelDetailV2.Should().NotBeNull();
+                    parcelDetailV2!.Addresses.Select(x => x.AddressPersistentLocalId).Should()
+                        .NotContain(addressWasReplaced.PreviousAddressPersistentLocalId);
+                    parcelDetailV2.Addresses.Select(x => x.AddressPersistentLocalId).Should()
+                        .Contain(addressWasReplaced.NewAddressPersistentLocalId);
+
+                    parcelDetailV2.VersionTimestamp.Should().Be(addressWasReplaced.Provenance.Timestamp);
+                    parcelDetailV2.LastEventHash.Should().Be(addressWasReplaced.GetHash());
                 });
         }
 

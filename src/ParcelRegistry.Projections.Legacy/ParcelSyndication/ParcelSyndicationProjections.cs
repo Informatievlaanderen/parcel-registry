@@ -224,6 +224,19 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     ct);
             });
 
+            When<Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x =>
+                    {
+                        x.RemoveAddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId);
+                        x.AddAddressPersistentLocalId(message.Message.NewAddressPersistentLocalId);
+                    },
+                    ct);
+            });
+
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
             {
                 await context.CreateNewParcelSyndicationItem(

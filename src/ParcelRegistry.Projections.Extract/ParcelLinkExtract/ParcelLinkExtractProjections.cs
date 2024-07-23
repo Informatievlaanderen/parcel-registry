@@ -68,6 +68,27 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
                     }, ct);
             });
 
+            When<Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await RemoveParcelLink(context, message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId, ct);
+
+                await context
+                    .ParcelLinkExtract
+                    .AddAsync(new ParcelLinkExtractItem
+                    {
+                        ParcelId = message.Message.ParcelId,
+                        CaPaKey = message.Message.CaPaKey,
+                        AddressPersistentLocalId = message.Message.NewAddressPersistentLocalId,
+                        Count = 1,
+                        DbaseRecord = new ParcelLinkDbaseRecord
+                        {
+                            objecttype = { Value = ParcelObjectType },
+                            adresobjid = { Value = message.Message.CaPaKey },
+                            adresid = { Value = message.Message.NewAddressPersistentLocalId }
+                        }.ToBytes(_encoding)
+                    }, ct);
+            });
+
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
             {
                 await RemoveParcelLink(context, message.Message.ParcelId, message.Message.AddressPersistentLocalId, ct);

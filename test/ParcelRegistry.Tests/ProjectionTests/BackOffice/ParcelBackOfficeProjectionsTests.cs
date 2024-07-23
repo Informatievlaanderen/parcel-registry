@@ -241,6 +241,50 @@ namespace ParcelRegistry.Tests.ProjectionTests.BackOffice
                 });
         }
 
+        [Fact]
+        public async Task GivenParcelAddressWasReplacedBecauseOfMunicipalityMergerAndPreviousRelationDoesntExist_ThenRelationIsReplaced()
+        {
+            var parcelAddressWasReplaced = _fixture.Create<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>();
+
+            await Sut
+                .Given(BuildEnvelope(parcelAddressWasReplaced))
+                .Then(async _ =>
+                {
+                    var previousRelation = await _backOfficeContext.ParcelAddressRelations.FindAsync(
+                        parcelAddressWasReplaced.ParcelId, parcelAddressWasReplaced.PreviousAddressPersistentLocalId);
+
+                    previousRelation.Should().BeNull();
+
+                    var newRelation = await _backOfficeContext.ParcelAddressRelations.FindAsync(
+                        parcelAddressWasReplaced.ParcelId, parcelAddressWasReplaced.NewAddressPersistentLocalId);
+
+                    newRelation.Should().NotBeNull();
+                    newRelation!.ParcelId.Should().Be(parcelAddressWasReplaced.ParcelId);
+                    newRelation.AddressPersistentLocalId.Should().Be(parcelAddressWasReplaced.NewAddressPersistentLocalId);
+                });
+        }
+
+        [Fact]
+        public async Task GivenParcelAddressWasReplacedBecauseOfMunicipalityMergerAndNewRelationExists_ThenNothing()
+        {
+            var parcelAddressWasReplaced = _fixture.Create<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>();
+
+            var expectedRelation = await AddRelation(
+                parcelAddressWasReplaced.ParcelId,
+                parcelAddressWasReplaced.NewAddressPersistentLocalId);
+
+            await Sut
+                .Given(BuildEnvelope(parcelAddressWasReplaced))
+                .Then(async _ =>
+                {
+                    var result = await _backOfficeContext.ParcelAddressRelations.FindAsync(
+                        parcelAddressWasReplaced.ParcelId, parcelAddressWasReplaced.NewAddressPersistentLocalId);
+
+                    result.Should().NotBeNull();
+                    result.Should().BeSameAs(expectedRelation);
+                });
+        }
+
         private async Task<ParcelAddressRelation> AddRelation(Guid parcelId, int addressPersistentLocalId)
         {
             return await _backOfficeContext.AddIdempotentParcelAddressRelation(

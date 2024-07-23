@@ -10,7 +10,7 @@ namespace ParcelRegistry.Parcel.Events
 
     [EventTags(EventTag.For.Sync, EventTag.For.Edit)]
     [EventName(EventName)]
-    [EventDescription("Het adres werd gekoppeld aan het perceel.")] //TODO-rik event description
+    [EventDescription("Het adres werd herkoppeld van het perceel in functie van een gemeentefusie.")]
     public sealed class ParcelAddressWasReplacedBecauseOfMunicipalityMerger : IParcelEvent
     {
         public const string EventName = "ParcelAddressWasReplacedBecauseOfMunicipalityMerger"; // BE CAREFUL CHANGING THIS!!

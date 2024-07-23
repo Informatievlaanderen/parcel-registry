@@ -383,6 +383,54 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        [Fact]
+        public async Task GivenParcelAddressWasReplacedBecauseOfMunicipalityMerger_ThenAddressesAreAttachedAndDetached()
+        {
+            _fixture.Customizations.Add(new WithUniqueInteger());
+
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var parcelAddressWasAttached = _fixture.Create<ParcelAddressWasAttachedV2>();
+
+            var @event = new ParcelAddressWasReplacedBecauseOfMunicipalityMergerBuilder(_fixture)
+                .WithPreviousAddress(parcelAddressWasAttached.AddressPersistentLocalId)
+                .WithNewAddress(parcelAddressWasAttached.AddressPersistentLocalId + 1)
+                .Build();
+
+            var position = _fixture.Create<long>();
+            var parcelWasImportedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasImported.GetHash() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelWasImported) },
+            };
+            var parcelAddressWasAttachedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasImported.GetHash() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelAddressWasAttachedV2) },
+            };
+            var eventMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, parcelWasImported.GetHash() },
+                { Envelope.PositionMetadataKey, ++position },
+                { Envelope.EventNameMetadataKey, nameof(ParcelAddressWasReplacedBecauseOfMunicipalityMerger) },
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<ParcelWasImported>(new Envelope(parcelWasImported, parcelWasImportedMetadata)),
+                    new Envelope<ParcelAddressWasAttachedV2>(new Envelope(parcelAddressWasAttached, parcelAddressWasAttachedMetadata)),
+                    new Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>(new Envelope(@event, eventMetadata)))
+                .Then(async context =>
+                {
+                    var parcelSyndicationItem = await context.ParcelSyndication.FindAsync(position);
+                    parcelSyndicationItem.Should().NotBeNull();
+
+                    parcelSyndicationItem!.AddressPersistentLocalIds.Should().Contain(@event.NewAddressPersistentLocalId);
+                    parcelSyndicationItem!.AddressPersistentLocalIds.Should().NotContain(@event.PreviousAddressPersistentLocalId);
+                });
+        }
+
         protected override ParcelSyndicationProjections CreateProjection()
             => new ParcelSyndicationProjections();
     }

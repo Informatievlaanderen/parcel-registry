@@ -1,5 +1,8 @@
 ﻿namespace ParcelRegistry.Projections.Integration.ParcelVersion
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -120,6 +123,28 @@
                         message.Message.CaPaKey), ct);
             });
 
+            When<Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelVersion(
+                    message.Message.ParcelId,
+                    message,
+                    _ => { }, ct);
+
+                await RemoveParcelAddress(context,
+                    message.Position,
+                    message.Message.ParcelId,
+                    message.Message.PreviousAddressPersistentLocalId,
+                    ct);
+
+                await context
+                    .ParcelVersionAddresses
+                    .AddAsync(new ParcelVersionAddress(
+                        message.Position,
+                        message.Message.ParcelId,
+                        message.Message.NewAddressPersistentLocalId,
+                        message.Message.CaPaKey), ct);
+            });
+
             When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (context, message, ct) =>
             {
                 await context.CreateNewParcelVersion(
@@ -205,12 +230,11 @@
                     message,
                     _ => { }, ct);
 
-                var versionAddress = await context
-                    .ParcelVersionAddresses
-                    .FindAsync(new object?[] { message.Position, message.Message.ParcelId, message.Message.AddressPersistentLocalId },
-                        cancellationToken: ct);
-
-                context.ParcelVersionAddresses.Remove(versionAddress);
+                await RemoveParcelAddress(context,
+                    message.Position,
+                    message.Message.ParcelId,
+                    message.Message.AddressPersistentLocalId,
+                    ct);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRejected>>(async (context, message, ct) =>
@@ -220,12 +244,11 @@
                     message,
                     _ => { }, ct);
 
-                var versionAddress = await context
-                    .ParcelVersionAddresses
-                    .FindAsync(new object?[] { message.Position, message.Message.ParcelId, message.Message.AddressPersistentLocalId },
-                        cancellationToken: ct);
-
-                context.ParcelVersionAddresses.Remove(versionAddress);
+                await RemoveParcelAddress(context,
+                    message.Position,
+                    message.Message.ParcelId,
+                    message.Message.AddressPersistentLocalId,
+                    ct);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRemoved>>(async (context, message, ct) =>
@@ -235,12 +258,11 @@
                     message,
                     _ => { }, ct);
 
-                var versionAddress = await context
-                    .ParcelVersionAddresses
-                    .FindAsync(new object?[] { message.Position, message.Message.ParcelId, message.Message.AddressPersistentLocalId },
-                        cancellationToken: ct);
-
-                context.ParcelVersionAddresses.Remove(versionAddress);
+                await RemoveParcelAddress(context,
+                    message.Position,
+                    message.Message.ParcelId,
+                    message.Message.AddressPersistentLocalId,
+                    ct);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRetired>>(async (context, message, ct) =>
@@ -250,12 +272,11 @@
                     message,
                     _ => { }, ct);
 
-                var versionAddress = await context
-                    .ParcelVersionAddresses
-                    .FindAsync(new object?[] { message.Position, message.Message.ParcelId, message.Message.AddressPersistentLocalId },
-                        cancellationToken: ct);
-
-                context.ParcelVersionAddresses.Remove(versionAddress);
+                await RemoveParcelAddress(context,
+                    message.Position,
+                    message.Message.ParcelId,
+                    message.Message.AddressPersistentLocalId,
+                    ct);
             });
 
             #region Legacy
@@ -433,5 +454,20 @@
         }
 
         #endregion
+
+        private static async Task RemoveParcelAddress(
+            IntegrationContext context,
+            long position,
+            Guid parcelId,
+            int addressPersistentLocalId,
+            CancellationToken ct)
+        {
+            var versionAddress = await context
+                .ParcelVersionAddresses
+                .FindAsync(new object?[] { position, parcelId, addressPersistentLocalId },
+                    cancellationToken: ct);
+
+            context.ParcelVersionAddresses.Remove(versionAddress);
+        }
     }
 }

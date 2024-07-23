@@ -47,6 +47,27 @@ namespace ParcelRegistry.Projections.BackOffice
                 await backOfficeContext.SaveChangesAsync(cancellationToken);
             });
 
+            When<Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>>(async (_, message, cancellationToken) =>
+            {
+                await DelayProjection(message, delayInSeconds, cancellationToken);
+
+                await using var backOfficeContext = await backOfficeContextFactory.CreateDbContextAsync(cancellationToken);
+
+                await backOfficeContext.RemoveIdempotentParcelAddressRelation(
+                    new ParcelId(message.Message.ParcelId),
+                    new AddressPersistentLocalId(message.Message.PreviousAddressPersistentLocalId),
+                    cancellationToken,
+                    saveChanges: false);
+
+                await backOfficeContext.AddIdempotentParcelAddressRelation(
+                    new ParcelId(message.Message.ParcelId),
+                    new AddressPersistentLocalId(message.Message.NewAddressPersistentLocalId),
+                    cancellationToken,
+                    saveChanges: false);
+
+                await backOfficeContext.SaveChangesAsync(cancellationToken);
+            });
+
             When<Envelope<ParcelAddressWasDetachedV2>>(async (_, message, cancellationToken) =>
             {
                 await DelayProjection(message, delayInSeconds, cancellationToken);
