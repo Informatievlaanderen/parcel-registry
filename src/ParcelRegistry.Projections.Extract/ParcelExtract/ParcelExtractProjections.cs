@@ -54,6 +54,17 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                     ct);
             });
 
+            When<Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await context.FindAndUpdateParcelExtract(
+                    message.Message.ParcelId,
+                    parcel =>
+                    {
+                        UpdateVersie(parcel, message.Message.Provenance.Timestamp);
+                    },
+                    ct);
+            });
+
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateParcelExtract(

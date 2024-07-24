@@ -244,6 +244,30 @@
                 });
         }
 
+        [Fact]
+        public async Task WhenParcelAddressWasReplacedBecauseOfMunicipalityMerger()
+        {
+            var attached = _fixture.Create<ParcelAddressWasAttachedV2>();
+
+            var message = new ParcelAddressWasReplacedBecauseOfMunicipalityMerger(
+                new ParcelId(attached.ParcelId),
+                new VbrCaPaKey(attached.CaPaKey),
+                new AddressPersistentLocalId(attached.AddressPersistentLocalId + 1),
+                new AddressPersistentLocalId(attached.AddressPersistentLocalId));
+
+            await Sut
+                .Given(_fixture.Create<ParcelWasImported>(), message)
+                .Then(async context =>
+                {
+                    var previousLatestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.PreviousAddressPersistentLocalId);
+                    previousLatestItem.Should().BeNull();
+
+                    var newLatestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.NewAddressPersistentLocalId);
+                    newLatestItem.Should().NotBeNull();
+                    newLatestItem!.CaPaKey.Should().Be(message.CaPaKey);
+                });
+        }
+
         protected override ParcelLatestItemProjections CreateProjection()
             => new(new OptionsWrapper<IntegrationOptions>(new IntegrationOptions{Namespace = Namespace }));
     }

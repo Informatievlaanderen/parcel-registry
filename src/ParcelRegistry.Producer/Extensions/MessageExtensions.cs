@@ -45,6 +45,9 @@ namespace ParcelRegistry.Producer.Extensions
         public static Contracts.ParcelAddressWasAttachedV2 ToContract(this ParcelAggregate.ParcelAddressWasAttachedV2 message) =>
             new Contracts.ParcelAddressWasAttachedV2(message.ParcelId.ToString("D"), message.CaPaKey, message.AddressPersistentLocalId, message.Provenance.ToContract());
 
+        public static Contracts.ParcelAddressWasReplacedBecauseOfMunicipalityMerger ToContract(this ParcelAggregate.ParcelAddressWasReplacedBecauseOfMunicipalityMerger message) =>
+            new Contracts.ParcelAddressWasReplacedBecauseOfMunicipalityMerger(message.ParcelId.ToString("D"), message.CaPaKey, message.NewAddressPersistentLocalId, message.PreviousAddressPersistentLocalId, message.Provenance.ToContract());
+
         public static Contracts.ParcelAddressWasDetachedV2 ToContract(this ParcelAggregate.ParcelAddressWasDetachedV2 message) =>
             new Contracts.ParcelAddressWasDetachedV2(message.ParcelId.ToString("D"), message.CaPaKey, message.AddressPersistentLocalId, message.Provenance.ToContract());
 

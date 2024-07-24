@@ -68,6 +68,12 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
                     }, ct);
             });
 
+            When<Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await RemoveParcelLink(context, message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId, ct);
+                await AddParcelLink(context, message.Message.ParcelId, message.Message.CaPaKey, message.Message.NewAddressPersistentLocalId, ct);
+            });
+
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
             {
                 await RemoveParcelLink(context, message.Message.ParcelId, message.Message.AddressPersistentLocalId, ct);
@@ -135,26 +141,12 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
             {
                 foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
                 {
-                    var relation = await context
-                        .ParcelLinkExtract
-                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
-
-                    if (relation is not null)
-                    {
-                        context.ParcelLinkExtract.Remove(relation);
-                    }
+                    await RemoveParcelLink(context, message.Message.ParcelId, addressPersistentLocalId, ct);
                 }
 
                 foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
                 {
-                    var relation = await context
-                        .ParcelLinkExtract
-                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
-
-                    if (relation is not null)
-                    {
-                        await context.ParcelLinkExtract.AddAsync(relation, ct);
-                    }
+                    await AddParcelLink(context, message.Message.ParcelId, message.Message.CaPaKey, addressPersistentLocalId, ct);
                 }
             });
         }
@@ -169,7 +161,41 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
                 .ParcelLinkExtract
                 .FindAsync(new object?[] { parcelId, addressPersistentLocalId }, ct);
 
-            context.Remove(linkExtractItem!);
+            if (linkExtractItem is not null)
+            {
+                context.Remove(linkExtractItem);
+            }
+        }
+
+        private async Task AddParcelLink(
+            ExtractContext context,
+            Guid parcelId,
+            string caPaKey,
+            int addressPersistentLocalId,
+            CancellationToken ct)
+        {
+            var newAddress = await context
+                .ParcelLinkExtract
+                .FindAsync(new object?[] { parcelId, addressPersistentLocalId }, ct);
+
+            if (newAddress is null || context.Entry(newAddress).State == EntityState.Deleted)
+            {
+                await context
+                    .ParcelLinkExtract
+                    .AddAsync(new ParcelLinkExtractItem
+                    {
+                        ParcelId = parcelId,
+                        CaPaKey = caPaKey,
+                        AddressPersistentLocalId = addressPersistentLocalId,
+                        Count = 1,
+                        DbaseRecord = new ParcelLinkDbaseRecord
+                        {
+                            objecttype = { Value = ParcelObjectType },
+                            adresobjid = { Value = caPaKey },
+                            adresid = { Value = addressPersistentLocalId }
+                        }.ToBytes(_encoding)
+                    }, ct);
+            }
         }
     }
 }

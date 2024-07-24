@@ -114,5 +114,21 @@ namespace ParcelRegistry.Parcel
                 addressPersistentLocalIdsToDetach,
                 readdresses.Select(x => new AddressRegistryReaddress(x))));
         }
+
+        public void ReplaceAddressBecauseOfMunicipalityMerger(
+            AddressPersistentLocalId newAddressPersistentLocalId,
+            AddressPersistentLocalId previousAddressPersistentLocalId)
+        {
+            if (!AddressPersistentLocalIds.Contains(previousAddressPersistentLocalId))
+            {
+                return;
+            }
+
+            ApplyChange(new ParcelAddressWasReplacedBecauseOfMunicipalityMerger(
+                ParcelId,
+                CaPaKey,
+                newAddressPersistentLocalId,
+                previousAddressPersistentLocalId));
+        }
     }
 }

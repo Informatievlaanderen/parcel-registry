@@ -50,6 +50,19 @@ namespace ParcelRegistry.Consumer.Address.Projections
                         , ct);
             });
 
+            When<AddressWasProposedForMunicipalityMerger>(async (context, message, ct) =>
+            {
+                await context
+                    .AddressConsumerItems
+                    .AddAsync(new AddressConsumerItem(
+                            message.AddressPersistentLocalId,
+                            AddressStatus.Proposed,
+                            message.GeometryMethod,
+                            message.GeometrySpecification,
+                            ParsePosition(message.ExtendedWkbGeometry))
+                        , ct);
+            });
+
             When<AddressWasApproved>(async (context, message, ct) =>
             {
                 var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);
@@ -86,6 +99,12 @@ namespace ParcelRegistry.Consumer.Address.Projections
                 address!.Status = AddressStatus.Rejected;
             });
 
+            When<AddressWasRejectedBecauseOfMunicipalityMerger>(async (context, message, ct) =>
+            {
+                var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);
+                address!.Status = AddressStatus.Rejected;
+            });
+
             When<AddressWasRetiredV2>(async (context, message, ct) =>
             {
                 var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);
@@ -105,6 +124,12 @@ namespace ParcelRegistry.Consumer.Address.Projections
             });
 
             When<AddressWasRetiredBecauseStreetNameWasRetired>(async (context, message, ct) =>
+            {
+                var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);
+                address!.Status = AddressStatus.Retired;
+            });
+
+            When<AddressWasRetiredBecauseOfMunicipalityMerger>(async (context, message, ct) =>
             {
                 var address = await context.AddressConsumerItems.FindAsync(message.AddressPersistentLocalId, cancellationToken: ct);
                 address!.Status = AddressStatus.Retired;

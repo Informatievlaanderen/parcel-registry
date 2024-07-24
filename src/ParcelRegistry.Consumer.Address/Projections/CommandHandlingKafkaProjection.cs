@@ -99,6 +99,36 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     ct);
             });
 
+            When<AddressWasRejectedBecauseOfMunicipalityMerger>(async (commandHandler, message, ct) =>
+            {
+                await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
+                var relations = backOfficeContext.ParcelAddressRelations
+                    .AsNoTracking()
+                    .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(message.AddressPersistentLocalId))
+                    .ToList();
+
+                foreach (var relation in relations)
+                {
+                    var command = new ReplaceParcelAddressBecauseOfMunicipalityMerger(
+                        new ParcelId(relation.ParcelId),
+                        new AddressPersistentLocalId(message.NewAddressPersistentLocalId),
+                        new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                        FromProvenance(message.Provenance));
+
+                    await commandHandler.Handle(command, ct);
+
+                    await backOfficeContext.RemoveIdempotentParcelAddressRelation(
+                        command.ParcelId,
+                        command.PreviousAddressPersistentLocalId,
+                        ct);
+
+                    await backOfficeContext.AddIdempotentParcelAddressRelation(
+                        command.ParcelId,
+                        command.NewAddressPersistentLocalId,
+                        ct);
+                }
+            });
+
             When<AddressWasRetiredV2>(async (commandHandler, message, ct) =>
             {
                 await DetachBecauseRetired(
@@ -133,6 +163,36 @@ namespace ParcelRegistry.Consumer.Address.Projections
                     new AddressPersistentLocalId(message.AddressPersistentLocalId),
                     message.Provenance,
                     ct);
+            });
+
+            When<AddressWasRetiredBecauseOfMunicipalityMerger>(async (commandHandler, message, ct) =>
+            {
+                await using var backOfficeContext = await _backOfficeContextFactory.CreateDbContextAsync(ct);
+                var relations = backOfficeContext.ParcelAddressRelations
+                    .AsNoTracking()
+                    .Where(x => x.AddressPersistentLocalId == new AddressPersistentLocalId(message.AddressPersistentLocalId))
+                    .ToList();
+
+                foreach (var relation in relations)
+                {
+                    var command = new ReplaceParcelAddressBecauseOfMunicipalityMerger(
+                        new ParcelId(relation.ParcelId),
+                        new AddressPersistentLocalId(message.NewAddressPersistentLocalId),
+                        new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                        FromProvenance(message.Provenance));
+
+                    await commandHandler.Handle(command, ct);
+
+                    await backOfficeContext.RemoveIdempotentParcelAddressRelation(
+                        command.ParcelId,
+                        command.PreviousAddressPersistentLocalId,
+                        ct);
+
+                    await backOfficeContext.AddIdempotentParcelAddressRelation(
+                        command.ParcelId,
+                        command.NewAddressPersistentLocalId,
+                        ct);
+                }
             });
 
             When<AddressWasRemovedV2>(async (commandHandler, message, ct) =>

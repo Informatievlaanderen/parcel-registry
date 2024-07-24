@@ -1,5 +1,8 @@
 ﻿namespace ParcelRegistry.Projections.Integration.ParcelLatestItem
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Converters;
@@ -96,12 +99,13 @@
 
             When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
             {
-                await context
-                    .ParcelLatestItemAddresses
-                    .AddAsync(new ParcelLatestItemAddress(
-                        message.Message.ParcelId,
-                        message.Message.AddressPersistentLocalId,
-                        message.Message.CaPaKey), ct);
+                await AddParcelAddress(context, message.Message.ParcelId, message.Message.CaPaKey, message.Message.AddressPersistentLocalId, ct);
+            });
+
+            When<Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
+            {
+                await RemoveParcelAddress(context, message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId, ct);
+                await AddParcelAddress(context, message.Message.ParcelId, message.Message.CaPaKey, message.Message.NewAddressPersistentLocalId, ct);
             });
 
             When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (context, message, ct) =>
@@ -142,69 +146,72 @@
             {
                 foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
                 {
-                    var relation = await context
-                        .ParcelLatestItemAddresses
-                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
-
-                    if (relation is not null)
-                    {
-                        context.ParcelLatestItemAddresses.Remove(relation);
-                    }
+                    await RemoveParcelAddress(context, message.Message.ParcelId, addressPersistentLocalId, ct);
                 }
 
                 foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
                 {
-                    var relation = await context
-                        .ParcelLatestItemAddresses
-                        .FindAsync([message.Message.ParcelId, addressPersistentLocalId], ct);
-
-                    if (relation is null)
-                    {
-                        await context.ParcelLatestItemAddresses.AddAsync(
-                            new ParcelLatestItemAddress(
-                                message.Message.ParcelId,
-                                addressPersistentLocalId,
-                                message.Message.CaPaKey),
-                            ct);
-                    }
+                    await AddParcelAddress(context, message.Message.ParcelId, message.Message.CaPaKey, addressPersistentLocalId, ct);
                 }
             });
 
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
             {
-                var latestItemAddress = await context
-                    .ParcelLatestItemAddresses
-                    .FindAsync(new object?[] { message.Message.ParcelId, message.Message.AddressPersistentLocalId }, cancellationToken: ct);
-
-                context.ParcelLatestItemAddresses.Remove(latestItemAddress);
+                await RemoveParcelAddress(context, message.Message.ParcelId, message.Message.AddressPersistentLocalId, ct);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRejected>>(async (context, message, ct) =>
             {
-                var latestItemAddress = await context
-                    .ParcelLatestItemAddresses
-                    .FindAsync(new object?[] { message.Message.ParcelId, message.Message.AddressPersistentLocalId }, cancellationToken: ct);
-
-                context.ParcelLatestItemAddresses.Remove(latestItemAddress);
+                await RemoveParcelAddress(context, message.Message.ParcelId, message.Message.AddressPersistentLocalId, ct);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRemoved>>(async (context, message, ct) =>
             {
-                var latestItemAddress = await context
-                    .ParcelLatestItemAddresses
-                    .FindAsync(new object?[] { message.Message.ParcelId, message.Message.AddressPersistentLocalId }, cancellationToken: ct);
-
-                context.ParcelLatestItemAddresses.Remove(latestItemAddress);
+                await RemoveParcelAddress(context, message.Message.ParcelId, message.Message.AddressPersistentLocalId, ct);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRetired>>(async (context, message, ct) =>
             {
-                var latestItemAddress = await context
-                    .ParcelLatestItemAddresses
-                    .FindAsync(new object?[] { message.Message.ParcelId, message.Message.AddressPersistentLocalId }, cancellationToken: ct);
-
-                context.ParcelLatestItemAddresses.Remove(latestItemAddress);
+                await RemoveParcelAddress(context, message.Message.ParcelId, message.Message.AddressPersistentLocalId, ct);
             });
+        }
+
+        private static async Task RemoveParcelAddress(
+            IntegrationContext context,
+            Guid parcelId,
+            int addressPersistentLocalId,
+            CancellationToken ct)
+        {
+            var latestItemAddress = await context
+                .ParcelLatestItemAddresses
+                .FindAsync(new object?[] { parcelId, addressPersistentLocalId }, cancellationToken: ct);
+
+            if (latestItemAddress is not null)
+            {
+                context.ParcelLatestItemAddresses.Remove(latestItemAddress);
+            }
+        }
+
+        private static async Task AddParcelAddress(
+            IntegrationContext context,
+            Guid parcelId,
+            string caPaKey,
+            int addressPersistentLocalId,
+            CancellationToken ct)
+        {
+            var newAddress = await context
+                .ParcelLatestItemAddresses
+                .FindAsync([parcelId, addressPersistentLocalId], cancellationToken: ct);
+
+            if (newAddress is null || context.Entry(newAddress).State == EntityState.Deleted)
+            {
+                await context
+                    .ParcelLatestItemAddresses
+                    .AddAsync(new ParcelLatestItemAddress(
+                        parcelId,
+                        addressPersistentLocalId,
+                        caPaKey), ct);
+            }
         }
 
         private static void UpdateVersionTimestamp(ParcelLatestItem parcel, Instant versionTimestamp)

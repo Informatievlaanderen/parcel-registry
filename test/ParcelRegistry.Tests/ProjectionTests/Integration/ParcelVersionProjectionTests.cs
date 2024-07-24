@@ -493,6 +493,58 @@
                 });
         }
 
+        [Fact]
+        public async Task WhenParcelAddressWasReplacedBecauseOfMunicipalityMerger()
+        {
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var attached = _fixture.Create<ParcelAddressWasAttachedV2>();
+            var message = new ParcelAddressWasReplacedBecauseOfMunicipalityMergerBuilder(_fixture)
+                .WithPreviousAddress(attached.AddressPersistentLocalId)
+                .WithNewAddress(attached.AddressPersistentLocalId + 1)
+                .Build();
+
+            var position = _fixture.Create<long>();
+            var importedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
+            };
+            var attachedMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
+            };
+            var messageMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position + 2 },
+                { Envelope.EventNameMetadataKey, "EventName"}
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<ParcelWasImported>(new Envelope(parcelWasImported, importedMetadata)),
+                    new Envelope<ParcelAddressWasAttachedV2>(new Envelope(attached, attachedMetadata)),
+                    new Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>(new Envelope(message, messageMetadata)))
+                .Then(async context =>
+                {
+                    var parcelVersions = await context.ParcelVersions.FindAsync(position + 2, message.ParcelId);
+                    parcelVersions.Should().NotBeNull();
+                    parcelVersions!.Type.Should().Be("EventName");
+
+                    var previousParcelVersionAddress =
+                        await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, message.PreviousAddressPersistentLocalId);
+                    previousParcelVersionAddress.Should().BeNull();
+
+                    var newParcelVersionAddress =
+                        await context.ParcelVersionAddresses.FindAsync(position + 2, message.ParcelId, message.NewAddressPersistentLocalId);
+                    newParcelVersionAddress.Should().NotBeNull();
+                    newParcelVersionAddress!.CaPaKey.Should().Be(message.CaPaKey);
+                });
+        }
+
         #region Legacy
 
         [Fact]
