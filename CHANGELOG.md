@@ -1,3 +1,12 @@
+# [5.6.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.5.3...v5.6.0) (2024-07-29)
+
+
+### Features
+
+* add snapshot status endpoint ([#798](https://github.com/informatievlaanderen/parcel-registry/issues/798)) ([dfb2c2b](https://github.com/informatievlaanderen/parcel-registry/commit/dfb2c2bf7f91dbdc026b48c08a09b4b39cc90607))
+* blacklist ovocodes ([#797](https://github.com/informatievlaanderen/parcel-registry/issues/797)) ([c50e0fd](https://github.com/informatievlaanderen/parcel-registry/commit/c50e0fdb2e40a228fa9ff4425826faa10f42c99d))
+* replace parcel address because of municipality merger ([cec8278](https://github.com/informatievlaanderen/parcel-registry/commit/cec827853696f5e12c450ea897c85e5460030d5c))
+
 ## [5.5.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.5.2...v5.5.3) (2024-06-28)
 
 
