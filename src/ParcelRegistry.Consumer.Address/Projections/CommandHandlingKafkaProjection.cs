@@ -109,9 +109,19 @@ namespace ParcelRegistry.Consumer.Address.Projections
 
                 foreach (var relation in relations)
                 {
+                    if (!message.NewAddressPersistentLocalId.HasValue)
+                    {
+                        await DetachBecauseRejected(
+                            commandHandler,
+                            new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                            message.Provenance,
+                            ct);
+                        return;
+                    }
+
                     var command = new ReplaceParcelAddressBecauseOfMunicipalityMerger(
                         new ParcelId(relation.ParcelId),
-                        new AddressPersistentLocalId(message.NewAddressPersistentLocalId),
+                        new AddressPersistentLocalId(message.NewAddressPersistentLocalId.Value),
                         new AddressPersistentLocalId(message.AddressPersistentLocalId),
                         FromProvenance(message.Provenance));
 
@@ -175,9 +185,19 @@ namespace ParcelRegistry.Consumer.Address.Projections
 
                 foreach (var relation in relations)
                 {
+                    if (!message.NewAddressPersistentLocalId.HasValue)
+                    {
+                        await DetachBecauseRetired(
+                            commandHandler,
+                            new AddressPersistentLocalId(message.AddressPersistentLocalId),
+                            message.Provenance,
+                            ct);
+                        return;
+                    }
+
                     var command = new ReplaceParcelAddressBecauseOfMunicipalityMerger(
                         new ParcelId(relation.ParcelId),
-                        new AddressPersistentLocalId(message.NewAddressPersistentLocalId),
+                        new AddressPersistentLocalId(message.NewAddressPersistentLocalId.Value),
                         new AddressPersistentLocalId(message.AddressPersistentLocalId),
                         FromProvenance(message.Provenance));
 

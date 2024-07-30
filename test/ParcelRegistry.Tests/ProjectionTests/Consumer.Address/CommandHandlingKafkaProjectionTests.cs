@@ -624,6 +624,41 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
         }
 
         [Fact]
+        public async Task DetachParcelAddressBecauseOfMunicipalityMerger_AddressWasRejectedBecauseOfMunicipalityMerger()
+        {
+            var oldAddressPersistentLocalId = 1;
+
+            var @event = new AddressWasRejectedBecauseOfMunicipalityMerger(
+                Fixture.Create<int>(),
+                oldAddressPersistentLocalId,
+                null,
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [oldAddressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [oldAddressPersistentLocalId]);
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x => x.Handle(
+                        It.IsAny<DetachAddressBecauseAddressWasRejected>(), CancellationToken.None),
+                    Times.Exactly(2));
+
+                var oldAddressRelations = _fakeBackOfficeContext.ParcelAddressRelations
+                    .Where(x => x.AddressPersistentLocalId == oldAddressPersistentLocalId)
+                    .ToList();
+
+                oldAddressRelations.Should().BeEmpty();
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
         public async Task ReplaceParcelAddressBecauseOfMunicipalityMerger_AddressWasRetiredBecauseOfMunicipalityMerger()
         {
             var oldAddressPersistentLocalId = 1;
@@ -660,6 +695,41 @@ namespace ParcelRegistry.Tests.ProjectionTests.Consumer.Address
 
                 oldAddressRelations.Should().BeEmpty();
                 newAddressRelations.Should().HaveCount(2);
+                await Task.CompletedTask;
+            });
+        }
+
+        [Fact]
+        public async Task DetachParcelAddressBecauseOfMunicipalityMerger_AddressWasRetiredBecauseOfMunicipalityMerger()
+        {
+            var oldAddressPersistentLocalId = 1;
+
+            var @event = new AddressWasRetiredBecauseOfMunicipalityMerger(
+                Fixture.Create<int>(),
+                oldAddressPersistentLocalId,
+                null,
+                new Provenance(
+                    Instant.FromDateTimeOffset(DateTimeOffset.Now).ToString(),
+                    Application.ParcelRegistry.ToString(),
+                    Modification.Update.ToString(),
+                    Organisation.Aiv.ToString(),
+                    "test"));
+
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [oldAddressPersistentLocalId]);
+            AddParcelAddressRelations(Fixture.Create<ParcelId>(), [oldAddressPersistentLocalId]);
+
+            Given(@event);
+            await Then(async _ =>
+            {
+                _mockCommandHandler.Verify(x => x.Handle(
+                        It.IsAny<DetachAddressBecauseAddressWasRetired>(), CancellationToken.None),
+                    Times.Exactly(2));
+
+                var oldAddressRelations = _fakeBackOfficeContext.ParcelAddressRelations
+                    .Where(x => x.AddressPersistentLocalId == oldAddressPersistentLocalId)
+                    .ToList();
+
+                oldAddressRelations.Should().BeEmpty();
                 await Task.CompletedTask;
             });
         }
