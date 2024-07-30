@@ -1,3 +1,10 @@
+## [5.6.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.0...v5.6.1) (2024-07-30)
+
+
+### Bug Fixes
+
+* new address can be null for rejected or retired address because of municipality merger ([061a945](https://github.com/informatievlaanderen/parcel-registry/commit/061a94552798ee87041c464702f297960aaee1dc))
+
 # [5.6.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.5.3...v5.6.0) (2024-07-29)
 
 
