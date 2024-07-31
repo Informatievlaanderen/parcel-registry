@@ -148,7 +148,7 @@
             builder.Ignore(parcel => parcel.VersionTimestamp);
             builder.Ignore(parcel => parcel.CreatedOnTimestamp);
 
-
+            builder.HasIndex(parcel => parcel.ParcelId);
             builder.HasIndex(parcel => parcel.CaPaKey);
             builder.HasIndex(parcel => parcel.Status);
             builder.HasIndex(parcel => parcel.OsloStatus);
