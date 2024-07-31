@@ -1,3 +1,10 @@
+## [5.6.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.1...v5.6.2) (2024-07-31)
+
+
+### Performance Improvements
+
+* **integration:** add index on parcelid for version ([00a221c](https://github.com/informatievlaanderen/parcel-registry/commit/00a221cd3eb4eaae22670328175113a5c2de0762))
+
 ## [5.6.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.0...v5.6.1) (2024-07-30)
 
 
