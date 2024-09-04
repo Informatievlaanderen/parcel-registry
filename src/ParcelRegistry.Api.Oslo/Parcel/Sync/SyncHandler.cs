@@ -36,6 +36,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
             _context = context;
             _responseOptions = responseOptions;
         }
+
         public async Task<string> Handle(SyncRequest request, CancellationToken cancellationToken)
         {
             var filtering = request.HttpRequest.ExtractFilteringRequest<ParcelSyndicationFilter>();
