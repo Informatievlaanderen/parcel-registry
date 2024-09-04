@@ -1,3 +1,10 @@
+## [5.6.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.2...v5.6.3) (2024-09-04)
+
+
+### Bug Fixes
+
+* style to trigger bump ([54cbd6a](https://github.com/informatievlaanderen/parcel-registry/commit/54cbd6a2c11160cf6dd9cdcb36803b9fa01cd89d))
+
 ## [5.6.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.1...v5.6.2) (2024-07-31)
 
 
