@@ -1,3 +1,10 @@
+## [5.6.4](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.3...v5.6.4) (2024-09-24)
+
+
+### Bug Fixes
+
+* ci deploy lambda ([a948050](https://github.com/informatievlaanderen/parcel-registry/commit/a948050d755f04c6dcbbb2c37b4776eb51b3530b))
+
 ## [5.6.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.2...v5.6.3) (2024-09-04)
 
 
