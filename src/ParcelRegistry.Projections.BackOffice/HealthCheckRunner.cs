@@ -12,7 +12,7 @@
         private readonly HealthCheckService _healthCheckService;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ILogger<HealthCheckRunner> _logger;
-        private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(5); // Check every 5 minutes
+        private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(5);
 
         public HealthCheckRunner(
             HealthCheckService healthCheckService,
@@ -32,7 +32,6 @@
             {
                 var report = await _healthCheckService.CheckHealthAsync(stoppingToken);
 
-                // Log the health check result
                 if (report.Status == HealthStatus.Healthy)
                 {
                     _logger.LogInformation("Database health check passed.");
