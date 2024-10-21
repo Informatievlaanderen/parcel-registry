@@ -1,11 +1,13 @@
 namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
 {
     using System;
+    using Amazon.SimpleNotificationService;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
+    using Be.Vlaanderen.Basisregisters.GrAr.Notifications;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
@@ -16,6 +18,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using NodaTime;
     using ParcelRegistry.Infrastructure;
 
     public class ApiModule : Module
@@ -36,7 +39,12 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
+            builder.Register(_ => SystemClock.Instance)
+                .As<IClock>()
+                .SingleInstance();
+
             RegisterProjectionSetup(builder);
+            RegisterReproducers();
 
             builder
                 .RegisterType<ProblemDetailsHelper>()
@@ -52,11 +60,8 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
                     new EventHandlingModule(
                         typeof(DomainAssemblyMarker).Assembly,
                         EventsJsonSerializerSettingsProvider.CreateSerializerSettings()))
-
                 .RegisterModule<EnvelopeModule>()
-
                 .RegisterEventStreamModule(_configuration)
-
                 .RegisterModule(new ProjectorModule(_configuration));
 
             RegisterProjections(builder);
@@ -83,22 +88,7 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<ProducerProjections, ProducerContext>(c =>
                     {
-                        var bootstrapServers = _configuration["Kafka:BootstrapServers"]!;
-                        var topic = $"{_configuration[ProducerProjections.TopicKey]}" ?? throw new ArgumentException($"Configuration has no value for {ProducerProjections.TopicKey}");
-                        var producerOptions = new ProducerOptions(
-                                new BootstrapServers(bootstrapServers),
-                                new Topic(topic),
-                                true,
-                                EventsJsonSerializerSettingsProvider.CreateSerializerSettings())
-                            .ConfigureEnableIdempotence();
-                        if (!string.IsNullOrEmpty(_configuration["Kafka:SaslUserName"])
-                            && !string.IsNullOrEmpty(_configuration["Kafka:SaslPassword"]))
-                        {
-                            producerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
-                                _configuration["Kafka:SaslUserName"]!,
-                                _configuration["Kafka:SaslPassword"]!));
-                        }
-
+                        var producerOptions = CreateProducerOptions();
                         var osloProxy = c.Resolve<IOsloProxy>();
 
                         return new ProducerProjections(
@@ -112,6 +102,52 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure.Modules
                             osloProxy);
                     },
                     connectedProjectionSettings);
+        }
+
+        private void RegisterReproducers()
+        {
+            _services.AddAWSService<IAmazonSimpleNotificationService>();
+            _services.AddSingleton<INotificationService>(sp =>
+                new NotificationService(sp.GetRequiredService<IAmazonSimpleNotificationService>(),
+                    _configuration.GetValue<string>("NotificationTopicArn")!));
+
+            var connectionString = _configuration.GetConnectionString("Integration");
+            var utcHourToRunWithin = _configuration.GetValue<int>("SnapshotReproducerUtcHour");
+
+            _services.AddHostedService<SnapshotReproducer>(provider =>
+            {
+                var producerOptions = CreateProducerOptions();
+                return new SnapshotReproducer(
+                    connectionString!,
+                    provider.GetRequiredService<IOsloProxy>(),
+                    new Producer(producerOptions),
+                    provider.GetRequiredService<IClock>(),
+                    provider.GetRequiredService<INotificationService>(),
+                    utcHourToRunWithin,
+                    _loggerFactory);
+            });
+        }
+
+        private ProducerOptions CreateProducerOptions()
+        {
+            var bootstrapServers = _configuration["Kafka:BootstrapServers"]!;
+            var topic = $"{_configuration[ProducerProjections.TopicKey]}" ??
+                        throw new ArgumentException($"Configuration has no value for {ProducerProjections.TopicKey}");
+            var producerOptions = new ProducerOptions(
+                    new BootstrapServers(bootstrapServers),
+                    new Topic(topic),
+                    true,
+                    EventsJsonSerializerSettingsProvider.CreateSerializerSettings())
+                .ConfigureEnableIdempotence();
+            if (!string.IsNullOrEmpty(_configuration["Kafka:SaslUserName"])
+                && !string.IsNullOrEmpty(_configuration["Kafka:SaslPassword"]))
+            {
+                producerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
+                    _configuration["Kafka:SaslUserName"]!,
+                    _configuration["Kafka:SaslPassword"]!));
+            }
+
+            return producerOptions;
         }
     }
 }
