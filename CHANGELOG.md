@@ -1,3 +1,10 @@
+# [5.7.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.5...v5.7.0) (2024-10-21)
+
+
+### Features
+
+* add snapshot reproducer ([6e1d17a](https://github.com/informatievlaanderen/parcel-registry/commit/6e1d17a7f7297b87028ac3f7a94b800684510be8))
+
 ## [5.6.5](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.4...v5.6.5) (2024-10-18)
 
 ## [5.6.4](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.3...v5.6.4) (2024-09-24)
