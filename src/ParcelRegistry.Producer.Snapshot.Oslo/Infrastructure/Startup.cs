@@ -88,14 +88,24 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo.Infrastructure
                             {
                                 var connectionStrings = _configuration
                                     .GetSection("ConnectionStrings")
-                                    .GetChildren();
-
-                                foreach (var connectionString in connectionStrings)
+                                    .GetChildren()
+                                    .ToArray();
+                                
+                                foreach (var connectionString in connectionStrings
+                                             .Where(x => !x.Value!.Contains("host", StringComparison.OrdinalIgnoreCase)))
                                 {
                                     health.AddSqlServer(
-                                        connectionString.Value,
+                                        connectionString.Value!,
                                         name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
-                                        tags: new[] { DatabaseTag, "sql", "sqlserver" });
+                                        tags: [ DatabaseTag, "sql", "sqlserver" ]);
+                                }
+                                foreach (var connectionString in connectionStrings
+                                             .Where(x => x.Value!.Contains("host", StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    health.AddNpgSql(
+                                        connectionString.Value!,
+                                        name: $"npgsql-{connectionString.Key.ToLowerInvariant()}",
+                                        tags: [ DatabaseTag, "sql", "npgsql" ]);
                                 }
 
                                 health.AddDbContextCheck<ProducerContext>(
