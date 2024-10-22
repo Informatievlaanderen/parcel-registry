@@ -84,12 +84,12 @@
         }
     }
 
-    public sealed class ParcelLatestItemConfiguration : IEntityTypeConfiguration<ParcelVersion>
+    public sealed class ParcelVersionConfiguration : IEntityTypeConfiguration<ParcelVersion>
     {
         public void Configure(EntityTypeBuilder<ParcelVersion> builder)
         {
             builder
-                .ToTable("parcel_version", Schema.Integration)
+                .ToTable("parcel_versions", Schema.Integration)
                 .HasKey(parcel => new { parcel.Position, parcel.ParcelId});
 
             builder.Property(parcel => parcel.Position).ValueGeneratedNever();
