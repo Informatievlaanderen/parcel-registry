@@ -1,3 +1,10 @@
+## [5.7.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.7.0...v5.7.1) (2024-10-22)
+
+
+### Bug Fixes
+
+* integration ParcelVersion table name ([6abac9d](https://github.com/informatievlaanderen/parcel-registry/commit/6abac9d500cb633319f26f26bd60884fd8eddf5c))
+
 # [5.7.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.6.5...v5.7.0) (2024-10-21)
 
 
