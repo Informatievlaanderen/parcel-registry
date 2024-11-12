@@ -20,6 +20,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Projections.Integration;
     using ParcelRegistry.Projections.Integration.Infrastructure;
     using ParcelRegistry.Projections.Integration.ParcelLatestItem;
+    using ParcelRegistry.Projections.Integration.ParcelLatestItemV2;
     using ParcelRegistry.Projections.Integration.ParcelVersion;
     using ParcelRegistry.Projections.LastChangedList;
     using ParcelRegistry.Projections.Legacy;
@@ -134,6 +135,9 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _loggerFactory)
                 .RegisterProjections<ParcelLatestItemProjections, IntegrationContext>(
                     context => new ParcelLatestItemProjections(context.Resolve<IOptions<IntegrationOptions>>()),
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<ParcelLatestItemV2Projections, IntegrationContext>(
+                    context => new ParcelLatestItemV2Projections(context.Resolve<IOptions<IntegrationOptions>>()),
                     ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelVersionProjections, IntegrationContext>(
                     context => new ParcelVersionProjections(
