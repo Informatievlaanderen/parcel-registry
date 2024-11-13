@@ -1,3 +1,10 @@
+## [5.7.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.7.1...v5.7.2) (2024-11-13)
+
+
+### Bug Fixes
+
+* **integration:** bump parcel version when changing address ([bd6395b](https://github.com/informatievlaanderen/parcel-registry/commit/bd6395b690122731f282c1d178e97b92322783dd))
+
 ## [5.7.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.7.0...v5.7.1) (2024-10-22)
 
 
