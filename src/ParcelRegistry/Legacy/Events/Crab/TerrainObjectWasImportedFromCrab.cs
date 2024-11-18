@@ -6,6 +6,7 @@ namespace ParcelRegistry.Legacy.Events.Crab
     using Newtonsoft.Json;
     using NodaTime;
 
+    [HideEvent]
     [Obsolete("CRAB events are obsolete.")]
     [EventName("CRAB-TerrainObjectWasImported")]
     [EventDescription("Legacy event om tblterreinobject en tblterreinobject_hist te importeren voor kadPercelen.")]

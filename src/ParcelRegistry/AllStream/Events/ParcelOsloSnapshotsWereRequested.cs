@@ -8,6 +8,7 @@ namespace ParcelRegistry.AllStream.Events
     using Newtonsoft.Json;
     using Parcel;
 
+    [HideEvent]
     [EventName(EventName)]
     [EventDescription("Nieuwe OSLO snapshots werd aangevraagd voor de percelen.")]
     public sealed class ParcelOsloSnapshotsWereRequested : IHasProvenance, ISetProvenance, IMessage
