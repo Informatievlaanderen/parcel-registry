@@ -8,6 +8,7 @@ namespace ParcelRegistry.Parcel.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
+    [HideEvent]
     [EventName("ParcelSnapshotV2")]
     [EventSnapshot(nameof(SnapshotContainer) + "<ParcelSnapshotV2>", typeof(SnapshotContainerV2))]
     [EventDescription("Snapshot of Parcel")]
