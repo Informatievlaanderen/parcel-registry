@@ -1,3 +1,10 @@
+## [5.7.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.7.2...v5.7.3) (2024-11-19)
+
+
+### Bug Fixes
+
+* **integration:** v2 address to correct table ([d4c35f6](https://github.com/informatievlaanderen/parcel-registry/commit/d4c35f6c29162154dd6d5d2a95d13dc6d64ebb81))
+
 ## [5.7.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.7.1...v5.7.2) (2024-11-13)
 
 
