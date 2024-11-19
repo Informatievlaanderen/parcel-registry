@@ -1,3 +1,10 @@
+# [5.8.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.7.3...v5.8.0) (2024-11-19)
+
+
+### Features
+
+* bump event-handling + hide events ([9a0f8d7](https://github.com/informatievlaanderen/parcel-registry/commit/9a0f8d769f924c84af5c1bf016c8c138e648c452))
+
 ## [5.7.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.7.2...v5.7.3) (2024-11-19)
 
 
