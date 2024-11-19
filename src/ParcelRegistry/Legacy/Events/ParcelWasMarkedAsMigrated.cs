@@ -5,6 +5,7 @@ namespace ParcelRegistry.Legacy.Events
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Newtonsoft.Json;
 
+    [HideEvent]
     [Obsolete("This is a legacy event and should not be used anymore.")]
     [EventName("ParcelWasMarkedAsMigrated")]
     [EventDescription("Het perceel werd gemarkeerd als gemigreerd.")]
