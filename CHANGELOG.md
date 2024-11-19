@@ -1,3 +1,10 @@
+## [5.8.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.8.0...v5.8.1) (2024-11-19)
+
+
+### Bug Fixes
+
+* **docs:** hide markedasmigrated legacy event ([9a16fa1](https://github.com/informatievlaanderen/parcel-registry/commit/9a16fa121615ac6fda28ec7bbe49d1ac8f48d1a7))
+
 # [5.8.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.7.3...v5.8.0) (2024-11-19)
 
 
