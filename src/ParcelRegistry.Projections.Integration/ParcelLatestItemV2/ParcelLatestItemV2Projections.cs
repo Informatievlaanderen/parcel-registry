@@ -130,12 +130,12 @@
                     }, ct);
 
                 var previousAddress = await context
-                    .ParcelLatestItemAddresses
+                    .ParcelLatestItemV2Addresses
                     .FindAsync([message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId], cancellationToken: ct);
 
                 if (previousAddress is not null && previousAddress.Count == 1)
                 {
-                    context.ParcelLatestItemAddresses.Remove(previousAddress);
+                    context.ParcelLatestItemV2Addresses.Remove(previousAddress);
                 }
                 else if (previousAddress is not null)
                 {
@@ -143,7 +143,7 @@
                 }
 
                 var newAddress = await context
-                    .ParcelLatestItemAddresses
+                    .ParcelLatestItemV2Addresses
                     .FindAsync([message.Message.ParcelId, message.Message.NewAddressPersistentLocalId], cancellationToken: ct);
 
                 if (newAddress is null || context.Entry(newAddress).State == EntityState.Deleted)
@@ -250,7 +250,7 @@
             CancellationToken ct)
         {
             var newAddress = await context
-                .ParcelLatestItemAddresses
+                .ParcelLatestItemV2Addresses
                 .FindAsync([parcelId, addressPersistentLocalId], cancellationToken: ct);
 
             if (newAddress is null || context.Entry(newAddress).State == EntityState.Deleted)
