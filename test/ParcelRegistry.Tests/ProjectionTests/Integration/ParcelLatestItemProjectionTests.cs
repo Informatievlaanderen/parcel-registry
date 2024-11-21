@@ -7,16 +7,17 @@
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
+    using EventExtensions;
     using Fixtures;
     using FluentAssertions;
     using Microsoft.Extensions.Options;
     using Parcel;
     using Parcel.Events;
     using Projections.Integration.Infrastructure;
-    using Projections.Integration.ParcelLatestItem;
+    using Projections.Integration.ParcelLatestItemV2;
     using Xunit;
 
-    public partial class ParcelLatestItemProjectionTests : IntegrationProjectionTest<ParcelLatestItemProjections>
+    public partial class ParcelLatestItemProjectionTests : IntegrationProjectionTest<ParcelLatestItemV2Projections>
     {
         private readonly Fixture _fixture;
         private const string Namespace = "https://data.vlaanderen.be/id/perceel";
@@ -32,7 +33,7 @@
         }
 
         [Fact]
-        public async Task WhenParcelWasMigrated()
+        public async Task GivenParcelWasMigrated()
         {
             var message = _fixture.Create<ParcelWasMigrated>();
 
@@ -41,7 +42,7 @@
                 {
                     var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
 
-                    var latestItem = await context.ParcelLatestItems.FindAsync(message.ParcelId);
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();
                     latestItem!.CaPaKey.Should().Be(message.CaPaKey);
                     latestItem.Status.Should().Be(ParcelStatus.Parse(message.ParcelStatus));
@@ -57,7 +58,7 @@
                     foreach (var addressPersistentLocalId in message.AddressPersistentLocalIds)
                     {
                         await context
-                            .ParcelLatestItemAddresses
+                            .ParcelLatestItemV2Addresses
                             .FindAsync(message.ParcelId, addressPersistentLocalId);
                         latestItem.Should().NotBeNull();
                         latestItem.CaPaKey.Should().Be(message.CaPaKey);
@@ -66,7 +67,7 @@
         }
 
         [Fact]
-        public async Task WhenParcelIsImported()
+        public async Task GivenParcelIsImported()
         {
             var message = _fixture.Create<ParcelWasImported>();
 
@@ -75,7 +76,7 @@
                 {
                     var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
 
-                    var latestItem = await context.ParcelLatestItems.FindAsync(message.ParcelId);
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();
                     latestItem!.CaPaKey.Should().Be(message.CaPaKey);
                     latestItem.Status.Should().Be(ParcelStatus.Realized);
@@ -91,7 +92,7 @@
         }
 
         [Fact]
-        public async Task WhenParcelGeometryWasChanged()
+        public async Task GivenParcelGeometryWasChanged()
         {
             var parcelWasImported = _fixture.Create<ParcelWasImported>();
             var message = new ParcelGeometryWasChanged(
@@ -106,7 +107,7 @@
                 {
                     var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
 
-                    var latestItem = await context.ParcelLatestItems.FindAsync(message.ParcelId);
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();
                     latestItem!.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
                     latestItem.VersionAsString.Should()
@@ -116,7 +117,7 @@
         }
 
         [Fact]
-        public async Task WhenParcelWasCorrectedFromRetiredToRealized()
+        public async Task GivenParcelWasCorrectedFromRetiredToRealized()
         {
             var message = _fixture.Create<ParcelWasCorrectedFromRetiredToRealized>();
 
@@ -126,7 +127,7 @@
                 {
                     var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
 
-                    var latestItem = await context.ParcelLatestItems.FindAsync(message.ParcelId);
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();
                     latestItem!.Status.Should().Be(ParcelStatus.Realized);
                     latestItem.OsloStatus.Should().Be("Gerealiseerd");
@@ -138,7 +139,7 @@
         }
 
         [Fact]
-        public async Task WhenParcelWasRetiredV2()
+        public async Task GivenParcelWasRetiredV2()
         {
             var message = _fixture.Create<ParcelWasRetiredV2>();
 
@@ -146,7 +147,7 @@
                 .Given(_fixture.Create<ParcelWasImported>(), message)
                 .Then(async context =>
                 {
-                    var latestItem = await context.ParcelLatestItems.FindAsync(message.ParcelId);
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();
                     latestItem!.Status.Should().Be(ParcelStatus.Retired);
                     latestItem.OsloStatus.Should().Be("Gehistoreerd");
@@ -158,7 +159,7 @@
         }
 
         [Fact]
-        public async Task WhenParcelAddressWasAttachedV2()
+        public async Task GivenParcelAddressWasAttachedV2()
         {
             var message = _fixture.Create<ParcelAddressWasAttachedV2>();
 
@@ -166,86 +167,110 @@
                 .Given(_fixture.Create<ParcelWasImported>(), message)
                 .Then(async context =>
                 {
-                    var latestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();
-                    latestItem!.CaPaKey.Should().Be(message.CaPaKey);
+                    latestItem!.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
+
+                    var latestItemAddress = await context.ParcelLatestItemV2Addresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
+                    latestItemAddress.Should().NotBeNull();
+                    latestItemAddress!.CaPaKey.Should().Be(message.CaPaKey);
                 });
         }
 
         [Fact]
-        public async Task WhenParcelAddressWasDetachedV2()
+        public async Task GivenParcelAddressWasDetachedV2()
         {
             var attached = _fixture.Create<ParcelAddressWasAttachedV2>();
             var message = new ParcelAddressWasDetachedV2(
                 new ParcelId(attached.ParcelId),
                 new VbrCaPaKey(attached.CaPaKey),
                 new AddressPersistentLocalId(attached.AddressPersistentLocalId));
+            message.SetFixtureProvenance(_fixture);
 
             await Sut
                 .Given(_fixture.Create<ParcelWasImported>(), attached, message)
                 .Then(async context =>
                 {
-                    var latestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
-                    latestItem.Should().BeNull();
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
+                    latestItem.Should().NotBeNull();
+                    latestItem!.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
+
+                    var latestItemAddress = await context.ParcelLatestItemV2Addresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
+                    latestItemAddress.Should().BeNull();
                 });
         }
 
         [Fact]
-        public async Task WhenParcelAddressWasDetachedBecauseAddressWasRejected()
+        public async Task GivenParcelAddressWasDetachedBecauseAddressWasRejected()
         {
             var attached = _fixture.Create<ParcelAddressWasAttachedV2>();
             var message = new ParcelAddressWasDetachedBecauseAddressWasRejected(
                 new ParcelId(attached.ParcelId),
                 new VbrCaPaKey(attached.CaPaKey),
                 new AddressPersistentLocalId(attached.AddressPersistentLocalId));
+            message.SetFixtureProvenance(_fixture);
 
             await Sut
                 .Given(_fixture.Create<ParcelWasImported>(), attached, message)
                 .Then(async context =>
                 {
-                    var latestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
-                    latestItem.Should().BeNull();
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
+                    latestItem.Should().NotBeNull();
+                    latestItem!.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
+
+                    var latestItemAddress = await context.ParcelLatestItemV2Addresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
+                    latestItemAddress.Should().BeNull();
                 });
         }
 
         [Fact]
-        public async Task WhenParcelAddressWasDetachedBecauseAddressWasRemoved()
+        public async Task GivenParcelAddressWasDetachedBecauseAddressWasRemoved()
         {
             var attached = _fixture.Create<ParcelAddressWasAttachedV2>();
             var message = new ParcelAddressWasDetachedBecauseAddressWasRemoved(
                 new ParcelId(attached.ParcelId),
                 new VbrCaPaKey(attached.CaPaKey),
                 new AddressPersistentLocalId(attached.AddressPersistentLocalId));
+            message.SetFixtureProvenance(_fixture);
 
             await Sut
                 .Given(_fixture.Create<ParcelWasImported>(), attached, message)
                 .Then(async context =>
                 {
-                    var latestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
-                    latestItem.Should().BeNull();
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
+                    latestItem.Should().NotBeNull();
+                    latestItem!.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
+
+                    var latestItemAddress = await context.ParcelLatestItemV2Addresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
+                    latestItemAddress.Should().BeNull();
                 });
         }
 
         [Fact]
-        public async Task WhenParcelAddressWasDetachedBecauseAddressWasRetired()
+        public async Task GivenParcelAddressWasDetachedBecauseAddressWasRetired()
         {
             var attached = _fixture.Create<ParcelAddressWasAttachedV2>();
             var message = new ParcelAddressWasDetachedBecauseAddressWasRetired(
                 new ParcelId(attached.ParcelId),
                 new VbrCaPaKey(attached.CaPaKey),
                 new AddressPersistentLocalId(attached.AddressPersistentLocalId));
+            message.SetFixtureProvenance(_fixture);
 
             await Sut
                 .Given(_fixture.Create<ParcelWasImported>(), attached, message)
                 .Then(async context =>
                 {
-                    var latestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
-                    latestItem.Should().BeNull();
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
+                    latestItem.Should().NotBeNull();
+                    latestItem!.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
+
+                    var latestItemAddress = await context.ParcelLatestItemV2Addresses.FindAsync(message.ParcelId, message.AddressPersistentLocalId);
+                    latestItemAddress.Should().BeNull();
                 });
         }
 
         [Fact]
-        public async Task WhenParcelAddressWasReplacedBecauseOfMunicipalityMerger()
+        public async Task GivenParcelAddressWasReplacedBecauseOfMunicipalityMerger()
         {
             var attached = _fixture.Create<ParcelAddressWasAttachedV2>();
 
@@ -254,21 +279,26 @@
                 new VbrCaPaKey(attached.CaPaKey),
                 new AddressPersistentLocalId(attached.AddressPersistentLocalId + 1),
                 new AddressPersistentLocalId(attached.AddressPersistentLocalId));
+            message.SetFixtureProvenance(_fixture);
 
             await Sut
                 .Given(_fixture.Create<ParcelWasImported>(), message)
                 .Then(async context =>
                 {
-                    var previousLatestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.PreviousAddressPersistentLocalId);
-                    previousLatestItem.Should().BeNull();
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
+                    latestItem.Should().NotBeNull();
+                    latestItem!.VersionTimestamp.Should().Be(message.Provenance.Timestamp);
 
-                    var newLatestItem = await context.ParcelLatestItemAddresses.FindAsync(message.ParcelId, message.NewAddressPersistentLocalId);
-                    newLatestItem.Should().NotBeNull();
-                    newLatestItem!.CaPaKey.Should().Be(message.CaPaKey);
+                    var previousAddressLatestItem = await context.ParcelLatestItemV2Addresses.FindAsync(message.ParcelId, message.PreviousAddressPersistentLocalId);
+                    previousAddressLatestItem.Should().BeNull();
+
+                    var newAddressLatestItem = await context.ParcelLatestItemV2Addresses.FindAsync(message.ParcelId, message.NewAddressPersistentLocalId);
+                    newAddressLatestItem.Should().NotBeNull();
+                    newAddressLatestItem!.CaPaKey.Should().Be(message.CaPaKey);
                 });
         }
 
-        protected override ParcelLatestItemProjections CreateProjection()
+        protected override ParcelLatestItemV2Projections CreateProjection()
             => new(new OptionsWrapper<IntegrationOptions>(new IntegrationOptions{Namespace = Namespace }));
     }
 }

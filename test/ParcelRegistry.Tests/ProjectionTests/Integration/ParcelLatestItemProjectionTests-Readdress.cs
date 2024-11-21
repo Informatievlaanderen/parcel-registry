@@ -3,6 +3,7 @@
     using System.Threading.Tasks;
     using AutoFixture;
     using Builders;
+    using EventExtensions;
     using Fixtures;
     using FluentAssertions;
     using Parcel;
@@ -20,6 +21,7 @@
                 _fixture.Create<VbrCaPaKey>(),
                 newAddressPersistentLocalId: new AddressPersistentLocalId(parcelAddressWasAttachedV2.AddressPersistentLocalId + 1),
                 previousAddressPersistentLocalId: new AddressPersistentLocalId(parcelAddressWasAttachedV2.AddressPersistentLocalId));
+            @event.SetFixtureProvenance(_fixture);
 
             await Sut
                 .Given(
@@ -28,12 +30,16 @@
                     @event)
                 .Then(async context =>
                 {
-                    var previousRelation = await context.ParcelLatestItemAddresses.FindAsync(
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(@event.ParcelId);
+                    latestItem.Should().NotBeNull();
+                    latestItem!.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+
+                    var previousRelation = await context.ParcelLatestItemV2Addresses.FindAsync(
                         @event.ParcelId,
                         @event.PreviousAddressPersistentLocalId);
                     previousRelation.Should().BeNull();
 
-                    var newRelation = await context.ParcelLatestItemAddresses.FindAsync(
+                    var newRelation = await context.ParcelLatestItemV2Addresses.FindAsync(
                         @event.ParcelId,
                         @event.NewAddressPersistentLocalId);
                     newRelation.Should().NotBeNull();
@@ -51,12 +57,14 @@
                 _fixture.Create<VbrCaPaKey>(),
                 newAddressPersistentLocalId: new AddressPersistentLocalId(parcelAddressWasAttachedV2.AddressPersistentLocalId),
                 previousAddressPersistentLocalId: new AddressPersistentLocalId(parcelAddressWasAttachedV2.AddressPersistentLocalId + 100));
+            eventToAddPreviousRelationASecondTime.SetFixtureProvenance(_fixture);
 
             var @event = new ParcelAddressWasReplacedBecauseAddressWasReaddressed(
                 _fixture.Create<ParcelId>(),
                 _fixture.Create<VbrCaPaKey>(),
                 newAddressPersistentLocalId: new AddressPersistentLocalId(parcelAddressWasAttachedV2.AddressPersistentLocalId + 101),
                 previousAddressPersistentLocalId: new AddressPersistentLocalId(parcelAddressWasAttachedV2.AddressPersistentLocalId));
+            @event.SetFixtureProvenance(_fixture);
 
             await Sut
                 .Given(
@@ -66,13 +74,17 @@
                     @event)
                 .Then(async context =>
                 {
-                    var previousRelation = await context.ParcelLatestItemAddresses.FindAsync(
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(@event.ParcelId);
+                    latestItem.Should().NotBeNull();
+                    latestItem!.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+
+                    var previousRelation = await context.ParcelLatestItemV2Addresses.FindAsync(
                         @event.ParcelId,
                         @event.PreviousAddressPersistentLocalId);
                     previousRelation.Should().NotBeNull();
                     previousRelation!.Count.Should().Be(1);
 
-                    var newRelation = await context.ParcelLatestItemAddresses.FindAsync(
+                    var newRelation = await context.ParcelLatestItemV2Addresses.FindAsync(
                         @event.ParcelId,
                         @event.NewAddressPersistentLocalId);
                     newRelation.Should().NotBeNull();
@@ -92,6 +104,7 @@
                 _fixture.Create<VbrCaPaKey>(),
                 newAddressPersistentLocalId: new AddressPersistentLocalId(newParcelAddressWasAttachedV2.AddressPersistentLocalId),
                 previousAddressPersistentLocalId: new AddressPersistentLocalId(previousParcelAddressWasAttachedV2.AddressPersistentLocalId));
+            @event.SetFixtureProvenance(_fixture);
 
             await Sut
                 .Given(
@@ -101,12 +114,16 @@
                     @event)
                 .Then(async context =>
                 {
-                    var previousRelation = await context.ParcelLatestItemAddresses.FindAsync(
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(@event.ParcelId);
+                    latestItem.Should().NotBeNull();
+                    latestItem!.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+
+                    var previousRelation = await context.ParcelLatestItemV2Addresses.FindAsync(
                         @event.ParcelId,
                         @event.PreviousAddressPersistentLocalId);
                     previousRelation.Should().BeNull();
 
-                    var newRelation = await context.ParcelLatestItemAddresses.FindAsync(
+                    var newRelation = await context.ParcelLatestItemV2Addresses.FindAsync(
                         @event.ParcelId,
                         @event.NewAddressPersistentLocalId);
                     newRelation.Should().NotBeNull();
@@ -158,7 +175,7 @@
                 {
                     foreach (var addressPersistentLocalId in attachedAddressPersistentLocalIds)
                     {
-                        var parcelAddressRelation = await context.ParcelLatestItemAddresses.FindAsync(
+                        var parcelAddressRelation = await context.ParcelLatestItemV2Addresses.FindAsync(
                             @event.ParcelId,
                             addressPersistentLocalId);
 
@@ -168,7 +185,7 @@
 
                     foreach (var addressPersistentLocalId in detachedAddressPersistentLocalIds)
                     {
-                        var parcelAddressRelation = await context.ParcelLatestItemAddresses.FindAsync(
+                        var parcelAddressRelation = await context.ParcelLatestItemV2Addresses.FindAsync(
                             @event.ParcelId,
                             addressPersistentLocalId);
 
