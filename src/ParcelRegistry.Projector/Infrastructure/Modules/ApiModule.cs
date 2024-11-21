@@ -19,7 +19,6 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Projections.Extract.ParcelExtract;
     using ParcelRegistry.Projections.Integration;
     using ParcelRegistry.Projections.Integration.Infrastructure;
-    using ParcelRegistry.Projections.Integration.ParcelLatestItem;
     using ParcelRegistry.Projections.Integration.ParcelLatestItemV2;
     using ParcelRegistry.Projections.Integration.ParcelVersion;
     using ParcelRegistry.Projections.LastChangedList;
@@ -133,9 +132,6 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .RegisterProjectionMigrator<IntegrationContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<ParcelLatestItemProjections, IntegrationContext>(
-                    context => new ParcelLatestItemProjections(context.Resolve<IOptions<IntegrationOptions>>()),
-                    ConnectedProjectionSettings.Default)
                 .RegisterProjections<ParcelLatestItemV2Projections, IntegrationContext>(
                     context => new ParcelLatestItemV2Projections(context.Resolve<IOptions<IntegrationOptions>>()),
                     ConnectedProjectionSettings.Default)
