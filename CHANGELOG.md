@@ -1,3 +1,10 @@
+# [5.9.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.8.1...v5.9.0) (2024-11-21)
+
+
+### Features
+
+* **integration:** remove v1 tables GAWR-6666 ([0574dc8](https://github.com/informatievlaanderen/parcel-registry/commit/0574dc876847873c97e571c98fad34e333ae9e91))
+
 ## [5.8.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.8.0...v5.8.1) (2024-11-19)
 
 
