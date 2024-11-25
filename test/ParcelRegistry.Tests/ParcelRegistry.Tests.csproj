@@ -6,8 +6,12 @@
     <ProjectReference Include="..\..\src\ParcelRegistry.Api.BackOffice\ParcelRegistry.Api.BackOffice.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Consumer.Address\ParcelRegistry.Consumer.Address.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Importer.Grb\ParcelRegistry.Importer.Grb.csproj" />
+    <ProjectReference Include="..\..\src\ParcelRegistry.Producer.Snapshot.Oslo\ParcelRegistry.Producer.Snapshot.Oslo.csproj" />
+    <ProjectReference Include="..\..\src\ParcelRegistry.Producer\ParcelRegistry.Producer.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Projections.BackOffice\ParcelRegistry.Projections.BackOffice.csproj" />
+    <ProjectReference Include="..\..\src\ParcelRegistry.Projections.Extract\ParcelRegistry.Projections.Extract.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Projections.Integration\ParcelRegistry.Projections.Integration.csproj" />
+    <ProjectReference Include="..\..\src\ParcelRegistry.Projections.LastChangedList\ParcelRegistry.Projections.LastChangedList.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Projections.Legacy\ParcelRegistry.Projections.Legacy.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry\ParcelRegistry.csproj" />
   </ItemGroup>

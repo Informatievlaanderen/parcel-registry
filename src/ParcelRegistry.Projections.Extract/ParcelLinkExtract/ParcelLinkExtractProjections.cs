@@ -4,6 +4,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Extracts;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -149,6 +150,11 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
                     await AddParcelLink(context, message.Message.ParcelId, message.Message.CaPaKey, addressPersistentLocalId, ct);
                 }
             });
+
+            When<Envelope<ParcelGeometryWasChanged>>(DoNothing);
+            When<Envelope<ParcelWasRetiredV2>>(DoNothing);
+            When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(DoNothing);
+            When<Envelope<ParcelWasImported>>(DoNothing);
         }
 
         private static async Task RemoveParcelLink(
@@ -197,5 +203,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
                     }, ct);
             }
         }
+
+        private static Task DoNothing<T>(ExtractContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }
 }
