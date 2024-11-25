@@ -159,7 +159,11 @@ namespace ParcelRegistry.Projections.BackOffice
                 await backOfficeContext.SaveChangesAsync(cancellationToken);
             });
 
-            When<Envelope<ParcelAddressesWereReaddressed>>((_, _, _) => Task.CompletedTask);
+            When<Envelope<ParcelWasImported>>(DoNothing);
+            When<Envelope<ParcelGeometryWasChanged>>(DoNothing);
+            When<Envelope<ParcelAddressesWereReaddressed>>(DoNothing);
+            When<Envelope<ParcelWasRetiredV2>>(DoNothing);
+            When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(DoNothing);
         }
 
         private static async Task DelayProjection<TMessage>(Envelope<TMessage> envelope, int delayInSeconds, CancellationToken cancellationToken)
@@ -171,5 +175,7 @@ namespace ParcelRegistry.Projections.BackOffice
                 await Task.Delay(TimeSpan.FromSeconds(delayInSeconds - differenceInSeconds), cancellationToken);
             }
         }
+
+        private static Task DoNothing<T>(BackOfficeProjectionsContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }
 }
