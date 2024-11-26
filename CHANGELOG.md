@@ -1,3 +1,10 @@
+## [5.9.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.9.0...v5.9.1) (2024-11-26)
+
+
+### Bug Fixes
+
+* **extract:** add missing version update in extract + add tests ([6275610](https://github.com/informatievlaanderen/parcel-registry/commit/6275610a16bc90dd779deb0b47f125a2259eebf0))
+
 # [5.9.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.8.1...v5.9.0) (2024-11-21)
 
 
