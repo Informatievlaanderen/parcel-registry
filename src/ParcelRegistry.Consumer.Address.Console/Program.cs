@@ -2,7 +2,6 @@ namespace ParcelRegistry.Consumer.Address.Console
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions;
@@ -13,6 +12,7 @@ namespace ParcelRegistry.Consumer.Address.Console
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.Extensions;
     using Destructurama;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -103,7 +103,7 @@ namespace ParcelRegistry.Consumer.Address.Console
 
                     builder.Register(c =>
                     {
-                        var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"];
+                        var bootstrapServers = hostContext.Configuration["Kafka:BootstrapServers"]!;
                         var topic = $"{hostContext.Configuration["AddressTopic"]}" ?? throw new ArgumentException("Configuration has no AddressTopic.");
                         var suffix = hostContext.Configuration["GroupSuffix"];
                         var consumerGroupId = $"ParcelRegistry.BackOfficeConsumer.{topic}{suffix}";
@@ -115,28 +115,11 @@ namespace ParcelRegistry.Consumer.Address.Console
                             EventsJsonSerializerSettingsProvider.CreateSerializerSettings());
 
                         consumerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
-                            hostContext.Configuration["Kafka:SaslUserName"],
-                            hostContext.Configuration["Kafka:SaslPassword"]));
+                            hostContext.Configuration["Kafka:SaslUserName"]!,
+                            hostContext.Configuration["Kafka:SaslPassword"]!));
 
-                        var offset = hostContext.Configuration["AddressTopicOffset"];
-
-                        if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
-                        {
-                            var ignoreDataCheck = hostContext.Configuration.GetValue<bool>("IgnoreAddressTopicOffsetDataCheck", false);
-
-                            if (!ignoreDataCheck)
-                            {
-                                using var ctx = c.Resolve<ConsumerAddressContext>();
-
-                                if (ctx.AddressConsumerItems.Any())
-                                {
-                                    throw new InvalidOperationException(
-                                        $"Cannot set Kafka offset to {offset} because {nameof(ctx.AddressConsumerItems)} has data.");
-                                }
-                            }
-
-                            consumerOptions.ConfigureOffset(new Offset(result));
-                        }
+                        using var ctx = c.Resolve<ConsumerAddressContext>();
+                        ctx.OverrideConfigureOffset(consumerOptions);
 
                         return consumerOptions;
                     });

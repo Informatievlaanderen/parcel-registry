@@ -5,6 +5,7 @@ namespace ParcelRegistry.Consumer.Address
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
     using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,12 @@ namespace ParcelRegistry.Consumer.Address
     using Parcel.DataStructures;
     using ParcelRegistry.Infrastructure;
 
-    public class ConsumerAddressContext : SqlServerConsumerDbContext<ConsumerAddressContext>, IAddresses
+    public class ConsumerAddressContext : SqlServerConsumerDbContext<ConsumerAddressContext>, IAddresses, IOffsetOverrideDbSet
     {
         public override string ProcessedMessagesSchema => Schema.ConsumerAddress;
 
-        public DbSet<AddressConsumerItem> AddressConsumerItems { get; set; }
+        public DbSet<AddressConsumerItem> AddressConsumerItems => Set<AddressConsumerItem>();
+        public DbSet<OffsetOverride> OffsetOverrides => Set<OffsetOverride>();
 
         // This needs to be here to please EF
         public ConsumerAddressContext()
@@ -88,8 +90,8 @@ namespace ParcelRegistry.Consumer.Address
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder
-                .ApplyConfigurationsFromAssembly(typeof(ConsumerAddressContext).GetTypeInfo().Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ConsumerAddressContext).GetTypeInfo().Assembly);
+            modelBuilder.ApplyConfiguration(new OffsetOverrideConfiguration(Schema.ConsumerAddress));
         }
     }
 

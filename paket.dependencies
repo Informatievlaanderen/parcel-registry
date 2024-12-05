@@ -90,10 +90,10 @@ nuget Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm 21.14.1
 nuget Be.Vlaanderen.Basisregisters.GrAr.Extracts 21.14.1
 nuget Be.Vlaanderen.Basisregisters.GrAr.Oslo 21.14.1
 
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 5.0.1
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 5.0.1
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer 5.0.1
-nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer 5.0.1
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple 5.2.0
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Simple 5.2.0
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer 5.2.0
+nuget Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer 5.2.0
 
 nuget Be.Vlaanderen.Basisregisters.Shaperon 10.0.2
 

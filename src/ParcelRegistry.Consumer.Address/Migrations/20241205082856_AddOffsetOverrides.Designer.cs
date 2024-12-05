@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using ParcelRegistry.Consumer.Address;
@@ -12,9 +13,11 @@ using ParcelRegistry.Consumer.Address;
 namespace ParcelRegistry.Consumer.Address.Migrations
 {
     [DbContext(typeof(ConsumerAddressContext))]
-    partial class ConsumerAddressContextModelSnapshot : ModelSnapshot
+    [Migration("20241205082856_AddOffsetOverrides")]
+    partial class AddOffsetOverrides
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
