@@ -57,14 +57,7 @@ namespace ParcelRegistry.Consumer.Address
             {
                 await _kafkaIdemIdompotencyConsumer.ConsumeContinuously(async (message, context) =>
                 {
-                    _logger.LogInformation("Handling next message");
-
-                    await commandHandlingProjector.ProjectAsync(commandHandler, message, stoppingToken).ConfigureAwait(false);
-                    await backOfficeProjector.ProjectAsync(context, message, stoppingToken).ConfigureAwait(false);
-
-                    //CancellationToken.None to prevent halfway consumption
-                    await context.SaveChangesAsync(CancellationToken.None);
-
+                    await HandleMessage(commandHandlingProjector, commandHandler, message, backOfficeProjector, context);
                 }, stoppingToken);
             }
             catch (Exception)
@@ -72,6 +65,18 @@ namespace ParcelRegistry.Consumer.Address
                 _hostApplicationLifetime.StopApplication();
                 throw;
             }
+        }
+
+        private async Task HandleMessage(ConnectedProjector<CommandHandler> commandHandlingProjector, CommandHandler commandHandler, object message,
+            ConnectedProjector<ConsumerAddressContext> backOfficeProjector, ConsumerAddressContext context)
+        {
+            _logger.LogInformation("Handling next message");
+
+            await commandHandlingProjector.ProjectAsync(commandHandler, message, CancellationToken.None).ConfigureAwait(false);
+            await backOfficeProjector.ProjectAsync(context, message, CancellationToken.None).ConfigureAwait(false);
+
+            //CancellationToken.None to prevent halfway consumption
+            await context.SaveChangesAsync(CancellationToken.None);
         }
     }
 }
