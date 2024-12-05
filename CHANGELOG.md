@@ -1,3 +1,15 @@
+# [5.10.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.9.1...v5.10.0) (2024-12-05)
+
+
+### Bug Fixes
+
+* **consumer:** remove stopping token in messagehandler ([f94d486](https://github.com/informatievlaanderen/parcel-registry/commit/f94d4868e52c758acac82f1ea8bc87d3330c57f0))
+
+
+### Features
+
+* **consumer:** add offset override ([467b2e0](https://github.com/informatievlaanderen/parcel-registry/commit/467b2e05205d5368522ea070605d06b6fb5a0850))
+
 ## [5.9.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.9.0...v5.9.1) (2024-11-26)
 
 
