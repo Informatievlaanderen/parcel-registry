@@ -13,6 +13,7 @@ namespace ParcelRegistry.Consumer.Address.Console
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
+    using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.Extensions;
     using Destructurama;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -84,7 +85,7 @@ namespace ParcelRegistry.Consumer.Address.Console
                             ));
 
                     services
-                        .AddDbContextFactory<ConsumerAddressContext>((provider, options) => options
+                        .AddDbContextFactory<ConsumerAddressContext>((_, options) => options
                             .UseLoggerFactory(loggerFactory)
                             .UseSqlServer(hostContext.Configuration.GetConnectionString("ConsumerAddress"), sqlServerOptions =>
                             {
@@ -118,25 +119,8 @@ namespace ParcelRegistry.Consumer.Address.Console
                             hostContext.Configuration["Kafka:SaslUserName"],
                             hostContext.Configuration["Kafka:SaslPassword"]));
 
-                        var offset = hostContext.Configuration["AddressTopicOffset"];
-
-                        if (!string.IsNullOrWhiteSpace(offset) && long.TryParse(offset, out var result))
-                        {
-                            var ignoreDataCheck = hostContext.Configuration.GetValue<bool>("IgnoreAddressTopicOffsetDataCheck", false);
-
-                            if (!ignoreDataCheck)
-                            {
-                                using var ctx = c.Resolve<ConsumerAddressContext>();
-
-                                if (ctx.AddressConsumerItems.Any())
-                                {
-                                    throw new InvalidOperationException(
-                                        $"Cannot set Kafka offset to {offset} because {nameof(ctx.AddressConsumerItems)} has data.");
-                                }
-                            }
-
-                            consumerOptions.ConfigureOffset(new Offset(result));
-                        }
+                        using var ctx = c.Resolve<ConsumerAddressContext>();
+                        ctx.OverrideConfigureOffset(consumerOptions);
 
                         return consumerOptions;
                     });

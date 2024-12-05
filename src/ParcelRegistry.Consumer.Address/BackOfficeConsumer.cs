@@ -20,7 +20,7 @@ namespace ParcelRegistry.Consumer.Address
         private readonly IDbContextFactory<BackOfficeContext> _backOfficeContextFactory;
         private readonly IParcels _parcels;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly IIdempotentConsumer<ConsumerAddressContext> _kafkaIdemIdompotencyConsumer;
+        private readonly IIdempotentConsumer<ConsumerAddressContext> _kafkaIdompotencyConsumer;
         private readonly ILogger<BackOfficeConsumer> _logger;
 
         public BackOfficeConsumer(
@@ -29,14 +29,14 @@ namespace ParcelRegistry.Consumer.Address
             IDbContextFactory<BackOfficeContext> backOfficeContextFactory,
             IParcels parcels,
             ILoggerFactory loggerFactory,
-            IIdempotentConsumer<ConsumerAddressContext> kafkaIdemIdompotencyConsumer)
+            IIdempotentConsumer<ConsumerAddressContext> kafkaIdompotencyConsumer)
         {
             _lifetimeScope = lifetimeScope;
             _hostApplicationLifetime = hostApplicationLifetime;
             _backOfficeContextFactory = backOfficeContextFactory;
             _parcels = parcels;
             _loggerFactory = loggerFactory;
-            _kafkaIdemIdompotencyConsumer = kafkaIdemIdompotencyConsumer;
+            _kafkaIdompotencyConsumer = kafkaIdompotencyConsumer;
 
             _logger = loggerFactory.CreateLogger<BackOfficeConsumer>();
         }
@@ -55,7 +55,7 @@ namespace ParcelRegistry.Consumer.Address
 
             try
             {
-                await _kafkaIdemIdompotencyConsumer.ConsumeContinuously(async (message, context) =>
+                await _kafkaIdompotencyConsumer.ConsumeContinuously(async (message, context) =>
                 {
                     await HandleMessage(commandHandlingProjector, commandHandler, message, backOfficeProjector, context);
                 }, stoppingToken);

@@ -109,7 +109,6 @@ namespace ParcelRegistry.Consumer.Address
                     status => AddressStatus.Parse(status));
 
             builder.HasIndex(x => x.AddressId);
-            builder.HasIndex(x => x.Position);
             builder.HasIndex(x => x.IsRemoved);
         }
     }
