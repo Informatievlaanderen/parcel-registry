@@ -42,7 +42,7 @@ nuget Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite 8.0.2
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 7.2.5
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 4.0.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 3.0.0
+nuget Be.Vlaanderen.Basisregisters.Auth.AcmIdm 3.3.0
 
 nuget Be.Vlaanderen.Basisregisters.AggregateSource 9.0.1
 nuget Be.Vlaanderen.Basisregisters.AggregateSource.ExplicitRouting 9.0.1
