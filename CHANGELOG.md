@@ -1,3 +1,10 @@
+# [5.11.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.10.0...v5.11.0) (2025-01-02)
+
+
+### Features
+
+* add cache introspection ([d6a4e3e](https://github.com/informatievlaanderen/parcel-registry/commit/d6a4e3e92e8fa978edda58359aa31548df5019f3))
+
 # [5.10.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.9.1...v5.10.0) (2024-12-05)
 
 
