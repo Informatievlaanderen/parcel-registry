@@ -1,3 +1,10 @@
+# [5.12.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.11.0...v5.12.0) (2025-01-07)
+
+
+### Features
+
+* **api:** add feed docs GAWR-5321 ([0bd46e5](https://github.com/informatievlaanderen/parcel-registry/commit/0bd46e5e1d0f6b7eb2f445fc2413451a3f1657fe))
+
 # [5.11.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.10.0...v5.11.0) (2025-01-02)
 
 
