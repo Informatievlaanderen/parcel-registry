@@ -51,11 +51,11 @@ namespace ParcelRegistry.Consumer.Address
             var fixedGeometry = NetTopologySuite.Geometries.Utilities.GeometryFixer.Fix(geometry);
 
             var containsResult = AddressConsumerItems
-                .Where(x => fixedGeometry.Contains(x.Position))
+                .Where(x => !x.IsRemoved && fixedGeometry.Contains(x.Position))
                 .ToList();
 
             var touchesResult= AddressConsumerItems
-                .Where(x => x.Position.Touches(fixedGeometry))
+                .Where(x => !x.IsRemoved && x.Position.Touches(fixedGeometry))
                 .ToList();
 
             return containsResult
