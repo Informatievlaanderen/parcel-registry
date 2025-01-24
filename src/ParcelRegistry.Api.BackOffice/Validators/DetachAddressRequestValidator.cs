@@ -16,7 +16,7 @@ namespace ParcelRegistry.Api.BackOffice.Validators
             RuleFor(x => x.AdresId)
               .Must(adresId =>
                   OsloPuriValidator.TryParseIdentifier(adresId, out var id)
-                  || int.TryParse(id, out var persistentLocalId))
+                  || int.TryParse(id, out _))
               .DependentRules(() =>
               {
                   RuleFor(x => x.AdresId)
@@ -25,7 +25,7 @@ namespace ParcelRegistry.Api.BackOffice.Validators
                           var addressPersistentLocalId = OsloPuriValidatorExtensions.ParsePersistentLocalId(adresId);
 
                           var address = addressContext.GetOptional(new AddressPersistentLocalId(addressPersistentLocalId));
-                          return address is not null && !address.Value.IsRemoved;
+                          return address is not null; //&& !address.Value.IsRemoved; GAWR-6746
                       })
                       .WithErrorCode(ValidationErrors.Common.AdresIdInvalid.Code)
                       .WithMessage(ValidationErrors.Common.AdresIdInvalid.Message);
