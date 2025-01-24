@@ -1,3 +1,11 @@
+## [5.12.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.12.1...v5.12.2) (2025-01-24)
+
+
+### Bug Fixes
+
+* **backoffice:** remove isremoved validation when detaching address ([28c5f63](https://github.com/informatievlaanderen/parcel-registry/commit/28c5f632f3a2ed94c94cb2d616895c6f1f85c919))
+* **importer:** dont link parcel to removed addresses ([79c065c](https://github.com/informatievlaanderen/parcel-registry/commit/79c065c803d9fdb3873eb9d4d37a5c38f5c9263b))
+
 ## [5.12.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.12.0...v5.12.1) (2025-01-17)
 
 # [5.12.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.11.0...v5.12.0) (2025-01-07)
