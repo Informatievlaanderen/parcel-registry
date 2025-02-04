@@ -1,3 +1,10 @@
+## [5.12.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.12.2...v5.12.3) (2025-02-04)
+
+
+### Bug Fixes
+
+* **ci:** update to lambda v4 ([fe4dbea](https://github.com/informatievlaanderen/parcel-registry/commit/fe4dbea02c3793a7560739ca3c0a9f992d9800ee))
+
 ## [5.12.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.12.1...v5.12.2) (2025-01-24)
 
 
