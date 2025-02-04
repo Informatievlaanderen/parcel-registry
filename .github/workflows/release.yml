@@ -437,8 +437,8 @@ jobs:
       shell: bash
       run: |
         echo Push Lambda functions to S3 DevOps
-        echo aws s3 cp ~/lambda.zip s3://s3-vbr-lam-par-sqsbackofficefunction-362233117987/$SEMVER/lambda.zip
-        aws s3 cp ~/lambda.zip s3://s3-vbr-lam-par-sqsbackofficefunction-362233117987/$SEMVER/lambda.zip
+        echo aws s3 cp ~/lambda.zip s3://devops-api-deploy-v4-lambda-362233117987/par-sqsbackofficefunction/$SEMVER/lambda.zip
+        aws s3 cp ~/lambda.zip s3://devops-api-deploy-v4-lambda-362233117987/par-sqsbackofficefunction/$SEMVER/lambda.zip
       env:
         SEMVER: ${{ needs.release.outputs.version }}
 
@@ -751,7 +751,7 @@ jobs:
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Promote Lambda(s)
-      uses: Informatievlaanderen/build-pipeline/.github/actions/deploy-lambda@main
+      uses: Informatievlaanderen/build-pipeline/.github/actions/deploy-lambda-v4@main
       with:
         function-name: par-sqsbackofficefunction
         deploy-url: ${{ vars.VBR_AWS_DEPLOY_LAMBDA_DEVOPS_BASEURL }}
@@ -782,7 +782,7 @@ jobs:
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
         REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
 
-  deploy_to_new_stg_start_slack:
+  deploy_to_stg_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ deploy_to_test_finish_slack, release ]
     name: Deploy to staging started
@@ -804,9 +804,9 @@ jobs:
         SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
         REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
 
-  deploy_services_to_new_stg:
+  deploy_services_to_stg:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_new_stg_start_slack, release ]
+    needs: [ deploy_to_stg_start_slack, release ]
     name: Deploy services to new staging
     runs-on: ubuntu-latest
     strategy:
@@ -845,9 +845,9 @@ jobs:
         echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
         echo ${{ steps.awscurl-polling-action.outputs.final-message }}
 
-  deploy_tasks_to_new_stg:
+  deploy_tasks_to_stg:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_to_new_stg_start_slack, release ]
+    needs: [ deploy_to_stg_start_slack, release ]
     name: Deploy tasks to staging
     runs-on: ubuntu-latest
     strategy:
@@ -882,9 +882,9 @@ jobs:
         echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
         echo ${{ steps.awscurl-polling-action.outputs.final-message }}
 
-  deploy_lambda_to_new_stg:
+  deploy_lambda_to_stg:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_tasks_to_new_stg, deploy_services_to_new_stg, release ]
+    needs: [ deploy_tasks_to_stg, deploy_services_to_stg, release ]
     name: Deploy lambda to staging
     runs-on: ubuntu-latest
 
@@ -897,7 +897,7 @@ jobs:
         aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
     - name: Promote Lambda(s)
-      uses: Informatievlaanderen/build-pipeline/.github/actions/deploy-lambda@main
+      uses: Informatievlaanderen/build-pipeline/.github/actions/deploy-lambda-v4@main
       with:
         function-name: par-sqsbackofficefunction
         deploy-url: ${{ vars.VBR_AWS_DEPLOY_LAMBDA_DEVOPS_BASEURL }}
@@ -907,9 +907,9 @@ jobs:
         version: ${{ needs.release.outputs.version }}
         environment: stg
 
-  deploy_to_new_stg_finish_slack:
+  deploy_to_stg_finish_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ deploy_lambda_to_new_stg ]
+    needs: [ deploy_lambda_to_stg ]
     name: Deploy to staging finished
     runs-on: ubuntu-latest
 
