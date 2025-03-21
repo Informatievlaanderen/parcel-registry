@@ -235,20 +235,6 @@ jobs:
       dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
     secrets: inherit
 
-  # if not needed also cleanup other steps in release, paket.template and csproj
-  # pack-api-backoffice:
-  #   name: Pack Api BackOffice
-  #   uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
-  #   needs: [ set-release-version ]
-  #   if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-  #   with:
-  #     pack-file: Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice
-  #     test-project: ParcelRegistry.Tests
-  #     build-project: ParcelRegistry.Api.BackOffice
-  #     semver: ${{ needs.set-release-version.outputs.version }}
-  #     dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
-  #   secrets: inherit
-
   pack-api-backoffice-abstractions:
     name: Pack Api BackOffice Abstractions
     uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
@@ -306,7 +292,6 @@ jobs:
     name: Semantic Release
     runs-on: ubuntu-latest
     needs: [ set-release-version,
-      #pack-api-backoffice,
       pack-api-backoffice-abstractions,
       pack-api-oslo,
       pack-api-extract,
@@ -378,13 +363,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests markdown argparse
 
-    # - name: Download NuGet Api BackOffice
-    #   uses: actions/download-artifact@v4
-    #   continue-on-error: false
-    #   with:
-    #     name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice-${{ needs.set-release-version.outputs.version }}
-    #     path: dist/nuget/
-
     - name: Download NuGet Api BackOffice Abstractions
       uses: actions/download-artifact@v4
       continue-on-error: false
@@ -442,7 +420,7 @@ jobs:
         name: lambda-backoffice-${{ needs.release.outputs.version }}
         path: ~/
 
-    - name: Configure AWS credentials (Test)
+    - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4.0.2
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
@@ -455,25 +433,6 @@ jobs:
         echo Push Lambda functions to S3 DevOps
         echo aws s3 cp ~/lambda.zip s3://devops-api-deploy-v4-lambda-362233117987/par-sqsbackofficefunction/$SEMVER/lambda.zip
         aws s3 cp ~/lambda.zip s3://devops-api-deploy-v4-lambda-362233117987/par-sqsbackofficefunction/$SEMVER/lambda.zip
-      env:
-        SEMVER: ${{ needs.release.outputs.version }}
-
-    - name: Configure AWS credentials (New Production)
-      uses: aws-actions/configure-aws-credentials@v4.0.2
-      with:
-        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_NEWPRD }}
-        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_NEWPRD }}
-        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-    - name: Login to Amazon ECR (New Production)
-      uses: aws-actions/amazon-ecr-login@v2
-
-    - name: Push Lambda functions to S3 New Production
-      shell: bash
-      run: |
-        echo Push Lambda functions to S3 New Production
-        echo aws s3 cp ~/lambda.zip s3://077849980894-vbr-prd-lam-par-sqsbackoffice/$SEMVER/lambda.zip
-        aws s3 cp ~/lambda.zip s3://077849980894-vbr-prd-lam-par-sqsbackoffice/$SEMVER/lambda.zip
       env:
         SEMVER: ${{ needs.release.outputs.version }}
 
@@ -496,12 +455,6 @@ jobs:
       shell: bash
       run: dotnet --info
 
-    # - name: Download NuGet package api-backoffice
-    #   uses: actions/download-artifact@v4
-    #   with:
-    #     name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice-${{ needs.release.outputs.version }}
-    #     path: ~/
-
     - name: Download NuGet package api-backoffice-abstractions
       uses: actions/download-artifact@v4
       with:
@@ -522,7 +475,6 @@ jobs:
 
     - name: Publish packages to NuGet
       shell: bash
-      # dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       run: |
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY

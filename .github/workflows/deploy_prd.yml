@@ -137,7 +137,7 @@ jobs:
         version: ${{ github.event.inputs.version }}
         environment: prd
 
-  deploy_to_production_finish_1:
+  deploy_to_production_finish:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ deploy_lambda_to_production ]
     name: Deploy to production finished
