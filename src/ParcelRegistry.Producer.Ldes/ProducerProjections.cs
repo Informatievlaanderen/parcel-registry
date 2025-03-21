@@ -345,10 +345,8 @@ namespace ParcelRegistry.Producer.Ldes
 
             if (!result.IsSuccess)
             {
-                throw new InvalidOperationException(result.Error + Environment.NewLine + result.ErrorReason); //TODO: create custom exception
+                throw new InvalidOperationException(result.Error + Environment.NewLine + result.ErrorReason);
             }
         }
-
-        private static Task DoNothing<T>(ProducerContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
     }
 }
