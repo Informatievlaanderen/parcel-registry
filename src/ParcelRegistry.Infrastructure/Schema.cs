@@ -13,6 +13,7 @@ namespace ParcelRegistry.Infrastructure
         public const string MigrateParcel = "ParcelRegistryMigration";
         public const string Producer = "ParcelRegistryProducer";
         public const string ProducerSnapshotOslo = "ParcelRegistryProducerSnapshotOslo";
+        public const string ProducerLdes = "ParcelRegistryProducerLdes";
         public const string GrbImporter = "GrbImporter";
         public const string Integration = "integration_parcel";
     }
@@ -27,6 +28,7 @@ namespace ParcelRegistry.Infrastructure
         public const string BackOfficeProjections = "__EFMigrationsHistoryBackOfficeProjections";
         public const string Producer = "__EFMigrationsHistoryProducer";
         public const string ProducerSnapshotOslo = "__EFMigrationsHistoryProducerSnapshotOslo";
+        public const string ProducerLdes = "__EFMigrationsHistoryProducerLdes";
         public const string GrbImporter = "__EFMigrationsHistoryGrbImporter";
         public const string Integration = "__EFMigrationsHistory";
     }

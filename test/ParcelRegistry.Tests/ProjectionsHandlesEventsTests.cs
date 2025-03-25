@@ -18,7 +18,7 @@ namespace ParcelRegistry.Tests
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
     using Moq;
-    using NetTopologySuite.IO;
+    using Newtonsoft.Json;
     using Parcel.Events;
     using Producer;
     using Producer.Snapshot.Oslo;
@@ -34,8 +34,8 @@ namespace ParcelRegistry.Tests
     using Projections.Legacy;
     using Projections.Legacy.ParcelDetail;
     using Projections.Legacy.ParcelSyndication;
-    using SqlStreamStore;
     using Xunit;
+    using ProducerContext = Producer.Snapshot.Oslo.ProducerContext;
 
     public sealed class ProjectionsHandlesEventsTests
     {
@@ -115,7 +115,7 @@ namespace ParcelRegistry.Tests
                 new BackOfficeProjections(Mock.Of<IDbContextFactory<BackOfficeContext>>(), configurationRoot)
             }];
 
-            yield return [new List<ConnectedProjection<ParcelRegistry.Producer.Snapshot.Oslo.ProducerContext>>
+            yield return [new List<ConnectedProjection<ProducerContext>>
             {
                 new ProducerProjections(Mock.Of<IProducer>(), Mock.Of<ISnapshotManager>(), Mock.Of<IOsloProxy>())
             }];
@@ -123,6 +123,11 @@ namespace ParcelRegistry.Tests
             yield return [new List<ConnectedProjection<ParcelRegistry.Producer.ProducerContext>>
             {
                 new ProducerMigrateProjections(Mock.Of<IProducer>())
+            }];
+
+            yield return [new List<ConnectedProjection<ParcelRegistry.Producer.Ldes.ProducerContext>>
+            {
+                new ParcelRegistry.Producer.Ldes.ProducerProjections(Mock.Of<IProducer>(), "", new JsonSerializerSettings())
             }];
         }
 
