@@ -1,3 +1,10 @@
+# [5.13.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.12.3...v5.13.0) (2025-03-25)
+
+
+### Features
+
+* add ldes producer GAWR-6786 ([ab96d55](https://github.com/informatievlaanderen/parcel-registry/commit/ab96d5583dd2a4d786cbe3bee302d1aeb8352f65))
+
 ## [5.12.3](https://github.com/informatievlaanderen/parcel-registry/compare/v5.12.2...v5.12.3) (2025-02-04)
 
 
