@@ -9,6 +9,7 @@ namespace ParcelRegistry.Projector.Infrastructure
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
+    using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Configuration;
     using Microsoft.AspNetCore.Builder;
@@ -121,11 +122,21 @@ namespace ParcelRegistry.Projector.Infrastructure
                             health.AddDbContextCheck<LastChangedListContext>(
                                 $"dbcontext-{nameof(LastChangedListContext).ToLowerInvariant()}",
                                 tags: new[] {DatabaseTag, "sql", "sqlserver"});
+
+                            health.AddCheck<ProjectionsHealthCheck>(
+                                "projections",
+                                failureStatus: HealthStatus.Unhealthy,
+                                tags: ["projections"]);
                         }
                     }
                 })
                 .Configure<ExtractConfig>(_configuration.GetSection("Extract"))
                 .Configure<IntegrationOptions>(_configuration.GetSection("Integration"));
+
+            services.AddSingleton<ProjectionsHealthCheck>(
+                c => new ProjectionsHealthCheck(
+                    new AllUnhealthyProjectionsHealthCheckStrategy
+                        (c.GetRequiredService<IConnectedProjectionsManager>()), _loggerFactory));
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new LoggingModule(_configuration, services));
