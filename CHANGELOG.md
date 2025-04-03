@@ -1,3 +1,10 @@
+# [5.14.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.13.0...v5.14.0) (2025-04-03)
+
+
+### Features
+
+* update projector and add new health check ([584edb4](https://github.com/informatievlaanderen/parcel-registry/commit/584edb4a5283116b2547fb2869f1bb08d30b66d7))
+
 # [5.13.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.12.3...v5.13.0) (2025-03-25)
 
 
