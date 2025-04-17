@@ -1,3 +1,10 @@
+## [5.14.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.14.0...v5.14.1) (2025-04-17)
+
+
+### Bug Fixes
+
+* **import:** add fallback for directory browsing in zip ([d33e5f2](https://github.com/informatievlaanderen/parcel-registry/commit/d33e5f246178babc0babe4444b1a07a7cd550850))
+
 # [5.14.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.13.0...v5.14.0) (2025-04-03)
 
 
