@@ -10,7 +10,7 @@
     using NetTopologySuite.Geometries;
     using NetTopologySuite.IO.GML2;
 
-    public sealed record GrbParcel(CaPaKey GrbCaPaKey, Geometry Geometry, int Version, DateTime VersionDate);
+    public sealed record GrbParcel(CaPaKey GrbCaPaKey, Geometry Geometry, int Version, DateTime VersionDate, DateTime BeginVersionDate);
 
     public sealed class GrbAddXmlReader : GrbXmlReader
     {
@@ -83,14 +83,15 @@
             NamespaceManager.AddNamespace("agiv", "http://www.agiv.be/agiv");
             NamespaceManager.AddNamespace("gml", "http://www.opengis.net/gml");
 
-            var features = xmlDoc.SelectNodes("//gml:featureMember", NamespaceManager);
+            var features = xmlDoc.SelectNodes("//gml:featureMember", NamespaceManager)!;
 
             foreach (XmlNode featureMemberNode in features)
             {
                 // Process each featureMemberNode
-                var caPaKeyNode = featureMemberNode.SelectSingleNode(".//agiv:CAPAKEY", NamespaceManager);
-                var versionNode = featureMemberNode.SelectSingleNode(".//agiv:VERSIE", NamespaceManager);
-                var versionDateNode = featureMemberNode.SelectSingleNode(".//agiv:VERSDATUM", NamespaceManager);
+                var caPaKeyNode = featureMemberNode.SelectSingleNode(".//agiv:CAPAKEY", NamespaceManager)!;
+                var versionNode = featureMemberNode.SelectSingleNode(".//agiv:VERSIE", NamespaceManager)!;
+                var versionDateNode = featureMemberNode.SelectSingleNode(".//agiv:VERSDATUM", NamespaceManager)!;
+                var beginVersionDateNode = featureMemberNode.SelectSingleNode(".//agiv:BEGINDATUM", NamespaceManager)!;
                 var polygonNode = featureMemberNode.SelectSingleNode(".//gml:polygonProperty", NamespaceManager);
                 var multiPolygonNode = featureMemberNode.SelectSingleNode(".//gml:multiPolygonProperty", NamespaceManager);
 
@@ -99,11 +100,11 @@
 
                 if (polygonNode != null)
                 {
-                    yield return new GrbParcel(CaPaKey.CreateFrom(caPaKeyNode.InnerText), _gmlReader.Read(polygonNode.InnerXml), Convert.ToInt32(versionNode.InnerText), DateTime.Parse(versionDateNode.InnerText));
+                    yield return new GrbParcel(CaPaKey.CreateFrom(caPaKeyNode.InnerText), _gmlReader.Read(polygonNode.InnerXml), Convert.ToInt32(versionNode.InnerText), DateTime.Parse(versionDateNode.InnerText), DateTime.Parse(beginVersionDateNode.InnerText));
                 }
                 else if (multiPolygonNode != null)
                 {
-                    yield return new GrbParcel(CaPaKey.CreateFrom(caPaKeyNode.InnerText), _gmlReader.Read(multiPolygonNode.InnerXml), Convert.ToInt32(versionNode.InnerText), DateTime.Parse(versionDateNode.InnerText));
+                    yield return new GrbParcel(CaPaKey.CreateFrom(caPaKeyNode.InnerText), _gmlReader.Read(multiPolygonNode.InnerXml), Convert.ToInt32(versionNode.InnerText), DateTime.Parse(versionDateNode.InnerText), DateTime.Parse(beginVersionDateNode.InnerText));
                 }
                 else
                 {

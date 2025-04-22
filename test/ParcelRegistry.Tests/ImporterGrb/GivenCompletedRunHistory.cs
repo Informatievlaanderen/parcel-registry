@@ -43,9 +43,9 @@
 
             var requests = new List<ParcelRequest>
             {
-                new RetireParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 10,  new DateTime(2023, 01, 01))),
-                new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9, new DateTime(2023, 01, 02))),
-                new ChangeParcelGeometryRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 11,  new DateTime(2023, 01, 02)))
+                new RetireParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 10,  new DateTime(2023, 01, 01), new DateTime(2022, 10, 30))),
+                new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 9, new DateTime(2023, 01, 01), new DateTime(2023, 01, 01))),
+                new ChangeParcelGeometryRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon, 11,  new DateTime(2023, 01, 02), new DateTime(2023, 01, 02)))
             };
 
             var today = DateTime.Now;

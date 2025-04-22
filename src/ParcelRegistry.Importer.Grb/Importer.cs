@@ -58,6 +58,7 @@
 
                 var groupedParcels = parcelsRequests
                     .OrderBy(x => x.GrbParcel.VersionDate)
+                    .ThenBy(x => x.GrbParcel.BeginVersionDate)
                     .ThenBy(x => x.GrbParcel.Version)
                     .GroupBy(y => y.GrbParcel.GrbCaPaKey);
 
@@ -96,6 +97,7 @@
             {
                 var orderedRequests = parcelRequests
                     .OrderBy(x => x.GrbParcel.VersionDate)
+                    .ThenBy(x => x.GrbParcel.BeginVersionDate)
                     .ThenBy(x => x.GrbParcel.Version);
 
                 foreach (var request in orderedRequests)

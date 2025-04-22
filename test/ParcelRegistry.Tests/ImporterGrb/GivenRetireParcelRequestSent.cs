@@ -7,13 +7,11 @@
     using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using FluentAssertions;
     using Importer.Grb.Handlers;
     using Importer.Grb.Infrastructure;
-    using NodaTime;
     using Parcel;
     using Parcel.Commands;
     using Xunit;
@@ -40,7 +38,7 @@
                     Fixture.Create<Provenance>()));
 
             var retireParcelRequest = new RetireParcelRequest(
-                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, DateTime.Now));
+                new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, DateTime.Now, DateTime.Today));
 
             var sut = new RetireParcelHandler(Container);
 
