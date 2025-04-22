@@ -15,13 +15,13 @@
         public Dictionary<GrbParcelActions, Stream> Open(ZipArchive zipArchive)
         {
             var filesByAction = new Dictionary<GrbParcelActions, Stream>();
-            var adpAddEntry = zipArchive.GetEntry("GML/AdpAdd.gml") ?? zipArchive.GetEntry("GML\\AdpAdd.gml");
-            var adpDelEntry = zipArchive.GetEntry("GML/AdpDel.gml") ?? zipArchive.GetEntry("GML\\AdpAdd.gml");;
-            if (adpAddEntry is null)
-                throw new InvalidOperationException("AdpAdd.gml not found in zip archive.");
+            var adpAddEntry = zipArchive.GetEntry("GML/AdpAdd.gml")
+                              ?? zipArchive.GetEntry("GML\\AdpAdd.gml")
+                              ?? throw new InvalidOperationException("AdpAdd.gml not found in zip archive.");
 
-            if (adpDelEntry is null)
-                throw new InvalidOperationException("AdpDel.gml not found in zip archive.");
+            var adpDelEntry = zipArchive.GetEntry("GML/AdpDel.gml")
+                              ?? zipArchive.GetEntry("GML\\AdpDel.gml")
+                              ?? throw new InvalidOperationException("AdpDel.gml not found in zip archive.");
 
             filesByAction.Add(GrbParcelActions.Add, adpAddEntry.Open());
             filesByAction.Add(GrbParcelActions.Update, adpAddEntry.Open());
