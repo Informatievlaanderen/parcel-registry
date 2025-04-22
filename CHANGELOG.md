@@ -1,3 +1,10 @@
+## [5.14.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.14.1...v5.14.2) (2025-04-22)
+
+
+### Bug Fixes
+
+* **import:** fix fallback ApdDel ([69f3e80](https://github.com/informatievlaanderen/parcel-registry/commit/69f3e80dcf6ee594012d3bf9560e35bb632686b7))
+
 ## [5.14.1](https://github.com/informatievlaanderen/parcel-registry/compare/v5.14.0...v5.14.1) (2025-04-17)
 
 
