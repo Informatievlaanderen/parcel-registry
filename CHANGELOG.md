@@ -1,3 +1,15 @@
+# [6.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.14.2...v6.0.0) (2025-04-28)
+
+
+### Code Refactoring
+
+* use renovate and nuget + update pipeline ([f2b16ae](https://github.com/informatievlaanderen/parcel-registry/commit/f2b16ae137924699ff8056323e6983647f7996fd))
+
+
+### BREAKING CHANGES
+
+* update to dotnet 9
+
 ## [5.14.2](https://github.com/informatievlaanderen/parcel-registry/compare/v5.14.1...v5.14.2) (2025-04-22)
 
 
