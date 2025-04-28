@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
+  <Import Project="..\..\.build\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ParcelRegistry.Api.BackOffice.Handlers.Lambda\ParcelRegistry.Api.BackOffice.Handlers.Lambda.csproj" />
@@ -25,5 +25,22 @@
     <None Update="ImporterGrb\grb_download_file.zip" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing.SqlStreamStore.Autofac" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.AggregateSource.Testing.Xunit" />
+
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector.Testing" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing.Xunit" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.EventHandling" />
+
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events" />
+
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="AutoFixture" />
+    <PackageReference Include="Moq" />
+  </ItemGroup>
 </Project>
