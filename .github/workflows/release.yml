@@ -22,7 +22,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20.x'
+        node-version: '22.x'
 
     - name: Node version
       shell: bash
@@ -51,13 +51,12 @@ jobs:
       run: |
         [ ! -f semver ] && echo none > semver
         echo $(cat semver)
-        echo ::set-output name=version::$(cat semver)
-        echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
+        echo "version=$(cat semver)" >> "$GITHUB_OUTPUT"
       shell: bash
 
   build-api-backoffice:
     name: Build Api BackOffice
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -67,12 +66,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Api.BackOffice
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-api-oslo:
     name: Build Api Oslo
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -82,12 +82,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Api.Oslo
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-api-extract:
     name: Build Api Extract
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -97,12 +98,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Api.Extract
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-projector:
     name: Build Projector
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -112,12 +114,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Projector
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-projections-last-changed-list:
     name: Build projections last changed list
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -127,12 +130,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Projections.LastChangedList.Console
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-projections-backoffice:
     name: Build Projections BackOffice
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -142,12 +146,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Projections.BackOffice
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-consumer-address:
     name: Build Consumer
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -157,12 +162,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Consumer.Address.Console
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-producer:
     name: Build Producer
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -172,12 +178,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Producer
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-producer-snapshot-oslo:
     name: Build Producer Snapshot Oslo
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -187,12 +194,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Producer.Snapshot.Oslo
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-producer-ldes:
     name: Build Producer Ldes
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -202,12 +210,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Producer.Ldes
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-importer-grb:
     name: Build Parcel Importer Grb
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -217,12 +226,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Importer.Grb
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-snapshot-verifier:
     name: Build Snapshot Verifier
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -232,12 +242,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Snapshot.Verifier
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   pack-api-backoffice-abstractions:
     name: Pack Api BackOffice Abstractions
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -245,12 +256,13 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Api.BackOffice.Abstractions
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   pack-api-oslo:
     name: Pack Api Oslo
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack-v2.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -258,33 +270,24 @@ jobs:
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Api.Oslo
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
-    secrets: inherit
-
-  pack-api-extract:
-    name: Pack Api Extract
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/pack.yml@main
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      pack-file: Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract
-      test-project: ParcelRegistry.Tests
-      build-project: ParcelRegistry.Api.Extract
-      semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   build-lambda-backoffice:
     name: Build Lambda
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda.yml@main
+    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda-arm64.yml@main
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
-      lambda-name: lambda-backoffice
+      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/parcel-registry
+      image-file: pr-lambda-sqsbackofficefunction-image.tar
+      image-name: lambda-sqsbackofficefunction
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Api.BackOffice.Handlers.Lambda
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+      prerestore-script: ./pre-restore.sh
     secrets: inherit
 
   release:
@@ -294,7 +297,6 @@ jobs:
     needs: [ set-release-version,
       pack-api-backoffice-abstractions,
       pack-api-oslo,
-      pack-api-extract,
       build-api-backoffice,
       build-api-oslo,
       build-api-extract,
@@ -334,7 +336,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20.x'
+        node-version: '22.x'
 
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -377,13 +379,6 @@ jobs:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo-${{ needs.set-release-version.outputs.version }}
         path: dist/nuget/
 
-    - name: Download NuGet Api Extract
-      uses: actions/download-artifact@v4
-      continue-on-error: false
-      with:
-        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract-${{ needs.set-release-version.outputs.version }}
-        path: dist/nuget/
-
     - name: Run Semantic Release
       shell: bash
       run: npx semantic-release
@@ -403,38 +398,8 @@ jobs:
       run: |
         [ ! -f semver ] && echo none > semver
         echo $(cat semver)
-        echo ::set-output name=version::$(cat semver)
-        echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
+        echo "version=$(cat semver)" >> "$GITHUB_OUTPUT"
       shell: bash
-
-  upload-lambda:
-    name: Upload Lambda
-    needs: [ release ]
-    runs-on: ubuntu-latest
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
-    steps:
-    - name: Download Lambda
-      uses: actions/download-artifact@v4
-      continue-on-error: false
-      with:
-        name: lambda-backoffice-${{ needs.release.outputs.version }}
-        path: ~/
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4.0.2
-      with:
-        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
-        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-    - name: Push Lambda functions to S3 DevOps
-      shell: bash
-      run: |
-        echo Push Lambda functions to S3 DevOps
-        echo aws s3 cp ~/lambda.zip s3://devops-api-deploy-v4-lambda-362233117987/par-sqsbackofficefunction/$SEMVER/lambda.zip
-        aws s3 cp ~/lambda.zip s3://devops-api-deploy-v4-lambda-362233117987/par-sqsbackofficefunction/$SEMVER/lambda.zip
-      env:
-        SEMVER: ${{ needs.release.outputs.version }}
 
   publish_to_nuget:
     needs: [ release ]
@@ -449,7 +414,9 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+        dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
+        cache: true
+        cache-dependency-path: "**/packages.lock.json"
 
     - name: .NET version
       shell: bash
@@ -467,18 +434,11 @@ jobs:
         name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo-${{ needs.release.outputs.version }}
         path: ~/
 
-    - name: Download NuGet package api-extract
-      uses: actions/download-artifact@v4
-      with:
-        name: nuget-Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract-${{ needs.release.outputs.version }}
-        path: ~/
-
     - name: Publish packages to NuGet
       shell: bash
       run: |
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
         dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
-        dotnet nuget push ~/Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Extract.$SEMVER.nupkg --source nuget.org --api-key $NUGET_API_KEY
       env:
         SEMVER: ${{  needs.release.outputs.version }}
         WORKSPACE: ${{ github.workspace }}
@@ -496,16 +456,6 @@ jobs:
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
-
-      - name: Cache Paket
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Cache Python
         uses: actions/cache@v4
@@ -526,9 +476,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests markdown argparse
 
+      - name: Restore build-pipeline
+        shell: bash
+        run: ./pre-restore.sh
+
       - name: Publish to Confluence
         shell: bash
-        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
+        run: bash ./.build/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
         env:
           CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
           CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
@@ -564,11 +518,12 @@ jobs:
           'producer-snapshot-oslo',
           'producer-ldes',
           'importer-grb',
-          'snapshot-verifier'
+          'snapshot-verifier',
+          'lambda-sqsbackofficefunction'
           ]
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4.0.2
+        uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
           aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
@@ -607,25 +562,20 @@ jobs:
 
   deploy_to_test_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ push_images, upload-lambda, release ]
+    needs: [ push_images, release ]
     name: Deploy to test started
     environment: test
     runs-on: ubuntu-latest
 
     steps:
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
-      shell: bash
-
     - name: Notify deployment started
-      uses: slackapi/slack-github-action@v1.25.0
+      uses: slackapi/slack-github-action@v2
       with:
-        channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of parcel-registry to test has started
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
-        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
-        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
+        method: chat.postMessage
+        token: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        payload: |
+          channel: '#team-dinosaur-dev'
+          text: 'Deployment of parcel-registry to test has started'
 
   deploy_services_to_test:
     if: github.repository_owner == 'Informatievlaanderen'
@@ -714,7 +664,7 @@ jobs:
 
     steps:
     - name: CD Lambda(s) Configure credentials
-      uses: aws-actions/configure-aws-credentials@v4.0.2
+      uses: aws-actions/configure-aws-credentials@v4.1.0
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
@@ -738,19 +688,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
-      shell: bash
-
     - name: Notify deployment finished
-      uses: slackapi/slack-github-action@v1.25.0
+      uses: slackapi/slack-github-action@v2
       with:
-        channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of parcel-registry to test has finished
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
-        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
-        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
+        method: chat.postMessage
+        token: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        payload: |
+          channel: '#team-dinosaur-dev'
+          text: 'Deployment of parcel-registry to test has finished'
 
   deploy_to_stg_start_slack:
     if: github.repository_owner == 'Informatievlaanderen'
@@ -760,19 +705,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
-      shell: bash
-
     - name: Notify deployment started
-      uses: slackapi/slack-github-action@v1.25.0
+      uses: slackapi/slack-github-action@v2
       with:
-        channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of parcel-registry to staging has started
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
-        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
-        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
+        method: chat.postMessage
+        token: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        payload: |
+          channel: '#team-dinosaur-dev'
+          text: 'Deployment of parcel-registry to staging has started'
 
   deploy_services_to_stg:
     if: github.repository_owner == 'Informatievlaanderen'
@@ -861,7 +801,7 @@ jobs:
 
     steps:
     - name: CD Lambda(s) Configure credentials
-      uses: aws-actions/configure-aws-credentials@v4.0.2
+      uses: aws-actions/configure-aws-credentials@v4.1.0
       with:
         aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
@@ -885,16 +825,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo ""$GITHUB_REPOSITORY"" | awk -F / '{print $2}' | sed -e ""s/:refs//"") >> $GITHUB_ENV
-      shell: bash
-
     - name: Notify deployment finished
-      uses: slackapi/slack-github-action@v1.25.0
+      uses: slackapi/slack-github-action@v2
       with:
-        channel-id: '#team-dinosaur-dev'
-        slack-message: Deployment of parcel-registry to staging has finished
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
-        SLACK_CHANNEL: ${{ secrets.VBR_NOTIFIER_CHANNEL_NAME }}
-        REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
+        method: chat.postMessage
+        token: ${{ secrets.VBR_SLACK_BOT_TOKEN }}
+        payload: |
+          channel: '#team-dinosaur-dev'
+          text: 'Deployment of parcel-registry to staging has finished'
