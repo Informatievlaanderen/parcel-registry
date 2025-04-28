@@ -17,7 +17,7 @@ namespace ParcelRegistry.Projections.Extract.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -44,7 +44,7 @@ namespace ParcelRegistry.Projections.Extract.Migrations
                     b.ToTable("ProjectionStates", "ParcelRegistryExtract");
                 });
 
-            modelBuilder.Entity("ParcelRegistry.Projections.Extract.ParcelExtract.ParcelExtractItemV2", b =>
+            modelBuilder.Entity("ParcelRegistry.Projections.Extract.ParcelExtract.ParcelExtractItem", b =>
                 {
                     b.Property<Guid>("ParcelId")
                         .ValueGeneratedOnAdd()
@@ -65,7 +65,7 @@ namespace ParcelRegistry.Projections.Extract.Migrations
 
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("CaPaKey"));
 
-                    b.ToTable("ParcelV2", "ParcelRegistryExtract");
+                    b.ToTable("Parcels", "ParcelRegistryExtract");
                 });
 
             modelBuilder.Entity("ParcelRegistry.Projections.Extract.ParcelLinkExtract.ParcelLinkExtractItem", b =>
