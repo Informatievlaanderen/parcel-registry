@@ -34,4 +34,4 @@ ENV DD_SERVERLESS_APPSEC_ENABLED=false
 
 ENV AWS_LAMBDA_EXEC_WRAPPER=/opt/datadog_wrapper
 
-CMD ["AddressRegistry.Api.BackOffice.Handlers.Lambda::AddressRegistry.Api.BackOffice.Handlers.Lambda.Function::Handler"]
+CMD ["ParcelRegistry.Api.BackOffice.Handlers.Lambda::ParcelRegistry.Api.BackOffice.Handlers.Lambda.Function::Handler"]

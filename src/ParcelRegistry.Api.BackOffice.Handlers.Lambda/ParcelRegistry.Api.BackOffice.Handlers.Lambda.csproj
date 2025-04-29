@@ -28,6 +28,7 @@
     </Content>
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
+    <Content Include="Dockerfile" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>

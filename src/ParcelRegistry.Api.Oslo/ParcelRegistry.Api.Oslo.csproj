@@ -22,10 +22,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Dockerfile" CopyToOutputDirectory="Always" />
-    <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
-    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
-    <Content Include="init.sh" CopyToOutputDirectory="Always" />
+    <Content Include="Dockerfile" CopyToOutputDirectory="Always" Pack="False" />
+    <Content Include="appsettings.json" CopyToOutputDirectory="Always" Pack="False" />
+    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" Pack="False" />
+    <Content Include="init.sh" CopyToOutputDirectory="Always" Pack="False" />
   </ItemGroup>
 
   <ItemGroup>
