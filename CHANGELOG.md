@@ -1,3 +1,10 @@
+## [6.0.1](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.0...v6.0.1) (2025-04-29)
+
+
+### Bug Fixes
+
+* **lambda:** correct docker CMD ([da7ce24](https://github.com/informatievlaanderen/parcel-registry/commit/da7ce24fea8102d39f40a99adc9902bfb04b9f01))
+
 # [6.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v5.14.2...v6.0.0) (2025-04-28)
 
 
