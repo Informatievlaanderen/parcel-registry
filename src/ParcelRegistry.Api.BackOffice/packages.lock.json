@@ -83,14 +83,14 @@
       },
       "Be.Vlaanderen.Basisregisters.MessageHandling.AwsSqs.Simple": {
         "type": "Direct",
-        "requested": "[6.0.2, )",
-        "resolved": "6.0.2",
-        "contentHash": "0x1ZuXywYqtWEuPgDcpFHTzISIBM3ZtzE0wIH4r/Vz2Q9GFIE8FtwN4GSCkQqqDwwnQlyJPiHtWDWn9StDBtEw==",
+        "requested": "[6.0.3, )",
+        "resolved": "6.0.3",
+        "contentHash": "wxSIdEKfGfWTmL/tW2+PgRdbjZpMmBc8NlCdMcsvvtTfbPzyeAEt3BrPAR4MOmf1kIjHWhhIqwgSakLPKS6JaA==",
         "dependencies": {
           "AWSSDK.Core": "3.7.402.35",
           "AWSSDK.SQS": "3.7.400.129",
-          "Microsoft.Extensions.Configuration.Json": "9.0.3",
-          "Microsoft.Extensions.DependencyInjection": "9.0.3",
+          "Microsoft.Extensions.Configuration.Json": "9.0.4",
+          "Microsoft.Extensions.DependencyInjection": "9.0.4",
           "Newtonsoft.Json": "13.0.3"
         }
       },
@@ -474,6 +474,14 @@
           "System.Drawing.Common": "8.0.0"
         }
       },
+      "Confluent.Kafka": {
+        "type": "Transitive",
+        "resolved": "2.10.0",
+        "contentHash": "beGF9x9Yw83NDTs0oyNdRHSR27HjF2NpwwCZZ45hEk1zE+yDW8JXuyzitfdYftLACCbuaBJCEh+ZW7Qxg9cdnA==",
+        "dependencies": {
+          "librdkafka.redist": "2.10.0"
+        }
+      },
       "Datadog.Trace": {
         "type": "Transitive",
         "resolved": "3.15.0",
@@ -535,6 +543,11 @@
         "dependencies": {
           "IdentityModel": "6.0.0"
         }
+      },
+      "librdkafka.redist": {
+        "type": "Transitive",
+        "resolved": "2.10.0",
+        "contentHash": "QOvg/8WapA3c5EwPojCjnLEdxJNjxJ5s2GO8VxrDV9BTpnXHHGJ14MPwcGKiQeiRsBvPoeoTKMOh5KYu/Wm3jw=="
       },
       "Microsoft.AspNetCore.Authentication.JwtBearer": {
         "type": "Transitive",
@@ -723,11 +736,11 @@
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "RIEeZxWYm77+OWLwgik7DzSVSONjqkmcbuCb1koZdGAV7BgOUWnLz80VMyHZMw3onrVwFCCMHBBdruBPuQTvkg==",
+        "resolved": "9.0.4",
+        "contentHash": "KIVBrMbItnCJDd1RF4KEaE8jZwDJcDUJW5zXpbwQ05HNYTK1GveHxHK0B3SjgDJuR48GRACXAO+BLhL8h34S7g==",
         "dependencies": {
-          "Microsoft.Extensions.Configuration.Abstractions": "9.0.3",
-          "Microsoft.Extensions.Primitives": "9.0.3"
+          "Microsoft.Extensions.Configuration.Abstractions": "9.0.4",
+          "Microsoft.Extensions.Primitives": "9.0.4"
         }
       },
       "Microsoft.Extensions.Configuration.Abstractions": {
@@ -766,25 +779,25 @@
       },
       "Microsoft.Extensions.Configuration.FileExtensions": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "tBNMSDJ2q7WQK2zwPhHY5I/q95t7sf6dT079mGrNm0yOZF/gM9JvR/LtCb/rwhRmh7A6XMnzv5WbpCh9KLq9EQ==",
+        "resolved": "9.0.4",
+        "contentHash": "UY864WQ3AS2Fkc8fYLombWnjrXwYt+BEHHps0hY4sxlgqaVW06AxbpgRZjfYf8PyRbplJqruzZDB/nSLT+7RLQ==",
         "dependencies": {
-          "Microsoft.Extensions.Configuration": "9.0.3",
-          "Microsoft.Extensions.Configuration.Abstractions": "9.0.3",
-          "Microsoft.Extensions.FileProviders.Abstractions": "9.0.3",
-          "Microsoft.Extensions.FileProviders.Physical": "9.0.3",
-          "Microsoft.Extensions.Primitives": "9.0.3"
+          "Microsoft.Extensions.Configuration": "9.0.4",
+          "Microsoft.Extensions.Configuration.Abstractions": "9.0.4",
+          "Microsoft.Extensions.FileProviders.Abstractions": "9.0.4",
+          "Microsoft.Extensions.FileProviders.Physical": "9.0.4",
+          "Microsoft.Extensions.Primitives": "9.0.4"
         }
       },
       "Microsoft.Extensions.Configuration.Json": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "mjkp3ZwynNacZk4uq93I0DyCY48FZmi3yRV0xlfeDuWh44KcDunPXHwt8IWr4kL7cVM6eiFVe6YTJg97KzUAUA==",
+        "resolved": "9.0.4",
+        "contentHash": "vVXI70CgT/dmXV3MM+n/BR2rLXEoAyoK0hQT+8MrbCMuJBiLRxnTtSrksNiASWCwOtxo/Tyy7CO8AGthbsYxnw==",
         "dependencies": {
-          "Microsoft.Extensions.Configuration": "9.0.3",
-          "Microsoft.Extensions.Configuration.Abstractions": "9.0.3",
-          "Microsoft.Extensions.Configuration.FileExtensions": "9.0.3",
-          "Microsoft.Extensions.FileProviders.Abstractions": "9.0.3"
+          "Microsoft.Extensions.Configuration": "9.0.4",
+          "Microsoft.Extensions.Configuration.Abstractions": "9.0.4",
+          "Microsoft.Extensions.Configuration.FileExtensions": "9.0.4",
+          "Microsoft.Extensions.FileProviders.Abstractions": "9.0.4"
         }
       },
       "Microsoft.Extensions.DependencyInjection": {
@@ -852,10 +865,10 @@
       },
       "Microsoft.Extensions.FileProviders.Abstractions": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "umczZ3+QPpzlrW/lkvy+IB0p52+qZ5w++aqx2lTCMOaPKzwcbVdrJgiQ3ajw5QWBp7gChLUiCYkSlWUpfjv24g==",
+        "resolved": "9.0.4",
+        "contentHash": "gQN2o/KnBfVk6Bd71E2YsvO5lsqrqHmaepDGk+FB/C4aiQY9B0XKKNKfl5/TqcNOs9OEithm4opiMHAErMFyEw==",
         "dependencies": {
-          "Microsoft.Extensions.Primitives": "9.0.3"
+          "Microsoft.Extensions.Primitives": "9.0.4"
         }
       },
       "Microsoft.Extensions.FileProviders.Embedded": {
@@ -868,18 +881,18 @@
       },
       "Microsoft.Extensions.FileProviders.Physical": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "th2+tQBV5oWjgKhip9GjiIv2AEK3QvfAO3tZcqV3F3dEt5D6Gb411RntCj1+8GS9HaRRSxjSGx/fCrMqIjkb1Q==",
+        "resolved": "9.0.4",
+        "contentHash": "qkQ9V7KFZdTWNThT7ke7E/Jad38s46atSs3QUYZB8f3thBTrcrousdY4Y/tyCtcH5YjsPSiByjuN+L8W/ThMQg==",
         "dependencies": {
-          "Microsoft.Extensions.FileProviders.Abstractions": "9.0.3",
-          "Microsoft.Extensions.FileSystemGlobbing": "9.0.3",
-          "Microsoft.Extensions.Primitives": "9.0.3"
+          "Microsoft.Extensions.FileProviders.Abstractions": "9.0.4",
+          "Microsoft.Extensions.FileSystemGlobbing": "9.0.4",
+          "Microsoft.Extensions.Primitives": "9.0.4"
         }
       },
       "Microsoft.Extensions.FileSystemGlobbing": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "Rec77KHk4iNpFznHi5/6wF3MlUDcKqg26t8gRYbUm1PSukZ4B6mrXpZsJSNOiwyhhQVkjYbaoZxi5XJgRQ5lFg=="
+        "resolved": "9.0.4",
+        "contentHash": "05Lh2ItSk4mzTdDWATW9nEcSybwprN8Tz42Fs5B+jwdXUpauktdAQUI1Am4sUQi2C63E5hvQp8gXvfwfg9mQGQ=="
       },
       "Microsoft.Extensions.Hosting.Abstractions": {
         "type": "Transitive",
@@ -1675,7 +1688,7 @@
         "type": "Project",
         "dependencies": {
           "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[22.0.0, )",
-          "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer": "[6.0.2, )",
+          "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer": "[6.0.3, )",
           "Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions": "[1.0.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
           "Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite": "[9.0.4, )",
@@ -1859,11 +1872,15 @@
       },
       "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer": {
         "type": "CentralTransitive",
-        "requested": "[6.0.2, )",
-        "resolved": "6.0.2",
-        "contentHash": "rlJ1JgpcsyEOdNQAM3ry+nzetI4T1All/grk7f+Wi8kCHm3vkvwcmFruBhgw1UaKoKbC8/tNispEtDjJZuIrGg==",
+        "requested": "[6.0.3, )",
+        "resolved": "6.0.3",
+        "contentHash": "Ty3Ac44+0Pb4uOuBKnutrJfmpfAILNpJe/yc/Ha53cmeoiSz0vdoXjy1daZjT/M3z0XvMgHol05fdmroz6IDGA==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.SqlServer": "9.0.3"
+          "Confluent.Kafka": "2.10.0",
+          "Microsoft.EntityFrameworkCore": "9.0.4",
+          "Microsoft.EntityFrameworkCore.SqlServer": "9.0.4",
+          "Microsoft.Extensions.Logging": "9.0.4",
+          "Newtonsoft.Json": "13.0.3"
         }
       },
       "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": {
@@ -2029,6 +2046,11 @@
       }
     },
     "net9.0/linux-arm64": {
+      "librdkafka.redist": {
+        "type": "Transitive",
+        "resolved": "2.10.0",
+        "contentHash": "QOvg/8WapA3c5EwPojCjnLEdxJNjxJ5s2GO8VxrDV9BTpnXHHGJ14MPwcGKiQeiRsBvPoeoTKMOh5KYu/Wm3jw=="
+      },
       "Microsoft.Data.SqlClient": {
         "type": "Transitive",
         "resolved": "6.0.1",
@@ -2460,6 +2482,11 @@
       }
     },
     "net9.0/linux-x64": {
+      "librdkafka.redist": {
+        "type": "Transitive",
+        "resolved": "2.10.0",
+        "contentHash": "QOvg/8WapA3c5EwPojCjnLEdxJNjxJ5s2GO8VxrDV9BTpnXHHGJ14MPwcGKiQeiRsBvPoeoTKMOh5KYu/Wm3jw=="
+      },
       "Microsoft.Data.SqlClient": {
         "type": "Transitive",
         "resolved": "6.0.1",
@@ -2891,6 +2918,11 @@
       }
     },
     "net9.0/win-x64": {
+      "librdkafka.redist": {
+        "type": "Transitive",
+        "resolved": "2.10.0",
+        "contentHash": "QOvg/8WapA3c5EwPojCjnLEdxJNjxJ5s2GO8VxrDV9BTpnXHHGJ14MPwcGKiQeiRsBvPoeoTKMOh5KYu/Wm3jw=="
+      },
       "Microsoft.Data.SqlClient": {
         "type": "Transitive",
         "resolved": "6.0.1",
