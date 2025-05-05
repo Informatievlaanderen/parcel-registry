@@ -1,3 +1,10 @@
+## [6.0.2](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.1...v6.0.2) (2025-05-05)
+
+
+### Bug Fixes
+
+* bump message-handling ([8c10e54](https://github.com/informatievlaanderen/parcel-registry/commit/8c10e5487c1ce3e9b78703382c7bd5cc4ac8618a))
+
 ## [6.0.1](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.0...v6.0.1) (2025-04-29)
 
 
