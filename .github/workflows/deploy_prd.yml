@@ -39,7 +39,7 @@ jobs:
           'parcel-consumer-address',
           'parcel-producer',
           'parcel-producer-snapshot-oslo',
-          #'parcel-producer-ldes',
+          'parcel-producer-ldes',
           'parcel-projections',
           'parcel-projections-backoffice'
           ]
