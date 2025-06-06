@@ -1,3 +1,10 @@
+## [6.0.3](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.2...v6.0.3) (2025-06-06)
+
+
+### Bug Fixes
+
+* **deps:** update dotnet monorepo to 9.0.5 ([53c1f15](https://github.com/informatievlaanderen/parcel-registry/commit/53c1f154f3c4d072ee7c18dd8fbba3bba7e67923))
+
 ## [6.0.2](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.1...v6.0.2) (2025-05-05)
 
 
