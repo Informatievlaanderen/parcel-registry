@@ -1,3 +1,10 @@
+## [6.0.4](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.3...v6.0.4) (2025-06-10)
+
+
+### Bug Fixes
+
+* **import:** add certificate to image ([9d027f9](https://github.com/informatievlaanderen/parcel-registry/commit/9d027f989bd726c9e27d550fe11509d9a9133647))
+
 ## [6.0.3](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.2...v6.0.3) (2025-06-06)
 
 
