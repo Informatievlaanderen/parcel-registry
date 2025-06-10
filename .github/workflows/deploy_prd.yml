@@ -41,7 +41,8 @@ jobs:
           'parcel-producer-snapshot-oslo',
           'parcel-producer-ldes',
           'parcel-projections',
-          'parcel-projections-backoffice'
+          'parcel-projections-backoffice',
+          'parcel-last-changed-list'
           ]
 
     steps:
