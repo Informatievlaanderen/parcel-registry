@@ -1,3 +1,10 @@
+## [6.0.5](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.4...v6.0.5) (2025-06-10)
+
+
+### Bug Fixes
+
+* **importer:** correct dockerfile installation certificate ([96d4959](https://github.com/informatievlaanderen/parcel-registry/commit/96d4959e104008d3fd8bb098bde089458c3450b1))
+
 ## [6.0.4](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.3...v6.0.4) (2025-06-10)
 
 
