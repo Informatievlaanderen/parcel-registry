@@ -12,6 +12,9 @@ WORKDIR /app
 
 RUN apt-get update && \
     apt-get install curl jq -y && \
+    mkdir -p /usr/local/share/ca-certificates/sectigo && \
+    cp ./download-api.pem /usr/local/share/ca-certificates/sectigo/download-api.pem && \
+    update-ca-certificates && \
     chmod +x ./init.sh
 
 ENV CORECLR_ENABLE_PROFILING=1
