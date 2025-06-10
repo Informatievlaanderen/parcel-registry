@@ -11,10 +11,22 @@ COPY / /app
 WORKDIR /app
 
 RUN apt-get update && \
-    apt-get install curl jq -y && \
+    apt-get install curl jq openssl ca-certificates -y && \
     mkdir -p /usr/local/share/ca-certificates/sectigo && \
-    cp ./download-api.pem /usr/local/share/ca-certificates/sectigo/download-api.pem && \
-    update-ca-certificates && \
+    cp ./download-api.pem /usr/local/share/ca-certificates/sectigo/download-api.crt && \
+    chmod 644 /usr/local/share/ca-certificates/sectigo/download-api.crt && \
+    update-ca-certificates --verbose && \
+    echo "Certificate subject:" && \
+    openssl x509 -in /usr/local/share/ca-certificates/sectigo/download-api.crt -subject -noout && \
+    echo "Certificate hash:" && \
+    CERT_HASH=$(openssl x509 -in /usr/local/share/ca-certificates/sectigo/download-api.crt -hash -noout) && \
+    echo "Certificate hash: $CERT_HASH" && \
+    # Check if hash symlink exists
+    echo "Looking for hash-based symlink:" && \
+    find /etc/ssl/certs -name "${CERT_HASH}*" || echo "No hash symlink found" && \
+    # Check if the certificate is trusted by the system
+    echo "Testing if certificate is trusted:" && \
+    openssl verify -CApath /etc/ssl/certs /usr/local/share/ca-certificates/sectigo/download-api.crt && \
     chmod +x ./init.sh
 
 ENV CORECLR_ENABLE_PROFILING=1
