@@ -1,3 +1,10 @@
+## [6.0.6](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.5...v6.0.6) (2025-06-10)
+
+
+### Bug Fixes
+
+* **ci:** separate last-changed-list ([87df6c4](https://github.com/informatievlaanderen/parcel-registry/commit/87df6c460699e5ab29c7f69d9363a787df436bfb))
+
 ## [6.0.5](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.4...v6.0.5) (2025-06-10)
 
 
