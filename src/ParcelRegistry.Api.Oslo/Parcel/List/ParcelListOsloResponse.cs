@@ -71,9 +71,16 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
         public Uri Detail { get; set; }
 
         /// <summary>
+        /// De CaPaKey van het perceel.
+        /// </summary>
+        [DataMember(Name = "CaPaKey", Order = 3)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public string CaPaKey { get; set; }
+
+        /// <summary>
         /// De status van het perceel
         /// </summary>
-        [DataMember(Name = "PerceelStatus", Order = 3)]
+        [DataMember(Name = "PerceelStatus", Order = 4)]
         [JsonProperty(Required = Required.DisallowNull)]
         public PerceelStatus PerceelStatus { get; set; }
 
@@ -85,6 +92,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.List
             DateTimeOffset version)
         {
             Identificator = new PerceelIdentificator(naamruimte, id, version);
+            CaPaKey = Be.Vlaanderen.Basisregisters.GrAr.Common.CaPaKey.CreateFrom(id).CaPaKeyCrabNotation2!;
             Detail = new Uri(string.Format(detail, id));
             PerceelStatus = status;
         }

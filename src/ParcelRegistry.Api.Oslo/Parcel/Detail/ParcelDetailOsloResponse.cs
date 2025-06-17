@@ -40,16 +40,23 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Detail
         public PerceelIdentificator Identificator { get; set; }
 
         /// <summary>
+        /// De CaPaKey van het perceel.
+        /// </summary>
+        [DataMember(Name = "CaPaKey", Order = 3)]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public string CaPaKey { get; set; }
+
+        /// <summary>
         /// De status van het perceel
         /// </summary>
-        [DataMember(Name = "PerceelStatus", Order = 3)]
+        [DataMember(Name = "PerceelStatus", Order = 4)]
         [JsonProperty(Required = Required.DisallowNull)]
         public PerceelStatus PerceelStatus { get; set; }
 
         /// <summary>
         /// De aan het perceel gekoppelde adressen.
         /// </summary>
-        [DataMember(Name = "Adressen", Order = 4)]
+        [DataMember(Name = "Adressen", Order = 5)]
         [JsonProperty(Required = Required.DisallowNull)]
         public List<PerceelDetailAdres> Adressen { get; set; }
 
@@ -64,6 +71,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Detail
         {
             Context = contextUrlDetail;
             Identificator = new PerceelIdentificator(naamruimte, caPaKey, version);
+            CaPaKey = Be.Vlaanderen.Basisregisters.GrAr.Common.CaPaKey.CreateFrom(caPaKey).CaPaKeyCrabNotation2!;
             PerceelStatus = status;
 
             Adressen = addressPersistentLocalIds
