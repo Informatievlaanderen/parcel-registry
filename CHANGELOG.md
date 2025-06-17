@@ -1,3 +1,10 @@
+# [6.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.6...v6.1.0) (2025-06-17)
+
+
+### Features
+
+* **api:** add CaPaKey to output GAWR-6952 ([9d9bc3b](https://github.com/informatievlaanderen/parcel-registry/commit/9d9bc3baf22eabe77dfba6ba22278dd30213564b))
+
 ## [6.0.6](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.5...v6.0.6) (2025-06-10)
 
 
