@@ -1,3 +1,10 @@
+# [6.2.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.1.0...v6.2.0) (2025-09-10)
+
+
+### Features
+
+* **producer:** add v2 producer gawr-5429 ([c9039cc](https://github.com/informatievlaanderen/parcel-registry/commit/c9039cccd8819cf1e105e893252bbc8be1a94d76))
+
 # [6.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.0.6...v6.1.0) (2025-06-17)
 
 
