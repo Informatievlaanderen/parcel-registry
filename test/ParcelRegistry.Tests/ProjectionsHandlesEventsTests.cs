@@ -122,8 +122,7 @@ namespace ParcelRegistry.Tests
 
             yield return [new List<ConnectedProjection<ParcelRegistry.Producer.ProducerContext>>
             {
-                new ProducerMigrateProjections(Mock.Of<IProducer>()),
-                new ProducerMigrateProjectionsV2(Mock.Of<IProducer>())
+                new ProducerMigrateProjections(Mock.Of<IProducer>())
             }];
 
             yield return [new List<ConnectedProjection<ParcelRegistry.Producer.Ldes.ProducerContext>>

@@ -68,7 +68,7 @@ namespace ParcelRegistry.Producer.Infrastructure.Modules
             var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
             if (hasConnectionString)
             {
-                RunOnSqlServer(_services, _loggerFactory, connectionString!);
+                RunOnSqlServer(_services, _loggerFactory, connectionString);
             }
             else
             {
@@ -91,7 +91,7 @@ namespace ParcelRegistry.Producer.Infrastructure.Modules
 
             var saslUserName = _configuration["Kafka:SaslUserName"];
             var saslPassword = _configuration["Kafka:SaslPassword"];
-            var bootstrapServers = _configuration["Kafka:BootstrapServers"]!;
+            var bootstrapServers = _configuration["Kafka:BootstrapServers"];
 
             builder
                 .RegisterProjectionMigrator<ProducerContextMigrationFactory>(
@@ -116,26 +116,6 @@ namespace ParcelRegistry.Producer.Infrastructure.Modules
                     }
 
                     return new ProducerMigrateProjections(new Producer(producerOptions));
-                }, connectedProjectionSettings)
-                .RegisterProjections<ProducerMigrateProjectionsV2, ProducerContext>(() =>
-                {
-                    var topic = $"{_configuration[ProducerMigrateProjectionsV2.TopicKey]}" ?? throw new ArgumentException($"Configuration has no value for {ProducerMigrateProjectionsV2.TopicKey}");
-                    var producerOptions = new ProducerOptions(
-                            new BootstrapServers(bootstrapServers),
-                            new Topic(topic),
-                            true,
-                            EventsJsonSerializerSettingsProvider.CreateSerializerSettings())
-                        .ConfigureEnableIdempotence();
-
-                    if (!string.IsNullOrEmpty(saslUserName)
-                        && !string.IsNullOrEmpty(saslPassword))
-                    {
-                        producerOptions.ConfigureSaslAuthentication(new SaslAuthentication(
-                            saslUserName,
-                            saslPassword));
-                    }
-
-                    return new ProducerMigrateProjectionsV2(new Producer(producerOptions));
                 }, connectedProjectionSettings);
         }
 
