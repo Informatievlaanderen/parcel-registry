@@ -124,11 +124,6 @@ namespace ParcelRegistry.Tests
             {
                 new ProducerMigrateProjections(Mock.Of<IProducer>())
             }];
-
-            yield return [new List<ConnectedProjection<ParcelRegistry.Producer.Ldes.ProducerContext>>
-            {
-                new ParcelRegistry.Producer.Ldes.ProducerProjections(Mock.Of<IProducer>(), "", new JsonSerializerSettings())
-            }];
         }
 
         private void AssertHandleEvents<T>(List<ConnectedProjection<T>> projectionsToTest, IList<Type>? eventsToExclude = null)
