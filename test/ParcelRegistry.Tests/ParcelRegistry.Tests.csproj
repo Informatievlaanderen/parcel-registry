@@ -6,7 +6,6 @@
     <ProjectReference Include="..\..\src\ParcelRegistry.Api.BackOffice\ParcelRegistry.Api.BackOffice.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Consumer.Address\ParcelRegistry.Consumer.Address.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Importer.Grb\ParcelRegistry.Importer.Grb.csproj" />
-    <ProjectReference Include="..\..\src\ParcelRegistry.Producer.Ldes\ParcelRegistry.Producer.Ldes.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Producer.Snapshot.Oslo\ParcelRegistry.Producer.Snapshot.Oslo.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Producer\ParcelRegistry.Producer.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Projections.BackOffice\ParcelRegistry.Projections.BackOffice.csproj" />

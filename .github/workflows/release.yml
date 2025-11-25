@@ -198,22 +198,6 @@ jobs:
       prerestore-script: ./pre-restore.sh
     secrets: inherit
 
-  build-producer-ldes:
-    name: Build Producer Ldes
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
-    needs: [ set-release-version ]
-    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
-    with:
-      registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/parcel-registry
-      image-file: pr-producer-ldes-image.tar
-      image-name: producer-ldes
-      test-project: ParcelRegistry.Tests
-      build-project: ParcelRegistry.Producer.Ldes
-      semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: ${{ vars.VBR_DOTNET_VERSION_9 }}
-      prerestore-script: ./pre-restore.sh
-    secrets: inherit
-
   build-importer-grb:
     name: Build Parcel Importer Grb
     uses: Informatievlaanderen/build-pipeline/.github/workflows/build-image-v2.yml@main
@@ -306,7 +290,6 @@ jobs:
       build-consumer-address,
       build-producer,
       build-producer-snapshot-oslo,
-      build-producer-ldes,
       build-lambda-backoffice,
       build-importer-grb,
       build-snapshot-verifier
@@ -516,7 +499,6 @@ jobs:
           'consumer-address',
           'producer',
           'producer-snapshot-oslo',
-          'producer-ldes',
           'importer-grb',
           'snapshot-verifier',
           'lambda-sqsbackofficefunction'
@@ -590,7 +572,6 @@ jobs:
           'parcel-consumer-address',
           'parcel-producer',
           'parcel-producer-snapshot-oslo',
-          'parcel-producer-ldes',
           'parcel-projections',
           'parcel-projections-backoffice',
           'parcel-last-changed-list'
@@ -728,7 +709,6 @@ jobs:
           'parcel-consumer-address',
           'parcel-producer',
           'parcel-producer-snapshot-oslo',
-          'parcel-producer-ldes',
           'parcel-projections',
           'parcel-projections-backoffice',
           'parcel-last-changed-list'

@@ -1822,21 +1822,6 @@
           "ParcelRegistry.Infrastructure": "[1.0.0, )"
         }
       },
-      "parcelregistry.producer.ldes": {
-        "type": "Project",
-        "dependencies": {
-          "AspNetCore.HealthChecks.SqlServer": "[9.0.0, )",
-          "Be.Vlaanderen.Basisregisters.Api": "[24.0.0, )",
-          "Be.Vlaanderen.Basisregisters.EventHandling.Autofac": "[7.0.0, )",
-          "Be.Vlaanderen.Basisregisters.GrAr.Legacy": "[22.0.0, )",
-          "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer": "[6.0.3, )",
-          "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
-          "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )",
-          "Be.Vlaanderen.Basisregisters.Projector": "[16.0.0, )",
-          "Datadog.Trace.Bundle": "[3.15.0, )",
-          "ParcelRegistry.Infrastructure": "[1.0.0, )"
-        }
-      },
       "parcelregistry.producer.snapshot.oslo": {
         "type": "Project",
         "dependencies": {
