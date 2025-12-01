@@ -1,3 +1,10 @@
+# [6.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.3.0...v6.4.0) (2025-12-01)
+
+
+### Features
+
+* remove ldes producer GAWR-7170 ([e111086](https://github.com/informatievlaanderen/parcel-registry/commit/e111086d98b61ac6a44c1c1d6e0728abfc89fdfa))
+
 # [6.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.2.0...v6.3.0) (2025-09-17)
 
 
