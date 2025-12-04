@@ -8,5 +8,6 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure.Options
         public string AdresDetailUrl { get; set; }
         public string ContextUrlList { get; set; }
         public string ContextUrlDetail { get; set; }
+        public string ParcelDetailBuildingsLink { get; set; }
     }
 }

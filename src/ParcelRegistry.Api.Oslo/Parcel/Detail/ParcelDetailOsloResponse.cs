@@ -60,6 +60,13 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Detail
         [JsonProperty(Required = Required.DisallowNull)]
         public List<PerceelDetailAdres> Adressen { get; set; }
 
+        /// <summary>
+        /// De hyperlinks die gerelateerd zijn aan het perceel.
+        /// </summary>
+        [DataMember(Name = "_links", Order = 99)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public ParcelDetailOsloResponseLinks? Links { get; set; }
+
         public ParcelDetailOsloResponse(
             string naamruimte,
             string contextUrlDetail,
@@ -67,7 +74,9 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Detail
             string caPaKey,
             DateTimeOffset version,
             List<string> addressPersistentLocalIds,
-            string adresDetailUrl)
+            string adresDetailUrl,
+            string selfDetailUrl,
+            string buildingsLinkUrl)
         {
             Context = contextUrlDetail;
             Identificator = new PerceelIdentificator(naamruimte, caPaKey, version);
@@ -78,6 +87,36 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Detail
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(x => PerceelDetailAdres.Create(x, new Uri(string.Format(adresDetailUrl, x))))
                 .ToList();
+
+            Links = new ParcelDetailOsloResponseLinks(
+                self: new Link
+                {
+                    Href = new Uri(string.Format(selfDetailUrl, caPaKey))
+                },
+                gebouwen: new Link
+                {
+                    Href = new Uri(string.Format(buildingsLinkUrl, caPaKey))
+                });
+        }
+    }
+
+    [DataContract(Name = "_links", Namespace = "")]
+    public class ParcelDetailOsloResponseLinks
+    {
+        [DataMember(Name = "self")]
+        [JsonProperty(Required = Required.DisallowNull)]
+        public Link Self { get; set; }
+
+        [DataMember(Name = "gebouwen", EmitDefaultValue = false)]
+        [JsonProperty(Required = Required.Default, DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public Link? Gebouwen { get; set; }
+
+        public ParcelDetailOsloResponseLinks(
+            Link self,
+            Link? gebouwen = null)
+        {
+            Self = self;
+            Gebouwen = gebouwen;
         }
     }
 
@@ -96,7 +135,9 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Detail
                 "11001B0001-00S000",
                 DateTimeOffset.Now.ToExampleOffset(),
                 new List<string> { "200001" },
-                _responseOptions.AdresDetailUrl);
+                _responseOptions.AdresDetailUrl,
+                _responseOptions.DetailUrl,
+                _responseOptions.ParcelDetailBuildingsLink);
     }
 
     public class ParcelNotFoundResponseExamples : IExamplesProvider<ProblemDetails>
