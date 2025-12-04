@@ -1,3 +1,10 @@
+## [6.5.1](https://github.com/informatievlaanderen/parcel-registry/compare/v6.5.0...v6.5.1) (2025-12-04)
+
+
+### Bug Fixes
+
+* **oslo:** docs detail links ([2c94cbc](https://github.com/informatievlaanderen/parcel-registry/commit/2c94cbc3ae75d54327fc1f0911f5eb6ba9007b1f))
+
 # [6.5.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.4.0...v6.5.0) (2025-12-04)
 
 
