@@ -100,6 +100,9 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Detail
         }
     }
 
+    /// <summary>
+    /// De hyperlinks die gerelateerd zijn aan het perceel.
+    /// </summary>
     [DataContract(Name = "_links", Namespace = "")]
     public class ParcelDetailOsloResponseLinks
     {
