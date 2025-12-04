@@ -71,7 +71,7 @@
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Extracts" Version="22.3.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Shaperon" Version="11.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.TicketingService.Abstractions" Version="3.0.0" />
-        <PackageVersion Include="Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy" Version="3.0.0" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy" Version="3.2.4" />
 
         <PackageVersion Include="Serilog" Version="4.2.0" />
         <PackageVersion Include="Serilog.Settings.Configuration" Version="9.0.0" />
