@@ -1,3 +1,10 @@
+# [6.5.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.4.0...v6.5.0) (2025-12-04)
+
+
+### Features
+
+* **oslo:** add parcel links ([1a335b0](https://github.com/informatievlaanderen/parcel-registry/commit/1a335b03b69ab59cc266e4e3cde71c395d9307c6))
+
 # [6.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.3.0...v6.4.0) (2025-12-01)
 
 
