@@ -51,7 +51,9 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Detail
                     .Select(x => x.AddressPersistentLocalId.ToString())
                     .OrderBy(x => x)
                     .ToList(),
-                _responseOptions.Value.AdresDetailUrl);
+                _responseOptions.Value.AdresDetailUrl,
+                _responseOptions.Value.DetailUrl,
+                _responseOptions.Value.ParcelDetailBuildingsLink);
 
             return new ParcelDetailOsloResponseWithEtag(response, parcel.LastEventHash);
         }
