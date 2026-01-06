@@ -1,26 +1,23 @@
 namespace ParcelRegistry.Tests
 {
-    using System;
     using System.Collections.Generic;
     using Autofac;
     using AutoFixture;
+    using BackOffice;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling;
-    using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Fixtures;
     using Infrastructure.Modules;
     using Microsoft.Extensions.Configuration;
-    using Newtonsoft.Json;
-    using Parcel;
-    using BackOffice;
-    using Consumer.Address;
     using NetTopologySuite;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Geometries.Implementation;
     using NetTopologySuite.IO;
+    using Newtonsoft.Json;
+    using Parcel;
     using Xunit.Abstractions;
 
     public class ParcelRegistryTest : AutofacBasedTest
@@ -47,6 +44,7 @@ namespace ParcelRegistry.Tests
             Fixture.Customize(new WithExtendedWkbGeometryPoint());
 
             Fixture.Customize(new SetProvenanceImplementationsCallSetProvenance());
+            Fixture.Customize(new RandomBooleanSequenceCustomization());
             Fixture.Register(() => (ISnapshotStrategy)NoSnapshotStrategy.Instance);
 
             _wkbReader = new WKBReader(
