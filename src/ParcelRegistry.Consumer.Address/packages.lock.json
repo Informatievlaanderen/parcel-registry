@@ -1502,7 +1502,7 @@
           "Be.Vlaanderen.Basisregisters.Api": "[24.0.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Edit": "[22.3.0, )",
           "Be.Vlaanderen.Basisregisters.Sqs": "[4.0.1, )",
-          "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": "[3.0.0, )",
+          "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": "[3.2.4, )",
           "MediatR.Contracts": "[2.0.1, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[9.0.5, )"
         }
@@ -1775,11 +1775,11 @@
       },
       "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": {
         "type": "CentralTransitive",
-        "requested": "[3.0.0, )",
-        "resolved": "3.0.0",
-        "contentHash": "c5WHaHXwXnJeZ9AvnBxJA1EMGjnVgFz3qnJF5KZ9hZt3m9yKKmDDX59iD7C/DgzjL1quUMy1F2GEGXJjZxjRZg==",
+        "requested": "[3.2.4, )",
+        "resolved": "3.2.4",
+        "contentHash": "QzKLjneSkzp9Cewm1rNaWFJ2TW+YHcJ4Jbc5Qx4ItOF+9pN9kugxaxVfU6xor9tfPK63CYjaK/jhb3eT6fhCdw==",
         "dependencies": {
-          "System.Text.Json": "9.0.3"
+          "System.Text.Json": "9.0.5"
         }
       },
       "Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor": {
