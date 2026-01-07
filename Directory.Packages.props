@@ -12,7 +12,7 @@
 
         <PackageVersion Include="Autofac" Version="8.2.1" />
 
-        <PackageVersion Include="Datadog.Trace.Bundle" Version="3.15.0" />
+        <PackageVersion Include="Datadog.Trace.Bundle" Version="3.34.0" />
 
         <PackageVersion Include="Destructurama.JsonNet" Version="4.0.2" />
         <PackageVersion Include="Dapper" Version="2.1.66" />
