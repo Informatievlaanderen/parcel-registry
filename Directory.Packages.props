@@ -5,7 +5,7 @@
         <CentralPackageVersionOverrideEnabled>false</CentralPackageVersionOverrideEnabled>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
+        <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.19" />
 
         <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
         <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
