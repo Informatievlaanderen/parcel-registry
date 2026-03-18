@@ -1,6 +1,6 @@
 ﻿namespace ParcelRegistry.Tests
 {
-    using Consumer.Address;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using NetTopologySuite.Geometries;
     using NetTopologySuite.Geometries.Implementation;
     using NetTopologySuite.IO;
@@ -84,7 +84,8 @@
 
         public static ExtendedWkbGeometry ToExtendedWkbGeometry(MultiPolygon multiPolygon)
         {
-            return ExtendedWkbGeometry.CreateEWkb(new WKBWriter().Write(multiPolygon));
+            multiPolygon.SRID = SystemReferenceId.SridLambert72;
+            return ExtendedWkbGeometry.CreateEWkb(multiPolygon)!;
         }
 
         private static readonly WKBWriter WkbWriter = new WKBWriter { Strict = false, HandleSRID = true };
@@ -94,16 +95,16 @@
         static GeometryHelpers()
         {
             var point = "POINT (141299 185188)";
-            var geometry = new WKTReader { DefaultSRID = SpatialReferenceSystemId.Lambert72 }.Read(point);
+            var geometry = new WKTReader { DefaultSRID = SystemReferenceId.SridLambert72 }.Read(point);
             ExampleWkb = geometry.AsBinary();
-            geometry.SRID = SpatialReferenceSystemId.Lambert72;
+            geometry.SRID = SystemReferenceId.SridLambert72;
             ExampleExtendedWkb = WkbWriter.Write(geometry);
         }
 
         public static ExtendedWkbGeometry CreateFromWkt(string wkt)
         {
-            var geometry = new WKTReader { DefaultSRID = SpatialReferenceSystemId.Lambert72 }.Read(wkt);
-            return ExtendedWkbGeometry.CreateEWkb(WkbWriter.Write(geometry));
+            var geometry = new WKTReader { DefaultSRID = SystemReferenceId.SridLambert72 }.Read(wkt);
+            return ExtendedWkbGeometry.CreateEWkb(geometry);
         }
 
         public static GMLReader CreateGmlReader() =>
@@ -118,7 +119,7 @@
             var gmlReader = CreateGmlReader();
             var geometry = gmlReader.Read(gml);
 
-            geometry.SRID = SpatialReferenceSystemId.Lambert72;
+            geometry.SRID = SystemReferenceId.SridLambert72;
 
             return new ExtendedWkbGeometry(geometry.AsBinary());
         }
@@ -128,7 +129,7 @@
             var gmlReader = CreateGmlReader();
             var geometry = gmlReader.Read(gml);
 
-            geometry.SRID = SpatialReferenceSystemId.Lambert72;
+            geometry.SRID = SystemReferenceId.SridLambert72;
 
             return geometry;
         }

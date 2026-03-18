@@ -3,8 +3,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
@@ -34,7 +32,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
         public ParcelDetailProjections()
         {
-            var wkbReader = WKBReaderFactory.Create();
+            var wkbReader = WKBReaderFactory.CreateForLambert72();
 
             (string gmlType, string gml) ToGml(string extendedWkbGeometry)
             {

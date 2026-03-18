@@ -1,5 +1,6 @@
 ﻿namespace ParcelRegistry.Projections.Integration.Converters
 {
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
     using NetTopologySuite.Geometries;
     using Parcel;
@@ -8,7 +9,7 @@
     {
         public static Geometry MapExtendedWkbGeometryToGeometry(string extendedWkbGeometry)
         {
-            var geometry = WKBReaderFactory.Create().Read(new ExtendedWkbGeometry(extendedWkbGeometry));
+            var geometry = WKBReaderFactory.CreateForLambert72().Read(new ExtendedWkbGeometry(extendedWkbGeometry));
             return geometry;
         }
 

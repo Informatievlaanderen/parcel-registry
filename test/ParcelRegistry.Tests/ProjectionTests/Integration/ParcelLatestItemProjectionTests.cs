@@ -4,6 +4,7 @@
     using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.Utilities;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
@@ -40,7 +41,7 @@
             await Sut.Given(message)
                 .Then(async context =>
                 {
-                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+                    var geometry = WKBReaderFactory.CreateForLambert72().Read(message.ExtendedWkbGeometry.ToByteArray());
 
                     var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();
@@ -74,7 +75,7 @@
             await Sut.Given(message)
                 .Then(async context =>
                 {
-                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+                    var geometry = WKBReaderFactory.CreateForLambert72().Read(message.ExtendedWkbGeometry.ToByteArray());
 
                     var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();
@@ -105,7 +106,7 @@
                 .Given(parcelWasImported, message)
                 .Then(async context =>
                 {
-                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+                    var geometry = WKBReaderFactory.CreateForLambert72().Read(message.ExtendedWkbGeometry.ToByteArray());
 
                     var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();
@@ -125,7 +126,7 @@
                 .Given(_fixture.Create<ParcelWasImported>(), message)
                 .Then(async context =>
                 {
-                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+                    var geometry = WKBReaderFactory.CreateForLambert72().Read(message.ExtendedWkbGeometry.ToByteArray());
 
                     var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
                     latestItem.Should().NotBeNull();

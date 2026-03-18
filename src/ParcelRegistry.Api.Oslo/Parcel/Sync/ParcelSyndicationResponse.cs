@@ -8,6 +8,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
     using System.Threading.Tasks;
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Syndication;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
@@ -26,7 +27,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
 
     public static class ParcelSyndicationResponse
     {
-        private static readonly WKBReader WkbReader = WKBReaderFactory.Create();
+        private static readonly WKBReader WkbReader = WKBReaderFactory.CreateForLambert72();
 
         public static async Task WriteParcel(
             this ISyndicationFeedWriter writer,

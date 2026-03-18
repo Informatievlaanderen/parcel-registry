@@ -49,7 +49,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 .Given(new Envelope<ParcelWasMigrated>(new Envelope(message, metadata)))
                 .Then(async context =>
                 {
-                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+                    var geometry = WKBReaderFactory.CreateForLambert72().Read(message.ExtendedWkbGeometry.ToByteArray());
 
                     var parcelDetailV2 = await context.ParcelDetails.FindAsync(message.ParcelId);
                     parcelDetailV2.Should().NotBeNull();
@@ -80,7 +80,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 .Given(new Envelope<ParcelWasImported>(new Envelope(message, metadata)))
                 .Then(async context =>
                 {
-                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+                    var geometry = WKBReaderFactory.CreateForLambert72().Read(message.ExtendedWkbGeometry.ToByteArray());
 
                     var parcelDetailV2 = await context.ParcelDetails.FindAsync(message.ParcelId);
                     parcelDetailV2.Should().NotBeNull();

@@ -5,6 +5,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Builders;
     using FluentAssertions;
     using NetTopologySuite.Geometries;
@@ -81,7 +82,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
         {
             var command = new MigrateParcelBuilder(Fixture)
                 .WithStatus(ParcelStatus.Realized)
-                .WithExtendedWkbGeometry(GeometryHelpers.ToExtendedWkbGeometry(new MultiPolygon(new[] { GeometryHelpers.InValidPolygon })))
+                .WithExtendedWkbGeometry(GeometryHelpers.ToExtendedWkbGeometry(new MultiPolygon(new[] { GeometryHelpers.InValidPolygon, GeometryHelpers.ValidPolygon }){SRID = SystemReferenceId.SridLambert72}))
                 .Build();
 
             Assert(new Scenario()
