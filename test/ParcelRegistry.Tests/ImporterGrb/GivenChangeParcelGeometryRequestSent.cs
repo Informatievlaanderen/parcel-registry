@@ -85,7 +85,7 @@
             var parcel = await parcels.GetOptionalAsync(new ParcelStreamId(parcelId));
 
             parcel.Should().NotBeNull();
-            parcel.Value.Geometry.Should().Be(ExtendedWkbGeometry.CreateEWkb(changeParcelGeometryRequest.GrbParcel.Geometry.ToBinary()));
+            parcel.Value.Geometry.Should().Be(ExtendedWkbGeometry.CreateEWkb(changeParcelGeometryRequest.GrbParcel.Geometry));
 
             parcel.Value.AddressPersistentLocalIds.Count.Should().Be(2);
             parcel.Value.AddressPersistentLocalIds.Should().Contain(addressPersistentLocalId1);

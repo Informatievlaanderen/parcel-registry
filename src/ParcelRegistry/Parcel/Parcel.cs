@@ -4,6 +4,7 @@ namespace ParcelRegistry.Parcel
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Events;
     using Exceptions;
     using NetTopologySuite.Geometries;
@@ -20,7 +21,7 @@ namespace ParcelRegistry.Parcel
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
             ExtendedWkbGeometry extendedWkbGeometry)
         {
-            GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
+            GuardPolygon(WKBReaderFactory.CreateForLambert72().Read(extendedWkbGeometry));
 
             var newParcel = parcelFactory.Create();
             newParcel.ApplyChange(
@@ -43,7 +44,7 @@ namespace ParcelRegistry.Parcel
             ExtendedWkbGeometry extendedWkbGeometry,
             List<AddressPersistentLocalId> addressesToAttach)
         {
-            GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
+            GuardPolygon(WKBReaderFactory.CreateForLambert72().Read(extendedWkbGeometry));
 
             var newParcel = parcelFactory.Create();
 
@@ -72,7 +73,7 @@ namespace ParcelRegistry.Parcel
             List<AddressPersistentLocalId> addressesToAttach)
         {
             GuardParcelNotRemoved();
-            GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
+            GuardPolygon(WKBReaderFactory.CreateForLambert72().Read(extendedWkbGeometry));
 
             ApplyChange(
                 new ParcelWasCorrectedFromRetiredToRealized(
@@ -110,7 +111,7 @@ namespace ParcelRegistry.Parcel
         public void ChangeGeometry(ExtendedWkbGeometry extendedWkbGeometry, List<AddressPersistentLocalId> addresses)
         {
             GuardParcelNotRemoved();
-            GuardPolygon(WKBReaderFactory.Create().Read(extendedWkbGeometry));
+            GuardPolygon(WKBReaderFactory.CreateForLambert72().Read(extendedWkbGeometry));
 
             if (Geometry == extendedWkbGeometry)
             {

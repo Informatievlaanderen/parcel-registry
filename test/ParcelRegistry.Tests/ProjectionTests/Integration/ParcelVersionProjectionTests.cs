@@ -6,6 +6,7 @@
     using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Pipes;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -60,7 +61,7 @@
             await Sut.Given(new Envelope<ParcelWasMigrated>(new Envelope(message, metadata)))
                 .Then(async context =>
                 {
-                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+                    var geometry = WKBReaderFactory.CreateForLambert72().Read(message.ExtendedWkbGeometry.ToByteArray());
 
                     var parcelVersions = await context.ParcelVersions.FindAsync(position, message.ParcelId);
                     parcelVersions.Should().NotBeNull();
@@ -106,7 +107,7 @@
             await Sut.Given(new Envelope<ParcelWasImported>(new Envelope(message, metadata)))
                 .Then(async context =>
                 {
-                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+                    var geometry = WKBReaderFactory.CreateForLambert72().Read(message.ExtendedWkbGeometry.ToByteArray());
 
                     var parcelVersions = await context.ParcelVersions.FindAsync(position, message.ParcelId);
                     parcelVersions.Should().NotBeNull();
@@ -159,7 +160,7 @@
                     new Envelope<ParcelGeometryWasChanged>(new Envelope(message, messageMetadata)))
                 .Then(async context =>
                 {
-                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+                    var geometry = WKBReaderFactory.CreateForLambert72().Read(message.ExtendedWkbGeometry.ToByteArray());
 
                     var parcelVersions = await context.ParcelVersions.FindAsync(position + 1, message.ParcelId);
                     parcelVersions.Should().NotBeNull();
@@ -198,7 +199,7 @@
                     new Envelope<ParcelWasCorrectedFromRetiredToRealized>(new Envelope(message, messageMetadata)))
                 .Then(async context =>
                 {
-                    var geometry = WKBReaderFactory.Create().Read(message.ExtendedWkbGeometry.ToByteArray());
+                    var geometry = WKBReaderFactory.CreateForLambert72().Read(message.ExtendedWkbGeometry.ToByteArray());
 
                     var parcelVersions = await context.ParcelVersions.FindAsync(position + 1, message.ParcelId);
                     parcelVersions.Should().NotBeNull();

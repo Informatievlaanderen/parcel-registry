@@ -1,7 +1,6 @@
 ﻿namespace ParcelRegistry.Api.BackOffice.Abstractions.Extensions
 {
-    using NetTopologySuite.Geometries;
-    using NetTopologySuite.Geometries.Implementation;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using NetTopologySuite.IO.GML2;
     using Parcel;
 
@@ -14,14 +13,10 @@
 
             geometry.SRID = ExtendedWkbGeometry.SridLambert72;
 
-            return ExtendedWkbGeometry.CreateEWkb(geometry.AsBinary());
+            return ExtendedWkbGeometry.CreateEWkb(geometry)!;
         }
 
         public static GMLReader CreateGmlReader() =>
-            new GMLReader(
-                new GeometryFactory(
-                    new PrecisionModel(PrecisionModels.Floating),
-                    ExtendedWkbGeometry.SridLambert72,
-                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY)));
+            new GMLReader(NtsGeometryFactory.CreateGeometryFactoryLambert72());
     }
 }

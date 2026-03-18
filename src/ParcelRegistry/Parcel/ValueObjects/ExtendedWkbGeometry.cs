@@ -2,6 +2,7 @@
 {
     using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using NetTopologySuite;
     using NetTopologySuite.Geometries;
@@ -11,9 +12,9 @@
 
     public sealed class ExtendedWkbGeometry : ByteArrayValueObject<ExtendedWkbGeometry>
     {
-        public const int SridLambert72 = 31370;
+        public const int SridLambert72 = SystemReferenceId.SridLambert72;
 
-        private static readonly WKBReader WkbReader = WKBReaderFactory.Create();
+        private static readonly WKBWriter WkbWriter = new WKBWriter() { Strict = false, HandleSRID = true };
 
         [JsonConstructor]
         public ExtendedWkbGeometry(byte[] ewkbBytes) : base(ewkbBytes) { }
@@ -22,34 +23,12 @@
 
         public override string ToString() => Value.ToHexString();
 
-        public static ExtendedWkbGeometry? CreateEWkb(byte[]? wkb)
+        public static ExtendedWkbGeometry? CreateEWkb(Geometry geometry)
         {
-            if (wkb == null)
-            {
+            if (geometry.SRID <= 0)
                 return null;
-            }
-            try
-            {
-                var geometry = WkbReader.Read(wkb);
-                geometry.SRID = SridLambert72;
-                var wkbWriter = new WKBWriter { Strict = false, HandleSRID = true };
-                return new ExtendedWkbGeometry(wkbWriter.Write(geometry));
-            }
-            catch (ArgumentException)
-            {
-                return null;
-            }
-        }
 
-        public static ExtendedWkbGeometry CreateDummyForRetiredParcel()
-        {
-            var geometry = new WKTReader(new NtsGeometryServices(
-                    new DotSpatialAffineCoordinateSequenceFactory(Ordinates.XY),
-                    new PrecisionModel(PrecisionModels.Floating),
-                    SridLambert72))
-                .Read("POLYGON ((0 0,0 1,1 1,1 0,0 0))");
-
-            return CreateEWkb(geometry.AsBinary())!;
+            return new ExtendedWkbGeometry(WkbWriter.Write(geometry));
         }
     }
 }
