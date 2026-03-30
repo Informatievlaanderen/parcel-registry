@@ -61,6 +61,7 @@
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Projector" Version="16.0.0" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.Crab" Version="5.0.1" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Common" Version="22.8.1" />
+        <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed" Version="22.8.1" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Contracts" Version="22.8.1" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Edit" Version="22.8.1" />
         <PackageVersion Include="Be.Vlaanderen.Basisregisters.GrAr.Legacy" Version="22.8.1" />
