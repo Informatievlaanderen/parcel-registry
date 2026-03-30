@@ -35,6 +35,7 @@
     <ProjectReference Include="..\ParcelRegistry.Producer\ParcelRegistry.Producer.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Producer.Snapshot.Oslo\ParcelRegistry.Producer.Snapshot.Oslo.csproj" />
     <ProjectReference Include="..\ParcelRegistry.Importer.Grb\ParcelRegistry.Importer.Grb.csproj" />
+    <ProjectReference Include="..\ParcelRegistry.Projections.Feed\ParcelRegistry.Projections.Feed.csproj" />
   </ItemGroup>
 
   <ItemGroup>
