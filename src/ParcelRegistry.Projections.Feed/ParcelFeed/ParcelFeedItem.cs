@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Projections.Feed.ParcelFeed
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,9 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
         public int Page { get; set; }
         public long Position { get; set; }
 
+        public Guid ParcelId { get; set; }
+        public string CaPaKey { get; set; } = null!;
+
         public Application? Application { get; set; }
         public Modification? Modification { get; set; }
         public string? Operator { get; set; }
@@ -20,23 +24,11 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
         private ParcelFeedItem() { }
 
-        public ParcelFeedItem(long position, int page) : this()
+        public ParcelFeedItem(long position, int page, Guid parcelId, string caPaKey) : this()
         {
             Page = page;
             Position = position;
-        }
-    }
-
-    public class ParcelFeedItemParcel
-    {
-        public long FeedItemId { get; set; }
-        public string CaPaKey { get; set; } = null!;
-
-        private ParcelFeedItemParcel() { }
-
-        public ParcelFeedItemParcel(long feedItemId, string caPaKey) : this()
-        {
-            FeedItemId = feedItemId;
+            ParcelId = parcelId;
             CaPaKey = caPaKey;
         }
     }
@@ -54,6 +46,12 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             b.Property(x => x.Id)
                 .UseHiLo("ParcelFeedSequence", Schema.Feed);
 
+            b.Property(x => x.ParcelId)
+                .IsRequired();
+
+            b.Property(x => x.CaPaKey)
+                .IsRequired();
+
             b.Property(x => x.CloudEventAsString)
                 .HasColumnName("CloudEvent")
                 .IsRequired();
@@ -66,19 +64,6 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
             b.HasIndex(x => x.Position);
             b.HasIndex(x => x.Page);
-        }
-    }
-
-    public class ParcelFeedItemParcelConfiguration : IEntityTypeConfiguration<ParcelFeedItemParcel>
-    {
-        private const string TableName = "ParcelFeedItemParcels";
-
-        public void Configure(EntityTypeBuilder<ParcelFeedItemParcel> b)
-        {
-            b.ToTable(TableName, Schema.Feed)
-                .HasKey(x => new { x.FeedItemId, x.CaPaKey });
-
-            b.HasIndex(x => x.FeedItemId);
             b.HasIndex(x => x.CaPaKey);
         }
     }

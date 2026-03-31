@@ -13,6 +13,8 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Contract;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Options;
+    using Parcel;
     using Parcel.Events;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
@@ -21,6 +23,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
     public class ParcelFeedProjections : ConnectedProjection<FeedContext>
     {
         private readonly IChangeFeedService _changeFeedService;
+        private readonly string _addressNamespace;
 
         private static string MapStatus(string parcelStatus)
         {
@@ -32,18 +35,27 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             };
         }
 
-        public ParcelFeedProjections(IChangeFeedService changeFeedService)
+        private List<string> BuildAddressPuris(IEnumerable<int> addressPersistentLocalIds)
+        {
+            return addressPersistentLocalIds
+                .Select(id => $"{_addressNamespace}/{id}")
+                .ToList();
+        }
+
+        public ParcelFeedProjections(IChangeFeedService changeFeedService, IOptions<FeedOptions> options)
         {
             _changeFeedService = changeFeedService;
+            _addressNamespace = options.Value.AddressNamespace;
 
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
                 var status = MapStatus(message.Message.ParcelStatus);
+                var addressPersistentLocalIds = message.Message.AddressPersistentLocalIds.ToList();
 
                 var document = new ParcelDocument(
                     message.Message.CaPaKey,
                     status,
-                    message.Message.AddressPersistentLocalIds.ToList(),
+                    addressPersistentLocalIds,
                     message.Message.IsRemoved,
                     message.Message.Provenance.Timestamp);
 
@@ -52,6 +64,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 List<BaseRegistriesCloudEventAttribute> attributes =
                 [
                     new(ParcelAttributeNames.StatusName, null, status),
+                    new(ParcelAttributeNames.AdresIds, null, BuildAddressPuris(addressPersistentLocalIds)),
                 ];
 
                 await AddCloudEvent(message, document, context, attributes, ParcelEventTypes.CreateV1);
@@ -71,6 +84,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 List<BaseRegistriesCloudEventAttribute> attributes =
                 [
                     new(ParcelAttributeNames.StatusName, null, document.Document.Status),
+                    new(ParcelAttributeNames.AdresIds, null, new List<string>()),
                 ];
 
                 await AddCloudEvent(message, document, context, attributes, ParcelEventTypes.CreateV1);
@@ -114,51 +128,77 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             When<Envelope<ParcelAddressWasAttachedV2>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
+                var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.Document.AddressPersistentLocalIds.Add(message.Message.AddressPersistentLocalId);
+                var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
+                await AddCloudEvent(message, document, context,
+                [
+                    new(ParcelAttributeNames.AdresIds, oldAddressPuris, newAddressPuris),
+                ], ParcelEventTypes.UpdateV1);
             });
 
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
+                var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.Document.AddressPersistentLocalIds.Remove(message.Message.AddressPersistentLocalId);
+                var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
+                await AddCloudEvent(message, document, context,
+                [
+                    new(ParcelAttributeNames.AdresIds, oldAddressPuris, newAddressPuris),
+                ], ParcelEventTypes.UpdateV1);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRemoved>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
+                var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.Document.AddressPersistentLocalIds.Remove(message.Message.AddressPersistentLocalId);
+                var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
+                await AddCloudEvent(message, document, context,
+                [
+                    new(ParcelAttributeNames.AdresIds, oldAddressPuris, newAddressPuris),
+                ], ParcelEventTypes.UpdateV1);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRejected>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
+                var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.Document.AddressPersistentLocalIds.Remove(message.Message.AddressPersistentLocalId);
+                var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
+                await AddCloudEvent(message, document, context,
+                [
+                    new(ParcelAttributeNames.AdresIds, oldAddressPuris, newAddressPuris),
+                ], ParcelEventTypes.UpdateV1);
             });
 
             When<Envelope<ParcelAddressWasDetachedBecauseAddressWasRetired>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
+                var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.Document.AddressPersistentLocalIds.Remove(message.Message.AddressPersistentLocalId);
+                var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
+                await AddCloudEvent(message, document, context,
+                [
+                    new(ParcelAttributeNames.AdresIds, oldAddressPuris, newAddressPuris),
+                ], ParcelEventTypes.UpdateV1);
             });
 
             When<Envelope<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
+                var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
 
                 document.Document.AddressPersistentLocalIds.Remove(message.Message.PreviousAddressPersistentLocalId);
                 if (!document.Document.AddressPersistentLocalIds.Contains(message.Message.NewAddressPersistentLocalId))
@@ -166,14 +206,19 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                     document.Document.AddressPersistentLocalIds.Add(message.Message.NewAddressPersistentLocalId);
                 }
 
+                var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
+                await AddCloudEvent(message, document, context,
+                [
+                    new(ParcelAttributeNames.AdresIds, oldAddressPuris, newAddressPuris),
+                ], ParcelEventTypes.UpdateV1);
             });
 
             When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
+                var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
 
                 document.Document.AddressPersistentLocalIds.Remove(message.Message.PreviousAddressPersistentLocalId);
                 if (!document.Document.AddressPersistentLocalIds.Contains(message.Message.NewAddressPersistentLocalId))
@@ -181,14 +226,19 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                     document.Document.AddressPersistentLocalIds.Add(message.Message.NewAddressPersistentLocalId);
                 }
 
+                var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
+                await AddCloudEvent(message, document, context,
+                [
+                    new(ParcelAttributeNames.AdresIds, oldAddressPuris, newAddressPuris),
+                ], ParcelEventTypes.UpdateV1);
             });
 
             When<Envelope<ParcelAddressesWereReaddressed>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
+                var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
 
                 foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
                 {
@@ -203,9 +253,13 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                     }
                 }
 
+                var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
+                await AddCloudEvent(message, document, context,
+                [
+                    new(ParcelAttributeNames.AdresIds, oldAddressPuris, newAddressPuris),
+                ], ParcelEventTypes.UpdateV1);
             });
         }
 
@@ -222,13 +276,13 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             ParcelDocument document,
             FeedContext context,
             List<BaseRegistriesCloudEventAttribute> attributes,
-            string eventType) where T : IMessage, IHasProvenance
+            string eventType) where T : IMessage, IHasProvenance, IHasParcelId
         {
             context.Entry(document).Property(x => x.Document).IsModified = true;
 
             var page = await context.CalculatePage();
 
-            var feedItem = new ParcelFeedItem(message.Position, page)
+            var feedItem = new ParcelFeedItem(message.Position, page, message.Message.ParcelId, document.CaPaKey)
             {
                 Application = message.Message.Provenance.Application,
                 Modification = message.Message.Provenance.Modification,
@@ -237,7 +291,6 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 Reason = message.Message.Provenance.Reason
             };
             await context.ParcelFeed.AddAsync(feedItem);
-            await context.ParcelFeedItemParcels.AddAsync(new ParcelFeedItemParcel(feedItem.Id, document.CaPaKey));
 
             var cloudEvent = _changeFeedService.CreateCloudEventWithData(
                 feedItem.Id,

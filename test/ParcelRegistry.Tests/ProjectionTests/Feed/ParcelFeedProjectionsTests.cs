@@ -15,6 +15,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
     using FluentAssertions;
     using Fixtures;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Options;
     using Moq;
     using Newtonsoft.Json;
     using Parcel;
@@ -27,6 +28,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
     public sealed class ParcelFeedProjectionsTests
     {
+        private const string AddressNamespace = "https://data.vlaanderen.be/id/adres";
+
         private readonly Fixture _fixture;
         private readonly FeedContext _feedContext;
 
@@ -38,9 +41,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
             ChangeFeedServiceMock = new Mock<IChangeFeedService>();
             _feedContext = CreateContext();
 
+            var feedOptions = new OptionsWrapper<FeedOptions>(new FeedOptions { AddressNamespace = AddressNamespace });
+
             Sut = new ConnectedProjectionTest<FeedContext, ParcelFeedProjections>(
                 () => _feedContext,
-                () => new ParcelFeedProjections(ChangeFeedServiceMock.Object));
+                () => new ParcelFeedProjections(ChangeFeedServiceMock.Object, feedOptions));
 
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
@@ -75,6 +80,12 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var feedItem = await FindFeedItemByCaPaKey(context, parcelWasMigrated.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelWasMigrated);
+                    feedItem!.ParcelId.Should().Be(parcelWasMigrated.ParcelId);
+                    feedItem.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
+
+                    var expectedAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .ToList();
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -86,7 +97,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == MapStatus(parcelWasMigrated.ParcelStatus))),
+                                               && a.NewValue!.ToString() == MapStatus(parcelWasMigrated.ParcelStatus))
+                                && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -116,6 +128,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var feedItem = await FindFeedItemByCaPaKey(context, parcelWasImported.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelWasImported);
+                    feedItem!.ParcelId.Should().Be(parcelWasImported.ParcelId);
+                    feedItem.CaPaKey.Should().Be(parcelWasImported.CaPaKey);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -127,7 +141,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == "Gerealiseerd")),
+                                               && a.NewValue!.ToString() == "Gerealiseerd")
+                                && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -264,6 +279,19 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasAttached.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasAttached);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasAttached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasAttached.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
                 });
         }
 
@@ -287,6 +315,19 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasDetached);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasDetached.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
                 });
         }
 
@@ -310,6 +351,19 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasDetached);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasDetached.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
                 });
         }
 
@@ -333,6 +387,19 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasDetached);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasDetached.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
                 });
         }
 
@@ -356,6 +423,19 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasDetached);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasDetached.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
                 });
         }
 
@@ -380,6 +460,19 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasReplaced.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasReplaced);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasReplaced.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasReplaced.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
                 });
         }
 
@@ -404,6 +497,19 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasReplaced.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasReplaced);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasReplaced.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasReplaced.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
                 });
         }
 
@@ -437,6 +543,19 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressesWereReaddressed.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressesWereReaddressed);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressesWereReaddressed.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressesWereReaddressed.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
                 });
         }
 
@@ -477,25 +596,15 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
         private static async Task<ParcelFeedItem?> FindFeedItemByCaPaKey(FeedContext context, string caPaKey)
         {
-            var feedItemParcel = await context.ParcelFeedItemParcels
+            return await context.ParcelFeed
                 .Where(x => x.CaPaKey == caPaKey)
                 .SingleOrDefaultAsync();
-
-            if (feedItemParcel is null)
-                return null;
-
-            return await context.ParcelFeed.SingleOrDefaultAsync(x => x.Id == feedItemParcel.FeedItemId);
         }
 
         private static async Task<ParcelFeedItem> FindLastFeedItemByCaPaKey(FeedContext context, string caPaKey)
         {
-            var feedItemIds = await context.ParcelFeedItemParcels
-                .Where(x => x.CaPaKey == caPaKey)
-                .Select(x => x.FeedItemId)
-                .ToListAsync();
-
             return await context.ParcelFeed
-                .Where(x => feedItemIds.Contains(x.Id))
+                .Where(x => x.CaPaKey == caPaKey)
                 .OrderBy(x => x.Id)
                 .LastAsync();
         }

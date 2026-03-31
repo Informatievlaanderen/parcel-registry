@@ -14,8 +14,6 @@ namespace ParcelRegistry.Projections.Feed
 
         public DbSet<ParcelFeedItem> ParcelFeed => Set<ParcelFeedItem>();
 
-        public DbSet<ParcelFeedItemParcel> ParcelFeedItemParcels => Set<ParcelFeedItemParcel>();
-
         public DbSet<ParcelDocument> ParcelDocuments => Set<ParcelDocument>();
 
         // This needs to be here to please EF
@@ -38,7 +36,6 @@ namespace ParcelRegistry.Projections.Feed
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new ParcelFeedConfiguration());
-            modelBuilder.ApplyConfiguration(new ParcelFeedItemParcelConfiguration());
             modelBuilder.ApplyConfiguration(new ParcelDocumentConfiguration(_jsonSerializerSettings));
         }
     }

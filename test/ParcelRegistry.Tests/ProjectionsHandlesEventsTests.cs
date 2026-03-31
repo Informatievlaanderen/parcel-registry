@@ -130,7 +130,7 @@ namespace ParcelRegistry.Tests
 
             yield return [new List<ConnectedProjection<FeedContext>>
             {
-                new ParcelFeedProjections(Mock.Of<IChangeFeedService>())
+                new ParcelFeedProjections(Mock.Of<IChangeFeedService>(), new OptionsWrapper<FeedOptions>(new FeedOptions()))
             }];
         }
 
