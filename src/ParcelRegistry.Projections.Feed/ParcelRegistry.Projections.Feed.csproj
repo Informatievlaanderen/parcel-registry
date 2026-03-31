@@ -15,6 +15,7 @@
 
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Common" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Oslo" />
 
     <PackageReference Include="SourceLink.Embed.AllSourceFiles" PrivateAssets="all" />
     <PackageReference Include="SourceLink.Copy.PdbFiles" PrivateAssets="all" />

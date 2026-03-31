@@ -8,44 +8,25 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Contract;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Options;
     using Parcel;
     using Parcel.Events;
-    using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
     [ConnectedProjectionName("Feed endpoint percelen")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor de percelen cloudevent feed voorziet.")]
     public class ParcelFeedProjections : ConnectedProjection<FeedContext>
     {
         private readonly IChangeFeedService _changeFeedService;
-        private readonly string _addressNamespace;
 
-        private static string MapStatus(string parcelStatus)
-        {
-            return parcelStatus switch
-            {
-                "Realized" => "Gerealiseerd",
-                "Retired" => "Gehistoreerd",
-                _ => parcelStatus
-            };
-        }
-
-        private List<string> BuildAddressPuris(IEnumerable<int> addressPersistentLocalIds)
-        {
-            return addressPersistentLocalIds
-                .Select(id => $"{_addressNamespace}/{id}")
-                .ToList();
-        }
-
-        public ParcelFeedProjections(IChangeFeedService changeFeedService, IOptions<FeedOptions> options)
+        public ParcelFeedProjections(IChangeFeedService changeFeedService)
         {
             _changeFeedService = changeFeedService;
-            _addressNamespace = options.Value.AddressNamespace;
 
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
@@ -53,6 +34,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 var addressPersistentLocalIds = message.Message.AddressPersistentLocalIds.ToList();
 
                 var document = new ParcelDocument(
+                    message.Message.ParcelId,
                     message.Message.CaPaKey,
                     status,
                     addressPersistentLocalIds,
@@ -73,8 +55,9 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             When<Envelope<ParcelWasImported>>(async (context, message, ct) =>
             {
                 var document = new ParcelDocument(
+                    message.Message.ParcelId,
                     message.Message.CaPaKey,
-                    MapStatus("Realized"),
+                    MapStatus(ParcelStatus.Realized),
                     new List<int>(),
                     false,
                     message.Message.Provenance.Timestamp);
@@ -94,7 +77,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
                 var oldStatus = document.Document.Status;
-                document.Document.Status = MapStatus("Retired");
+                document.Document.Status = MapStatus(ParcelStatus.Retired);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context,
@@ -116,7 +99,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
 
                 var oldStatus = document.Document.Status;
-                document.Document.Status = MapStatus("Realized");
+                document.Document.Status = MapStatus(ParcelStatus.Realized);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context,
@@ -221,10 +204,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
 
                 document.Document.AddressPersistentLocalIds.Remove(message.Message.PreviousAddressPersistentLocalId);
-                if (!document.Document.AddressPersistentLocalIds.Contains(message.Message.NewAddressPersistentLocalId))
-                {
-                    document.Document.AddressPersistentLocalIds.Add(message.Message.NewAddressPersistentLocalId);
-                }
+                document.Document.AddressPersistentLocalIds.Add(message.Message.NewAddressPersistentLocalId); //this can cause doubles, but we'll build the uri's unique
 
                 var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
@@ -306,6 +286,24 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             feedItem.CloudEventAsString = _changeFeedService.SerializeCloudEvent(cloudEvent);
 
             await CheckToUpdateCache(page, context);
+        }
+
+        private static PerceelStatus MapStatus(ParcelStatus parcelStatus)
+        {
+            if(parcelStatus == ParcelStatus.Realized)
+                return PerceelStatus.Gerealiseerd;
+            if(parcelStatus == ParcelStatus.Retired)
+                return PerceelStatus.Gehistoreerd;
+
+            throw new InvalidOperationException($"Unknown parcel status: {parcelStatus}");
+        }
+
+        private static List<string> BuildAddressPuris(IEnumerable<int> addressPersistentLocalIds)
+        {
+            return addressPersistentLocalIds
+                .Select(id => OsloNamespaces.Adres.ToPuri(id.ToString()))
+                .Distinct()
+                .ToList();
         }
 
         private async Task CheckToUpdateCache(int page, FeedContext context)

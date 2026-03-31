@@ -19,7 +19,6 @@ namespace ParcelRegistry.Tests
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
     using Moq;
-    using Newtonsoft.Json;
     using Parcel.Events;
     using Producer;
     using Producer.Snapshot.Oslo;
@@ -130,7 +129,7 @@ namespace ParcelRegistry.Tests
 
             yield return [new List<ConnectedProjection<FeedContext>>
             {
-                new ParcelFeedProjections(Mock.Of<IChangeFeedService>(), new OptionsWrapper<FeedOptions>(new FeedOptions()))
+                new ParcelFeedProjections(Mock.Of<IChangeFeedService>())
             }];
         }
 

@@ -8,14 +8,15 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
+    using Builders;
     using CloudNative.CloudEvents;
-    using FluentAssertions;
     using Fixtures;
+    using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Options;
     using Moq;
     using Newtonsoft.Json;
     using Parcel;
@@ -28,7 +29,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
     public sealed class ParcelFeedProjectionsTests
     {
-        private const string AddressNamespace = "https://data.vlaanderen.be/id/adres";
+        private static readonly string AddressNamespace = OsloNamespaces.Adres;
 
         private readonly Fixture _fixture;
         private readonly FeedContext _feedContext;
@@ -41,11 +42,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
             ChangeFeedServiceMock = new Mock<IChangeFeedService>();
             _feedContext = CreateContext();
 
-            var feedOptions = new OptionsWrapper<FeedOptions>(new FeedOptions { AddressNamespace = AddressNamespace });
-
             Sut = new ConnectedProjectionTest<FeedContext, ParcelFeedProjections>(
                 () => _feedContext,
-                () => new ParcelFeedProjections(ChangeFeedServiceMock.Object, feedOptions));
+                () => new ParcelFeedProjections(ChangeFeedServiceMock.Object));
 
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
@@ -85,6 +84,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
                     var expectedAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
                         .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
                         .ToList();
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
@@ -97,8 +97,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == MapStatus(parcelWasMigrated.ParcelStatus))
-                                && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                                               && a.NewValue!.ToString() == MapStatus(parcelWasMigrated.ParcelStatus).ToString())
+                                && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && a.OldValue == null
+                                               && a.NewValue != null
+                                               && ((List<string>)a.NewValue).SequenceEqual(expectedAddressPuris))),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -123,7 +126,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     document.IsRemoved.Should().BeFalse();
                     document.RecordCreatedAt.Should().Be(parcelWasImported.Provenance.Timestamp);
                     document.LastChangedOn.Should().Be(parcelWasImported.Provenance.Timestamp);
-                    document.Document.Status.Should().Be("Gerealiseerd");
+                    document.Document.Status.Should().Be(PerceelStatus.Gerealiseerd);
                     document.Document.AddressPersistentLocalIds.Should().BeEmpty();
 
                     var feedItem = await FindFeedItemByCaPaKey(context, parcelWasImported.CaPaKey);
@@ -141,7 +144,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == "Gerealiseerd")
+                                               && a.NewValue!.ToString() == PerceelStatus.Gerealiseerd.ToString())
                                 && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
@@ -152,7 +155,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelWasRetiredV2_ThenDocumentStatusIsUpdated()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
             var parcelWasRetired = _fixture.Create<ParcelWasRetiredV2>();
             var position = 2L;
 
@@ -164,7 +167,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.ParcelDocuments.FindAsync(parcelWasRetired.CaPaKey);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be("Gehistoreerd");
+                    document!.Document.Status.Should().Be(PerceelStatus.Gehistoreerd);
                     document.LastChangedOn.Should().Be(parcelWasRetired.Provenance.Timestamp);
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelWasRetired.CaPaKey);
@@ -179,8 +182,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<List<string>>(),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == "Gerealiseerd"
-                                               && a.NewValue!.ToString() == "Gehistoreerd")),
+                                               && a.OldValue!.ToString() == PerceelStatus.Gerealiseerd.ToString()
+                                               && a.NewValue!.ToString() == PerceelStatus.Gehistoreerd.ToString())),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -190,7 +193,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelGeometryWasChanged_ThenVersionIsUpdated()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
             var parcelGeometryWasChanged = _fixture.Create<ParcelGeometryWasChanged>();
             var position = 2L;
 
@@ -224,7 +227,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelWasCorrectedFromRetiredToRealized_ThenStatusIsUpdated()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Retired");
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Retired);
             var parcelWasCorrected = _fixture.Create<ParcelWasCorrectedFromRetiredToRealized>();
             var position = 2L;
 
@@ -236,7 +239,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.ParcelDocuments.FindAsync(parcelWasCorrected.CaPaKey);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be("Gerealiseerd");
+                    document!.Document.Status.Should().Be(PerceelStatus.Gerealiseerd);
                     document.LastChangedOn.Should().Be(parcelWasCorrected.Provenance.Timestamp);
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelWasCorrected.CaPaKey);
@@ -251,8 +254,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<List<string>>(),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == "Gehistoreerd"
-                                               && a.NewValue!.ToString() == "Gerealiseerd")),
+                                               && a.OldValue!.ToString() == PerceelStatus.Gehistoreerd.ToString()
+                                               && a.NewValue!.ToString() == PerceelStatus.Gerealiseerd.ToString())),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -262,7 +265,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasAttachedV2_ThenAddressIsAdded()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
             var parcelAddressWasAttached = _fixture.Create<ParcelAddressWasAttachedV2>();
             var position = 2L;
 
@@ -280,6 +283,16 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasAttached.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasAttached);
 
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Concat([$"{AddressNamespace}/{parcelAddressWasAttached.AddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
                             parcelAddressWasAttached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
@@ -288,7 +301,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.IsAny<List<string>>(),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
-                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                    && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                    && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -298,7 +313,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasDetachedV2_ThenAddressIsRemoved()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
             var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedV2>();
             var position = 2L;
 
@@ -316,6 +331,16 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasDetached);
 
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasDetached.AddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
                             parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
@@ -324,7 +349,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.IsAny<List<string>>(),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
-                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -334,7 +361,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasDetachedBecauseAddressWasRemoved_ThenAddressIsRemoved()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
             var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRemoved>();
             var position = 2L;
 
@@ -352,6 +379,16 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasDetached);
 
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasDetached.AddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
                             parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
@@ -360,7 +397,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.IsAny<List<string>>(),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
-                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -370,7 +409,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasDetachedBecauseAddressWasRejected_ThenAddressIsRemoved()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
             var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRejected>();
             var position = 2L;
 
@@ -388,6 +427,16 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasDetached);
 
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasDetached.AddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
                             parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
@@ -396,7 +445,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.IsAny<List<string>>(),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
-                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -406,7 +457,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasDetachedBecauseAddressWasRetired_ThenAddressIsRemoved()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
             var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRetired>();
             var position = 2L;
 
@@ -424,6 +475,16 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasDetached);
 
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasDetached.AddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
                             parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
@@ -432,7 +493,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.IsAny<List<string>>(),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
-                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -442,8 +505,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasReplacedBecauseOfMunicipalityMerger_ThenAddressIsReplaced()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
-            var parcelAddressWasReplaced = _fixture.Create<ParcelAddressWasReplacedBecauseOfMunicipalityMerger>();
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressWasReplaced = new ParcelAddressWasReplacedBecauseOfMunicipalityMergerBuilder(_fixture)
+                .WithPreviousAddress(parcelWasMigrated.AddressPersistentLocalIds.First())
+                .Build();
             var position = 2L;
 
             await Sut
@@ -454,12 +519,24 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.ParcelDocuments.FindAsync(parcelAddressWasReplaced.CaPaKey);
                     document.Should().NotBeNull();
-                    document!.Document.AddressPersistentLocalIds.Should().Contain(parcelAddressWasReplaced.NewAddressPersistentLocalId);
+                    document!.Document.AddressPersistentLocalIds.Count.Should().Be(parcelWasMigrated.AddressPersistentLocalIds.Count);
+                    document.Document.AddressPersistentLocalIds.Should().Contain(parcelAddressWasReplaced.NewAddressPersistentLocalId);
                     document.Document.AddressPersistentLocalIds.Should().NotContain(parcelAddressWasReplaced.PreviousAddressPersistentLocalId);
                     document.LastChangedOn.Should().Be(parcelAddressWasReplaced.Provenance.Timestamp);
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasReplaced.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasReplaced);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasReplaced.PreviousAddressPersistentLocalId}"])
+                        .Concat([$"{AddressNamespace}/{parcelAddressWasReplaced.NewAddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -469,7 +546,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.IsAny<List<string>>(),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
-                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -479,8 +558,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasReplacedBecauseAddressWasReaddressed_ThenAddressIsReplaced()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
-            var parcelAddressWasReplaced = _fixture.Create<ParcelAddressWasReplacedBecauseAddressWasReaddressed>();
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressWasReplaced = new ParcelAddressWasReplacedBecauseAddressWasReaddressedBuilder(_fixture)
+                .WithPreviousAddress(parcelWasMigrated.AddressPersistentLocalIds.First())
+                .WithNewAddress(parcelWasMigrated.AddressPersistentLocalIds.LastOrDefault())
+                .Build();
             var position = 2L;
 
             await Sut
@@ -491,12 +573,27 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.ParcelDocuments.FindAsync(parcelAddressWasReplaced.CaPaKey);
                     document.Should().NotBeNull();
-                    document!.Document.AddressPersistentLocalIds.Should().Contain(parcelAddressWasReplaced.NewAddressPersistentLocalId);
+                    document!.Document.AddressPersistentLocalIds.Count.Should().Be(parcelWasMigrated.AddressPersistentLocalIds.Count);
+                    document.Document.AddressPersistentLocalIds.Should().Contain(parcelAddressWasReplaced.NewAddressPersistentLocalId);
                     document.Document.AddressPersistentLocalIds.Should().NotContain(parcelAddressWasReplaced.PreviousAddressPersistentLocalId);
                     document.LastChangedOn.Should().Be(parcelAddressWasReplaced.Provenance.Timestamp);
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasReplaced.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressWasReplaced);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasReplaced.PreviousAddressPersistentLocalId}"])
+                        .Concat([$"{AddressNamespace}/{parcelAddressWasReplaced.NewAddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
+                    //distinct
+                    expectedAddressPuris.Count.Should().Be(parcelWasMigrated.AddressPersistentLocalIds.Count - 1);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -506,7 +603,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.IsAny<List<string>>(),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
-                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -516,8 +615,11 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressesWereReaddressed_ThenAddressesAreUpdated()
         {
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
-            var parcelAddressesWereReaddressed = _fixture.Create<ParcelAddressesWereReaddressed>();
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressesWereReaddressed = new ParcelAddressesWereReaddressedBuilder(_fixture)
+                .WithDetachedAddress(parcelWasMigrated.AddressPersistentLocalIds.First())
+                .WithAttachedAddress(_fixture.Create<int>())
+                .Build();
             var position = 2L;
 
             await Sut
@@ -528,21 +630,33 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.ParcelDocuments.FindAsync(parcelAddressesWereReaddressed.CaPaKey);
                     document.Should().NotBeNull();
+                    document!.Document.AddressPersistentLocalIds.Count.Should().Be(parcelWasMigrated.AddressPersistentLocalIds.Count);
 
                     foreach (var attached in parcelAddressesWereReaddressed.AttachedAddressPersistentLocalIds)
                     {
-                        document!.Document.AddressPersistentLocalIds.Should().Contain(attached);
+                        document.Document.AddressPersistentLocalIds.Should().Contain(attached);
                     }
 
                     foreach (var detached in parcelAddressesWereReaddressed.DetachedAddressPersistentLocalIds)
                     {
-                        document!.Document.AddressPersistentLocalIds.Should().NotContain(detached);
+                        document.Document.AddressPersistentLocalIds.Should().NotContain(detached);
                     }
 
-                    document!.LastChangedOn.Should().Be(parcelAddressesWereReaddressed.Provenance.Timestamp);
+                    document.LastChangedOn.Should().Be(parcelAddressesWereReaddressed.Provenance.Timestamp);
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressesWereReaddressed.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelAddressesWereReaddressed);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except(parcelAddressesWereReaddressed.DetachedAddressPersistentLocalIds.Select(id => $"{AddressNamespace}/{id}"))
+                        .Concat(parcelAddressesWereReaddressed.AttachedAddressPersistentLocalIds.Select(id => $"{AddressNamespace}/{id}"))
+                        .Distinct()
+                        .ToList();
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
                             It.IsAny<long>(),
@@ -552,7 +666,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.IsAny<List<string>>(),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
-                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -561,19 +677,19 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
         #region Helpers
 
-        private static string MapStatus(string parcelStatus)
+        private static PerceelStatus MapStatus(ParcelStatus parcelStatus)
         {
-            return parcelStatus switch
-            {
-                "Realized" => "Gerealiseerd",
-                "Retired" => "Gehistoreerd",
-                _ => parcelStatus
-            };
+            if(parcelStatus == ParcelStatus.Realized)
+                return PerceelStatus.Gerealiseerd;
+            if(parcelStatus == ParcelStatus.Retired)
+                return PerceelStatus.Gehistoreerd;
+
+            throw new ArgumentOutOfRangeException(nameof(parcelStatus));
         }
 
-        private ParcelWasMigrated CreateParcelWasMigrated(string status)
+        private ParcelWasMigrated CreateParcelWasMigrated(ParcelStatus status)
         {
-            _fixture.Register(() => ParcelStatus.Parse(status));
+            _fixture.Register(() => status);
             var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
             return parcelWasMigrated;
         }

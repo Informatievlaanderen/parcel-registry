@@ -3,6 +3,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
     using System;
     using System.Collections.Generic;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -11,6 +12,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
     public sealed class ParcelDocument
     {
+        public Guid ParcelId { get; set; }
         public string CaPaKey { get; set; } = null!;
         public bool IsRemoved { get; set; }
         public ParcelDocumentContent Document { get; set; }
@@ -42,12 +44,14 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
         }
 
         public ParcelDocument(
+            Guid parcelId,
             string caPaKey,
-            string status,
+            PerceelStatus status,
             List<int> addressPersistentLocalIds,
             bool isRemoved,
             Instant createdTimestamp)
         {
+            ParcelId = parcelId;
             CaPaKey = caPaKey;
             IsRemoved = isRemoved;
 
@@ -66,7 +70,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
     public sealed class ParcelDocumentContent
     {
         public string CaPaKey { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
+        public PerceelStatus Status { get; set; }
         public List<int> AddressPersistentLocalIds { get; set; } = new();
 
         public DateTimeOffset VersionId { get; set; }
