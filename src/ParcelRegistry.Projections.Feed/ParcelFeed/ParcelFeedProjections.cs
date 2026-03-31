@@ -8,17 +8,11 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Contract;
-    using Infrastructure;
     using Microsoft.EntityFrameworkCore;
-    using NetTopologySuite.Geometries;
-    using NodaTime;
-    using Parcel;
     using Parcel.Events;
     using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
 
@@ -38,34 +32,17 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             };
         }
 
-        private static string MapGeometryType(OgcGeometryType ogcGeometryType)
-        {
-            return ogcGeometryType switch
-            {
-                OgcGeometryType.Polygon => OgcGeometryType.Polygon.ToString(),
-                OgcGeometryType.MultiSurface => OgcGeometryType.MultiSurface.ToString(),
-                OgcGeometryType.MultiPolygon => OgcGeometryType.MultiSurface.ToString(),
-                _ => throw new ArgumentOutOfRangeException(nameof(ogcGeometryType), ogcGeometryType, null)
-            };
-        }
-
         public ParcelFeedProjections(IChangeFeedService changeFeedService)
         {
             _changeFeedService = changeFeedService;
 
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
-                var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
-                var gml = geometry.ConvertToGml();
-                var gmlType = MapGeometryType(geometry.OgcGeometryType);
                 var status = MapStatus(message.Message.ParcelStatus);
 
                 var document = new ParcelDocument(
                     message.Message.CaPaKey,
                     status,
-                    gml,
-                    gmlType,
-                    message.Message.ExtendedWkbGeometry,
                     message.Message.AddressPersistentLocalIds.ToList(),
                     message.Message.IsRemoved,
                     message.Message.Provenance.Timestamp);
@@ -75,7 +52,6 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 List<BaseRegistriesCloudEventAttribute> attributes =
                 [
                     new(ParcelAttributeNames.StatusName, null, status),
-                    new(ParcelAttributeNames.Geometry, null, new ParcelGeometryCloudEventValue(gml, gmlType)),
                 ];
 
                 await AddCloudEvent(message, document, context, attributes, ParcelEventTypes.CreateV1);
@@ -83,16 +59,9 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
             When<Envelope<ParcelWasImported>>(async (context, message, ct) =>
             {
-                var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
-                var gml = geometry.ConvertToGml();
-                var gmlType = MapGeometryType(geometry.OgcGeometryType);
-
                 var document = new ParcelDocument(
                     message.Message.CaPaKey,
                     MapStatus("Realized"),
-                    gml,
-                    gmlType,
-                    message.Message.ExtendedWkbGeometry,
                     new List<int>(),
                     false,
                     message.Message.Provenance.Timestamp);
@@ -102,7 +71,6 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 List<BaseRegistriesCloudEventAttribute> attributes =
                 [
                     new(ParcelAttributeNames.StatusName, null, document.Document.Status),
-                    new(ParcelAttributeNames.Geometry, null, new ParcelGeometryCloudEventValue(gml, gmlType)),
                 ];
 
                 await AddCloudEvent(message, document, context, attributes, ParcelEventTypes.CreateV1);
@@ -124,43 +92,22 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             When<Envelope<ParcelGeometryWasChanged>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
-                var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
-                var gml = geometry.ConvertToGml();
-                var gmlType = MapGeometryType(geometry.OgcGeometryType);
-
-                var oldGeometry = new ParcelGeometryCloudEventValue(document.Document.GeometryAsGml, document.Document.GeometryGmlType);
-
-                document.Document.GeometryAsGml = gml;
-                document.Document.GeometryGmlType = gmlType;
-                document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
-                await AddCloudEvent(message, document, context,
-                [
-                    new(ParcelAttributeNames.Geometry, oldGeometry, new ParcelGeometryCloudEventValue(gml, gmlType)),
-                ], ParcelEventTypes.UpdateV1);
+                await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
             });
 
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
-                var geometry = GmlHelpers.ParseGeometry(message.Message.ExtendedWkbGeometry);
-                var gml = geometry.ConvertToGml();
-                var gmlType = MapGeometryType(geometry.OgcGeometryType);
 
                 var oldStatus = document.Document.Status;
-                var oldGeometry = new ParcelGeometryCloudEventValue(document.Document.GeometryAsGml, document.Document.GeometryGmlType);
-
                 document.Document.Status = MapStatus("Realized");
-                document.Document.GeometryAsGml = gml;
-                document.Document.GeometryGmlType = gmlType;
-                document.Document.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry;
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context,
                 [
                     new(ParcelAttributeNames.StatusName, oldStatus, document.Document.Status),
-                    new(ParcelAttributeNames.Geometry, oldGeometry, new ParcelGeometryCloudEventValue(gml, gmlType)),
                 ], ParcelEventTypes.UpdateV1);
             });
 
@@ -319,21 +266,6 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                         .Count(x => x.Page == page && context.Entry(x).State == EntityState.Added);
                     return await context.ParcelFeed.CountAsync(x => x.Page == p) + localCount - 1;
                 });
-        }
-    }
-
-    public sealed class ParcelGeometryCloudEventValue
-    {
-        [Newtonsoft.Json.JsonProperty("type")]
-        public string Type { get; set; } = string.Empty;
-
-        [Newtonsoft.Json.JsonProperty("gml")]
-        public string Gml { get; set; } = string.Empty;
-
-        public ParcelGeometryCloudEventValue(string gml, string gmlType)
-        {
-            Gml = gml;
-            Type = gmlType;
         }
     }
 }

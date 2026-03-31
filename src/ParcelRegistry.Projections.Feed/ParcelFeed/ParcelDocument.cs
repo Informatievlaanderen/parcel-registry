@@ -44,9 +44,6 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
         public ParcelDocument(
             string caPaKey,
             string status,
-            string gml,
-            string gmlType,
-            string extendedWkbGeometry,
             List<int> addressPersistentLocalIds,
             bool isRemoved,
             Instant createdTimestamp)
@@ -58,9 +55,6 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             {
                 CaPaKey = caPaKey,
                 Status = status,
-                GeometryAsGml = gml,
-                GeometryGmlType = gmlType,
-                ExtendedWkbGeometry = extendedWkbGeometry,
                 AddressPersistentLocalIds = addressPersistentLocalIds,
             };
 
@@ -73,9 +67,6 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
     {
         public string CaPaKey { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
-        public string GeometryAsGml { get; set; } = string.Empty;
-        public string GeometryGmlType { get; set; } = string.Empty;
-        public string ExtendedWkbGeometry { get; set; } = string.Empty;
         public List<int> AddressPersistentLocalIds { get; set; } = new();
 
         public DateTimeOffset VersionId { get; set; }

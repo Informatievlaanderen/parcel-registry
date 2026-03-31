@@ -10,7 +10,5 @@ namespace ParcelRegistry.Projections.Feed.Contract
     public static class ParcelAttributeNames
     {
         public const string StatusName = "perceelStatus";
-        public const string Geometry = "perceelGeometrie";
-        public const string GeometryGmlType = "geometrieType";
     }
 }

@@ -8,6 +8,7 @@ namespace ParcelRegistry.Tests
     using System.Text;
     using Api.BackOffice.Abstractions;
     using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo.SnapshotProducer;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Producer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -26,6 +27,8 @@ namespace ParcelRegistry.Tests
     using Projections.Extract;
     using Projections.Extract.ParcelExtract;
     using Projections.Extract.ParcelLinkExtract;
+    using Projections.Feed;
+    using Projections.Feed.ParcelFeed;
     using Projections.Integration;
     using Projections.Integration.Infrastructure;
     using Projections.Integration.ParcelLatestItemV2;
@@ -123,6 +126,11 @@ namespace ParcelRegistry.Tests
             yield return [new List<ConnectedProjection<ParcelRegistry.Producer.ProducerContext>>
             {
                 new ProducerMigrateProjections(Mock.Of<IProducer>())
+            }];
+
+            yield return [new List<ConnectedProjection<FeedContext>>
+            {
+                new ParcelFeedProjections(Mock.Of<IChangeFeedService>())
             }];
         }
 
