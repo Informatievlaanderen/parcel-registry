@@ -65,6 +65,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             b.HasIndex(x => x.Position);
             b.HasIndex(x => x.Page);
             b.HasIndex(x => x.CaPaKey);
+            b.HasIndex(x => x.ParcelId);
         }
     }
 }

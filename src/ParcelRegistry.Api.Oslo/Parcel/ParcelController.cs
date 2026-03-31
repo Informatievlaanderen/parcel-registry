@@ -24,6 +24,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Projections.Feed;
+    using Projections.Legacy;
     using Swashbuckle.AspNetCore.Filters;
     using Sync;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -222,6 +223,91 @@ namespace ParcelRegistry.Api.Oslo.Parcel
             var jsonContent = "[" + string.Join(",", feedItemsEvents) + "]";
 
             return Content(jsonContent, AcceptTypes.JsonCloudEventsBatch);
+        }
+
+        [HttpGet("posities")]
+        [Produces(AcceptTypes.Json)]
+        [ProducesResponseType(typeof(FeedPositieResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPositions(
+            [FromServices] LegacyContext legacyContext,
+            [FromServices] FeedContext feedContext,
+            CancellationToken cancellationToken = default)
+        {
+            var filtering = Request.ExtractFilteringRequest<AddressPositionFilter>();
+            var response = new FeedPositieResponse();
+            if (filtering.ShouldFilter && !filtering.Filter.HasMoreThanOneFilter)
+            {
+                if (filtering.Filter.Download.HasValue)
+                {
+                    var businessFeedPosition = await legacyContext
+                        .ParcelSyndication
+                        .AsNoTracking()
+                        .Where(x => x.Position <= filtering.Filter.Download.Value)
+                        .OrderByDescending(x => x.Position)
+                        .Select(x => x.Position)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    var changeFeed = await feedContext
+                        .ParcelFeed
+                        .AsNoTracking()
+                        .Where(x => x.Position <= filtering.Filter.Download.Value)
+                        .OrderByDescending(x => x.Position)
+                        .Select(x => new { x.Id, x.Page })
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    response.Feed = businessFeedPosition;
+                    response.WijzigingenFeedPagina = changeFeed?.Page;
+                    response.WijzigingenFeedId = changeFeed?.Id;
+                }
+                else if (filtering.Filter.Sync.HasValue)
+                {
+                    var position = await legacyContext
+                        .ParcelSyndication
+                        .AsNoTracking()
+                        .Where(x => x.Position <= filtering.Filter.Sync.Value)
+                        .OrderByDescending(x => x.Position)
+                        .Select(x => x.Position)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    var changeFeed = await feedContext
+                        .ParcelFeed
+                        .AsNoTracking()
+                        .Where(x => x.Position <= position)
+                        .OrderByDescending(x => x.Position)
+                        .Select(x => new { x.Id, x.Page })
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    response.Feed = filtering.Filter.Sync.Value;
+                    response.WijzigingenFeedPagina = changeFeed?.Page;
+                    response.WijzigingenFeedId = changeFeed?.Id;
+                }
+                else if (filtering.Filter.ChangeFeedId.HasValue)
+                {
+                    var feedItem = await feedContext
+                        .ParcelFeed
+                        .AsNoTracking()
+                        .Where(x => x.Id == filtering.Filter.ChangeFeedId.Value)
+                        .Select(x => new { x.Id, x.Page, x.Position })
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    if (feedItem is null)
+                        return Ok(response);
+
+                    var syncPosition = await legacyContext
+                        .ParcelSyndication
+                        .AsNoTracking()
+                        .Where(x => x.Position == feedItem.Position)
+                        .OrderByDescending(x => x.Position)
+                        .Select(x => x.Position)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    response.Feed = syncPosition;
+                    response.WijzigingenFeedPagina = feedItem.Page;
+                    response.WijzigingenFeedId = feedItem.Id;
+                }
+            }
+
+            return Ok(response);
         }
     }
 }
