@@ -592,7 +592,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                         .Distinct()
                         .ToList();
 
-                    //distinct
+                    // NewAddress already exists in the list, so after Distinct() the count drops by 1 (only the previous address was removed)
                     expectedAddressPuris.Count.Should().Be(parcelWasMigrated.AddressPersistentLocalIds.Count - 1);
 
                     ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
