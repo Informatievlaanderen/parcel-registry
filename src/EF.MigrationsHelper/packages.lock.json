@@ -1890,6 +1890,7 @@
           "Be.Vlaanderen.Basisregisters.EventHandling.Autofac": "[7.0.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed": "[22.8.1, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Common": "[22.8.1, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Oslo": "[22.8.1, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )",
           "ParcelRegistry": "[1.0.0, )",
