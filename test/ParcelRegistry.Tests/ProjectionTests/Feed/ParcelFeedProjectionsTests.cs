@@ -270,8 +270,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasDetachedV2_ThenAddressIsRemoved()
         {
-            var addressPersistentLocalId = _fixture.Create<int>();
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized", new List<int> { addressPersistentLocalId });
+            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
             var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedV2>();
             var position = 2L;
 
@@ -294,8 +293,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasDetachedBecauseAddressWasRemoved_ThenAddressIsRemoved()
         {
-            var addressPersistentLocalId = _fixture.Create<int>();
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized", new List<int> { addressPersistentLocalId });
+            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
             var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRemoved>();
             var position = 2L;
 
@@ -318,8 +316,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasDetachedBecauseAddressWasRejected_ThenAddressIsRemoved()
         {
-            var addressPersistentLocalId = _fixture.Create<int>();
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized", new List<int> { addressPersistentLocalId });
+            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
             var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRejected>();
             var position = 2L;
 
@@ -342,8 +339,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         [Fact]
         public async Task WhenParcelAddressWasDetachedBecauseAddressWasRetired_ThenAddressIsRemoved()
         {
-            var addressPersistentLocalId = _fixture.Create<int>();
-            var parcelWasMigrated = CreateParcelWasMigrated("Realized", new List<int> { addressPersistentLocalId });
+            var parcelWasMigrated = CreateParcelWasMigrated("Realized");
             var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRetired>();
             var position = 2L;
 
@@ -456,7 +452,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
             };
         }
 
-        private ParcelWasMigrated CreateParcelWasMigrated(string status, List<int>? addressPersistentLocalIds = null)
+        private ParcelWasMigrated CreateParcelWasMigrated(string status)
         {
             _fixture.Register(() => ParcelStatus.Parse(status));
             var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
