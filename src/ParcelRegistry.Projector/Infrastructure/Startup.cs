@@ -8,6 +8,7 @@ namespace ParcelRegistry.Projector.Infrastructure
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
@@ -22,6 +23,7 @@ namespace ParcelRegistry.Projector.Infrastructure
     using Microsoft.OpenApi.Models;
     using Modules;
     using ParcelRegistry.Projections.Extract;
+    using ParcelRegistry.Projections.Feed;
     using ParcelRegistry.Projections.Integration.Infrastructure;
     using ParcelRegistry.Projections.Legacy;
 
@@ -123,6 +125,10 @@ namespace ParcelRegistry.Projector.Infrastructure
                                 $"dbcontext-{nameof(LastChangedListContext).ToLowerInvariant()}",
                                 tags: new[] {DatabaseTag, "sql", "sqlserver"});
 
+                            health.AddDbContextCheck<FeedContext>(
+                                $"dbcontext-{nameof(FeedContext).ToLowerInvariant()}",
+                                tags: new[] {DatabaseTag, "sql", "sqlserver"});
+
                             health.AddCheck<ProjectionsHealthCheck>(
                                 "projections",
                                 failureStatus: HealthStatus.Unhealthy,
@@ -131,7 +137,8 @@ namespace ParcelRegistry.Projector.Infrastructure
                     }
                 })
                 .Configure<ExtractConfig>(_configuration.GetSection("Extract"))
-                .Configure<IntegrationOptions>(_configuration.GetSection("Integration"));
+                .Configure<IntegrationOptions>(_configuration.GetSection("Integration"))
+                .Configure<ChangeFeedConfig>(_configuration.GetSection("ParcelFeed"));
 
             services.AddSingleton<ProjectionsHealthCheck>(
                 c => new ProjectionsHealthCheck(

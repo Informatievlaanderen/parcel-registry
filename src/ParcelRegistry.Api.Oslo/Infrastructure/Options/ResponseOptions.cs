@@ -1,5 +1,7 @@
 namespace ParcelRegistry.Api.Oslo.Infrastructure.Options
 {
+    using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
+
     public class ResponseOptions
     {
         public string Naamruimte { get; set; }
@@ -9,5 +11,6 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure.Options
         public string ContextUrlList { get; set; }
         public string ContextUrlDetail { get; set; }
         public string ParcelDetailBuildingsLink { get; set; }
+        public ChangeFeedConfig ParcelFeed { get; set; }
     }
 }

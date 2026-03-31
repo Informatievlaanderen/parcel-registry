@@ -3,8 +3,11 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.EventHandling.Autofac;
+    using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.LastChangedList;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac;
     using Be.Vlaanderen.Basisregisters.Projector;
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
@@ -14,9 +17,12 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
     using ParcelRegistry.Infrastructure;
     using ParcelRegistry.Projections.Extract;
     using ParcelRegistry.Projections.Extract.ParcelExtract;
+    using ParcelRegistry.Projections.Feed;
+    using ParcelRegistry.Projections.Feed.ParcelFeed;
     using ParcelRegistry.Projections.Integration;
     using ParcelRegistry.Projections.Integration.Infrastructure;
     using ParcelRegistry.Projections.Integration.ParcelLatestItemV2;
@@ -68,6 +74,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
             RegisterLastChangedProjections(builder);
             RegisterExtractV2Projections(builder);
             RegisterLegacyV2Projections(builder);
+            RegisterFeedProjections(builder);
 
             if(_configuration.GetSection("Integration").GetValue("Enabled", false))
                 RegisterIntegrationProjections(builder);
@@ -140,6 +147,38 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                         context.Resolve<IAddressRepository>(),
                         context.Resolve<IOptions<IntegrationOptions>>()),
                     ConnectedProjectionSettings.Default);
+        }
+
+        private void RegisterFeedProjections(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule(
+                    new FeedModule(
+                        _configuration,
+                        _services,
+                        _loggerFactory,
+                        EventsJsonSerializerSettingsProvider.CreateSerializerSettings()));
+
+            builder.Register(c => new ChangeFeedService(
+                    c.Resolve<IOptions<ChangeFeedConfig>>().Value,
+                    c.Resolve<LastChangedListContext>(),
+                    new JsonSerializerSettings().ConfigureDefaultForApi()))
+                .AsImplementedInterfaces()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+
+            builder
+                .RegisterProjectionMigrator<FeedContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<ParcelFeedProjections, FeedContext>(context =>
+                        new ParcelFeedProjections(
+                            context.Resolve<IChangeFeedService>()),
+                    ConnectedProjectionSettings.Configure(c =>
+                    {
+                        c.ConfigureCatchUpPageSize(1);
+                        c.ConfigureCatchUpUpdatePositionMessageInterval(1);
+                    }));
         }
     }
 }

@@ -1,22 +1,29 @@
 namespace ParcelRegistry.Api.Oslo.Parcel
 {
+    using System.Linq;
     using System.Net.Mime;
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
     using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.Api.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.Api.ETag;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
     using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
     using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
+    using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
+    using ChangeFeed;
+    using CloudNative.CloudEvents;
     using Count;
     using Detail;
     using List;
     using MediatR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using Projections.Feed;
     using Swashbuckle.AspNetCore.Filters;
     using Sync;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -134,6 +141,87 @@ namespace ParcelRegistry.Api.Oslo.Parcel
                 ContentType = MediaTypeNames.Text.Xml,
                 StatusCode = StatusCodes.Status200OK
             };
+        }
+
+        /// <summary>
+        /// Vraag een lijst met wijzigingen van percelen op (CloudEvents).
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="page"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("wijzigingen")]
+        [Produces(AcceptTypes.JsonCloudEventsBatch)]
+        [ProducesResponseType(typeof(System.Collections.Generic.List<CloudEvent>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParcelFeedResultExample))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        public async Task<IActionResult> Changes(
+            [FromServices] FeedContext context,
+            [FromQuery] int? page,
+            CancellationToken cancellationToken = default)
+        {
+            var filtering = Request.ExtractFilteringRequest<ParcelFeedFilter>();
+            if (page is null)
+                page = filtering.Filter?.Page ?? 1;
+
+            var feedPosition = filtering.Filter?.FeedPosition;
+
+            if (feedPosition.HasValue && filtering.Filter?.Page.HasValue == false)
+            {
+                page = context.ParcelFeed
+                    .Where(x => x.Position == feedPosition.Value)
+                    .Select(x => x.Page)
+                    .Distinct()
+                    .AsEnumerable()
+                    .DefaultIfEmpty(1)
+                    .Min();
+            }
+
+            var feedItemsEvents = await context
+                .ParcelFeed
+                .Where(x => x.Page == page)
+                .OrderBy(x => x.Id)
+                .Select(x => x.CloudEventAsString)
+                .ToListAsync(cancellationToken);
+
+            var jsonContent = "[" + string.Join(",", feedItemsEvents) + "]";
+
+            return new ChangeFeedResult(jsonContent, feedItemsEvents.Count >= ChangeFeedService.DefaultMaxPageSize);
+        }
+
+        /// <summary>
+        /// Vraag wijzigingen van een bepaald perceel op (CloudEvents).
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="caPaKey"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("{caPaKey}/wijzigingen")]
+        [Produces(AcceptTypes.JsonCloudEventsBatch)]
+        [ProducesResponseType(typeof(System.Collections.Generic.List<CloudEvent>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParcelFeedResultExample))]
+        [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
+        public async Task<IActionResult> ChangesByCaPaKey(
+            [FromServices] FeedContext context,
+            [FromRoute] string caPaKey,
+            CancellationToken cancellationToken = default)
+        {
+            var pagination = (PaginationRequest)Request.ExtractPaginationRequest();
+
+            var feedItemsEvents = await context
+                .ParcelFeed
+                .Where(x => x.CaPaKey == caPaKey)
+                .OrderBy(x => x.Id)
+                .Select(x => x.CloudEventAsString)
+                .Skip(pagination.Offset)
+                .Take(pagination.Limit)
+                .ToListAsync(cancellationToken);
+
+            var jsonContent = "[" + string.Join(",", feedItemsEvents) + "]";
+
+            return Content(jsonContent, AcceptTypes.JsonCloudEventsBatch);
         }
     }
 }
