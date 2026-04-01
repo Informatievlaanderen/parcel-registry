@@ -20,19 +20,19 @@ namespace ParcelRegistry.Api.Oslo.Parcel.ChangeFeed
                          [
                             {
                                 "specversion": "1.0",
-                                 "id": "1",
-                                 "time": "2023-11-01T11:44:38.5493268+01:00",
+                                 "id": "2",
+                                 "time": "2023-11-02T07:37:09.2309729+01:00",
                                  "type": "basisregisters.parcel.create.v1",
                                  "source": "{{_responseOptions.ParcelFeed.FeedUrl}}",
                                  "datacontenttype": "application/json",
                                  "dataschema": "{{_responseOptions.ParcelFeed.DataSchemaUrl}}",
                                  "basisregisterseventtype": "ParcelWasMigrated",
-                                 "basisregisterscausationid": "4fe743fb-0736-5246-8df2-da07f9276c88",
+                                 "basisregisterscausationid": "0870f9b0-bba0-5444-9f76-4316e9f8cc0f",
                                  "data": {
-                                     "@id": "https://data.vlaanderen.be/id/perceel/11001B0001-00S000",
-                                     "objectId": "11001B0001-00S000",
+                                     "@id": "https://data.vlaanderen.be/id/perceel/34034B0003-00_000",
+                                     "objectId": "34034B0003-00_000",
                                      "naamruimte": "https://data.vlaanderen.be/id/perceel",
-                                     "versieId": "2023-11-01T11:44:38+01:00",
+                                     "versieId": "2023-11-02T07:37:09+01:00",
                                      "attributen": [
                                          {
                                              "naam": "perceelStatus",
