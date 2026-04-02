@@ -300,9 +300,9 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
         private static PerceelStatus MapStatus(ParcelStatus parcelStatus)
         {
-            if(parcelStatus == ParcelStatus.Realized)
+            if (parcelStatus == ParcelStatus.Realized)
                 return PerceelStatus.Gerealiseerd;
-            if(parcelStatus == ParcelStatus.Retired)
+            if (parcelStatus == ParcelStatus.Retired)
                 return PerceelStatus.Gehistoreerd;
 
             throw new InvalidOperationException($"Unknown parcel status: {parcelStatus}");

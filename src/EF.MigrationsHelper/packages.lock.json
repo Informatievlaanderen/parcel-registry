@@ -1182,14 +1182,6 @@
           "NodaTime": "[3.0.0, 4.0.0)"
         }
       },
-      "Npgsql": {
-        "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "tPvY61CxOAWxNsKLEBg+oR646X4Bc8UmyQ/tJszL/7mEmIXQnnBhVJZrZEEUv0Bstu0mEsHZD5At3EO8zQRAYw==",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
-        }
-      },
       "Npgsql.NetTopologySuite": {
         "type": "Transitive",
         "resolved": "9.0.3",
@@ -1893,6 +1885,8 @@
           "Be.Vlaanderen.Basisregisters.GrAr.Oslo": "[22.8.1, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )",
+          "Dapper": "[2.1.66, )",
+          "Npgsql": "[9.0.3, )",
           "ParcelRegistry": "[1.0.0, )",
           "ParcelRegistry.Infrastructure": "[1.0.0, )"
         }
@@ -2485,6 +2479,15 @@
         "requested": "[3.2.2, )",
         "resolved": "3.2.2",
         "contentHash": "dmju5W0UYC3QP/UJM0juKAZkH0HSDMp0gH91A0+mT9M0kgyM2Jm67hUZPl/WRQLq8Lijjqmdk8kyAViWFWM7dA=="
+      },
+      "Npgsql": {
+        "type": "CentralTransitive",
+        "requested": "[9.0.3, )",
+        "resolved": "9.0.3",
+        "contentHash": "tPvY61CxOAWxNsKLEBg+oR646X4Bc8UmyQ/tJszL/7mEmIXQnnBhVJZrZEEUv0Bstu0mEsHZD5At3EO8zQRAYw==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
+        }
       },
       "Serilog": {
         "type": "CentralTransitive",
