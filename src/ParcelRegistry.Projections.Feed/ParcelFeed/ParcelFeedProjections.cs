@@ -314,7 +314,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 async p =>
                 {
                     var localCount = context.ParcelFeed.Local
-                        .Count(x => x.Page == page && context.Entry(x).State == EntityState.Added);
+                        .Count(x => x.Page == p && context.Entry(x).State == EntityState.Added);
                     return await context.ParcelFeed.CountAsync(x => x.Page == p) + localCount - 1;
                 });
         }
