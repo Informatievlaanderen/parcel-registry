@@ -266,7 +266,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             List<BaseRegistriesCloudEventAttribute> attributes,
             string eventType) where T : IMessage, IHasProvenance, IHasParcelId
         {
-            var nisCodes = GetNisCodes(document.Document.GeometryAsExtendedWkb);
+            var nisCodes = GetNisCodes(document.Document.GeometryAsExtendedWkb, message.Message.Provenance.Timestamp);
 
             context.Entry(document).Property(x => x.Document).IsModified = true;
 
@@ -329,12 +329,12 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 });
         }
 
-        private List<string> GetNisCodes(string? geometryAsExtendedWkb)
+        private List<string> GetNisCodes(string? geometryAsExtendedWkb, NodaTime.Instant eventTimestamp)
         {
             if (string.IsNullOrEmpty(geometryAsExtendedWkb))
                 return new List<string>();
 
-            return _municipalityGeometryRepository.GetOverlappingNisCodes(geometryAsExtendedWkb);
+            return _municipalityGeometryRepository.GetOverlappingNisCodes(geometryAsExtendedWkb, eventTimestamp);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
     using Microsoft.EntityFrameworkCore;
     using Moq;
     using Newtonsoft.Json;
+    using NodaTime;
     using Parcel;
     using Parcel.Events;
     using Projections.Feed;
@@ -687,7 +688,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         {
             var expectedNisCodes = new List<string> { "11001", "11002" };
             MunicipalityGeometryRepositoryMock
-                .Setup(x => x.GetOverlappingNisCodes(It.IsAny<string>()))
+                .Setup(x => x.GetOverlappingNisCodes(It.IsAny<string>(), It.IsAny<Instant>()))
                 .Returns(expectedNisCodes);
 
             var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
@@ -724,7 +725,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
             var updatedNisCodes = new List<string> { "11002", "11003" };
 
             MunicipalityGeometryRepositoryMock
-                .SetupSequence(x => x.GetOverlappingNisCodes(It.IsAny<string>()))
+                .SetupSequence(x => x.GetOverlappingNisCodes(It.IsAny<string>(), It.IsAny<Instant>()))
                 .Returns(initialNisCodes)
                 .Returns(updatedNisCodes);
 
@@ -766,7 +767,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
             var updatedNisCodes = new List<string> { "21001" };
 
             MunicipalityGeometryRepositoryMock
-                .SetupSequence(x => x.GetOverlappingNisCodes(It.IsAny<string>()))
+                .SetupSequence(x => x.GetOverlappingNisCodes(It.IsAny<string>(), It.IsAny<Instant>()))
                 .Returns(initialNisCodes)
                 .Returns(updatedNisCodes);
 
@@ -885,7 +886,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         private void SetupMunicipalityGeometryRepositoryMock(List<string>? nisCodes = null)
         {
             MunicipalityGeometryRepositoryMock
-                .Setup(x => x.GetOverlappingNisCodes(It.IsAny<string>()))
+                .Setup(x => x.GetOverlappingNisCodes(It.IsAny<string>(), It.IsAny<Instant>()))
                 .Returns(nisCodes ?? new List<string> { "11001" });
         }
 
