@@ -33,6 +33,9 @@ namespace ParcelRegistry.Api.Oslo.Parcel.ChangeFeed
                                      "objectId": "34034B0003-00_000",
                                      "naamruimte": "https://data.vlaanderen.be/id/perceel",
                                      "versieId": "2023-11-02T07:37:09+01:00",
+                                     "nisCodes": [
+                                         "34042"
+                                     ],
                                      "attributen": [
                                          {
                                              "naam": "perceelStatus",

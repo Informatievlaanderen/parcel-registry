@@ -1,13 +1,14 @@
 namespace ParcelRegistry.Projections.Feed.ParcelFeed
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Dapper;
     using NetTopologySuite.Geometries;
+    using NetTopologySuite.IO;
     using NodaTime;
     using Npgsql;
 
@@ -30,9 +31,18 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             EnsureCacheLoaded();
 
             var ewkbBytes = extendedWkbGeometryAsHex.ToByteArray();
-            var wkbReader = WKBReaderFactory.CreateForEwkb(ewkbBytes);
+            WKBReader? wkbReader = null;
+            if (!ewkbBytes.TryReadSrid(out var srid))
+            {
+                srid = SystemReferenceId.SridLambert72;
+                wkbReader = WKBReaderFactory.CreateForLambert72();
+            }
+            else
+            {
+                wkbReader = WKBReaderFactory.CreateForEwkb(ewkbBytes);
+            }
+
             var parcelGeometry = wkbReader.Read(ewkbBytes);
-            var srid = parcelGeometry.SRID;
 
             var geometries = eventTimestamp >= CutoffDate
                 ? _cachedGeometries!
@@ -65,7 +75,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
-            var sql = $@"SELECT nis_code, geometry, geometry_lambert08
+            var sql = $@"SELECT nis_code, ST_AsBinary(geometry) as geometry, ST_AsBinary(geometry_lambert08) as geometry_lambert08
                          FROM {tableName}";
 
             var rows = connection.Query(sql);
