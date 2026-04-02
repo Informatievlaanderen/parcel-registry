@@ -1,20 +1,19 @@
 namespace ParcelRegistry.Projections.Feed.ParcelFeed
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Dapper;
     using NetTopologySuite.Geometries;
-    using NetTopologySuite.IO;
     using Npgsql;
 
     public sealed class MunicipalityGeometryRepository : IMunicipalityGeometryRepository
     {
         private readonly string _connectionString;
         private List<MunicipalityGeometryItem>? _cachedGeometries;
-        private readonly object _lock = new();
+        private readonly Lock _lock = new();
 
         public MunicipalityGeometryRepository(string connectionString)
         {
