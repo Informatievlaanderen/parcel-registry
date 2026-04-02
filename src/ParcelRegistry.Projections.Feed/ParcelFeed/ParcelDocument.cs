@@ -48,6 +48,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             string caPaKey,
             PerceelStatus status,
             List<int> addressPersistentLocalIds,
+            string? geometry,
             bool isRemoved,
             Instant createdTimestamp)
         {
@@ -60,6 +61,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 CaPaKey = caPaKey,
                 Status = status,
                 AddressPersistentLocalIds = addressPersistentLocalIds,
+                GeometryAsExtendedWkb = geometry,
             };
 
             RecordCreatedAt = createdTimestamp;
@@ -72,6 +74,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
         public string CaPaKey { get; set; } = string.Empty;
         public PerceelStatus Status { get; set; }
         public List<int> AddressPersistentLocalIds { get; set; } = new();
+        public string? GeometryAsExtendedWkb { get; set; }
 
         public DateTimeOffset VersionId { get; set; }
     }

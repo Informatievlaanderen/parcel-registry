@@ -76,6 +76,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     document.Document.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
                     document.Document.Status.Should().Be(MapStatus(parcelWasMigrated.ParcelStatus));
                     document.Document.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds);
+                    document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasMigrated.ExtendedWkbGeometry);
 
                     var feedItem = await FindFeedItemByCaPaKey(context, parcelWasMigrated.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelWasMigrated);
@@ -128,6 +129,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     document.LastChangedOn.Should().Be(parcelWasImported.Provenance.Timestamp);
                     document.Document.Status.Should().Be(PerceelStatus.Gerealiseerd);
                     document.Document.AddressPersistentLocalIds.Should().BeEmpty();
+                    document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasImported.ExtendedWkbGeometry);
 
                     var feedItem = await FindFeedItemByCaPaKey(context, parcelWasImported.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelWasImported);
@@ -206,6 +208,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     var document = await context.ParcelDocuments.FindAsync(parcelGeometryWasChanged.CaPaKey);
                     document.Should().NotBeNull();
                     document!.LastChangedOn.Should().Be(parcelGeometryWasChanged.Provenance.Timestamp);
+                    document.Document.GeometryAsExtendedWkb.Should().Be(parcelGeometryWasChanged.ExtendedWkbGeometry);
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelGeometryWasChanged.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelGeometryWasChanged);
@@ -241,6 +244,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     document.Should().NotBeNull();
                     document!.Document.Status.Should().Be(PerceelStatus.Gerealiseerd);
                     document.LastChangedOn.Should().Be(parcelWasCorrected.Provenance.Timestamp);
+                    document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasCorrected.ExtendedWkbGeometry);
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelWasCorrected.CaPaKey);
                     AssertFeedItem(feedItem, position, parcelWasCorrected);

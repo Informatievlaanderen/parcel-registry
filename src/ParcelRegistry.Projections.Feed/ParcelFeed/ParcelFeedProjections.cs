@@ -38,6 +38,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                     message.Message.CaPaKey,
                     status,
                     addressPersistentLocalIds,
+                    message.Message.ExtendedWkbGeometry,
                     message.Message.IsRemoved,
                     message.Message.Provenance.Timestamp);
 
@@ -59,6 +60,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                     message.Message.CaPaKey,
                     MapStatus(ParcelStatus.Realized),
                     new List<int>(),
+                    message.Message.ExtendedWkbGeometry,
                     false,
                     message.Message.Provenance.Timestamp);
 
@@ -89,6 +91,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             When<Envelope<ParcelGeometryWasChanged>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
+                document.Document.GeometryAsExtendedWkb = message.Message.ExtendedWkbGeometry;
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
@@ -100,6 +103,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
                 var oldStatus = document.Document.Status;
                 document.Document.Status = MapStatus(ParcelStatus.Realized);
+                document.Document.GeometryAsExtendedWkb = message.Message.ExtendedWkbGeometry;
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
                 await AddCloudEvent(message, document, context,
