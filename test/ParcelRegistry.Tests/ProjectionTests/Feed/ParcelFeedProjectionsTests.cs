@@ -36,15 +36,17 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
         private ConnectedProjectionTest<FeedContext, ParcelFeedProjections> Sut { get; }
         private Mock<IChangeFeedService> ChangeFeedServiceMock { get; }
+        private Mock<IMunicipalityGeometryRepository> MunicipalityGeometryRepositoryMock { get; }
 
         public ParcelFeedProjectionsTests()
         {
             ChangeFeedServiceMock = new Mock<IChangeFeedService>();
+            MunicipalityGeometryRepositoryMock = new Mock<IMunicipalityGeometryRepository>();
             _feedContext = CreateContext();
 
             Sut = new ConnectedProjectionTest<FeedContext, ParcelFeedProjections>(
                 () => _feedContext,
-                () => new ParcelFeedProjections(ChangeFeedServiceMock.Object));
+                () => new ParcelFeedProjections(ChangeFeedServiceMock.Object, MunicipalityGeometryRepositoryMock.Object));
 
             _fixture = new Fixture();
             _fixture.Customize(new InfrastructureCustomization());
@@ -54,6 +56,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
             _fixture.Customize(new WithExtendedWkbGeometryPolygon());
 
             SetupChangeFeedServiceMock();
+            SetupMunicipalityGeometryRepositoryMock();
         }
 
         [Fact]
@@ -94,7 +97,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.CreateV1,
                             parcelWasMigrated.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue == null
@@ -142,7 +145,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.CreateV1,
                             parcelWasImported.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue == null
@@ -181,7 +184,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelWasRetired.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue!.ToString() == PerceelStatus.Gerealiseerd.ToString()
@@ -219,7 +222,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelGeometryWasChanged.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs => attrs.Count == 0),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
@@ -255,7 +258,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelWasCorrected.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue!.ToString() == PerceelStatus.Gehistoreerd.ToString()
@@ -303,7 +306,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelAddressWasAttached.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                     && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
@@ -351,7 +354,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelAddressWasDetached.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
@@ -399,7 +402,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelAddressWasDetached.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
@@ -447,7 +450,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelAddressWasDetached.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
@@ -495,7 +498,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelAddressWasDetached.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
@@ -548,7 +551,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelAddressWasReplaced.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
@@ -605,7 +608,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelAddressWasReplaced.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
@@ -668,11 +671,128 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             ParcelEventTypes.UpdateV1,
                             parcelAddressesWereReaddressed.CaPaKey,
                             It.IsAny<DateTimeOffset>(),
-                            It.IsAny<List<string>>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
                                                && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelWasMigrated_WithMultipleMunicipalities_ThenNisCodesArePassedToCloudEvent()
+        {
+            var expectedNisCodes = new List<string> { "11001", "11002" };
+            MunicipalityGeometryRepositoryMock
+                .Setup(x => x.GetOverlappingNisCodes(It.IsAny<string>()))
+                .Returns(expectedNisCodes);
+
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(parcelWasMigrated, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelWasMigrated.CaPaKey);
+                    document.Should().NotBeNull();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            It.IsAny<DateTimeOffset>(),
+                            ParcelEventTypes.CreateV1,
+                            parcelWasMigrated.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes =>
+                                nisCodes.Count == 2
+                                && nisCodes.Contains("11001")
+                                && nisCodes.Contains("11002")),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelGeometryWasChanged_ThenNisCodesAreUpdated()
+        {
+            var initialNisCodes = new List<string> { "11001" };
+            var updatedNisCodes = new List<string> { "11002", "11003" };
+
+            MunicipalityGeometryRepositoryMock
+                .SetupSequence(x => x.GetOverlappingNisCodes(It.IsAny<string>()))
+                .Returns(initialNisCodes)
+                .Returns(updatedNisCodes);
+
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelGeometryWasChanged = _fixture.Create<ParcelGeometryWasChanged>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelGeometryWasChanged, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelGeometryWasChanged.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.GeometryAsExtendedWkb.Should().Be(parcelGeometryWasChanged.ExtendedWkbGeometry);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelGeometryWasChanged.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelGeometryWasChanged.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes =>
+                                nisCodes.Count == 2
+                                && nisCodes.Contains("11002")
+                                && nisCodes.Contains("11003")),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelWasCorrectedFromRetiredToRealized_ThenNisCodesAreUpdated()
+        {
+            var initialNisCodes = new List<string> { "11001" };
+            var updatedNisCodes = new List<string> { "21001" };
+
+            MunicipalityGeometryRepositoryMock
+                .SetupSequence(x => x.GetOverlappingNisCodes(It.IsAny<string>()))
+                .Returns(initialNisCodes)
+                .Returns(updatedNisCodes);
+
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Retired);
+            var parcelWasCorrected = _fixture.Create<ParcelWasCorrectedFromRetiredToRealized>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelWasCorrected, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelWasCorrected.CaPaKey);
+                    document.Should().NotBeNull();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelWasCorrected.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes =>
+                                nisCodes.Count == 1
+                                && nisCodes.Contains("21001")),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
                             It.IsAny<string>(),
                             It.IsAny<string>()),
                         Times.Once);
@@ -760,6 +880,13 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                 It.IsAny<int>(),
                 It.IsAny<FeedContext>(),
                 It.IsAny<Func<int, Task<int>>>()));
+        }
+
+        private void SetupMunicipalityGeometryRepositoryMock(List<string>? nisCodes = null)
+        {
+            MunicipalityGeometryRepositoryMock
+                .Setup(x => x.GetOverlappingNisCodes(It.IsAny<string>()))
+                .Returns(nisCodes ?? new List<string> { "11001" });
         }
 
         private FeedContext CreateContext()

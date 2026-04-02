@@ -17,6 +17,9 @@
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Oslo" />
 
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Npgsql" />
+
     <PackageReference Include="SourceLink.Embed.AllSourceFiles" PrivateAssets="all" />
     <PackageReference Include="SourceLink.Copy.PdbFiles" PrivateAssets="all" />
   </ItemGroup>

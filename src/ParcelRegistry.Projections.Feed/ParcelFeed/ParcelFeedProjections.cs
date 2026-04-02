@@ -23,10 +23,14 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
     public class ParcelFeedProjections : ConnectedProjection<FeedContext>
     {
         private readonly IChangeFeedService _changeFeedService;
+        private readonly IMunicipalityGeometryRepository _municipalityGeometryRepository;
 
-        public ParcelFeedProjections(IChangeFeedService changeFeedService)
+        public ParcelFeedProjections(
+            IChangeFeedService changeFeedService,
+            IMunicipalityGeometryRepository municipalityGeometryRepository)
         {
             _changeFeedService = changeFeedService;
+            _municipalityGeometryRepository = municipalityGeometryRepository;
 
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
@@ -262,6 +266,8 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             List<BaseRegistriesCloudEventAttribute> attributes,
             string eventType) where T : IMessage, IHasProvenance, IHasParcelId
         {
+            var nisCodes = GetNisCodes(document.Document.GeometryAsExtendedWkb);
+
             context.Entry(document).Property(x => x.Document).IsModified = true;
 
             var page = await context.CalculatePage();
@@ -282,7 +288,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 eventType,
                 document.CaPaKey,
                 document.LastChangedOnAsDateTimeOffset,
-                new List<string>(),
+                nisCodes,
                 attributes,
                 message.EventName,
                 message.Metadata["CommandId"].ToString()!);
@@ -321,6 +327,14 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                         .Count(x => x.Page == p && context.Entry(x).State == EntityState.Added);
                     return await context.ParcelFeed.CountAsync(x => x.Page == p) + localCount - 1;
                 });
+        }
+
+        private List<string> GetNisCodes(string? geometryAsExtendedWkb)
+        {
+            if (string.IsNullOrEmpty(geometryAsExtendedWkb))
+                return new List<string>();
+
+            return _municipalityGeometryRepository.GetOverlappingNisCodes(geometryAsExtendedWkb);
         }
     }
 }

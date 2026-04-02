@@ -167,13 +167,19 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                 .AsSelf()
                 .InstancePerLifetimeScope();
 
+            var integrationConnectionString = _configuration.GetConnectionString("IntegrationProjections");
+            builder.Register(_ => new MunicipalityGeometryRepository(integrationConnectionString!))
+                .As<IMunicipalityGeometryRepository>()
+                .SingleInstance();
+
             builder
                 .RegisterProjectionMigrator<FeedContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
                 .RegisterProjections<ParcelFeedProjections, FeedContext>(context =>
                         new ParcelFeedProjections(
-                            context.Resolve<IChangeFeedService>()),
+                            context.Resolve<IChangeFeedService>(),
+                            context.Resolve<IMunicipalityGeometryRepository>()),
                     ConnectedProjectionSettings.Configure(c =>
                     {
                         c.ConfigureCatchUpPageSize(1);
