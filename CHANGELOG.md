@@ -1,3 +1,10 @@
+# [6.6.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.5.2...v6.6.0) (2026-04-03)
+
+
+### Features
+
+* **feed:** add ParcelRegistry.Projections.Feed project ([43cefcd](https://github.com/informatievlaanderen/parcel-registry/commit/43cefcd2913ae7c62698c65131c33bffb7ebfd5e))
+
 ## [6.5.2](https://github.com/informatievlaanderen/parcel-registry/compare/v6.5.1...v6.5.2) (2026-03-30)
 
 ## [6.5.1](https://github.com/informatievlaanderen/parcel-registry/compare/v6.5.0...v6.5.1) (2025-12-04)
