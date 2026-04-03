@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\src\ParcelRegistry.Projections.Integration\ParcelRegistry.Projections.Integration.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Projections.LastChangedList\ParcelRegistry.Projections.LastChangedList.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Projections.Legacy\ParcelRegistry.Projections.Legacy.csproj" />
+    <ProjectReference Include="..\..\src\ParcelRegistry.Projections.Feed\ParcelRegistry.Projections.Feed.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry\ParcelRegistry.csproj" />
   </ItemGroup>
 

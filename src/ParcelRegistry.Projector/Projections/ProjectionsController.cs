@@ -19,6 +19,7 @@ namespace ParcelRegistry.Projector.Projections
                 configuration.GetValue<string>("BaseUrl"))
         {
             RegisterConnectionString(Schema.Legacy, configuration.GetConnectionString("LegacyProjections"));
+            RegisterConnectionString(Schema.Feed, configuration.GetConnectionString("FeedProjections"));
             RegisterConnectionString(Schema.Extract, configuration.GetConnectionString("ExtractProjections"));
         }
     }

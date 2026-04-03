@@ -1,0 +1,904 @@
+namespace ParcelRegistry.Tests.ProjectionTests.Feed
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using AutoFixture;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
+    using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
+    using Be.Vlaanderen.Basisregisters.GrAr.Common;
+    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
+    using Builders;
+    using CloudNative.CloudEvents;
+    using Fixtures;
+    using FluentAssertions;
+    using Microsoft.EntityFrameworkCore;
+    using Moq;
+    using Newtonsoft.Json;
+    using NodaTime;
+    using Parcel;
+    using Parcel.Events;
+    using Projections.Feed;
+    using Projections.Feed.Contract;
+    using Projections.Feed.ParcelFeed;
+    using Xunit;
+    using Envelope = Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope;
+
+    public sealed class ParcelFeedProjectionsTests
+    {
+        private static readonly string AddressNamespace = OsloNamespaces.Adres;
+
+        private readonly Fixture _fixture;
+        private readonly FeedContext _feedContext;
+
+        private ConnectedProjectionTest<FeedContext, ParcelFeedProjections> Sut { get; }
+        private Mock<IChangeFeedService> ChangeFeedServiceMock { get; }
+        private Mock<IMunicipalityGeometryRepository> MunicipalityGeometryRepositoryMock { get; }
+
+        public ParcelFeedProjectionsTests()
+        {
+            ChangeFeedServiceMock = new Mock<IChangeFeedService>();
+            MunicipalityGeometryRepositoryMock = new Mock<IMunicipalityGeometryRepository>();
+            _feedContext = CreateContext();
+
+            Sut = new ConnectedProjectionTest<FeedContext, ParcelFeedProjections>(
+                () => _feedContext,
+                () => new ParcelFeedProjections(ChangeFeedServiceMock.Object, MunicipalityGeometryRepositoryMock.Object));
+
+            _fixture = new Fixture();
+            _fixture.Customize(new InfrastructureCustomization());
+            _fixture.Customize(new WithParcelStatus());
+            _fixture.Customize(new WithFixedParcelId());
+            _fixture.Customize(new Tests.Legacy.AutoFixture.WithFixedParcelId());
+            _fixture.Customize(new WithExtendedWkbGeometryPolygon());
+
+            SetupChangeFeedServiceMock();
+            SetupMunicipalityGeometryRepositoryMock();
+        }
+
+        [Fact]
+        public async Task WhenParcelWasMigrated_ThenFeedItemAndDocumentAreAdded()
+        {
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(parcelWasMigrated, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelWasMigrated.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
+                    document.IsRemoved.Should().Be(parcelWasMigrated.IsRemoved);
+                    document.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);
+                    document.LastChangedOn.Should().Be(parcelWasMigrated.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(parcelWasMigrated.Provenance.Timestamp.ToBelgianDateTimeOffset());
+                    document.Document.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
+                    document.Document.Status.Should().Be(MapStatus(parcelWasMigrated.ParcelStatus));
+                    document.Document.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds);
+                    document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasMigrated.ExtendedWkbGeometry);
+
+                    var feedItem = await FindFeedItemByCaPaKey(context, parcelWasMigrated.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelWasMigrated);
+                    feedItem!.ParcelId.Should().Be(parcelWasMigrated.ParcelId);
+                    feedItem.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
+
+                    var expectedAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelWasMigrated.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.CreateV1,
+                            parcelWasMigrated.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == MapStatus(parcelWasMigrated.ParcelStatus).ToString())
+                                && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && a.OldValue == null
+                                               && a.NewValue != null
+                                               && ((List<string>)a.NewValue).SequenceEqual(expectedAddressPuris))),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelWasImported_ThenFeedItemAndDocumentAreAdded()
+        {
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(parcelWasImported, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelWasImported.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.CaPaKey.Should().Be(parcelWasImported.CaPaKey);
+                    document.IsRemoved.Should().BeFalse();
+                    document.RecordCreatedAt.Should().Be(parcelWasImported.Provenance.Timestamp);
+                    document.LastChangedOn.Should().Be(parcelWasImported.Provenance.Timestamp);
+                    document.Document.Status.Should().Be(PerceelStatus.Gerealiseerd);
+                    document.Document.AddressPersistentLocalIds.Should().BeEmpty();
+                    document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasImported.ExtendedWkbGeometry);
+
+                    var feedItem = await FindFeedItemByCaPaKey(context, parcelWasImported.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelWasImported);
+                    feedItem!.ParcelId.Should().Be(parcelWasImported.ParcelId);
+                    feedItem.CaPaKey.Should().Be(parcelWasImported.CaPaKey);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelWasImported.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.CreateV1,
+                            parcelWasImported.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
+                                               && a.OldValue == null
+                                               && a.NewValue!.ToString() == PerceelStatus.Gerealiseerd.ToString())
+                                && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelWasRetiredV2_ThenDocumentStatusIsUpdated()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelWasRetired = _fixture.Create<ParcelWasRetiredV2>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelWasRetired, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelWasRetired.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.Status.Should().Be(PerceelStatus.Gehistoreerd);
+                    document.LastChangedOn.Should().Be(parcelWasRetired.Provenance.Timestamp);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelWasRetired.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelWasRetired);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelWasRetired.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelWasRetired.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
+                                               && a.OldValue!.ToString() == PerceelStatus.Gerealiseerd.ToString()
+                                               && a.NewValue!.ToString() == PerceelStatus.Gehistoreerd.ToString())),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelGeometryWasChanged_ThenVersionIsUpdated()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelGeometryWasChanged = _fixture.Create<ParcelGeometryWasChanged>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelGeometryWasChanged, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelGeometryWasChanged.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.LastChangedOn.Should().Be(parcelGeometryWasChanged.Provenance.Timestamp);
+                    document.Document.GeometryAsExtendedWkb.Should().Be(parcelGeometryWasChanged.ExtendedWkbGeometry);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelGeometryWasChanged.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelGeometryWasChanged);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelGeometryWasChanged.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelGeometryWasChanged.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs => attrs.Count == 0),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelWasCorrectedFromRetiredToRealized_ThenStatusIsUpdated()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Retired);
+            var parcelWasCorrected = _fixture.Create<ParcelWasCorrectedFromRetiredToRealized>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelWasCorrected, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelWasCorrected.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.Status.Should().Be(PerceelStatus.Gerealiseerd);
+                    document.LastChangedOn.Should().Be(parcelWasCorrected.Provenance.Timestamp);
+                    document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasCorrected.ExtendedWkbGeometry);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelWasCorrected.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelWasCorrected);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelWasCorrected.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
+                                               && a.OldValue!.ToString() == PerceelStatus.Gehistoreerd.ToString()
+                                               && a.NewValue!.ToString() == PerceelStatus.Gerealiseerd.ToString())),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasAttachedV2_ThenAddressIsAdded()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressWasAttached = _fixture.Create<ParcelAddressWasAttachedV2>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelAddressWasAttached, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelAddressWasAttached.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.AddressPersistentLocalIds.Should().Contain(parcelAddressWasAttached.AddressPersistentLocalId);
+                    document.LastChangedOn.Should().Be(parcelAddressWasAttached.Provenance.Timestamp);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasAttached.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelAddressWasAttached);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Concat([$"{AddressNamespace}/{parcelAddressWasAttached.AddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasAttached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasAttached.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                    && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                    && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasDetachedV2_ThenAddressIsRemoved()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedV2>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelAddressWasDetached, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelAddressWasDetached.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.AddressPersistentLocalIds.Should().NotContain(parcelAddressWasDetached.AddressPersistentLocalId);
+                    document.LastChangedOn.Should().Be(parcelAddressWasDetached.Provenance.Timestamp);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelAddressWasDetached);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasDetached.AddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasDetached.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasDetachedBecauseAddressWasRemoved_ThenAddressIsRemoved()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRemoved>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelAddressWasDetached, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelAddressWasDetached.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.AddressPersistentLocalIds.Should().NotContain(parcelAddressWasDetached.AddressPersistentLocalId);
+                    document.LastChangedOn.Should().Be(parcelAddressWasDetached.Provenance.Timestamp);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelAddressWasDetached);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasDetached.AddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasDetached.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasDetachedBecauseAddressWasRejected_ThenAddressIsRemoved()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRejected>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelAddressWasDetached, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelAddressWasDetached.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.AddressPersistentLocalIds.Should().NotContain(parcelAddressWasDetached.AddressPersistentLocalId);
+                    document.LastChangedOn.Should().Be(parcelAddressWasDetached.Provenance.Timestamp);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelAddressWasDetached);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasDetached.AddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasDetached.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasDetachedBecauseAddressWasRetired_ThenAddressIsRemoved()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressWasDetached = _fixture.Create<ParcelAddressWasDetachedBecauseAddressWasRetired>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelAddressWasDetached, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelAddressWasDetached.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.AddressPersistentLocalIds.Should().NotContain(parcelAddressWasDetached.AddressPersistentLocalId);
+                    document.LastChangedOn.Should().Be(parcelAddressWasDetached.Provenance.Timestamp);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasDetached.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelAddressWasDetached);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasDetached.AddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasDetached.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasDetached.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasReplacedBecauseOfMunicipalityMerger_ThenAddressIsReplaced()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressWasReplaced = new ParcelAddressWasReplacedBecauseOfMunicipalityMergerBuilder(_fixture)
+                .WithPreviousAddress(parcelWasMigrated.AddressPersistentLocalIds.First())
+                .Build();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelAddressWasReplaced, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelAddressWasReplaced.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.AddressPersistentLocalIds.Count.Should().Be(parcelWasMigrated.AddressPersistentLocalIds.Count);
+                    document.Document.AddressPersistentLocalIds.Should().Contain(parcelAddressWasReplaced.NewAddressPersistentLocalId);
+                    document.Document.AddressPersistentLocalIds.Should().NotContain(parcelAddressWasReplaced.PreviousAddressPersistentLocalId);
+                    document.LastChangedOn.Should().Be(parcelAddressWasReplaced.Provenance.Timestamp);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasReplaced.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelAddressWasReplaced);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasReplaced.PreviousAddressPersistentLocalId}"])
+                        .Concat([$"{AddressNamespace}/{parcelAddressWasReplaced.NewAddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasReplaced.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasReplaced.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasReplacedBecauseAddressWasReaddressed_ThenAddressIsReplaced()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressWasReplaced = new ParcelAddressWasReplacedBecauseAddressWasReaddressedBuilder(_fixture)
+                .WithPreviousAddress(parcelWasMigrated.AddressPersistentLocalIds.First())
+                .WithNewAddress(parcelWasMigrated.AddressPersistentLocalIds.LastOrDefault())
+                .Build();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelAddressWasReplaced, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelAddressWasReplaced.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.AddressPersistentLocalIds.Count.Should().Be(parcelWasMigrated.AddressPersistentLocalIds.Count);
+                    document.Document.AddressPersistentLocalIds.Should().Contain(parcelAddressWasReplaced.NewAddressPersistentLocalId);
+                    document.Document.AddressPersistentLocalIds.Should().NotContain(parcelAddressWasReplaced.PreviousAddressPersistentLocalId);
+                    document.LastChangedOn.Should().Be(parcelAddressWasReplaced.Provenance.Timestamp);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressWasReplaced.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelAddressWasReplaced);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except([$"{AddressNamespace}/{parcelAddressWasReplaced.PreviousAddressPersistentLocalId}"])
+                        .Concat([$"{AddressNamespace}/{parcelAddressWasReplaced.NewAddressPersistentLocalId}"])
+                        .Distinct()
+                        .ToList();
+
+                    // NewAddress already exists in the list, so after Distinct() the count drops by 1 (only the previous address was removed)
+                    expectedAddressPuris.Count.Should().Be(parcelWasMigrated.AddressPersistentLocalIds.Count - 1);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressWasReplaced.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressWasReplaced.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressesWereReaddressed_ThenAddressesAreUpdated()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelAddressesWereReaddressed = new ParcelAddressesWereReaddressedBuilder(_fixture)
+                .WithDetachedAddress(parcelWasMigrated.AddressPersistentLocalIds.First())
+                .WithAttachedAddress(_fixture.Create<int>())
+                .Build();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelAddressesWereReaddressed, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelAddressesWereReaddressed.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.AddressPersistentLocalIds.Count.Should().Be(parcelWasMigrated.AddressPersistentLocalIds.Count);
+
+                    foreach (var attached in parcelAddressesWereReaddressed.AttachedAddressPersistentLocalIds)
+                    {
+                        document.Document.AddressPersistentLocalIds.Should().Contain(attached);
+                    }
+
+                    foreach (var detached in parcelAddressesWereReaddressed.DetachedAddressPersistentLocalIds)
+                    {
+                        document.Document.AddressPersistentLocalIds.Should().NotContain(detached);
+                    }
+
+                    document.LastChangedOn.Should().Be(parcelAddressesWereReaddressed.Provenance.Timestamp);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelAddressesWereReaddressed.CaPaKey);
+                    AssertFeedItem(feedItem, position, parcelAddressesWereReaddressed);
+
+                    var oldAddressPuris = parcelWasMigrated.AddressPersistentLocalIds
+                        .Select(id => $"{AddressNamespace}/{id}")
+                        .Distinct()
+                        .ToList();
+
+                    var expectedAddressPuris = oldAddressPuris
+                        .Except(parcelAddressesWereReaddressed.DetachedAddressPersistentLocalIds.Select(id => $"{AddressNamespace}/{id}"))
+                        .Concat(parcelAddressesWereReaddressed.AttachedAddressPersistentLocalIds.Select(id => $"{AddressNamespace}/{id}"))
+                        .Distinct()
+                        .ToList();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelAddressesWereReaddressed.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelAddressesWereReaddressed.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
+                            It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
+                                attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
+                                               && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
+                                               && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelWasMigrated_WithMultipleMunicipalities_ThenNisCodesArePassedToCloudEvent()
+        {
+            var expectedNisCodes = new List<string> { "11001", "11002" };
+            MunicipalityGeometryRepositoryMock
+                .Setup(x => x.GetOverlappingNisCodes(It.IsAny<string>(), It.IsAny<Instant>()))
+                .Returns(expectedNisCodes);
+
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(parcelWasMigrated, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelWasMigrated.CaPaKey);
+                    document.Should().NotBeNull();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            It.IsAny<DateTimeOffset>(),
+                            ParcelEventTypes.CreateV1,
+                            parcelWasMigrated.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes =>
+                                nisCodes.Count == 2
+                                && nisCodes.Contains("11001")
+                                && nisCodes.Contains("11002")),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelGeometryWasChanged_ThenNisCodesAreUpdated()
+        {
+            var initialNisCodes = new List<string> { "11001" };
+            var updatedNisCodes = new List<string> { "11002", "11003" };
+
+            MunicipalityGeometryRepositoryMock
+                .SetupSequence(x => x.GetOverlappingNisCodes(It.IsAny<string>(), It.IsAny<Instant>()))
+                .Returns(initialNisCodes)
+                .Returns(updatedNisCodes);
+
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+            var parcelGeometryWasChanged = _fixture.Create<ParcelGeometryWasChanged>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelGeometryWasChanged, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelGeometryWasChanged.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.GeometryAsExtendedWkb.Should().Be(parcelGeometryWasChanged.ExtendedWkbGeometry);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelGeometryWasChanged.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelGeometryWasChanged.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes =>
+                                nisCodes.Count == 2
+                                && nisCodes.Contains("11002")
+                                && nisCodes.Contains("11003")),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelWasCorrectedFromRetiredToRealized_ThenNisCodesAreUpdated()
+        {
+            var initialNisCodes = new List<string> { "11001" };
+            var updatedNisCodes = new List<string> { "21001" };
+
+            MunicipalityGeometryRepositoryMock
+                .SetupSequence(x => x.GetOverlappingNisCodes(It.IsAny<string>(), It.IsAny<Instant>()))
+                .Returns(initialNisCodes)
+                .Returns(updatedNisCodes);
+
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Retired);
+            var parcelWasCorrected = _fixture.Create<ParcelWasCorrectedFromRetiredToRealized>();
+            var position = 2L;
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelWasCorrected, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelWasCorrected.CaPaKey);
+                    document.Should().NotBeNull();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            parcelWasCorrected.Provenance.Timestamp.ToBelgianDateTimeOffset(),
+                            ParcelEventTypes.UpdateV1,
+                            parcelWasCorrected.CaPaKey,
+                            It.IsAny<DateTimeOffset>(),
+                            It.Is<List<string>>(nisCodes =>
+                                nisCodes.Count == 1
+                                && nisCodes.Contains("21001")),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Once);
+                });
+        }
+
+        #region Helpers
+
+        private static PerceelStatus MapStatus(ParcelStatus parcelStatus)
+        {
+            if(parcelStatus == ParcelStatus.Realized)
+                return PerceelStatus.Gerealiseerd;
+            if(parcelStatus == ParcelStatus.Retired)
+                return PerceelStatus.Gehistoreerd;
+
+            throw new ArgumentOutOfRangeException(nameof(parcelStatus));
+        }
+
+        private ParcelWasMigrated CreateParcelWasMigrated(ParcelStatus status)
+        {
+            _fixture.Register(() => status);
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            return parcelWasMigrated;
+        }
+
+        private static void AssertFeedItem(
+            ParcelFeedItem? feedItem,
+            long position,
+            IParcelEvent @event)
+        {
+            feedItem.Should().NotBeNull();
+            feedItem!.CloudEventAsString.Should().NotBeNullOrEmpty();
+            feedItem.Page.Should().Be(1);
+            feedItem.Position.Should().Be(position);
+            feedItem.Application.Should().Be(@event.Provenance.Application);
+            feedItem.Modification.Should().Be(@event.Provenance.Modification);
+            feedItem.Operator.Should().Be(@event.Provenance.Operator);
+            feedItem.Organisation.Should().Be(@event.Provenance.Organisation);
+            feedItem.Reason.Should().Be(@event.Provenance.Reason);
+        }
+
+        private static async Task<ParcelFeedItem?> FindFeedItemByCaPaKey(FeedContext context, string caPaKey)
+        {
+            return await context.ParcelFeed
+                .Where(x => x.CaPaKey == caPaKey)
+                .SingleOrDefaultAsync();
+        }
+
+        private static async Task<ParcelFeedItem> FindLastFeedItemByCaPaKey(FeedContext context, string caPaKey)
+        {
+            return await context.ParcelFeed
+                .Where(x => x.CaPaKey == caPaKey)
+                .OrderBy(x => x.Id)
+                .LastAsync();
+        }
+
+        private Envelope<T> CreateEnvelope<T>(T @event, long position) where T : IMessage
+        {
+            var metadata = new Dictionary<string, object>
+            {
+                { "Position", position },
+                { "EventName", @event.GetType().Name },
+                { "CommandId", Guid.NewGuid().ToString() }
+            };
+            return new Envelope<T>(new Envelope(@event, metadata));
+        }
+
+        private void SetupChangeFeedServiceMock()
+        {
+            ChangeFeedServiceMock.Setup(x => x.CreateCloudEventWithData(
+                    It.IsAny<long>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<DateTimeOffset>(),
+                    It.IsAny<List<string>>(),
+                    It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Returns(new CloudEvent());
+
+            ChangeFeedServiceMock.Setup(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>())).Returns("serialized cloud event");
+
+            ChangeFeedServiceMock.Setup(x => x.CheckToUpdateCacheAsync(
+                It.IsAny<int>(),
+                It.IsAny<FeedContext>(),
+                It.IsAny<Func<int, Task<int>>>()));
+        }
+
+        private void SetupMunicipalityGeometryRepositoryMock(List<string>? nisCodes = null)
+        {
+            MunicipalityGeometryRepositoryMock
+                .Setup(x => x.GetOverlappingNisCodes(It.IsAny<string>(), It.IsAny<Instant>()))
+                .Returns(nisCodes ?? new List<string> { "11001" });
+        }
+
+        private FeedContext CreateContext()
+        {
+            var options = new DbContextOptionsBuilder<FeedContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            return new FeedContext(options, new JsonSerializerSettings());
+        }
+
+        #endregion
+    }
+}
