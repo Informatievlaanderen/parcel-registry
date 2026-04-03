@@ -18,7 +18,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
     using Parcel;
     using Parcel.Events;
 
-    [ConnectedProjectionName("Feed endpoint percelen")]
+    [ConnectedProjectionName("Feed endpoint percelen (cloudevents)")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor de percelen cloudevent feed voorziet.")]
     public class ParcelFeedProjections : ConnectedProjection<FeedContext>
     {
