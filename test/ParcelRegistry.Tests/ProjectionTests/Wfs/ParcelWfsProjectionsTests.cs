@@ -220,6 +220,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Wfs
                     CreateEnvelope(@event, 2L))
                 .Then(async context =>
                 {
+                    var item = await context.ParcelWfsItems.FindAsync(@event.ParcelId);
+                    item.Should().NotBeNull();
+                    item!.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+
                     var address = await context.ParcelWfsAddresses.FindAsync(
                         @event.ParcelId, @event.AddressPersistentLocalId);
                     address.Should().BeNull();
@@ -241,6 +245,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Wfs
                     CreateEnvelope(@event, 2L))
                 .Then(async context =>
                 {
+                    var item = await context.ParcelWfsItems.FindAsync(@event.ParcelId);
+                    item.Should().NotBeNull();
+                    item!.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+
                     var address = await context.ParcelWfsAddresses.FindAsync(
                         @event.ParcelId, @event.AddressPersistentLocalId);
                     address.Should().BeNull();
@@ -262,6 +270,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Wfs
                     CreateEnvelope(@event, 2L))
                 .Then(async context =>
                 {
+                    var item = await context.ParcelWfsItems.FindAsync(@event.ParcelId);
+                    item.Should().NotBeNull();
+                    item!.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+
                     var address = await context.ParcelWfsAddresses.FindAsync(
                         @event.ParcelId, @event.AddressPersistentLocalId);
                     address.Should().BeNull();
@@ -289,6 +301,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Wfs
                     CreateEnvelope(@event, 2L))
                 .Then(async context =>
                 {
+                    var item = await context.ParcelWfsItems.FindAsync(@event.ParcelId);
+                    item.Should().NotBeNull();
+                    item!.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+
                     var oldAddress = await context.ParcelWfsAddresses.FindAsync(
                         @event.ParcelId, previousAddressPersistentLocalId);
                     oldAddress.Should().BeNull();
@@ -319,6 +335,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Wfs
                     CreateEnvelope(@event, 2L))
                 .Then(async context =>
                 {
+                    var item = await context.ParcelWfsItems.FindAsync(@event.ParcelId);
+                    item.Should().NotBeNull();
+                    item!.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+
                     var oldAddress = await context.ParcelWfsAddresses.FindAsync(
                         @event.ParcelId, previousAddressPersistentLocalId);
                     oldAddress.Should().BeNull();
@@ -350,6 +370,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Wfs
                     CreateEnvelope(@event, 2L))
                 .Then(async context =>
                 {
+                    var item = await context.ParcelWfsItems.FindAsync(@event.ParcelId);
+                    item.Should().NotBeNull();
+                    item!.VersionTimestamp.Should().Be(@event.Provenance.Timestamp);
+
                     var detached = await context.ParcelWfsAddresses.FindAsync(
                         @event.ParcelId, detachedAddressPersistentLocalId);
                     detached.Should().BeNull();
