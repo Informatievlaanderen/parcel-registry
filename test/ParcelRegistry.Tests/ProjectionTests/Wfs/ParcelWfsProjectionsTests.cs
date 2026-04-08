@@ -346,6 +346,69 @@ namespace ParcelRegistry.Tests.ProjectionTests.Wfs
                     var newAddress = await context.ParcelWfsAddresses.FindAsync(
                         @event.ParcelId, newAddressPersistentLocalId);
                     newAddress.Should().NotBeNull();
+                    newAddress!.Count.Should().Be(1);
+                });
+        }
+
+        [Fact]
+        public async Task WhenParcelAddressWasReplacedBecauseAddressWasReaddressed_WithCount2_ThenCountIsDecremented()
+        {
+            var parcelWasMigrated = CreateParcelWasMigratedWithoutAddresses();
+            var addressA = _fixture.Create<int>();
+            var addressB = _fixture.Create<int>();
+            var addressC = _fixture.Create<int>();
+
+            // First: attach addressA (via simple attach)
+            var attachA = new ParcelAddressWasAttachedV2(
+                new ParcelId(parcelWasMigrated.ParcelId),
+                new VbrCaPaKey(parcelWasMigrated.CaPaKey),
+                new AddressPersistentLocalId(addressA));
+            ((ISetProvenance)attachA).SetProvenance(_fixture.Create<Provenance>());
+
+            // Second: attach addressB (via simple attach)
+            var attachB = new ParcelAddressWasAttachedV2(
+                new ParcelId(parcelWasMigrated.ParcelId),
+                new VbrCaPaKey(parcelWasMigrated.CaPaKey),
+                new AddressPersistentLocalId(addressB));
+            ((ISetProvenance)attachB).SetProvenance(_fixture.Create<Provenance>());
+
+            // Readdress: A -> C (creates C with count=1, removes A)
+            var readdress1 = new ParcelAddressWasReplacedBecauseAddressWasReaddressed(
+                new ParcelId(parcelWasMigrated.ParcelId),
+                new VbrCaPaKey(parcelWasMigrated.CaPaKey),
+                new AddressPersistentLocalId(addressC),
+                new AddressPersistentLocalId(addressA));
+            ((ISetProvenance)readdress1).SetProvenance(_fixture.Create<Provenance>());
+
+            // Readdress: B -> C (C already exists, so count should become 2; B count=1 so removed)
+            var readdress2 = new ParcelAddressWasReplacedBecauseAddressWasReaddressed(
+                new ParcelId(parcelWasMigrated.ParcelId),
+                new VbrCaPaKey(parcelWasMigrated.CaPaKey),
+                new AddressPersistentLocalId(addressC),
+                new AddressPersistentLocalId(addressB));
+            ((ISetProvenance)readdress2).SetProvenance(_fixture.Create<Provenance>());
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(attachA, 2L),
+                    CreateEnvelope(attachB, 3L),
+                    CreateEnvelope(readdress1, 4L),
+                    CreateEnvelope(readdress2, 5L))
+                .Then(async context =>
+                {
+                    var addrA = await context.ParcelWfsAddresses.FindAsync(
+                        readdress2.ParcelId, addressA);
+                    addrA.Should().BeNull();
+
+                    var addrB = await context.ParcelWfsAddresses.FindAsync(
+                        readdress2.ParcelId, addressB);
+                    addrB.Should().BeNull();
+
+                    var addrC = await context.ParcelWfsAddresses.FindAsync(
+                        readdress2.ParcelId, addressC);
+                    addrC.Should().NotBeNull();
+                    addrC!.Count.Should().Be(2);
                 });
         }
 

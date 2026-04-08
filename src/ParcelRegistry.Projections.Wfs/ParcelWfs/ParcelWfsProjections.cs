@@ -187,14 +187,29 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
                     },
                     ct);
 
-                await RemoveParcelAddress(context, message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId, ct);
+                var previousAddress = await context.ParcelWfsAddresses.FindAsync(
+                    [message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId], ct);
 
-                var existing = await context.ParcelWfsAddresses.FindAsync(
+                if (previousAddress is not null && previousAddress.Count == 1)
+                {
+                    context.ParcelWfsAddresses.Remove(previousAddress);
+                }
+                else if (previousAddress is not null)
+                {
+                    previousAddress.Count -= 1;
+                }
+
+                var newAddress = await context.ParcelWfsAddresses.FindAsync(
                     [message.Message.ParcelId, message.Message.NewAddressPersistentLocalId], ct);
-                if (existing is null)
+
+                if (newAddress is null)
                 {
                     await context.ParcelWfsAddresses.AddAsync(
                         new ParcelWfsAddressItem(message.Message.ParcelId, message.Message.NewAddressPersistentLocalId), ct);
+                }
+                else
+                {
+                    newAddress.Count += 1;
                 }
             });
 

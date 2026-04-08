@@ -14,10 +14,12 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
         {
             ParcelId = parcelId;
             AddressPersistentLocalId = addressPersistentLocalId;
+            Count = 1;
         }
 
         public Guid ParcelId { get; set; }
         public int AddressPersistentLocalId { get; set; }
+        public int Count { get; set; }
     }
 
     public class ParcelWfsAddressItemConfiguration : IEntityTypeConfiguration<ParcelWfsAddressItem>
@@ -32,6 +34,7 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
 
             builder.HasIndex(x => x.AddressPersistentLocalId);
             builder.HasIndex(x => x.ParcelId);
+            builder.Property(x => x.Count).HasDefaultValue(1);
         }
     }
 }
