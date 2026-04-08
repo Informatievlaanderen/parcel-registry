@@ -31,6 +31,8 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using ParcelRegistry.Projections.Legacy;
     using ParcelRegistry.Projections.Legacy.ParcelDetail;
     using ParcelRegistry.Projections.Legacy.ParcelSyndication;
+    using ParcelRegistry.Projections.Wfs;
+    using ParcelRegistry.Projections.Wfs.ParcelWfs;
     using ParcelLinkExtractWithCountProjections = ParcelRegistry.Projections.Extract.ParcelLinkExtract.ParcelLinkExtractProjections;
 
     public class ApiModule : Module
@@ -75,6 +77,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
             RegisterExtractV2Projections(builder);
             RegisterLegacyV2Projections(builder);
             RegisterFeedProjections(builder);
+            RegisterWfsProjections(builder);
 
             if(_configuration.GetSection("Integration").GetValue("Enabled", false))
                 RegisterIntegrationProjections(builder);
@@ -185,6 +188,21 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                         c.ConfigureCatchUpPageSize(1);
                         c.ConfigureCatchUpUpdatePositionMessageInterval(1);
                     }));
+        }
+
+        private void RegisterWfsProjections(ContainerBuilder builder)
+        {
+            builder.RegisterModule(
+                new WfsModule(
+                    _configuration,
+                    _services,
+                    _loggerFactory));
+
+            builder
+                .RegisterProjectionMigrator<WfsContextMigrationFactory>(
+                    _configuration,
+                    _loggerFactory)
+                .RegisterProjections<ParcelWfsProjections, WfsContext>(ConnectedProjectionSettings.Default);
         }
     }
 }

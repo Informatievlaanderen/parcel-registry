@@ -36,6 +36,8 @@ namespace ParcelRegistry.Tests
     using Projections.Legacy;
     using Projections.Legacy.ParcelDetail;
     using Projections.Legacy.ParcelSyndication;
+    using Projections.Wfs;
+    using Projections.Wfs.ParcelWfs;
     using Xunit;
     using ProducerContext = Producer.Snapshot.Oslo.ProducerContext;
 
@@ -130,6 +132,11 @@ namespace ParcelRegistry.Tests
             yield return [new List<ConnectedProjection<FeedContext>>
             {
                 new ParcelFeedProjections(Mock.Of<IChangeFeedService>(), Mock.Of<IMunicipalityGeometryRepository>())
+            }];
+
+            yield return [new List<ConnectedProjection<WfsContext>>
+            {
+                new ParcelWfsProjections()
             }];
         }
 
