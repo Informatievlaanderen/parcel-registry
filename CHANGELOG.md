@@ -1,3 +1,10 @@
+## [6.6.1](https://github.com/informatievlaanderen/parcel-registry/compare/v6.6.0...v6.6.1) (2026-04-09)
+
+
+### Bug Fixes
+
+* **feed:** removed migrated parcel not emit event + cleanup tests ([3b0a74e](https://github.com/informatievlaanderen/parcel-registry/commit/3b0a74e55d3e78e86b5099ab4336c2ceae209c52))
+
 # [6.6.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.5.2...v6.6.0) (2026-04-03)
 
 
