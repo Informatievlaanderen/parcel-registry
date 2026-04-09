@@ -13,6 +13,7 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
     using Be.Vlaanderen.Basisregisters.Projector.ConnectedProjections;
     using Be.Vlaanderen.Basisregisters.Projector.Modules;
     using Be.Vlaanderen.Basisregisters.Shaperon;
+    using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -198,11 +199,15 @@ namespace ParcelRegistry.Projector.Infrastructure.Modules
                     _services,
                     _loggerFactory));
 
+            var wfsProjectionSettings = ConnectedProjectionSettings
+                .Configure(settings =>
+                    settings.ConfigureLinearBackoff<SqlException>(_configuration, "Wfs"));
+
             builder
                 .RegisterProjectionMigrator<WfsContextMigrationFactory>(
                     _configuration,
                     _loggerFactory)
-                .RegisterProjections<ParcelWfsProjections, WfsContext>(ConnectedProjectionSettings.Default);
+                .RegisterProjections<ParcelWfsProjections, WfsContext>(wfsProjectionSettings);
         }
     }
 }
