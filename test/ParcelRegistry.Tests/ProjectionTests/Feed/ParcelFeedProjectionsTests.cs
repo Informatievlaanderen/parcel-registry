@@ -14,6 +14,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
     using Builders;
     using CloudNative.CloudEvents;
+    using EventExtensions;
     using Fixtures;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
@@ -61,9 +62,52 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         }
 
         [Fact]
+        public async Task WhenRemovedParcelWasMigrated_ThenFeedItemIsNotAddedAndDocumentIsAdded()
+        {
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>()
+                .WithRemoved(true);
+            var position = 1L;
+
+            await Sut
+                .Given(CreateEnvelope(parcelWasMigrated, position))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelWasMigrated.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
+                    document.IsRemoved.Should().Be(parcelWasMigrated.IsRemoved);
+                    document.RecordCreatedAt.Should().Be(parcelWasMigrated.Provenance.Timestamp);
+                    document.LastChangedOn.Should().Be(parcelWasMigrated.Provenance.Timestamp);
+                    document.Document.VersionId.Should().Be(parcelWasMigrated.Provenance.Timestamp.ToBelgianDateTimeOffset());
+                    document.Document.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
+                    document.Document.Status.Should().Be(MapStatus(parcelWasMigrated.ParcelStatus));
+                    document.Document.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds);
+                    document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasMigrated.ExtendedWkbGeometry);
+
+                    var feedItem = await FindFeedItemByCaPaKey(context, parcelWasMigrated.CaPaKey);
+                    feedItem.Should().BeNull();
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<string>(),
+                            It.IsAny<string>(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            It.IsAny<string>(),
+                            It.IsAny<string>()),
+                        Times.Never);
+
+                    ChangeFeedServiceMock.Verify(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>()), Times.Never);
+                });
+        }
+
+        [Fact]
         public async Task WhenParcelWasMigrated_ThenFeedItemAndDocumentAreAdded()
         {
-            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>()
+                .WithRemoved(false);
             var position = 1L;
 
             await Sut
@@ -107,7 +151,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                                && a.OldValue == null
                                                && a.NewValue != null
                                                && ((List<string>)a.NewValue).SequenceEqual(expectedAddressPuris))),
-                            It.IsAny<string>(),
+                            ParcelWasMigrated.EventName,
                             It.IsAny<string>()),
                         Times.Once);
 
@@ -152,7 +196,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                                && a.OldValue == null
                                                && a.NewValue!.ToString() == PerceelStatus.Gerealiseerd.ToString())
                                 && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
-                            It.IsAny<string>(),
+                            ParcelWasImported.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -190,7 +234,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue!.ToString() == PerceelStatus.Gerealiseerd.ToString()
                                                && a.NewValue!.ToString() == PerceelStatus.Gehistoreerd.ToString())),
-                            It.IsAny<string>(),
+                            ParcelWasRetiredV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -225,7 +269,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.IsAny<DateTimeOffset>(),
                             It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs => attrs.Count == 0),
-                            It.IsAny<string>(),
+                            ParcelGeometryWasChanged.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -264,7 +308,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue!.ToString() == PerceelStatus.Gehistoreerd.ToString()
                                                && a.NewValue!.ToString() == PerceelStatus.Gerealiseerd.ToString())),
-                            It.IsAny<string>(),
+                            ParcelWasCorrectedFromRetiredToRealized.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -312,7 +356,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                     && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
                                     && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
-                            It.IsAny<string>(),
+                            ParcelAddressWasAttachedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -360,7 +404,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
                                                && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
-                            It.IsAny<string>(),
+                            ParcelAddressWasDetachedV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -408,7 +452,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
                                                && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
-                            It.IsAny<string>(),
+                            ParcelAddressWasDetachedBecauseAddressWasRemoved.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -456,7 +500,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
                                                && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
-                            It.IsAny<string>(),
+                            ParcelAddressWasDetachedBecauseAddressWasRejected.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -504,7 +548,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
                                                && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
-                            It.IsAny<string>(),
+                            ParcelAddressWasDetachedBecauseAddressWasRetired.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -557,7 +601,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
                                                && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
-                            It.IsAny<string>(),
+                            ParcelAddressWasReplacedBecauseOfMunicipalityMerger.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -614,7 +658,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
                                                && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
-                            It.IsAny<string>(),
+                            ParcelAddressWasReplacedBecauseAddressWasReaddressed.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -677,7 +721,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && ((List<string>)a.OldValue!).SequenceEqual(oldAddressPuris)
                                                && ((List<string>)a.NewValue!).SequenceEqual(expectedAddressPuris))),
-                            It.IsAny<string>(),
+                            ParcelAddressesWereReaddressed.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -691,7 +735,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                 .Setup(x => x.GetOverlappingNisCodes(It.IsAny<string>(), It.IsAny<Instant>()))
                 .Returns(expectedNisCodes);
 
-            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>()
+                .WithRemoved(false);
             var position = 1L;
 
             await Sut
@@ -712,7 +757,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 && nisCodes.Contains("11001")
                                 && nisCodes.Contains("11002")),
                             It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
-                            It.IsAny<string>(),
+                            ParcelWasMigrated.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -754,7 +799,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 && nisCodes.Contains("11002")
                                 && nisCodes.Contains("11003")),
                             It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
-                            It.IsAny<string>(),
+                            ParcelGeometryWasChanged.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -794,7 +839,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                                 nisCodes.Count == 1
                                 && nisCodes.Contains("21001")),
                             It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
-                            It.IsAny<string>(),
+                            ParcelWasCorrectedFromRetiredToRealized.EventName,
                             It.IsAny<string>()),
                         Times.Once);
                 });
@@ -815,7 +860,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         private ParcelWasMigrated CreateParcelWasMigrated(ParcelStatus status)
         {
             _fixture.Register(() => status);
-            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>();
+            var parcelWasMigrated = _fixture.Create<ParcelWasMigrated>()
+                .WithRemoved(false);
             return parcelWasMigrated;
         }
 

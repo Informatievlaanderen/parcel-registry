@@ -48,6 +48,9 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
                 await context.ParcelDocuments.AddAsync(document, ct);
 
+                if (message.Message.IsRemoved)
+                    return;
+
                 List<BaseRegistriesCloudEventAttribute> attributes =
                 [
                     new(ParcelAttributeNames.StatusName, null, status),
