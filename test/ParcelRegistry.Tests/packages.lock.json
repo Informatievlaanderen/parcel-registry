@@ -2847,6 +2847,17 @@
           "ParcelRegistry.Infrastructure": "[1.0.0, )"
         }
       },
+      "parcelregistry.projections.wfs": {
+        "type": "Project",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.EventHandling.Autofac": "[7.0.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "[22.9.0, )",
+          "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[15.0.1, )",
+          "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[15.0.1, )",
+          "ParcelRegistry": "[1.0.0, )",
+          "ParcelRegistry.Infrastructure": "[1.0.0, )"
+        }
+      },
       "AspNetCore.HealthChecks.NpgSql": {
         "type": "CentralTransitive",
         "requested": "[9.0.0, )",

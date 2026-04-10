@@ -16,6 +16,7 @@ namespace ParcelRegistry.Infrastructure
         public const string GrbImporter = "GrbImporter";
         public const string Integration = "integration_parcel";
         public const string Feed = "ParcelRegistryFeed";
+        public const string Wfs = "ParcelRegistryWfs";
     }
 
     public static class MigrationTables
@@ -31,5 +32,6 @@ namespace ParcelRegistry.Infrastructure
         public const string GrbImporter = "__EFMigrationsHistoryGrbImporter";
         public const string Integration = "__EFMigrationsHistory";
         public const string Feed = "__EFMigrationsHistoryFeed";
+        public const string Wfs = "__EFMigrationsHistoryWfs";
     }
 }
