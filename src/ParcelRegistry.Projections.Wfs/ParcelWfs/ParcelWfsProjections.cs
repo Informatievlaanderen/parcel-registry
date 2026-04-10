@@ -97,8 +97,7 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
                     },
                     ct);
 
-                await context.ParcelWfsAddresses.AddAsync(
-                    new ParcelWfsAddressItem(message.Message.ParcelId, message.Message.AddressPersistentLocalId), ct);
+                await AddParcelAddress(context, message.Message.ParcelId, message.Message.AddressPersistentLocalId, ct);
             });
 
             When<Envelope<ParcelAddressWasDetachedV2>>(async (context, message, ct) =>
@@ -165,13 +164,7 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
 
                 await RemoveParcelAddress(context, message.Message.ParcelId, message.Message.PreviousAddressPersistentLocalId, ct);
 
-                var existing = await context.ParcelWfsAddresses.FindAsync(
-                    [message.Message.ParcelId, message.Message.NewAddressPersistentLocalId], ct);
-                if (existing is null)
-                {
-                    await context.ParcelWfsAddresses.AddAsync(
-                        new ParcelWfsAddressItem(message.Message.ParcelId, message.Message.NewAddressPersistentLocalId), ct);
-                }
+                await AddParcelAddress(context, message.Message.ParcelId, message.Message.NewAddressPersistentLocalId, ct);
             });
 
             When<Envelope<ParcelAddressWasReplacedBecauseAddressWasReaddressed>>(async (context, message, ct) =>
@@ -199,7 +192,12 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
                 var newAddress = await context.ParcelWfsAddresses.FindAsync(
                     [message.Message.ParcelId, message.Message.NewAddressPersistentLocalId], ct);
 
-                if (newAddress is null)
+                if (newAddress is not null && context.Entry(newAddress).State == Microsoft.EntityFrameworkCore.EntityState.Deleted)
+                {
+                    context.Entry(newAddress).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    newAddress.Count = 1;
+                }
+                else if (newAddress is null)
                 {
                     await context.ParcelWfsAddresses.AddAsync(
                         new ParcelWfsAddressItem(message.Message.ParcelId, message.Message.NewAddressPersistentLocalId), ct);
@@ -227,15 +225,31 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
 
                 foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
                 {
-                    var existing = await context.ParcelWfsAddresses.FindAsync(
-                        [message.Message.ParcelId, addressPersistentLocalId], ct);
-                    if (existing is null)
-                    {
-                        await context.ParcelWfsAddresses.AddAsync(
-                            new ParcelWfsAddressItem(message.Message.ParcelId, addressPersistentLocalId), ct);
-                    }
+                    await AddParcelAddress(context, message.Message.ParcelId, addressPersistentLocalId, ct);
                 }
             });
+        }
+
+        private static async Task AddParcelAddress(
+            WfsContext context,
+            Guid parcelId,
+            int addressPersistentLocalId,
+            CancellationToken ct)
+        {
+            var existing = await context.ParcelWfsAddresses.FindAsync(
+                [parcelId, addressPersistentLocalId], ct);
+
+            if (existing is not null && context.Entry(existing).State == Microsoft.EntityFrameworkCore.EntityState.Deleted)
+            {
+                // Manually revive the deleted entity
+                context.Entry(existing).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                existing.Count = 1;
+            }
+            else if (existing is null)
+            {
+                await context.ParcelWfsAddresses.AddAsync(
+                    new ParcelWfsAddressItem(parcelId, addressPersistentLocalId), ct);
+            }
         }
 
         private static async Task RemoveParcelAddress(

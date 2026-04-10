@@ -3,6 +3,7 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
 
     public static class ParcelWfsExtensions
     {
@@ -14,7 +15,7 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
         {
             var item = await context.ParcelWfsItems.FindAsync([parcelId], ct);
             if (item == null)
-                throw new InvalidOperationException($"ParcelWfsItem with ParcelId '{parcelId}' not found.");
+                throw new ProjectionItemNotFoundException<ParcelWfsProjections>(parcelId.ToString("D"));
 
             updateAction(item);
         }
