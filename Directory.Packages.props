@@ -10,7 +10,7 @@
         <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
         <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
 
-        <PackageVersion Include="Autofac" Version="8.2.1" />
+        <PackageVersion Include="Autofac" Version="8.4.0" />
 
         <PackageVersion Include="Datadog.Trace.Bundle" Version="3.15.0" />
 
