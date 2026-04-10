@@ -1,14 +1,11 @@
 namespace ParcelRegistry.Projections.Wfs.ParcelWfs
 {
     using System;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
-    using Microsoft.EntityFrameworkCore;
     using NodaTime;
     using Parcel;
     using Parcel.Events;
