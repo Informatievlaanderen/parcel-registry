@@ -351,7 +351,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Wfs
         }
 
         [Fact]
-        public async Task WhenParcelAddressWasReplacedBecauseAddressWasReaddressed_WithCount2_ThenCountIsDecremented()
+        public async Task WhenParcelAddressWasReplacedBecauseAddressWasReaddressed_WithCount2_ThenCountIsAggregatedTo2AndPreviousAddressesAreRemoved()
         {
             var parcelWasMigrated = CreateParcelWasMigratedWithoutAddresses();
             var addressA = _fixture.Create<int>();
