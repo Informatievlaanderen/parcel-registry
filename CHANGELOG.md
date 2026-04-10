@@ -1,3 +1,10 @@
+# [6.7.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.6.1...v6.7.0) (2026-04-10)
+
+
+### Features
+
+* **wfs:** add ParcelRegistry.Projections.Wfs projections ([47868b5](https://github.com/informatievlaanderen/parcel-registry/commit/47868b5a1797af62695e62e220d19ddaf30468f3))
+
 ## [6.6.1](https://github.com/informatievlaanderen/parcel-registry/compare/v6.6.0...v6.6.1) (2026-04-09)
 
 
