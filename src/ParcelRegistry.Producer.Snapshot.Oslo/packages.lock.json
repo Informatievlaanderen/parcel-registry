@@ -196,11 +196,11 @@
       },
       "Datadog.Trace.Bundle": {
         "type": "Direct",
-        "requested": "[3.15.0, )",
-        "resolved": "3.15.0",
-        "contentHash": "mzCLTCiA1Lzlj3dRbE9G84aePo7S+7ekFdl5r3ujm8hmoeKkW0MBayhKIg2+ZvTbIbrA5oHMDcwIscLR125cVg==",
+        "requested": "[3.43.0, )",
+        "resolved": "3.43.0",
+        "contentHash": "uLrq7BE47Fs6iLfOrCO92WDux9Zg6sh2GoI8KM/wOVScPdFSJ3buoVM1JFzt2+P7AHx76HxX1/7K2frDsUPAgw==",
         "dependencies": {
-          "Datadog.Trace": "3.15.0"
+          "Datadog.Trace": "3.43.0"
         }
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL": {
@@ -543,8 +543,8 @@
       },
       "Datadog.Trace": {
         "type": "Transitive",
-        "resolved": "3.15.0",
-        "contentHash": "xDdce/RLnXEoyyySKoY+MEp586Yj5x9lNIhN3I2NbZhS7wnaXXHJ/1ieFxdgU2dfY5m6RlEGWKG5auzgKd9rzA==",
+        "resolved": "3.43.0",
+        "contentHash": "8NtN6ti6FA6VB8TJOaN7Z67um3emZLcy45e8nF5RA6xVD2hMFNjd2ENGIZEHlyArel9MmMz2YhtBotmXZQ3wiw==",
         "dependencies": {
           "System.Diagnostics.DiagnosticSource": "4.4.1"
         }
