@@ -1,3 +1,10 @@
+## [6.7.1](https://github.com/informatievlaanderen/parcel-registry/compare/v6.7.0...v6.7.1) (2026-05-19)
+
+
+### Bug Fixes
+
+* **feed:** readdress duplicate fix ([daa9580](https://github.com/informatievlaanderen/parcel-registry/commit/daa95806eb1f01c2529aee4c6b3d26625c558867))
+
 # [6.7.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.6.1...v6.7.0) (2026-04-10)
 
 
