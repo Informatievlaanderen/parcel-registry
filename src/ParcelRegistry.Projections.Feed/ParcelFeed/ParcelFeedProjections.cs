@@ -137,7 +137,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
                 var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
-                document.Document.AddressPersistentLocalIds.Remove(message.Message.AddressPersistentLocalId);
+                document.Document.AddressPersistentLocalIds.RemoveAll(id => id == message.Message.AddressPersistentLocalId);
                 var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
@@ -151,7 +151,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
                 var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
-                document.Document.AddressPersistentLocalIds.Remove(message.Message.AddressPersistentLocalId);
+                document.Document.AddressPersistentLocalIds.RemoveAll(id => id == message.Message.AddressPersistentLocalId);
                 var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
@@ -165,7 +165,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
                 var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
-                document.Document.AddressPersistentLocalIds.Remove(message.Message.AddressPersistentLocalId);
+                document.Document.AddressPersistentLocalIds.RemoveAll(id => id == message.Message.AddressPersistentLocalId);
                 var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
@@ -179,7 +179,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
                 var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
-                document.Document.AddressPersistentLocalIds.Remove(message.Message.AddressPersistentLocalId);
+                document.Document.AddressPersistentLocalIds.RemoveAll(id => id == message.Message.AddressPersistentLocalId);
                 var newAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
                 document.LastChangedOn = message.Message.Provenance.Timestamp;
 
@@ -194,7 +194,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);
                 var oldAddressPuris = BuildAddressPuris(document.Document.AddressPersistentLocalIds);
 
-                document.Document.AddressPersistentLocalIds.Remove(message.Message.PreviousAddressPersistentLocalId);
+                document.Document.AddressPersistentLocalIds.RemoveAll(id => id == message.Message.PreviousAddressPersistentLocalId);
                 if (!document.Document.AddressPersistentLocalIds.Contains(message.Message.NewAddressPersistentLocalId))
                 {
                     document.Document.AddressPersistentLocalIds.Add(message.Message.NewAddressPersistentLocalId);
@@ -233,7 +233,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
                 foreach (var addressPersistentLocalId in message.Message.DetachedAddressPersistentLocalIds)
                 {
-                    document.Document.AddressPersistentLocalIds.Remove(addressPersistentLocalId);
+                    document.Document.AddressPersistentLocalIds.RemoveAll(id => id == addressPersistentLocalId);
                 }
 
                 foreach (var addressPersistentLocalId in message.Message.AttachedAddressPersistentLocalIds)
