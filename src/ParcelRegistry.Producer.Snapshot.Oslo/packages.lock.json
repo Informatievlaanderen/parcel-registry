@@ -24,9 +24,9 @@
       },
       "AWSSDK.Extensions.NETCore.Setup": {
         "type": "Direct",
-        "requested": "[3.7.400, )",
-        "resolved": "3.7.400",
-        "contentHash": "i4ta6n+QuGKt1RBCIbRU2wohz5DYJ+wRPR9EI7YkzC8eaWSbmMXTNL+s4HpYUsoxM7uyUrYoW0gC52/9KnK7xw==",
+        "requested": "[3.7.400.2, )",
+        "resolved": "3.7.400.2",
+        "contentHash": "E32qzett6rGaes90k1/8ciaGyxkbZSr1IvbRFSc96vhreKTKMb+Qm3NFORB69yAwgq9vt3isP/QAhteCZjn5Cw==",
         "dependencies": {
           "AWSSDK.Core": "3.7.402",
           "Microsoft.Extensions.Configuration.Abstractions": "2.0.0",
