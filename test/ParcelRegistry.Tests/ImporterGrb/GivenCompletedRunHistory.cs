@@ -96,6 +96,7 @@
 
             // Act
             await sut.StartAsync(CancellationToken.None);
+            await sut.ExecuteTask!;
 
             // Assert
             mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -135,7 +136,9 @@
                 Mock.Of<IHostApplicationLifetime>());
 
             // Act
-            var act = () => sut.StartAsync(CancellationToken.None);
+            await sut.StartAsync(CancellationToken.None);
+
+            var act = () => sut.ExecuteTask!;
 
             // Assert
             await act.Should().ThrowAsync<OrderInvalidDateRangeException>();

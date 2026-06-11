@@ -11,6 +11,7 @@ namespace ParcelRegistry.Api.BackOffice
     using FluentValidation.Results;
     using Infrastructure.Options;
     using MediatR;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
     using Microsoft.Extensions.Options;
@@ -23,17 +24,17 @@ namespace ParcelRegistry.Api.BackOffice
     {
         private readonly IMediator _mediator;
         private readonly TicketingOptions _ticketingOptions;
-        private readonly IActionContextAccessor _actionContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IProvenanceFactory _provenanceFactory;
 
         public ParcelController(
             IMediator mediator,
             IOptions<TicketingOptions> ticketingOptions,
-            IActionContextAccessor actionContextAccessor,
+            IHttpContextAccessor httpContextAccessor,
             IProvenanceFactory provenanceFactory)
         {
             _mediator = mediator;
-            _actionContextAccessor = actionContextAccessor;
+            _httpContextAccessor = httpContextAccessor;
             _provenanceFactory = provenanceFactory;
             _ticketingOptions = ticketingOptions.Value;
         }
@@ -61,9 +62,8 @@ namespace ParcelRegistry.Api.BackOffice
 
         private IDictionary<string, object?> GetMetadata()
         {
-            var correlationId = _actionContextAccessor
-                .ActionContext?
-                .HttpContext
+            var correlationId = _httpContextAccessor
+                .HttpContext!
                 .Request
                 .Headers["x-correlation-id"].FirstOrDefault() ?? Guid.NewGuid().ToString("D");
 

@@ -66,6 +66,7 @@
                 Mock.Of<IHostApplicationLifetime>());
 
             await sut.StartAsync(CancellationToken.None);
+            await sut.ExecuteTask!;
 
             // Assert
             mockMediator.Verify(x => x.Send<ParcelRequest>(It.IsAny<ImportParcelRequest>(), It.IsAny<CancellationToken>()), Times.Never);
