@@ -8,8 +8,8 @@
     using System.Net.Http.Json;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using IdentityModel;
-    using IdentityModel.Client;
+    using Duende.IdentityModel;
+    using Duende.IdentityModel.Client;
     using Microsoft.Extensions.Options;
 
     public sealed class DownloadClient

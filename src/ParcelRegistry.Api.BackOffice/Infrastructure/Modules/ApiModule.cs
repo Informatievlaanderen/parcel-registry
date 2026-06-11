@@ -3,13 +3,13 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
     using Abstractions;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+    using Be.Vlaanderen.Basisregisters.Auth.AcmIdm;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance.AcmIdm;
     using Consumer.Address.Infrastructure;
-    using Microsoft.AspNetCore.Mvc.Infrastructure;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -50,7 +50,7 @@ namespace ParcelRegistry.Api.BackOffice.Infrastructure.Modules
                 .AsSelf()
                 .InstancePerLifetimeScope();
 
-            builder.Register(c => new AcmIdmProvenanceFactory(Application.ParcelRegistry, c.Resolve<IActionContextAccessor>()))
+            builder.Register(c => new AcmIdmProvenanceFactory(Application.ParcelRegistry, c.Resolve<IHttpContextAccessor>()))
                 .As<IProvenanceFactory>()
                 .InstancePerLifetimeScope()
                 .AsSelf();

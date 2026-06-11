@@ -72,14 +72,16 @@
                 Mock.Of<IHostApplicationLifetime>());
 
             // Act
-            var act = async () => await sut.StartAsync(CancellationToken.None);
+            await sut.StartAsync(CancellationToken.None);
+
+            var act = () => sut.ExecuteTask!;
 
             // Assert
 
             var expectedExceptionMessage =
                 $"Exception for parcel: {caPaKey.VbrCaPaKey}, {typeof(Exception)} {Environment.NewLine} Parcel hash: {requests.First().Hash}";
-            act.Should().ThrowAsync<Exception>().Result
-                .Where(x => x.Message == expectedExceptionMessage);
+            (await act.Should().ThrowAsync<Exception>())
+                .WithMessage(expectedExceptionMessage);
 
             mockNotificationService.Verify(x => x.PublishToTopicAsync(
                 It.Is<NotificationMessage>(y => y.BasisregistersError == expectedExceptionMessage)));
@@ -112,11 +114,13 @@
                 Mock.Of<IHostApplicationLifetime>());
 
             // Act
-            var act = async () => await sut.StartAsync(CancellationToken.None);
+            await sut.StartAsync(CancellationToken.None);
+
+            var act = () => sut.ExecuteTask!;
 
             // Assert
-            act.Should().ThrowAsync<Exception>().Result
-                .Where(x => x.Message == "Something went wrong");
+            (await act.Should().ThrowAsync<Exception>())
+                .WithMessage("Something went wrong");
 
             mockNotificationService.Verify(x => x.PublishToTopicAsync(
                 It.Is<NotificationMessage>(y => y.BasisregistersError == "Something went wrong")));
