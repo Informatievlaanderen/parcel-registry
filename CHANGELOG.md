@@ -1,3 +1,15 @@
+# [7.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.7.1...v7.0.0) (2026-06-11)
+
+
+### Features
+
+* update packages + upgrade to dotnet 10 ([1f31c7e](https://github.com/informatievlaanderen/parcel-registry/commit/1f31c7e701b7ddc48904cbe3231ede7a2e3c9715))
+
+
+### BREAKING CHANGES
+
+* update to dotnet 10
+
 ## [6.7.1](https://github.com/informatievlaanderen/parcel-registry/compare/v6.7.0...v6.7.1) (2026-05-19)
 
 
