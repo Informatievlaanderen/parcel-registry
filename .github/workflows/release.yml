@@ -442,7 +442,7 @@ jobs:
           'api-extract',
           'projector',
           'projections-backoffice',
-          'projections-last-changed-list-console',
+          'last-changed-list',
           'consumer-address',
           'producer',
           'producer-snapshot-oslo',
