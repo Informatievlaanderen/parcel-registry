@@ -1,3 +1,10 @@
+## [7.0.3](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.2...v7.0.3) (2026-06-17)
+
+
+### Bug Fixes
+
+* **ci:** correct image lastchangedlist ([3f8dc39](https://github.com/informatievlaanderen/parcel-registry/commit/3f8dc39aa82062386e2eb0551a0c1772a632ce43))
+
 ## [7.0.2](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.1...v7.0.2) (2026-06-17)
 
 
