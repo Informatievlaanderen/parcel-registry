@@ -1,3 +1,11 @@
+## [7.0.1](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.0...v7.0.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* **api:** api xml docs ([63ea21f](https://github.com/informatievlaanderen/parcel-registry/commit/63ea21f509848e659e065e2cc5e4ee290dea9f76))
+* **ci:** change pipelines ([704aa7c](https://github.com/informatievlaanderen/parcel-registry/commit/704aa7cd16be3bb0ff5e83205d3362da6a8c1ed1))
+
 # [7.0.0](https://github.com/informatievlaanderen/parcel-registry/compare/v6.7.1...v7.0.0) (2026-06-11)
 
 
