@@ -437,7 +437,7 @@ jobs:
     strategy:
       matrix:
         image: [
-          'api-backoffice',
+          'backoffice-api',
           'api-oslo',
           'api-extract',
           'projector',
