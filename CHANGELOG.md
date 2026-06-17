@@ -1,3 +1,10 @@
+## [7.0.4](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.3...v7.0.4) (2026-06-17)
+
+
+### Bug Fixes
+
+* **ci:** correct image importer-grb ([cc60cbf](https://github.com/informatievlaanderen/parcel-registry/commit/cc60cbfe5994a87e2153731dc69476743249b914))
+
 ## [7.0.3](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.2...v7.0.3) (2026-06-17)
 
 
