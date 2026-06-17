@@ -1,3 +1,10 @@
+## [7.0.2](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.1...v7.0.2) (2026-06-17)
+
+
+### Bug Fixes
+
+* **ci:** correct backoffice image ([82e981e](https://github.com/informatievlaanderen/parcel-registry/commit/82e981e8a7b39b6db50b94f55b06421f0b17a4f4))
+
 ## [7.0.1](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.0...v7.0.1) (2026-06-17)
 
 
