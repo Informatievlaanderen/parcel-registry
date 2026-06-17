@@ -205,8 +205,8 @@ jobs:
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
       registry: ${{ vars.VBR_DEVOPS_DOCKER_REGISTRY }}/parcel
-      image-file: pr-importer-grb-image.tar
-      image-name: importer-grb
+      image-file: pr-grb-importer-image.tar
+      image-name: grb-importer
       test-project: ParcelRegistry.Tests
       build-project: ParcelRegistry.Importer.Grb
       semver: ${{ needs.set-release-version.outputs.version }}
@@ -446,7 +446,7 @@ jobs:
           'consumer-address',
           'producer',
           'producer-snapshot-oslo',
-          'importer-grb',
+          'grb-importer',
           'snapshot-verifier',
           'lambda-sqsbackofficefunction'
           ]
