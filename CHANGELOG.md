@@ -1,3 +1,10 @@
+## [7.0.5](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.4...v7.0.5) (2026-06-19)
+
+
+### Bug Fixes
+
+* **ci:** correct importer grb pipeline ([6e1394b](https://github.com/informatievlaanderen/parcel-registry/commit/6e1394b8d89865e16a98ab26352c68a98be2b22e))
+
 ## [7.0.4](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.3...v7.0.4) (2026-06-17)
 
 
