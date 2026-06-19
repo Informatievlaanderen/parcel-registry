@@ -521,7 +521,7 @@ jobs:
           'projector',
           'projections-backoffice',
           'last-changed-list',
-          'importer-grb',
+          'grb-importer',
           'snapshot-verifier'
           ]
     with:
@@ -603,7 +603,7 @@ jobs:
           'projector',
           'projections-backoffice',
           'last-changed-list',
-          'importer-grb',
+          'grb-importer',
           'snapshot-verifier'
           ]
     with:
