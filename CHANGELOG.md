@@ -1,3 +1,10 @@
+## [7.0.6](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.5...v7.0.6) (2026-06-22)
+
+
+### Bug Fixes
+
+* **projector:** resume projections ([fca6b06](https://github.com/informatievlaanderen/parcel-registry/commit/fca6b062e7ca390146399f0cd8221831b6172b9e))
+
 ## [7.0.5](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.4...v7.0.5) (2026-06-19)
 
 
