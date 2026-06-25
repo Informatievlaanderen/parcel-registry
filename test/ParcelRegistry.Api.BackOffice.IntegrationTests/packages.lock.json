@@ -1443,7 +1443,7 @@
       "parcelregistry.consumer.address": {
         "type": "Project",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[24.1.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[24.4.1, )",
           "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer": "[7.1.0, )",
           "Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions": "[1.0.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[16.0.0, )",
@@ -1652,9 +1652,9 @@
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Contracts": {
         "type": "CentralTransitive",
-        "requested": "[24.1.0, )",
-        "resolved": "24.1.0",
-        "contentHash": "A91/Y5HPq6Qy6ugOnA0IYE3Lb4fc+1XYJx70ErXGj/oa0JWd67sR+1VLhvc4XrPEoYqRAtrm9PYSdEu0wxwiOg=="
+        "requested": "[24.4.1, )",
+        "resolved": "24.4.1",
+        "contentHash": "JunZeBYr78fymZrm9UR0vGeErhbQGfPG/IEyXr5eR5T+A/LjcCsp7PVDJtiYHeH6RTaAL+FHv5EKp6Ts9HmsYA=="
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Edit": {
         "type": "CentralTransitive",
