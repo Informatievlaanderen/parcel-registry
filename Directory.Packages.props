@@ -6,7 +6,7 @@
         <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.4.6" />
+        <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.100.1" />
 
         <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
         <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
