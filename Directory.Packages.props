@@ -17,7 +17,7 @@
 
         <PackageVersion Include="Destructurama.JsonNet" Version="4.0.2" />
         <PackageVersion Include="Dapper" Version="2.1.79" />
-        <PackageVersion Include="MediatR" Version="[12.5.0,13.0.0)" />
+        <PackageVersion Include="MediatR" Version="[12.5.0,14.2.0]" />
         <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
         <PackageVersion Include="NetTopologySuite" Version="2.6.0" />
         <PackageVersion Include="NodaTime" Version="3.3.2" />
