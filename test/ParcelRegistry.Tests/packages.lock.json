@@ -1669,7 +1669,7 @@
           "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": "[4.0.0, )",
           "Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy": "[4.0.0, )",
           "Datadog.Trace.Bundle": "[3.45.0, )",
-          "MediatR": "[12.5.0, 13.0.0)",
+          "MediatR": "[12.5.0, 14.2.0]",
           "ParcelRegistry": "[1.0.0, )",
           "ParcelRegistry.Consumer.Address": "[1.0.0, )"
         }
@@ -1682,7 +1682,7 @@
           "Be.Vlaanderen.Basisregisters.Sqs.Lambda": "[5.3.0, )",
           "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": "[4.0.0, )",
           "Be.Vlaanderen.Basisregisters.TicketingService.Proxy.HttpProxy": "[4.0.0, )",
-          "MediatR": "[12.5.0, 13.0.0)",
+          "MediatR": "[12.5.0, 14.2.0]",
           "ParcelRegistry.Consumer.Address": "[1.0.0, )"
         }
       },
@@ -2362,7 +2362,7 @@
       },
       "MediatR": {
         "type": "CentralTransitive",
-        "requested": "[12.5.0, 13.0.0)",
+        "requested": "[12.5.0, 14.2.0]",
         "resolved": "12.5.0",
         "contentHash": "vqm2H8/nqL5NAJHPhsG1JOPwfkmbVrPyh4svdoRzu+uZh6Ex7PRoHBGsLYC0/RWCEJFqD1ohHNpteQvql9OktA==",
         "dependencies": {
