@@ -89,6 +89,9 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
                     _loggerFactory)
                 .RegisterProjections<LastChangedListProjections, LastChangedListContext>(
                     context => new LastChangedListProjections(context.Resolve<LastChangedListParcelCacheValidator>()),
+                    ConnectedProjectionSettings.Default)
+                .RegisterProjections<LastChangedListProjectionsV3, LastChangedListContext>(
+                    context => new LastChangedListProjectionsV3(context.Resolve<LastChangedListParcelCacheValidator>()),
                     ConnectedProjectionSettings.Default);
         }
     }

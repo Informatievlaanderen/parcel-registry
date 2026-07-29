@@ -86,7 +86,8 @@ namespace ParcelRegistry.Api.Oslo.Infrastructure
                         }
                     }
                 })
-                .Configure<ResponseOptions>(_configuration)
+                .Configure<ResponseOptionsV2>(_configuration.GetSection("V2"))
+                .Configure<ResponseOptionsV3>(_configuration.GetSection("V3"))
                 .AddValidatorsFromAssemblyContaining<Startup>();
         }
 
