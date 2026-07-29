@@ -8,7 +8,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.Perceel;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Testing;
@@ -80,7 +80,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     document.LastChangedOn.Should().Be(parcelWasMigrated.Provenance.Timestamp);
                     document.Document.VersionId.Should().Be(parcelWasMigrated.Provenance.Timestamp.ToBelgianDateTimeOffset());
                     document.Document.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
-                    document.Document.Status.Should().Be(MapStatus(parcelWasMigrated.ParcelStatus));
+                    document.Document.Status.Should().BeEquivalentTo(MapStatus(parcelWasMigrated.ParcelStatus));
                     document.Document.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds);
                     document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasMigrated.ExtendedWkbGeometry);
 
@@ -122,7 +122,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     document.LastChangedOn.Should().Be(parcelWasMigrated.Provenance.Timestamp);
                     document.Document.VersionId.Should().Be(parcelWasMigrated.Provenance.Timestamp.ToBelgianDateTimeOffset());
                     document.Document.CaPaKey.Should().Be(parcelWasMigrated.CaPaKey);
-                    document.Document.Status.Should().Be(MapStatus(parcelWasMigrated.ParcelStatus));
+                    document.Document.Status.Should().BeEquivalentTo(MapStatus(parcelWasMigrated.ParcelStatus));
                     document.Document.AddressPersistentLocalIds.Should().BeEquivalentTo(parcelWasMigrated.AddressPersistentLocalIds);
                     document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasMigrated.ExtendedWkbGeometry);
 
@@ -146,7 +146,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == MapStatus(parcelWasMigrated.ParcelStatus).ToString())
+                                               && a.NewValue!.ToString() == MapStatus(parcelWasMigrated.ParcelStatus).Id)
                                 && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds
                                                && a.OldValue == null
                                                && a.NewValue != null
@@ -175,7 +175,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                     document.IsRemoved.Should().BeFalse();
                     document.RecordCreatedAt.Should().Be(parcelWasImported.Provenance.Timestamp);
                     document.LastChangedOn.Should().Be(parcelWasImported.Provenance.Timestamp);
-                    document.Document.Status.Should().Be(PerceelStatus.Gerealiseerd);
+                    document.Document.Status.Should().BeEquivalentTo(new PerceelStatus(PerceelStatusValue.Gerealiseerd));
                     document.Document.AddressPersistentLocalIds.Should().BeEmpty();
                     document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasImported.ExtendedWkbGeometry);
 
@@ -194,7 +194,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == PerceelStatus.Gerealiseerd.ToString())
+                                               && a.NewValue!.ToString() == new PerceelStatus(PerceelStatusValue.Gerealiseerd).Id)
                                 && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
                             ParcelWasImported.EventName,
                             It.IsAny<string>()),
@@ -217,7 +217,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.ParcelDocuments.FindAsync(parcelWasRetired.CaPaKey);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(PerceelStatus.Gehistoreerd);
+                    document!.Document.Status.Should().BeEquivalentTo(new PerceelStatus(PerceelStatusValue.Gehistoreerd));
                     document.LastChangedOn.Should().Be(parcelWasRetired.Provenance.Timestamp);
 
                     var feedItem = await FindLastFeedItemByCaPaKey(context, parcelWasRetired.CaPaKey);
@@ -232,8 +232,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == PerceelStatus.Gerealiseerd.ToString()
-                                               && a.NewValue!.ToString() == PerceelStatus.Gehistoreerd.ToString())),
+                                               && a.OldValue!.ToString() == new PerceelStatus(PerceelStatusValue.Gerealiseerd).Id
+                                               && a.NewValue!.ToString() == new PerceelStatus(PerceelStatusValue.Gehistoreerd).Id)),
                             ParcelWasRetiredV2.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -290,7 +290,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                 {
                     var document = await context.ParcelDocuments.FindAsync(parcelWasCorrected.CaPaKey);
                     document.Should().NotBeNull();
-                    document!.Document.Status.Should().Be(PerceelStatus.Gerealiseerd);
+                    document!.Document.Status.Should().BeEquivalentTo(new PerceelStatus(PerceelStatusValue.Gerealiseerd));
                     document.LastChangedOn.Should().Be(parcelWasCorrected.Provenance.Timestamp);
                     document.Document.GeometryAsExtendedWkb.Should().Be(parcelWasCorrected.ExtendedWkbGeometry);
 
@@ -306,8 +306,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<string>>(nisCodes => nisCodes.Contains("11001")),
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
-                                               && a.OldValue!.ToString() == PerceelStatus.Gehistoreerd.ToString()
-                                               && a.NewValue!.ToString() == PerceelStatus.Gerealiseerd.ToString())),
+                                               && a.OldValue!.ToString() == new PerceelStatus(PerceelStatusValue.Gehistoreerd).Id
+                                               && a.NewValue!.ToString() == new PerceelStatus(PerceelStatusValue.Gerealiseerd).Id)),
                             ParcelWasCorrectedFromRetiredToRealized.EventName,
                             It.IsAny<string>()),
                         Times.Once);
@@ -850,9 +850,9 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
         private static PerceelStatus MapStatus(ParcelStatus parcelStatus)
         {
             if(parcelStatus == ParcelStatus.Realized)
-                return PerceelStatus.Gerealiseerd;
+                return new PerceelStatus(PerceelStatusValue.Gerealiseerd);
             if(parcelStatus == ParcelStatus.Retired)
-                return PerceelStatus.Gehistoreerd;
+                return new PerceelStatus(PerceelStatusValue.Gehistoreerd);
 
             throw new ArgumentOutOfRangeException(nameof(parcelStatus));
         }

@@ -8,7 +8,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.ChangeFeed;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
-    using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
+    using Be.Vlaanderen.Basisregisters.GrAr.Oslo.Perceel;
     using Be.Vlaanderen.Basisregisters.GrAr.Oslo;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
@@ -53,7 +53,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
                 List<BaseRegistriesCloudEventAttribute> attributes =
                 [
-                    new(ParcelAttributeNames.StatusName, null, status),
+                    new(ParcelAttributeNames.StatusName, null, status.Id),
                     new(ParcelAttributeNames.AdresIds, null, BuildAddressPuris(addressPersistentLocalIds)),
                 ];
 
@@ -75,7 +75,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
                 List<BaseRegistriesCloudEventAttribute> attributes =
                 [
-                    new(ParcelAttributeNames.StatusName, null, document.Document.Status),
+                    new(ParcelAttributeNames.StatusName, null, document.Document.Status.Id),
                     new(ParcelAttributeNames.AdresIds, null, new List<string>()),
                 ];
 
@@ -91,7 +91,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
                 await AddCloudEvent(message, document, context,
                 [
-                    new(ParcelAttributeNames.StatusName, oldStatus, document.Document.Status),
+                    new(ParcelAttributeNames.StatusName, oldStatus.Id, document.Document.Status.Id),
                 ], ParcelEventTypes.UpdateV1);
             });
 
@@ -115,7 +115,7 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
                 await AddCloudEvent(message, document, context,
                 [
-                    new(ParcelAttributeNames.StatusName, oldStatus, document.Document.Status),
+                    new(ParcelAttributeNames.StatusName, oldStatus.Id, document.Document.Status.Id),
                 ], ParcelEventTypes.UpdateV1);
             });
 
@@ -304,9 +304,9 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
         private static PerceelStatus MapStatus(ParcelStatus parcelStatus)
         {
             if (parcelStatus == ParcelStatus.Realized)
-                return PerceelStatus.Gerealiseerd;
+                return new PerceelStatus(PerceelStatusValue.Gerealiseerd);
             if (parcelStatus == ParcelStatus.Retired)
-                return PerceelStatus.Gehistoreerd;
+                return new PerceelStatus(PerceelStatusValue.Gehistoreerd);
 
             throw new InvalidOperationException($"Unknown parcel status: {parcelStatus}");
         }

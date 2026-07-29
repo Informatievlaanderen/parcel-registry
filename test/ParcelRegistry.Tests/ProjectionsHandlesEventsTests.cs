@@ -91,7 +91,8 @@ namespace ParcelRegistry.Tests
 
             yield return [new List<ConnectedProjection<LastChangedListContext>>
             {
-                new LastChangedListProjections(Mock.Of<ICacheValidator>())
+                new LastChangedListProjections(Mock.Of<ICacheValidator>()),
+                new LastChangedListProjectionsV3(Mock.Of<ICacheValidator>())
             }];
 
             yield return [new List<ConnectedProjection<IntegrationContext>>

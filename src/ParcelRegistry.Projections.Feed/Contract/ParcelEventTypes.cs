@@ -9,7 +9,7 @@ namespace ParcelRegistry.Projections.Feed.Contract
 
     public static class ParcelAttributeNames
     {
-        public const string StatusName = "perceelStatus";
-        public const string AdresIds = "adresIds";
+        public const string StatusName = "status";
+        public const string AdresIds = "toegekendAdres";
     }
 }
