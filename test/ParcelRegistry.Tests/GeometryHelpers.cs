@@ -134,6 +134,48 @@
             return geometry;
         }
 
+        /// <summary>
+        /// <see cref="ValidGmlPolygon"/> in Lambert 2008 (EPSG 3812). The coordinates are the genuine
+        /// transform of the Lambert 72 ones, rounded to centimetre precision, so tests comparing the two
+        /// are comparing the same physical parcel. See ADR 0003.
+        /// </summary>
+        public const string ValidGmlPolygonLambert2008 =
+            "<gml:Polygon srsName=\"https://www.opengis.net/def/crs/EPSG/0/3812\" xmlns:gml=\"http://www.opengis.net/gml/3.2\">" +
+            "<gml:exterior>" +
+            "<gml:LinearRing>" +
+            "<gml:posList>" +
+            "640281.95 686723.97 640288.86 686725.62 640286.02 686737.49 640278.99 686735.81 640281.95 686723.97" +
+            "</gml:posList>" +
+            "</gml:LinearRing>" +
+            "</gml:exterior>" +
+            "</gml:Polygon>";
+
+        /// <summary>
+        /// Reads GML into an EWKB carrying SRID 3812, the counterpart of
+        /// <see cref="Api.BackOffice.Abstractions.Extensions.GmlHelpers.GmlToExtendedWkbGeometry"/>, which
+        /// pins to Lambert 72 and so cannot produce Lambert 2008 input.
+        /// </summary>
+        public static ExtendedWkbGeometry ToExtendedWkbGeometryLambert2008(this string gml)
+        {
+            var geometry = new GMLReader(NtsGeometryFactory.CreateGeometryFactoryLambert2008()).Read(gml);
+
+            geometry.SRID = SystemReferenceId.SridLambert2008;
+
+            return ExtendedWkbGeometry.CreateEWkb(geometry)!;
+        }
+
+        /// <summary>
+        /// Reads GML into plain WKB carrying no SRID at all, as geometries persisted before the event store
+        /// wrote EWKB do. This is the input <c>GrAr.Common</c>'s <c>CreateForEwkb</c> throws on, and the only
+        /// reason <see cref="ParcelRegistry.WKBReaderFactory"/> exists. See ADR 0003.
+        /// </summary>
+        public static ExtendedWkbGeometry ToExtendedWkbGeometryWithoutSrid(this string gml)
+        {
+            var geometry = CreateGmlReader().Read(gml);
+
+            return new ExtendedWkbGeometry(geometry.AsBinary());
+        }
+
         public static Polygon ValidPolygon => (Polygon)ValidGmlPolygon.ToGeometry();
         public static Polygon ValidPolygon2 => (Polygon)ValidGmlPolygon2.ToGeometry();
         public static Polygon ValidPolygon3 => (Polygon)ValidGmlPolygon3.ToGeometry();
