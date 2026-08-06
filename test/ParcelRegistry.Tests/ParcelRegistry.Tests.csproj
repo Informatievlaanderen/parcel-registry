@@ -4,6 +4,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ParcelRegistry.Api.BackOffice.Handlers.Lambda\ParcelRegistry.Api.BackOffice.Handlers.Lambda.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Api.BackOffice\ParcelRegistry.Api.BackOffice.csproj" />
+    <ProjectReference Include="..\..\src\ParcelRegistry.Api.Oslo\ParcelRegistry.Api.Oslo.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Consumer.Address\ParcelRegistry.Consumer.Address.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Importer.Grb\ParcelRegistry.Importer.Grb.csproj" />
     <ProjectReference Include="..\..\src\ParcelRegistry.Producer.Snapshot.Oslo\ParcelRegistry.Producer.Snapshot.Oslo.csproj" />
