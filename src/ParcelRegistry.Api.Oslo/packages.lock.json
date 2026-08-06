@@ -60,6 +60,16 @@
           "SqlStreamStore.MsSql": "1.2.0"
         }
       },
+      "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": {
+        "type": "Direct",
+        "requested": "[24.1.0, )",
+        "resolved": "24.1.0",
+        "contentHash": "m5f15aXBfskISdPW1PISUXs1wZJriF+VwDwVKi3hDQVosuIihMhONyfdNexQdj6IwHt2NBsb0tTU09DEHXS+0A==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "24.1.0",
+          "NetTopologySuite.Features": "2.2.0"
+        }
+      },
       "Datadog.Trace.Bundle": {
         "type": "Direct",
         "requested": "[3.45.0, )",
@@ -702,6 +712,14 @@
         "type": "Transitive",
         "resolved": "3.5.0",
         "contentHash": "FnASiAaTGSmB4SaSroIwnK4ph9noFIXZpPOMezDqWw5S/TNakzSnawPeM7u0Auq1/EqJXeqG4s6UjfrGBH33Ow=="
+      },
+      "NetTopologySuite.Features": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "Uk0Sun2RtpDLMcPhPO8UFZYDtESpZmHSfqa/eskJkdOjmK2rVbo2Zm3YiT3zdtjgosypgDT/eQLiFbsPKMOgbg==",
+        "dependencies": {
+          "NetTopologySuite": "[2.0.0, 3.0.0-A)"
+        }
       },
       "Newtonsoft.Json": {
         "type": "Transitive",

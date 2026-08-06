@@ -10,6 +10,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.Syndication;
+    using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.Perceel;
     using Be.Vlaanderen.Basisregisters.GrAr.Legacy.SpatialTools;
@@ -24,17 +25,27 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
     using Swashbuckle.AspNetCore.Filters;
     using Polygon = NetTopologySuite.Geometries.Polygon;
     using Provenance = Be.Vlaanderen.Basisregisters.GrAr.Provenance.Syndication.Provenance;
+    // GrAr.Common.NetTopology is imported above and declares its own WKBReaderFactory, whose
+    // CreateForEwkb throws on SRID-less EWKB. Alias ours, which falls back to Lambert 72. See ADR 0003.
+    using WKBReaderFactory = ParcelRegistry.WKBReaderFactory;
 
     public static class ParcelSyndicationResponse
     {
-        private static readonly WKBReader WkbReader = WKBReaderFactory.CreateForLambert72();
+        /// <summary>
+        /// Coordinates are persisted at centimetre precision, which is what the Lambert transform is accurate
+        /// to, so a transformed geometry is rounded to that rather than carrying floating point noise.
+        /// </summary>
+        private const int TransformedCoordinateDecimals = 2;
+
+        private static readonly WKBWriter WkbWriter = new WKBWriter { Strict = false, HandleSRID = true };
 
         public static async Task WriteParcel(
             this ISyndicationFeedWriter writer,
             IOptions<ResponseOptions> responseOptions,
             AtomFormatter formatter,
             string category,
-            ParcelSyndicationQueryResult parcel)
+            ParcelSyndicationQueryResult parcel,
+            int objectSrid)
         {
             var item = new SyndicationItem
             {
@@ -42,7 +53,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
                 Title = $"{parcel.ChangeType}-{parcel.Position}",
                 Published = parcel.RecordCreatedAt.ToBelgianDateTimeOffset(),
                 LastUpdated = parcel.LastChangedOn.ToBelgianDateTimeOffset(),
-                Description = BuildDescription(parcel, responseOptions.Value.Naamruimte)
+                Description = BuildDescription(parcel, responseOptions.Value.Naamruimte, objectSrid)
             };
 
             item.AddLink(
@@ -79,7 +90,23 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
             await writer.Write(item);
         }
 
-        private static string BuildDescription(ParcelSyndicationQueryResult parcel, string naamruimte)
+        /// <summary>
+        /// Reads the persisted geometry in the reference system its EWKB carries and puts it in the one the
+        /// caller asked for through <see cref="ObjectCrs"/>. Only a geometry that has to move is transformed
+        /// and rounded; one already in the requested system is passed through untouched, so a caller that
+        /// does not ask for Lambert 2008 sees byte-for-byte what the feed emitted before. See ADR 0003.
+        /// </summary>
+        private static Geometry ToRequestedCrs(byte[] extendedWkbGeometry, int objectSrid)
+        {
+            var geometry = WKBReaderFactory.CreateForEwkb(extendedWkbGeometry).Read(extendedWkbGeometry);
+
+            if (objectSrid == SystemReferenceId.SridLambert2008)
+                return geometry.IsLambert08() ? geometry : geometry.EnsureLambert08(TransformedCoordinateDecimals);
+
+            return geometry.IsLambert72() ? geometry : geometry.EnsureLambert72().RoundCoordinates(TransformedCoordinateDecimals);
+        }
+
+        private static string BuildDescription(ParcelSyndicationQueryResult parcel, string naamruimte, int objectSrid)
         {
             if (!parcel.ContainsEvent && !parcel.ContainsObject)
                 return "No data embedded";
@@ -89,7 +116,13 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
             {
                 var geometry = parcel.ExtendedWkbGeometry is null
                     ? null
-                    : WkbReader.Read(parcel.ExtendedWkbGeometry);
+                    : ToRequestedCrs(parcel.ExtendedWkbGeometry, objectSrid);
+
+                // The GML builders take EWKB rather than a geometry and their polygon mapping is internal, so
+                // the transformed geometry is handed back to them the only way they accept it. Reusing them
+                // keeps one GML serialisation instead of a second, divergent copy.
+                var objectWkb = geometry is null ? null : WkbWriter.Write(geometry);
+                var objectReader = objectWkb is null ? null : WKBReaderFactory.CreateForEwkb(objectWkb);
 
                 content.Object = new ParcelSyndicationContent(
                     parcel.ParcelId,
@@ -99,10 +132,10 @@ namespace ParcelRegistry.Api.Oslo.Parcel.Sync
                     parcel.Status.MapToPerceelStatusSyndication(),
                     parcel.AddressIds,
                     geometry is MultiPolygon
-                        ? GmlMultiSurfaceBuilder.Build(parcel.ExtendedWkbGeometry!, WkbReader)
+                        ? GmlMultiSurfaceBuilder.Build(objectWkb!, objectReader!)
                         : null,
                     geometry is Polygon
-                        ? PolygonBuilder.Build(parcel.ExtendedWkbGeometry!, WkbReader)?.XmlPolygon
+                        ? PolygonBuilder.Build(objectWkb!, objectReader!)?.XmlPolygon
                         : null,
                     parcel.Organisation,
                     parcel.Reason);

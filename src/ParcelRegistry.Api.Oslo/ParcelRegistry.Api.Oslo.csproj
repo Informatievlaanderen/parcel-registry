@@ -75,6 +75,7 @@
     <PackageReference Include="Datadog.Trace.Bundle" />
 
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" />
 
     <PackageReference Include="MediatR" />
 

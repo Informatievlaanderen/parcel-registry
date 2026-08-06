@@ -18,16 +18,17 @@ reference system — it only has to stop hardcoding one. This mirrors the decisi
 its ADR 0004, in [address-registry#1375](https://github.com/Informatievlaanderen/address-registry/pull/1375)
 (not yet merged at the time of writing).
 
-This ADR covers the read side of `Projections.Legacy` and `Projections.Integration` only. Handled
-separately: `Api.Oslo/Parcel/Sync`, `Consumer.Address`, the producers, and the write side
+This ADR covers the read side of `Projections.Legacy`, `Projections.Integration` and the syndication feed
+in `Api.Oslo`. Handled separately: `Consumer.Address`, the producers, and the write side
 (`Parcel.GuardPolygon`, `GmlHelpers.GmlToExtendedWkbGeometry`, `ExtendedWkbGeometry.SridLambert72`).
 
 Parcel-registry has far less to change than address-registry because most projections never touch the
-geometry (see "Nothing to do" below), and because **no parcel consumer in scope is pinned to Lambert 72** —
-both projections follow whatever the event store writes. There is therefore no parcel counterpart to
-address-registry's new WFS V3 / WMS V4 projections, tables, views or recomputed spatial-index bounding
-boxes, and no dependency on `Be.Vlaanderen.Basisregisters.GrAr.CrsTransform`: nothing pins, so nothing
-transforms.
+geometry (see "Nothing to do" below). There is no parcel counterpart to address-registry's new WFS V3 /
+WMS V4 projections, tables, views or recomputed spatial-index bounding boxes.
+
+Neither projection is pinned: both follow whatever the event store writes. The syndication feed is the one
+consumer that has to choose a reference system, because its GML cannot express one — so it is also the only
+reason this repository takes a dependency on `Be.Vlaanderen.Basisregisters.GrAr.CrsTransform`.
 
 ### What the current code already does
 
@@ -107,6 +108,45 @@ The column is not pinned to Lambert 72 because it has no reader to protect: noth
 reads `Gml` or `GmlType` outside the projection that writes them, and the Oslo detail and list responses
 carry no geometry at all. That is also why no `ParcelDetailV3` is needed.
 
+### `Api.Oslo` syndication: the caller picks, through `objectCrs`
+
+The `/percelen/sync` feed is the one place that cannot simply follow the event store. Its GML comes from
+`GrAr.Legacy.SpatialTools.GmlMultiSurfaceBuilder` / `PolygonBuilder`, whose `GmlPolygon` and
+`GmlMultiSurface` types have **no `srsName` member at all** — the object's geometry is a bare `posList`. So
+the feed cannot say which reference system it is in, and letting the object silently follow the event store
+would move every consumer's coordinates ~500 km with nothing in the payload to signal it. This one cannot
+be solved downstream.
+
+A new filter, `objectCrs`, therefore makes the choice the caller's:
+
+- `3812` → the object's geometry is emitted in Lambert 2008: transformed if the store still holds
+  Lambert 72, passed through once it holds Lambert 2008.
+- **anything else — an unrecognised value, an empty one, or no filter at all → Lambert 72**: passed through
+  while the store holds Lambert 72, transformed back once it holds Lambert 2008.
+
+The default is what makes the conversion invisible: every existing consumer keeps receiving Lambert 72
+before and after, without changing a thing. Only a caller that opts in sees Lambert 2008.
+
+An unrecognised value falls back rather than returning 400, so the feed never breaks on a typo. The cost is
+that `objectCrs=EPSG:3812` silently yields Lambert 72; only the exact string `3812` (trimmed) selects
+Lambert 2008. `ObjectCrs.ToSrid` is the single place that mapping lives, and
+`GivenObjectCrsFilter.ThenOnlyTheExactValue3812SelectsLambert2008` pins the accepted spellings, so widening
+them later is a one-line change with a test that documents it.
+
+Two properties worth stating:
+
+- **Only the object is reprojected.** The embedded `event` is the event store's own payload, emitted
+  verbatim at every position, whatever `objectCrs` says. A feed replayed for auditing therefore still shows
+  what was actually stored, including the conversion event itself.
+- **Only a geometry that has to move is touched.** One already in the requested system is passed through,
+  so no rounding is applied to it and today's output is byte-for-byte unchanged. A transformed geometry is
+  rounded to 2 decimals, the centimetre precision coordinates are persisted at and the transform is
+  accurate to, rather than carrying floating point noise into an 11-decimal `posList`.
+
+The transformed geometry is handed back to the GML builders as EWKB because they take bytes and a reader
+rather than a geometry, and their polygon mapping is `internal`. That round trip buys reuse of the single
+existing GML serialisation instead of a second, divergent copy.
+
 ### Nothing to do
 
 Recorded so it does not have to be re-derived. All of the following store no geometry and handle
@@ -177,8 +217,21 @@ a future reader will otherwise file it as a bug and "fix" it with a rebuild.
   geographically, that index is paying for writes nobody reads, and under a permanent mix it can no longer
   serve a plain `ST_Within` anyway. Worth revisiting separately.
 - No EF migrations and no schema changes: no table, column or index is added or altered.
-- Still to do for the conversion, each in its own change: `Api.Oslo/Parcel/Sync` — its GML builders emit a
-  bare `posList` with no `srsName`, so its implicit Lambert 72 contract cannot be satisfied downstream and
-  must be handled at the source; `Consumer.Address`, which reads *address* positions off Kafka with a
-  reader pinned to Lambert 72 and is therefore driven by address-registry's conversion, not this one; the
-  producers; and the write side.
+- The syndication feed gains an `objectCrs` filter. Callers that do not use it are unaffected in either
+  direction. `ParcelSyndicationFilter` is populated from the `X-Filtering` header, so exposing `objectCrs`
+  as a query parameter needs the same gateway mapping that `embed` and `from` already rely on — that part
+  lives outside this repository.
+- `Be.Vlaanderen.Basisregisters.GrAr.CrsTransform` 24.1.0 is added, referenced only by `Api.Oslo`. It
+  depends on exactly the `GrAr.Common` 24.1.0 already pinned, so no other package moves. Note that the
+  25.x line of CrsTransform requires `GrAr.Common` >= 25.7.0 and would drag the whole GrAr family with it.
+- **A geometry that is not `IsValid` is not transformed.** `LambertTransformation.EnsureCoordinatesAreInCoordinateSystem`
+  returns such a geometry untouched, so an invalid Lambert 2008 parcel would be emitted with Lambert 2008
+  coordinates to a caller that asked for Lambert 72 — and, there being no `srsName`, silently. Invalid
+  parcel polygons do occur: `ConsumerAddressContext.FindAddressesWithinGeometry` runs `GeometryFixer.Fix`
+  for exactly that reason, and `GeometryHelpers.InValidNTSButValidSqlPolygon` exists as a fixture. This is
+  left as-is rather than papered over with a fixer, which would change the emitted shape; it needs a
+  decision of its own before the store is converted. It does not affect anything today, while the store
+  still holds Lambert 72 and no transform runs on the default path.
+- Still to do for the conversion, each in its own change: `Consumer.Address`, which reads *address*
+  positions off Kafka with a reader pinned to Lambert 72 and is therefore driven by address-registry's
+  conversion, not this one; the producers; and the write side.
