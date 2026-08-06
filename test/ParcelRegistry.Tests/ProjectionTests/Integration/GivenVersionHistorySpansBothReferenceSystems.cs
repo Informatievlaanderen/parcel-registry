@@ -11,6 +11,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Integration
     using EventExtensions;
     using Fixtures;
     using FluentAssertions;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Moq;
     using Parcel;
@@ -79,10 +80,10 @@ namespace ParcelRegistry.Tests.ProjectionTests.Integration
                     })))
                 .Then(async context =>
                 {
-                    var versions = await Task.FromResult(context.ParcelVersions
+                    var versions = await context.ParcelVersions
                         .Where(x => x.ParcelId == geometryWasChanged.ParcelId)
                         .OrderBy(x => x.Position)
-                        .ToList());
+                        .ToListAsync();
 
                     versions.Should().HaveCount(2);
 

@@ -19,7 +19,8 @@ namespace ParcelRegistry.Api.Oslo.Parcel.V2.Sync
     using Microsoft.Extensions.Options;
     using Microsoft.SyndicationFeed;
     using Microsoft.SyndicationFeed.Atom;
-    using ParcelRegistry.Projections.Legacy;
+    using Parcel.Sync;
+    using Projections.Legacy;
 
     public class SyncHandler : IRequestHandler<SyncRequest, string>
     {
@@ -58,14 +59,17 @@ namespace ParcelRegistry.Api.Oslo.Parcel.V2.Sync
                     filtering.Filter?.Embed)
                 .Fetch(filtering, sorting, pagination);
 
-            return await BuildAtomFeed(lastFeedUpdate, pagedParcels, _responseOptions, _configuration);
+            var objectSrid = ObjectCrs.ToSrid(filtering.Filter?.ObjectCrs);
+
+            return await BuildAtomFeed(lastFeedUpdate, pagedParcels, _responseOptions, _configuration, objectSrid);
         }
 
         private static async Task<string> BuildAtomFeed(
             DateTimeOffset lastUpdate,
             PagedQueryable<ParcelSyndicationQueryResult> pagedParcels,
             IOptions<ResponseOptionsV2> responseOptions,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            int objectSrid)
         {
             var sw = new StringWriterWithEncoding(Encoding.UTF8);
 
@@ -88,7 +92,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.V2.Sync
                     await writer.Write(new SyndicationLink(nextUri, "next"));
 
                 foreach (var parcel in pagedParcels.Items)
-                    await writer.WriteParcel(responseOptions, formatter, syndicationConfiguration["Category"], parcel);
+                    await writer.WriteParcel(responseOptions, formatter, syndicationConfiguration["Category"], parcel, objectSrid);
 
                 xmlWriter.Flush();
             }
