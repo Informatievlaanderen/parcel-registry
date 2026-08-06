@@ -14,6 +14,10 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
     using NodaTime;
     using Parcel;
     using Parcel.Events;
+    // This file imports GrAr.Common.NetTopology for ConvertToGml, which also declares a WKBReaderFactory.
+    // A using-imported type wins over an outer-namespace one, so alias ours explicitly: only ours falls
+    // back to Lambert 72 for SRID-less EWKB, the GrAr one throws. See ADR 0003.
+    using WKBReaderFactory = ParcelRegistry.WKBReaderFactory;
 
     [ConnectedProjectionName("API endpoint detail/lijst percelen")]
     [ConnectedProjectionDescription("Projectie die de percelen data voor het percelen detail & lijst voorziet.")]
@@ -32,15 +36,6 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
 
         public ParcelDetailProjections()
         {
-            var wkbReader = WKBReaderFactory.CreateForLambert72();
-
-            (string gmlType, string gml) ToGml(string extendedWkbGeometry)
-            {
-                var geometry = wkbReader.Read(extendedWkbGeometry.ToByteArray());
-                var gml = geometry.ConvertToGml();
-                return (MapGeometryType(geometry.OgcGeometryType), gml);
-            }
-
             When<Envelope<ParcelWasMigrated>>(async (context, message, ct) =>
             {
                 var (geometryType, gml) = ToGml(message.Message.ExtendedWkbGeometry);
@@ -250,7 +245,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     message.Message.ParcelId,
                     entity =>
                     {
-                        var geometry = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                        var geometry = ReadGeometry(message.Message.ExtendedWkbGeometry);
                         entity.Gml = geometry.ConvertToGml();
                         entity.GmlType = geometry.OgcGeometryType.ToString();
 
@@ -266,7 +261,7 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     message.Message.ParcelId,
                     entity =>
                     {
-                        var geometry = wkbReader.Read(message.Message.ExtendedWkbGeometry.ToByteArray());
+                        var geometry = ReadGeometry(message.Message.ExtendedWkbGeometry);
                         entity.Gml = geometry.ConvertToGml();
                         entity.GmlType = geometry.OgcGeometryType.ToString();
 
@@ -277,6 +272,22 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     },
                     ct);
             });
+        }
+
+        // Read in the reference system the EWKB carries rather than assuming Lambert 72, so ConvertToGml
+        // labels the GML with the srsName it was actually persisted in. See ADR 0003.
+        private static Geometry ReadGeometry(string extendedWkbGeometry)
+        {
+            var extendedWkb = extendedWkbGeometry.ToByteArray()!;
+
+            return WKBReaderFactory.CreateForEwkb(extendedWkb).Read(extendedWkb);
+        }
+
+        private (string gmlType, string gml) ToGml(string extendedWkbGeometry)
+        {
+            var geometry = ReadGeometry(extendedWkbGeometry);
+            var gml = geometry.ConvertToGml();
+            return (MapGeometryType(geometry.OgcGeometryType), gml);
         }
 
         private static void RemoveParcelAddress(

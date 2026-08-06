@@ -1239,6 +1239,14 @@
           "Microsoft.NETCore.Platforms": "1.1.0"
         }
       },
+      "NetTopologySuite.Features": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "Uk0Sun2RtpDLMcPhPO8UFZYDtESpZmHSfqa/eskJkdOjmK2rVbo2Zm3YiT3zdtjgosypgDT/eQLiFbsPKMOgbg==",
+        "dependencies": {
+          "NetTopologySuite": "[2.0.0, 3.0.0-A)"
+        }
+      },
       "NetTopologySuite.IO.PostGis": {
         "type": "Transitive",
         "resolved": "2.1.0",
@@ -1639,6 +1647,16 @@
           "Be.Vlaanderen.Basisregisters.TicketingService.Abstractions": "[4.0.0, )",
           "MediatR.Contracts": "[2.0.1, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[10.0.9, )"
+        }
+      },
+      "Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.Oslo": {
+        "type": "Project",
+        "dependencies": {
+          "AspNetCore.HealthChecks.SqlServer": "[9.0.0, )",
+          "Be.Vlaanderen.Basisregisters.Api": "[27.0.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": "[24.1.0, )",
+          "Datadog.Trace.Bundle": "[3.45.0, )",
+          "MediatR": "[12.5.0, 13.0.0)"
         }
       },
       "parcelregistry": {
@@ -2084,6 +2102,16 @@
         "requested": "[24.1.0, )",
         "resolved": "24.1.0",
         "contentHash": "A91/Y5HPq6Qy6ugOnA0IYE3Lb4fc+1XYJx70ErXGj/oa0JWd67sR+1VLhvc4XrPEoYqRAtrm9PYSdEu0wxwiOg=="
+      },
+      "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": {
+        "type": "CentralTransitive",
+        "requested": "[24.1.0, )",
+        "resolved": "24.1.0",
+        "contentHash": "m5f15aXBfskISdPW1PISUXs1wZJriF+VwDwVKi3hDQVosuIihMhONyfdNexQdj6IwHt2NBsb0tTU09DEHXS+0A==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "24.1.0",
+          "NetTopologySuite.Features": "2.2.0"
+        }
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Edit": {
         "type": "CentralTransitive",
