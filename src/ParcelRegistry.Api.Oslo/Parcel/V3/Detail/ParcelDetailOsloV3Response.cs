@@ -123,7 +123,7 @@ namespace ParcelRegistry.Api.Oslo.Parcel.V3.Detail
 
             Adressen = addressPersistentLocalIds
                 .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => new PerceelToegekendAdres(OsloNamespaces.Adres.ToPuri(x), new Uri(string.Format(adresDetailUrl, x)).ToString()))
+                .Select(x => new PerceelToegekendAdres(OsloNamespaces.Adres.ToPuri(x), new Uri(string.Format(adresDetailUrl, x))))
                 .ToList();
         }
     }
