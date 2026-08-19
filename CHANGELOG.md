@@ -1,3 +1,15 @@
+# [7.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.6...v7.1.0) (2026-08-19)
+
+
+### Bug Fixes
+
+* **oslo:** bump common packages ([adfd4d7](https://github.com/informatievlaanderen/parcel-registry/commit/adfd4d7fba3d01bc6776d1760bc7f56e0c5cf78c))
+
+
+### Features
+
+* **oslo:** add v3 endpoints + refactor feeds to oslo ([c84d847](https://github.com/informatievlaanderen/parcel-registry/commit/c84d847f5a55d50086699b75420794e4f21ce4b8))
+
 ## [7.0.6](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.5...v7.0.6) (2026-06-22)
 
 
