@@ -28,8 +28,8 @@ namespace ParcelRegistry.Api.Oslo.Parcel.V3.ChangeFeed
                                  "dataschema": "{{_responseOptions.ParcelFeed.DataSchemaUrl}}",
                                  "basisregisterseventtype": "ParcelWasMigrated",
                                  "basisregisterscausationid": "0870f9b0-bba0-5444-9f76-4316e9f8cc0f",
+                                 "subject": "https://data.vlaanderen.be/id/perceel/34034B0003-00_000",
                                  "data": {
-                                     "@id": "https://data.vlaanderen.be/id/perceel/34034B0003-00_000",
                                      "objectId": "34034B0003-00_000",
                                      "naamruimte": "https://data.vlaanderen.be/id/perceel",
                                      "versieId": "2023-11-02T07:37:09+01:00",
@@ -38,12 +38,12 @@ namespace ParcelRegistry.Api.Oslo.Parcel.V3.ChangeFeed
                                      ],
                                      "attributen": [
                                          {
-                                             "naam": "perceelStatus",
+                                             "naam": "status",
                                              "oudeWaarde": null,
-                                             "nieuweWaarde": "gerealiseerd"
+                                             "nieuweWaarde": "https://data.vlaanderen.be/id/concept/perceelstatus/gerealiseerd"
                                          },
                                          {
-                                             "naam": "adresIds",
+                                             "naam": "toegekendAdres",
                                              "oudeWaarde": null,
                                              "nieuweWaarde": [
                                                  "https://data.vlaanderen.be/id/adres/200001"
