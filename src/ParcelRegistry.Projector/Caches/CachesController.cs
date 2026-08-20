@@ -20,7 +20,8 @@ namespace ParcelRegistry.Projector.Caches
     {
         private static Dictionary<string, string> _projectionNameMapper = new Dictionary<string, string>()
         {
-            {"ParcelRegistry.Projections.LastChangedList.LastChangedListProjections", LastChangedListProjections.ProjectionName}
+            {"ParcelRegistry.Projections.LastChangedList.LastChangedListProjections", LastChangedListProjections.ProjectionName},
+            {"ParcelRegistry.Projections.LastChangedList.LastChangedListProjectionsV3", LastChangedListProjectionsV3.ProjectionName}
         };
 
         [HttpGet]
