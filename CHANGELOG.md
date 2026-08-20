@@ -1,3 +1,10 @@
+## [7.1.1](https://github.com/informatievlaanderen/parcel-registry/compare/v7.1.0...v7.1.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **projector:** status add mapping for LastChangedListProjectionsV3 ([318431b](https://github.com/informatievlaanderen/parcel-registry/commit/318431bd747862ae8a31db2d894974b605a8531e))
+
 # [7.1.0](https://github.com/informatievlaanderen/parcel-registry/compare/v7.0.6...v7.1.0) (2026-08-19)
 
 
