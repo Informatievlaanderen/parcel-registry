@@ -1,3 +1,10 @@
+## [7.1.2](https://github.com/informatievlaanderen/parcel-registry/compare/v7.1.1...v7.1.2) (2026-08-20)
+
+
+### Bug Fixes
+
+* **feed:** example ([04aacd3](https://github.com/informatievlaanderen/parcel-registry/commit/04aacd3153534438f96f7d8f5c62e9895136ee12))
+
 ## [7.1.1](https://github.com/informatievlaanderen/parcel-registry/compare/v7.1.0...v7.1.1) (2026-08-20)
 
 
