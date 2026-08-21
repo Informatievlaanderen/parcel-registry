@@ -1,3 +1,10 @@
+## [7.1.3](https://github.com/informatievlaanderen/parcel-registry/compare/v7.1.2...v7.1.3) (2026-08-21)
+
+
+### Bug Fixes
+
+* **feed:** concurrency in feed projections ([f0dfdc9](https://github.com/informatievlaanderen/parcel-registry/commit/f0dfdc9a0d2e0608874e0cf4bf9f627dda5b9c8f))
+
 ## [7.1.2](https://github.com/informatievlaanderen/parcel-registry/compare/v7.1.1...v7.1.2) (2026-08-20)
 
 
