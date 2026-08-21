@@ -923,9 +923,8 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
 
             ChangeFeedServiceMock.Setup(x => x.SerializeCloudEvent(It.IsAny<CloudEvent>())).Returns("serialized cloud event");
 
-            ChangeFeedServiceMock.Setup(x => x.CheckToUpdateCacheAsync(
+            ChangeFeedServiceMock.Setup(x => x.MarkCompletedPageAsync(
                 It.IsAny<int>(),
-                It.IsAny<FeedContext>(),
                 It.IsAny<Func<int, Task<int>>>()));
         }
 
