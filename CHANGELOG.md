@@ -1,3 +1,11 @@
+# [7.2.0](https://github.com/informatievlaanderen/parcel-registry/compare/v7.1.3...v7.2.0) (2026-08-25)
+
+
+### Features
+
+* **oslo:** prepare sync lambert 2008 transform ([884202d](https://github.com/informatievlaanderen/parcel-registry/commit/884202d806eced4f25ce2af16744b29fa4e3509c))
+* **projections:** prepare for lambert2008 ([edc574f](https://github.com/informatievlaanderen/parcel-registry/commit/edc574fbb6da01f99d78f3672328b5e499f8a9a3))
+
 ## [7.1.3](https://github.com/informatievlaanderen/parcel-registry/compare/v7.1.2...v7.1.3) (2026-08-21)
 
 
