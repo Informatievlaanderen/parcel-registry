@@ -1708,6 +1708,7 @@
         "type": "Project",
         "dependencies": {
           "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[26.0.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": "[26.0.0, )",
           "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer": "[7.1.0, )",
           "Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions": "[1.0.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[16.0.0, )",

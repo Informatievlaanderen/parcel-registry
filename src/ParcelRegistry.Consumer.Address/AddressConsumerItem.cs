@@ -13,7 +13,19 @@ namespace ParcelRegistry.Consumer.Address
         public AddressStatus Status { get; set; }
         public string GeometryMethod { get; set; }
         public string GeometrySpecification { get; set; }
+
+        /// <summary>
+        /// The position in Lambert 72 (EPSG 31370). Queried while parcels are still persisted in Lambert 72.
+        /// Dropped once they are not. See ADR 0004.
+        /// </summary>
         public Point Position { get; set; }
+
+        /// <summary>
+        /// The same position in Lambert 2008 (EPSG 3812). Null for rows not written since this column was
+        /// added; the address CRS conversion fills it for every address. See ADR 0004.
+        /// </summary>
+        public Point? PositionLambert2008 { get; set; }
+
         public bool IsRemoved { get; set; }
 
         //Needed for EF
@@ -26,13 +38,15 @@ namespace ParcelRegistry.Consumer.Address
             AddressStatus status,
             string geometryMethod,
             string geometrySpecification,
-            Point position)
+            Point position,
+            Point? positionLambert2008 = null)
         {
             AddressPersistentLocalId = addressPersistentLocalId;
             Status = status;
             GeometryMethod = geometryMethod;
             GeometrySpecification = geometrySpecification;
             Position = position;
+            PositionLambert2008 = positionLambert2008;
             IsRemoved = false;
         }
 
@@ -43,15 +57,11 @@ namespace ParcelRegistry.Consumer.Address
             bool isRemoved,
             string geometryMethod,
             string geometrySpecification,
-            Point position)
-            : this(addressPersistentLocalId, status, geometryMethod, geometrySpecification, position)
+            Point position,
+            Point? positionLambert2008 = null)
+            : this(addressPersistentLocalId, status, geometryMethod, geometrySpecification, position, positionLambert2008)
         {
-            AddressPersistentLocalId = addressPersistentLocalId;
             AddressId = addressId;
-            Status = status;
-            GeometryMethod = geometryMethod;
-            GeometrySpecification = geometrySpecification;
-            Position = position;
             IsRemoved = isRemoved;
         }
     }
@@ -100,6 +110,7 @@ namespace ParcelRegistry.Consumer.Address
             builder.Property(x => x.GeometryMethod);
             builder.Property(x => x.GeometrySpecification);
             builder.Property(x => x.Position).HasColumnType("sys.geometry");
+            builder.Property(x => x.PositionLambert2008).HasColumnType("sys.geometry");
             builder.Property(x => x.IsRemoved);
 
             builder

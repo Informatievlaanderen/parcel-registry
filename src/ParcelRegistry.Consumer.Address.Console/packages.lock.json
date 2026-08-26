@@ -927,6 +927,14 @@
         "resolved": "3.5.0",
         "contentHash": "FnASiAaTGSmB4SaSroIwnK4ph9noFIXZpPOMezDqWw5S/TNakzSnawPeM7u0Auq1/EqJXeqG4s6UjfrGBH33Ow=="
       },
+      "NetTopologySuite.Features": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "Uk0Sun2RtpDLMcPhPO8UFZYDtESpZmHSfqa/eskJkdOjmK2rVbo2Zm3YiT3zdtjgosypgDT/eQLiFbsPKMOgbg==",
+        "dependencies": {
+          "NetTopologySuite": "[2.0.0, 3.0.0-A)"
+        }
+      },
       "NetTopologySuite.IO.SqlServerBytes": {
         "type": "Transitive",
         "resolved": "2.1.0",
@@ -1230,6 +1238,7 @@
         "type": "Project",
         "dependencies": {
           "Be.Vlaanderen.Basisregisters.GrAr.Contracts": "[26.0.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": "[26.0.0, )",
           "Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer": "[7.1.0, )",
           "Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions": "[1.0.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[16.0.0, )",
@@ -1407,6 +1416,16 @@
         "requested": "[26.0.0, )",
         "resolved": "26.0.0",
         "contentHash": "tBFpZVE63vHwWuqumWpHkh/LBhWNdiqvq1BTf+hvKmGDN7rRM+iuf73pKFjLscBiFHKI5VBi0gfc9gFQLHlwXQ=="
+      },
+      "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": {
+        "type": "CentralTransitive",
+        "requested": "[26.0.0, )",
+        "resolved": "26.0.0",
+        "contentHash": "fGEsRknGQEUXxXDynNJrjNqSGv0KDu8UwArU65Ty9TU9CXGGefTVUf8xYvGk5AnSS/57c24QD/CpvhsgDQGchQ==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "26.0.0",
+          "NetTopologySuite.Features": "2.2.0"
+        }
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Edit": {
         "type": "CentralTransitive",

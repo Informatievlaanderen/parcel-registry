@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.Contracts" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.GrAr.CrsTransform" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer" />
 
