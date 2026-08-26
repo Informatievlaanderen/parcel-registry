@@ -5,6 +5,7 @@ namespace ParcelRegistry.Consumer.Address
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer;
     using Be.Vlaanderen.Basisregisters.MessageHandling.Kafka.Consumer.SqlServer;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer.MigrationExtensions;
@@ -46,23 +47,87 @@ namespace ParcelRegistry.Consumer.Address
             return new AddressData(new AddressPersistentLocalId(item.AddressPersistentLocalId), Map(item.Status), item.IsRemoved);
         }
 
+        /// <summary>
+        /// Set once the Lambert 2008 column has been observed complete. It only ever goes from false to
+        /// true: the address conversion fills the column and nothing empties it again. The context is
+        /// registered as a singleton in the GRB importer, so this costs one query per run rather than one
+        /// per parcel.
+        /// </summary>
+        private bool _lambert2008PositionsVerified;
+
         public IEnumerable<AddressConsumerItem> FindAddressesWithinGeometry(Geometry geometry)
         {
             var fixedGeometry = NetTopologySuite.Geometries.Utilities.GeometryFixer.Fix(geometry);
 
+            // Dispatch on where the coordinates actually are, not on the SRID. GrbXmlReader reads GRB GML
+            // through a GMLReader built on the Lambert 72 geometry factory, so every polygon arriving here
+            // carries SRID 31370 by construction — including, once GRB delivers Lambert 2008, ones whose
+            // coordinates are nothing of the sort. See ADR 0004.
+            return fixedGeometry.IsInsideFlandersUsingLambert08()
+                ? FindWithinLambert2008(fixedGeometry)
+                : FindWithinLambert72(fixedGeometry);
+        }
+
+        private IEnumerable<AddressConsumerItem> FindWithinLambert72(Geometry fixedGeometry)
+        {
             var containsResult = AddressConsumerItems
                 .Where(x => !x.IsRemoved && fixedGeometry.Contains(x.Position))
                 .ToList();
 
-            var touchesResult= AddressConsumerItems
+            var touchesResult = AddressConsumerItems
                 .Where(x => !x.IsRemoved && x.Position.Touches(fixedGeometry))
                 .ToList();
 
-            return containsResult
-                .Union(touchesResult)
-                .Where(x => new [] { AddressStatus.Proposed, AddressStatus.Current }.Contains(x.Status))
-                .Distinct();
+            return Combine(containsResult, touchesResult);
         }
+
+        private IEnumerable<AddressConsumerItem> FindWithinLambert2008(Geometry fixedGeometry)
+        {
+            GuardLambert2008PositionsAreComplete();
+
+            var containsResult = AddressConsumerItems
+                .Where(x => !x.IsRemoved && fixedGeometry.Contains(x.PositionLambert2008))
+                .ToList();
+
+            var touchesResult = AddressConsumerItems
+                .Where(x => !x.IsRemoved && x.PositionLambert2008!.Touches(fixedGeometry))
+                .ToList();
+
+            return Combine(containsResult, touchesResult);
+        }
+
+        /// <summary>
+        /// A Lambert 2008 query while any address is still missing its Lambert 2008 position would silently
+        /// skip that address, and the parcel would import without it. The conversion order — every address
+        /// converted before any parcel is — makes this unreachable; this turns that assumption about
+        /// another register's conversion into a stopped importer rather than parcels quietly missing
+        /// addresses. See ADR 0004.
+        /// </summary>
+        private void GuardLambert2008PositionsAreComplete()
+        {
+            if (_lambert2008PositionsVerified)
+            {
+                return;
+            }
+
+            if (AddressConsumerItems.Any(x => !x.IsRemoved && x.PositionLambert2008 == null))
+            {
+                throw new InvalidOperationException(
+                    "Cannot resolve addresses for a Lambert 2008 parcel: some addresses have no Lambert 2008 "
+                    + "position yet, so they would be silently skipped. The address register's conversion to "
+                    + "Lambert 2008 has to complete before parcels are converted.");
+            }
+
+            _lambert2008PositionsVerified = true;
+        }
+
+        private static IEnumerable<AddressConsumerItem> Combine(
+            IEnumerable<AddressConsumerItem> containsResult,
+            IEnumerable<AddressConsumerItem> touchesResult)
+            => containsResult
+                .Union(touchesResult)
+                .Where(x => new[] { AddressStatus.Proposed, AddressStatus.Current }.Contains(x.Status))
+                .Distinct();
 
         private static ParcelRegistry.Parcel.DataStructures.AddressStatus Map(AddressStatus status)
         {

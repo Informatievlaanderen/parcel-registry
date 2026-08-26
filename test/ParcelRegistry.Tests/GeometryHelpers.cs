@@ -176,6 +176,47 @@
             return new ExtendedWkbGeometry(geometry.AsBinary());
         }
 
+        /// <summary>
+        /// A base position inside Flanders in Lambert 72, and the same physical point in Lambert 2008.
+        /// Fixtures offset from these so that generated positions are ones the consumer can transform —
+        /// both Lambert transforms decide by envelope, not by SRID. See ADR 0004.
+        /// </summary>
+        public const double Lambert72PointX = 140000;
+        public const double Lambert72PointY = 186000;
+        public const double Lambert2008PointX = 640000;
+        public const double Lambert2008PointY = 686000;
+
+        public static ExtendedWkbGeometry CreateEwkbPointLambert2008(double x, double y)
+        {
+            var point = new Point(x, y) { SRID = SystemReferenceId.SridLambert2008 };
+
+            return ExtendedWkbGeometry.CreateEWkb(point)!;
+        }
+
+        /// <summary>
+        /// A point as plain WKB carrying no SRID at all, as positions persisted before the address event
+        /// store wrote EWKB do. This is the input GrAr's <c>CreateForEwkb</c> throws on, and the reason
+        /// <see cref="ParcelRegistry.WKBReaderFactory"/> exists. See ADR 0004.
+        /// </summary>
+        public static ExtendedWkbGeometry CreateWkbPointWithoutSrid(double x, double y)
+            => new ExtendedWkbGeometry(new Point(x, y).AsBinary());
+
+        /// <summary>
+        /// <see cref="ValidGmlPolygon2"/>'s shape, placed inside Flanders in Lambert 2008 so that
+        /// <c>FindAddressesWithinGeometry</c> dispatches to the Lambert 2008 column.
+        /// </summary>
+        public static Polygon ValidPolygon2Lambert2008 => (Polygon)new WKTReader
+            {
+                DefaultSRID = SystemReferenceId.SridLambert2008
+            }
+            .Read("POLYGON ((640100 686100, 640200 686100, 640200 686200, 640100 686200, 640100 686100))");
+
+        public static Point ValidPoint1InPolygon2Lambert2008 =>
+            new Point(640150, 686150) { SRID = SystemReferenceId.SridLambert2008 };
+
+        public static Point PointOutsideOfValidPolygon2Lambert2008 =>
+            new Point(640500, 686500) { SRID = SystemReferenceId.SridLambert2008 };
+
         public static Polygon ValidPolygon => (Polygon)ValidGmlPolygon.ToGeometry();
         public static Polygon ValidPolygon2 => (Polygon)ValidGmlPolygon2.ToGeometry();
         public static Polygon ValidPolygon3 => (Polygon)ValidGmlPolygon3.ToGeometry();
