@@ -54,6 +54,7 @@ namespace ParcelRegistry.Consumer.Address.Infrastructure
             migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);
 
             await using var migrator = new ConsumerAddressContext(migratorOptions.Options);
+            migrator.Database.SetCommandTimeout(10 * 60);
             await migrator.Database.MigrateAsync(cancellationToken);
         }
     }
