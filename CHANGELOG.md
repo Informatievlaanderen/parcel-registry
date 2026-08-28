@@ -1,3 +1,10 @@
+# [7.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v7.2.0...v7.3.0) (2026-08-28)
+
+
+### Features
+
+* **consumer:** prepare lambert2008 ([d3075ff](https://github.com/informatievlaanderen/parcel-registry/commit/d3075ffd1afd619e39c9d9612ac5d7edae4a11ac))
+
 # [7.2.0](https://github.com/informatievlaanderen/parcel-registry/compare/v7.1.3...v7.2.0) (2026-08-25)
 
 
