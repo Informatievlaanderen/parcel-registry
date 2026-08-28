@@ -1,3 +1,10 @@
+## [7.3.1](https://github.com/informatievlaanderen/parcel-registry/compare/v7.3.0...v7.3.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **consumer:** fix migration runner timeout ([51ed3d2](https://github.com/informatievlaanderen/parcel-registry/commit/51ed3d2789e145c50bf4180bb9b013936abcea8e))
+
 # [7.3.0](https://github.com/informatievlaanderen/parcel-registry/compare/v7.2.0...v7.3.0) (2026-08-28)
 
 
