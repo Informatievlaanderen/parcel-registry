@@ -5,6 +5,8 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
+    using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
+    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Events;
     using Exceptions;
     using NetTopologySuite.Geometries;
@@ -138,6 +140,44 @@ namespace ParcelRegistry.Parcel
             }
 
             ApplyChange(new ParcelGeometryWasChanged(ParcelId, CaPaKey, extendedWkbGeometry));
+        }
+
+        /// <summary>
+        /// Re-expresses the geometry in Lambert 2008 (EPSG 3812) for the one-off event store transformation,
+        /// see ADR 0005.
+        /// </summary>
+        /// <remarks>
+        /// Deliberately unguarded: unlike <see cref="ChangeGeometry"/> this is not an edit of the parcel but a
+        /// change of the reference system its geometry is expressed in, and it has to reach every parcel the
+        /// event store holds — removed and retired ones included — or the event store would be left holding both
+        /// reference systems forever. <see cref="GuardPolygon"/> is not run either: it pins the geometry to
+        /// Lambert 72, which is the very thing this leaves behind.
+        ///
+        /// A geometry that is already Lambert 2008 applies nothing, which is what makes re-running the
+        /// transformation over a stream a no-op instead of a double transform.
+        /// </remarks>
+        public void TransformToLambert2008()
+        {
+            var extendedWkb = Geometry.ToString().ToByteArray();
+
+            // Qualified: the GrAr WKBReaderFactory this file already uses for CreateForLambert72 throws on
+            // SRID-less bytes, and geometries persisted before the event store wrote EWKB are exactly that.
+            var geometry = ParcelRegistry.WKBReaderFactory.CreateForEwkb(extendedWkb).Read(extendedWkb);
+
+            if (geometry.SRID == SystemReferenceId.SridLambert2008)
+            {
+                return;
+            }
+
+            // The explicit transform rather than EnsureLambert08: that one relabels geometries falling outside
+            // Flanders instead of transforming them, which would silently corrupt any geometry this touches.
+            // Rounded to 2 decimals, the centimetre precision geometries are persisted at.
+            var transformed = geometry.TransformFromLambert72To08(roundingPrecision: 2);
+
+            ApplyChange(new ParcelGeometryCrsWasChanged(
+                ParcelId,
+                CaPaKey,
+                ExtendedWkbGeometry.Create(transformed)));
         }
 
         private static void GuardPolygon(Geometry? geometry)

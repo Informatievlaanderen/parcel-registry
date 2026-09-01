@@ -126,6 +126,18 @@ namespace ParcelRegistry.Parcel
                         parcelRepository().Add(new ParcelStreamId(message.Command.ParcelId), createdParcel);
                     }
                 });
+
+            For<TransformToLambert2008>()
+                .AddSqlStreamStore(getStreamStore, getUnitOfWork, eventMapping, eventSerializer, getSnapshotStore)
+                .AddEventHash<TransformToLambert2008, Parcel>(getUnitOfWork)
+                .AddProvenance(getUnitOfWork, provenanceFactory)
+                .Handle(async (message, ct) =>
+                {
+                    var streamId = new ParcelStreamId(message.Command.ParcelId);
+                    var parcel = await parcelRepository().GetAsync(streamId, ct);
+
+                    parcel.TransformToLambert2008();
+                });
         }
     }
 }

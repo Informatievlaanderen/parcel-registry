@@ -666,6 +666,14 @@
           "System.CodeDom": "6.0.0"
         }
       },
+      "NetTopologySuite.Features": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "Uk0Sun2RtpDLMcPhPO8UFZYDtESpZmHSfqa/eskJkdOjmK2rVbo2Zm3YiT3zdtjgosypgDT/eQLiFbsPKMOgbg==",
+        "dependencies": {
+          "NetTopologySuite": "[2.0.0, 3.0.0-A)"
+        }
+      },
       "Newtonsoft.Json": {
         "type": "Transitive",
         "resolved": "13.0.4",
@@ -811,6 +819,7 @@
           "Be.Vlaanderen.Basisregisters.EventHandling": "[7.1.0, )",
           "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": "[5.1.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Common": "[26.0.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": "[26.0.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Provenance": "[26.0.0, )",
           "Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor": "[5.1.0, )",
           "NetTopologySuite": "[2.6.0, )",
@@ -910,6 +919,16 @@
         "requested": "[5.1.0, )",
         "resolved": "5.1.0",
         "contentHash": "2WB1iVxqU35ULl7ATujoTlWNb4fCEv3CWytmfq1WqIrZvy5oLbfKmgKkTCAehQwZD4bIgQvPQQ4crifcQO3PSg=="
+      },
+      "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": {
+        "type": "CentralTransitive",
+        "requested": "[26.0.0, )",
+        "resolved": "26.0.0",
+        "contentHash": "fGEsRknGQEUXxXDynNJrjNqSGv0KDu8UwArU65Ty9TU9CXGGefTVUf8xYvGk5AnSS/57c24QD/CpvhsgDQGchQ==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "26.0.0",
+          "NetTopologySuite.Features": "2.2.0"
+        }
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Legacy": {
         "type": "CentralTransitive",
