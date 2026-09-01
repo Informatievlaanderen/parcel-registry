@@ -41,6 +41,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adr", "adr", "{957DE67B-315
 		docs\adr\0002-parcel-import-via-download.md = docs\adr\0002-parcel-import-via-download.md
 		docs\adr\0003-lambert2008-projections.md = docs\adr\0003-lambert2008-projections.md
 		docs\adr\0004-lambert2008-consumer-address.md = docs\adr\0004-lambert2008-consumer-address.md
+		docs\adr\0005-lambert2008-event-store-transformation.md = docs\adr\0005-lambert2008-event-store-transformation.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Projector", "src\ParcelRegistry.Projector\ParcelRegistry.Projector.csproj", "{3E07F9FB-8272-4D6A-95D5-70CDC60913F0}"

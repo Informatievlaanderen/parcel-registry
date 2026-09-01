@@ -55,7 +55,8 @@ jobs:
           'projections-backoffice',
           'last-changed-list',
           'grb-importer',
-          'snapshot-verifier'
+          'snapshot-verifier',
+          'migrator-lambert'
         ]
     with:
       environment: ${{ github.event.inputs.environment }}
