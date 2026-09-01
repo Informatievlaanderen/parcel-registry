@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
@@ -169,6 +170,50 @@
                     parcelVersions.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
                     parcelVersions.Geometry.Should().BeEquivalentTo(geometry);
+                    parcelVersions.Type.Should().Be("EventName");
+                });
+        }
+
+        /// <summary>
+        /// The version table is a row per event, so the transformation gets one — carrying the Lambert 2008
+        /// geometry. See ADR 0005.
+        /// </summary>
+        [Fact]
+        public async Task WhenParcelGeometryCrsWasChanged()
+        {
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var message = new ParcelGeometryCrsWasChanged(
+                new ParcelId(parcelWasImported.ParcelId),
+                new VbrCaPaKey(parcelWasImported.CaPaKey),
+                GeometryHelpers.ValidGmlPolygonLambert2008.ToExtendedWkbGeometryLambert2008());
+            ((ISetProvenance)message).SetProvenance(_fixture.Create<Provenance>());
+
+            var position = _fixture.Create<long>();
+            var metadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position },
+                { Envelope.EventNameMetadataKey, _fixture.Create<string>()}
+            };
+
+            var messageMetadata = new Dictionary<string, object>
+            {
+                { AddEventHashPipe.HashMetadataKey, _fixture.Create<string>() },
+                { Envelope.PositionMetadataKey, position + 1 },
+                { Envelope.EventNameMetadataKey, "EventName"}
+            };
+
+            await Sut
+                .Given(
+                    new Envelope<ParcelWasImported>(new Envelope(parcelWasImported, metadata)),
+                    new Envelope<ParcelGeometryCrsWasChanged>(new Envelope(message, messageMetadata)))
+                .Then(async context =>
+                {
+                    var parcelVersions = await context.ParcelVersions.FindAsync(position + 1, message.ParcelId);
+                    parcelVersions.Should().NotBeNull();
+
+                    parcelVersions!.Geometry!.SRID.Should().Be(SystemReferenceId.SridLambert2008);
+                    parcelVersions.Geometry.Coordinates.First().X.Should().BeApproximately(640281.95, 0.01);
                     parcelVersions.Type.Should().Be("EventName");
                 });
         }

@@ -3,6 +3,7 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
@@ -74,6 +75,11 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
                     },
                     ct);
             });
+
+            // The WFS item holds no geometry, only the parcel's attributes, so there is nothing to reproject.
+            // The version timestamp is deliberately not bumped either: the transformation does not change the
+            // parcel. See ADR 0005.
+            When<Envelope<ParcelGeometryCrsWasChanged>>(DoNothing);
 
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
             {
@@ -264,6 +270,8 @@ namespace ParcelRegistry.Projections.Wfs.ParcelWfs
                 context.ParcelWfsAddresses.Remove(address);
             }
         }
+
+        private static Task DoNothing<T>(WfsContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
 
         private static void UpdateVersionTimestamp(ParcelWfsItem item, Instant versionTimestamp)
             => item.VersionTimestamp = versionTimestamp;

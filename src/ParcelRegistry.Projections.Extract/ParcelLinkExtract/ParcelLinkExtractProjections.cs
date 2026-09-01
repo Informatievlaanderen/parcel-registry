@@ -152,6 +152,7 @@ namespace ParcelRegistry.Projections.Extract.ParcelLinkExtract
             });
 
             When<Envelope<ParcelGeometryWasChanged>>(DoNothing);
+            When<Envelope<ParcelGeometryCrsWasChanged>>(DoNothing);
             When<Envelope<ParcelWasRetiredV2>>(DoNothing);
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(DoNothing);
             When<Envelope<ParcelWasImported>>(DoNothing);

@@ -3,7 +3,9 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
     using System;
     using System.Collections.Generic;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.Connector;
     using Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
@@ -161,6 +163,11 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                     ct);
             });
 
+            // The extract holds no geometry, only the dbase record, so there is nothing to reproject. The
+            // version is deliberately not bumped either: the transformation does not change the parcel.
+            // See ADR 0005.
+            When<Envelope<ParcelGeometryCrsWasChanged>>(DoNothing);
+
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateParcelExtract(
@@ -200,6 +207,8 @@ namespace ParcelRegistry.Projections.Extract.ParcelExtract
                 ? StatusMapping[parcelStatus]
                 : throw new ArgumentOutOfRangeException(nameof(parcelStatus), parcelStatus, null);
         }
+
+        private static Task DoNothing<T>(ExtractContext context, Envelope<T> envelope, CancellationToken ct) where T: IMessage => Task.CompletedTask;
 
         private void UpdateStatus(ParcelExtractItem parcel, string status)
             => UpdateRecord(parcel, record => record.status.Value = status);

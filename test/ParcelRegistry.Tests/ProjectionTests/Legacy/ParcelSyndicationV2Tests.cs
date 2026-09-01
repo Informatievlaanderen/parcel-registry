@@ -145,6 +145,34 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                 });
         }
 
+        /// <summary>
+        /// The transformation is not a change to the parcel, so the syndication feed gets no new version and
+        /// its stored geometry stays in the reference system of the parcel's last real change. See ADR 0005.
+        /// </summary>
+        [Fact]
+        public async Task WhenParcelGeometryCrsWasChanged_ThenNoNewSyndicationItem()
+        {
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var parcelGeometryCrsWasChanged = new ParcelGeometryCrsWasChanged(
+                new ParcelId(parcelWasImported.ParcelId),
+                new VbrCaPaKey(parcelWasImported.CaPaKey),
+                GeometryHelpers.ValidGmlPolygonLambert2008.ToExtendedWkbGeometryLambert2008());
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasImported, 1L),
+                    CreateEnvelope(parcelGeometryCrsWasChanged, 2L))
+                .Then(async ct =>
+                {
+                    (await ct.ParcelSyndication.FindAsync(2L)).Should().BeNull();
+
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(1L);
+                    parcelSyndicationItem.Should().NotBeNull();
+                    parcelSyndicationItem!.ExtendedWkbGeometry.Should()
+                        .BeEquivalentTo(parcelWasImported.ExtendedWkbGeometry.ToByteArray());
+                });
+        }
+
         [Fact]
         public async Task WhenParcelWasCorrectedFromRetiredToRealized()
         {

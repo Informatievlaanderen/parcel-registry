@@ -1,5 +1,6 @@
 ﻿namespace ParcelRegistry.Tests.ProjectionTests.Integration
 {
+    using System.Linq;
     using System.Threading.Tasks;
     using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
@@ -114,6 +115,35 @@
                     latestItem.VersionAsString.Should()
                         .Be(new Rfc3339SerializableDateTimeOffset(message.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
                     latestItem.Geometry.Should().BeEquivalentTo(geometry);
+                });
+        }
+
+        /// <summary>
+        /// The geometry follows the event store into Lambert 2008, but the version does not move: the
+        /// transformation is not a change to the parcel. See ADR 0005.
+        /// </summary>
+        [Fact]
+        public async Task GivenParcelGeometryCrsWasChanged()
+        {
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var message = new ParcelGeometryCrsWasChanged(
+                new ParcelId(parcelWasImported.ParcelId),
+                new VbrCaPaKey(parcelWasImported.CaPaKey),
+                GeometryHelpers.ValidGmlPolygonLambert2008.ToExtendedWkbGeometryLambert2008());
+            ((ISetProvenance)message).SetProvenance(_fixture.Create<Provenance>());
+
+            await Sut
+                .Given(parcelWasImported, message)
+                .Then(async context =>
+                {
+                    var latestItem = await context.ParcelLatestItemsV2.FindAsync(message.ParcelId);
+                    latestItem.Should().NotBeNull();
+                    latestItem!.Geometry.SRID.Should().Be(SystemReferenceId.SridLambert2008);
+                    latestItem.Geometry.Coordinates.First().X.Should().BeApproximately(640281.95, 0.01);
+
+                    latestItem.VersionTimestamp.Should().Be(parcelWasImported.Provenance.Timestamp);
+                    latestItem.VersionAsString.Should()
+                        .Be(new Rfc3339SerializableDateTimeOffset(parcelWasImported.Provenance.Timestamp.ToBelgianDateTimeOffset()).ToString());
                 });
         }
 
