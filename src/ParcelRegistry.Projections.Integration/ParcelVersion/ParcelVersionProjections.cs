@@ -83,6 +83,15 @@
                     parcel => { parcel.Geometry = ParcelMapper.MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry); }, ct);
             });
 
+            // The version table is a row per event, so the transformation gets one like everything else.
+            When<Envelope<ParcelGeometryCrsWasChanged>>(async (context, message, ct) =>
+            {
+                await context.CreateNewParcelVersion(
+                    message.Message.ParcelId,
+                    message,
+                    parcel => { parcel.Geometry = ParcelMapper.MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry); }, ct);
+            });
+
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
             {
                 await context.CreateNewParcelVersion(

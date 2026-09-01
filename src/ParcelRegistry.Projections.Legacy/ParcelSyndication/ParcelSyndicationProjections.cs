@@ -202,6 +202,11 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     ct);
             });
 
+            // The transformation does not change the parcel, so it produces no new version in the syndication
+            // feed. Its stored geometry therefore stays Lambert 72 until the parcel next really changes.
+            // See ADR 0005.
+            When<Envelope<ParcelGeometryCrsWasChanged>>(async (context, message, ct) => await DoNothing());
+
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
             {
                 await context.CreateNewParcelSyndicationItem(
