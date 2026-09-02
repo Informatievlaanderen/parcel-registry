@@ -6,7 +6,6 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
-    using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Events;
     using Exceptions;
     using NetTopologySuite.Geometries;
@@ -187,7 +186,7 @@ namespace ParcelRegistry.Parcel
         /// </remarks>
         private static Geometry ReadGeometry(ExtendedWkbGeometry extendedWkbGeometry)
         {
-            var extendedWkb = extendedWkbGeometry.ToString().ToByteArray();
+            var extendedWkb = extendedWkbGeometry.ToByteArray();
 
             return ParcelRegistry.WKBReaderFactory.CreateForEwkb(extendedWkb).Read(extendedWkb);
         }
