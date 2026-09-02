@@ -139,7 +139,7 @@ reacts.
 | Projection | Geometry | Version |
 |---|---|---|
 | Legacy detail | Gml updated, re-labelled EPSG 3812 | **not** bumped |
-| Legacy syndication | — | `DoNothing` |
+| Legacy syndication | new item, geometry updated | **not** bumped |
 | Integration latest item v2 | updated | **not** bumped |
 | Integration version | new version row | — |
 | Feed | document updated | no cloud event, `LastChangedOn` untouched |
@@ -169,11 +169,12 @@ pre-transformation geometry on every subsequent event. Note that
 `Document` column is not change-tracked, so a handler that skips the cloud event has to mark it itself or
 the write is silently dropped.
 
-**Legacy syndication does nothing**, pending a decision with the analysts. The consequence is that the
-syndication item keeps its Lambert 72 geometry until the parcel's next real change. Output stays correct
-either way, because the `objectCrs` filter reprojects on read (ADR 0003), but the syndication table and the
-detail table will disagree on SRID after the transformation. If that is not wanted, the fix is the same
-shape as the feed's: update the row in place instead of cloning a new version.
+**Legacy syndication publishes the event but not a version.** It clones a new item as it does for every
+other event — so the entry appears in the feed, carrying the transformed geometry and
+`ParcelGeometryCrsWasChanged` as its `ChangeType` — and then puts `LastChangedOn` back to the value the
+parcel's last real change gave it. Consumers reading the feed sequentially therefore see the transformation
+and the new geometry; consumers keying on the version see no new version, which is the same rule the rest
+of the table follows. Address-registry's syndication does the same.
 
 **No projection needs a rebuild.** Every one of them handles the event, so each converges on its own as
 the transformation runs. That is a property worth keeping rather than a coincidence.
@@ -241,7 +242,9 @@ expires — which is exactly what the stop-and-evaluate loop does repeatedly.
 - Kafka consumers receive a `ParcelGeometryCrsWasChanged` message per parcel. The feed does not carry one,
   so a consumer reading the feed rather than Kafka sees the new coordinates only on the parcel's next real
   change.
-- The syndication feed's stored geometry stays Lambert 72 until the open question above is settled.
+- The syndication feed carries an entry per transformed parcel, so a consumer replaying it sees ~10^6
+  entries whose only change is the reference system. Their `LastChangedOn` is unchanged, so a consumer
+  keying on the version sees nothing new.
 - Versions and `VersionTimestamp`s do not move for ~10^6 parcels, so anything downstream that polls "what
   changed since" will not see the transformation. That is the intent, and it is the reason LastChangedList
   is the one exception.

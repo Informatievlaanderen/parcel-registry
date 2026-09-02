@@ -145,17 +145,20 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
         }
 
         /// <summary>
-        /// The transformation is not a change to the parcel, so the syndication feed gets no new version and
-        /// its stored geometry stays in the reference system of the parcel's last real change. See ADR 0005.
+        /// The event is published in the feed with the geometry the event store now holds, but the
+        /// transformation is not a change to the parcel: LastChangedOn keeps the value the parcel's last real
+        /// change gave it. See ADR 0005.
         /// </summary>
         [Fact]
-        public async Task WhenParcelGeometryCrsWasChanged_ThenNoNewSyndicationItem()
+        public async Task WhenParcelGeometryCrsWasChanged()
         {
+            var lambert2008Geometry = GeometryHelpers.ValidGmlPolygonLambert2008.ToExtendedWkbGeometryLambert2008();
+
             var parcelWasImported = _fixture.Create<ParcelWasImported>();
             var parcelGeometryCrsWasChanged = new ParcelGeometryCrsWasChanged(
                 new ParcelId(parcelWasImported.ParcelId),
                 new VbrCaPaKey(parcelWasImported.CaPaKey),
-                GeometryHelpers.ValidGmlPolygonLambert2008.ToExtendedWkbGeometryLambert2008());
+                lambert2008Geometry);
 
             await Sut
                 .Given(
@@ -163,12 +166,17 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     CreateEnvelope(parcelGeometryCrsWasChanged, 2L))
                 .Then(async ct =>
                 {
-                    (await ct.ParcelSyndication.FindAsync(2L)).Should().BeNull();
-
-                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(1L);
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(2L);
                     parcelSyndicationItem.Should().NotBeNull();
-                    parcelSyndicationItem!.ExtendedWkbGeometry.Should()
-                        .BeEquivalentTo(parcelWasImported.ExtendedWkbGeometry.ToByteArray());
+                    parcelSyndicationItem!.ChangeType.Should().Be(nameof(ParcelGeometryCrsWasChanged));
+                    parcelSyndicationItem.ExtendedWkbGeometry.Should()
+                        .BeEquivalentTo(lambert2008Geometry.ToString().ToByteArray());
+                    parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
+                    parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasImported.Provenance.Timestamp);
+
+                    parcelSyndicationItem.LastChangedOn.Should().Be(parcelWasImported.Provenance.Timestamp);
+                    parcelSyndicationItem.LastChangedOn.Should()
+                        .NotBe(parcelGeometryCrsWasChanged.Provenance.Timestamp);
                 });
         }
 
