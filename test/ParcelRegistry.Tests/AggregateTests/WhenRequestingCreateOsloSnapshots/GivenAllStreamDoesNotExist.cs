@@ -7,6 +7,7 @@
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Fixtures;
     using Parcel;
     using Xunit;
     using Xunit.Abstractions;

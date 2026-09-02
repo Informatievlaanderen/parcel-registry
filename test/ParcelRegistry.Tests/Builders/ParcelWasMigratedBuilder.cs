@@ -1,11 +1,12 @@
 ﻿namespace ParcelRegistry.Tests.Builders
 {
     using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using EventExtensions;
     using Parcel;
     using Parcel.Events;
+    using ParcelId = ParcelRegistry.Legacy.ParcelId;
+    using ParcelStatus = Parcel.ParcelStatus;
 
     /// <summary>
     /// Builder for creating instances of ParcelWasMigrated.
@@ -14,8 +15,8 @@
     public class ParcelWasMigratedBuilder
     {
         private readonly Fixture _fixture;
-        private ParcelRegistry.Legacy.ParcelId? _oldParcelId;
-        private ParcelId? _parcelId;
+        private ParcelId? _oldParcelId;
+        private ParcelRegistry.Parcel.ParcelId? _parcelId;
         private VbrCaPaKey? _caPaKey;
         private ParcelStatus? _status;
         private bool _isRemoved;
@@ -28,14 +29,14 @@
             _addressPersistentLocalIds = new List<AddressPersistentLocalId>();
         }
 
-        public ParcelWasMigratedBuilder WithOldParcelId(ParcelRegistry.Legacy.ParcelId parcelId)
+        public ParcelWasMigratedBuilder WithOldParcelId(ParcelId parcelId)
         {
             _oldParcelId = parcelId;
 
             return this;
         }
 
-        public ParcelWasMigratedBuilder WithParcelId(ParcelId parcelId)
+        public ParcelWasMigratedBuilder WithParcelId(ParcelRegistry.Parcel.ParcelId parcelId)
         {
             _parcelId = parcelId;
 
@@ -80,8 +81,8 @@
         public ParcelWasMigrated Build()
         {
             var parcelWasMigrated = new ParcelWasMigrated(
-                _oldParcelId ?? _fixture.Create<ParcelRegistry.Legacy.ParcelId>(),
-                _parcelId ?? _fixture.Create<ParcelId>(),
+                _oldParcelId ?? _fixture.Create<ParcelId>(),
+                _parcelId ?? _fixture.Create<ParcelRegistry.Parcel.ParcelId>(),
                 _caPaKey ?? _fixture.Create<VbrCaPaKey>(),
                 _status ?? _fixture.Create<ParcelStatus>(),
                 _isRemoved,

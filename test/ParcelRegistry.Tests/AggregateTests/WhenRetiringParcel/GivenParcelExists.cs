@@ -5,6 +5,7 @@
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Builders;
+    using Fixtures;
     using FluentAssertions;
     using Moq;
     using Parcel;

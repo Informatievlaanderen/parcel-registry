@@ -222,5 +222,15 @@
         public static Polygon ValidPolygon3 => (Polygon)ValidGmlPolygon3.ToGeometry();
         public static Polygon InValidPolygon => (Polygon)InValidGmlPolygon.ToGeometry();
         public static Polygon InvalidNtsPolygon => (Polygon)InValidNTSButValidSqlPolygon.ToGeometry();
+
+        public static ExtendedWkbGeometry GmlToExtendedWkbGeometry(this string gml)
+        {
+            var gmlReader = CreateGmlReader();
+            var geometry = gmlReader.Read(gml);
+
+            geometry.SRID = ExtendedWkbGeometry.SridLambert72;
+
+            return ExtendedWkbGeometry.CreateEWkb(geometry)!;
+        }
     }
 }

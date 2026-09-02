@@ -5,6 +5,7 @@
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Builders;
+    using Fixtures;
     using FluentAssertions;
     using Moq;
     using Parcel;
@@ -41,6 +42,36 @@
                 .When(command)
                 .Then(new ParcelStreamId(command.ParcelId),
                     new ParcelGeometryWasChanged(parcelId, caPaKey,  GeometryHelpers.ValidGmlPolygon2.GmlToExtendedWkbGeometry())));
+        }
+
+        /// <summary>
+        /// Once the event store holds Lambert 2008, that is what the GRB importer normalizes to and hands the
+        /// aggregate. The guard validates the shape and that the reference system is one of the two supported,
+        /// not that it is Lambert 72. See ADR 0005.
+        /// </summary>
+        [Fact]
+        public void WithLambert2008Geometry_ThenParcelGeometryChanged()
+        {
+            var caPaKey = Fixture.Create<VbrCaPaKey>();
+            var parcelId = ParcelId.CreateFor(caPaKey);
+
+            var lambert2008Geometry = GeometryHelpers.ValidGmlPolygonLambert2008.ToExtendedWkbGeometryLambert2008();
+
+            var parcelWasImported = new ParcelWasImportedBuilder(Fixture)
+                .WithParcelId(parcelId)
+                .WithCaPaKey(caPaKey)
+                .Build();
+
+            var command = new ChangeParcelGeometryBuilder(Fixture)
+                .WithVbrCaPaKey(caPaKey)
+                .WithExtendedWkbGeometry(lambert2008Geometry)
+                .Build();
+
+            Assert(new Scenario()
+                .Given(new ParcelStreamId(parcelId), parcelWasImported)
+                .When(command)
+                .Then(new ParcelStreamId(command.ParcelId),
+                    new ParcelGeometryWasChanged(parcelId, caPaKey, lambert2008Geometry)));
         }
 
         [Fact]

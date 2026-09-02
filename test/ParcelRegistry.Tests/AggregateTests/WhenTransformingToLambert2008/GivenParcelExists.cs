@@ -1,5 +1,6 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenTransformingToLambert2008
 {
+    using System.Linq;
     using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
@@ -8,6 +9,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenTransformingToLambert2008
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Builders;
+    using Fixtures;
     using FluentAssertions;
     using Moq;
     using Parcel;
@@ -22,16 +24,32 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenTransformingToLambert2008
             Fixture.Customize(new WithExtendedWkbGeometryPolygon());
         }
 
-        /// <summary>
-        /// <see cref="GeometryHelpers.ValidGmlPolygon"/> and the same physical parcel in Lambert 2008. Asserting
-        /// against fixed coordinates rather than against the transform the aggregate itself runs, so the test
-        /// actually pins the reference system instead of restating the implementation.
-        /// </summary>
         private static ExtendedWkbGeometry Lambert72Geometry
             => GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry();
 
+        /// <summary>
+        /// <see cref="Lambert72Geometry"/> as the shared transformation produces it. Parcel geometries are not
+        /// rounded, so this cannot be a GML constant of its own: it would differ from the aggregate's output in
+        /// the last decimals. What that output actually *is* is pinned against fixed coordinates by
+        /// <see cref="TheTransformedGeometryIsTheSameParcelInLambert2008"/>; the cases below then assert the
+        /// aggregate produces exactly it, for whichever parcel they are about.
+        /// </summary>
         private static ExtendedWkbGeometry Lambert2008Geometry
-            => GeometryHelpers.ValidGmlPolygonLambert2008.ToExtendedWkbGeometryLambert2008();
+            => ExtendedWkbGeometry.Create(
+                GeometryHelpers.ValidPolygon.ToReferenceSystem(SystemReferenceId.SridLambert2008));
+
+        [Fact]
+        public void TheTransformedGeometryIsTheSameParcelInLambert2008()
+        {
+            var transformed = _wkbReader.Read(Lambert2008Geometry);
+
+            transformed.SRID.Should().Be(SystemReferenceId.SridLambert2008);
+
+            // The first vertex of GeometryHelpers.ValidGmlPolygonLambert2008, the genuine Lambert 2008
+            // counterpart of GeometryHelpers.ValidGmlPolygon, to the centimetre it is documented at.
+            transformed.Coordinates.First().X.Should().BeApproximately(640281.95, 0.01);
+            transformed.Coordinates.First().Y.Should().BeApproximately(686723.97, 0.01);
+        }
 
         [Fact]
         public void ThenParcelGeometryCrsWasChanged()

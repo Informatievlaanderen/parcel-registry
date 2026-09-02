@@ -16,7 +16,8 @@ of the parcel event store itself open, and ADR 0003 explicitly deferred the writ
 along with it.
 
 This ADR covers the transformation: the domain change that expresses it, what each projection does with
-it, and the one-shot job that drives it. It mirrors what address-registry decided in its ADR 0005, in
+it, the write side that has to stop undoing it, and the one-shot job that drives it. It mirrors what
+address-registry decided in its ADR 0005, in
 [address-registry#1379](https://github.com/Informatievlaanderen/address-registry/pull/1379).
 
 ## Decision
@@ -58,9 +59,14 @@ restart-heavy operating model depends on.
 `EnsureLambert08` only transforms geometries that actually fall inside Flanders and *relabels* everything
 else (see ADR 0003). For a projection that is harmless. For the event store it would silently corrupt any
 geometry outside the envelope — writing Lambert 72 coordinates under SRID 3812, ~500 km from where the
-parcel is. The transformation therefore uses `LambertTransformation.TransformFromLambert72To08` with
-`roundingPrecision: 2`, which transforms unconditionally, at the centimetre precision geometries are
-persisted at.
+parcel is. The transformation therefore uses `LambertTransformation.TransformFromLambert72To08`, which
+transforms unconditionally.
+
+**The output is not rounded**, unlike address-registry's, which rounds positions to centimetres. An
+address position is a single point persisted at centimetre precision, so rounding drops transform noise
+and makes an 08 → 72 position read identically to the Lambert 72 one it replaced. A parcel geometry is a
+boundary GRB delivers at full precision — its coordinates carry far more decimals than a centimetre —
+and rounding its vertices would move the boundary rather than tidy it.
 
 ### Reading the current geometry
 
@@ -77,6 +83,52 @@ to GrAr's version, which *throws* on SRID-less EWKB instead of falling back, and
 every test that used a normal EWKB geometry. `Parcel.TransformToLambert2008()` therefore qualifies the
 call. Address-registry hit the same trap and solved it with a file-level alias; that is not available here
 because the same file needs both factories.
+
+### The write side: one toggle, normalized on the way in
+
+The transformation is worthless on its own. GRB delivers Lambert 72, so the first import after the
+conversion would write that parcel straight back to Lambert 72 and the conversion would unwind itself
+parcel by parcel.
+
+`UseLambert2008EventStoreToggle` says which reference system the event store holds — the same shape and
+name address-registry uses. The GRB importer normalizes every geometry it receives to
+`EventStoreSrid` before building the command, so the aggregate only ever sees one reference system:
+
+| Event store | GRB delivers | Result |
+|---|---|---|
+| Lambert 72 | Lambert 72 | unchanged |
+| Lambert 2008 | Lambert 72 | transformed 72 → 08 |
+| Lambert 2008 | Lambert 2008 | unchanged |
+| Lambert 72 | Lambert 2008 | transformed 08 → 72 |
+
+The last row should never happen — GRB delivers Lambert 72 — but without it a delivery in the wrong
+system while the store is still Lambert 72 would persist coordinates ~500 km from where the parcel is.
+It costs one branch, so it is there.
+
+**Which system a geometry arrived in is decided by its coordinates, not by its SRID.** `GrbXmlReader`
+reads GRB GML through a GMLReader built on the Lambert 72 geometry factory, so every polygon it produces
+carries SRID 31370 by construction — a Lambert 2008 delivery would arrive *labelled* Lambert 72, and an
+SRID-based check would sail straight past the one case the safeguard exists for.
+`ConsumerAddressContext.FindAddressesWithinGeometry` decides the same way and for the same reason (ADR
+0004); the two systems put Flanders ~500 km apart, so the envelopes cannot be confused. When the
+coordinates are already in the right system but the label disagrees, the geometry is relabelled rather
+than transformed.
+
+**The transformation is shared with the migrator.** `GeometryReferenceSystem.ToReferenceSystem` is the
+one place that decides how a geometry moves between the two systems, and `Parcel.TransformToLambert2008()`
+goes through it too. If the two ever transformed differently — a rounding on one side, a different
+transform on the other — the first GRB import after the conversion would differ in the last decimal from
+what is stored and emit a `ParcelGeometryWasChanged` for every parcel in the country.
+
+**`GuardPolygon` no longer pins Lambert 72.** It validates the shape and that the SRID is one of the two
+supported systems; which one the store holds is the toggle's business. Pinning Lambert 72 there would
+reject everything the moment the toggle flips. The guards now read the geometry through
+`ParcelRegistry.WKBReaderFactory.CreateForEwkb` rather than `CreateForLambert72`, which happened to read
+Lambert 2008 EWKB correctly but only by accident of the current precision models (ADR 0003).
+
+Address lookups are deliberately *not* normalized: `FindAddressesWithinGeometry` is given the geometry as
+GRB delivered it, so which addresses a parcel gets does not change with the parcel event store's
+reference system. It dispatches on coordinates, so it is unaffected either way.
 
 ### What each projection does
 
@@ -168,12 +220,16 @@ expires — which is exactly what the stop-and-evaluate loop does repeatedly.
 
 ## Consequences
 
-- **The write side is still Lambert 72 and has to follow.** `GmlHelpers.GmlToExtendedWkbGeometry` stamps
-  SRID 31370 and `Parcel.GuardPolygon` rejects anything else, so the first real geometry change after the
-  transformation — a GRB import or a BackOffice edit — writes that parcel back to Lambert 72. Left alone,
-  the transformation would be undone parcel by parcel. The cutover is therefore: freeze editing, run the
-  migrator to completion, release the write-side change, unfreeze. Until the write side lands, a full run
-  only makes sense on a test environment.
+- **The order of the cutover is: freeze editing, run the migrator to completion, flip
+  `FeatureToggles:UseLambert2008EventStore` to `true`, unfreeze.** Under the freeze the relative order of
+  the migrator and the toggle does not actually matter — a Lambert 2008 geometry written into an
+  untransformed stream is what the transformation would have produced anyway, and an untransformed stream
+  reached after the toggle flips still transforms — but running the migrator first keeps the window in
+  which the two reference systems coexist as short as possible.
+- **The toggle lives in the GRB importer only**, because that is the only thing that writes a geometry.
+  `GmlHelpers.GmlToExtendedWkbGeometry` still stamps SRID 31370, and it is dead code today — nothing in
+  `src` calls it. If the BackOffice ever accepts a geometry, it has to normalize through the same toggle
+  before the command is built, exactly as address-registry's BackOffice API does.
 - **Every projection holds a mix of reference systems while the transformation runs.** ADR 0003 covers what
   that means per projection; the reason to run this as one pass rather than trickling it is that the mixed
   window is visible to anything doing a spatial query across the two.
