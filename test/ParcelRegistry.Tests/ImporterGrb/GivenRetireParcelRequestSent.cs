@@ -10,6 +10,7 @@
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
+    using Fixtures;
     using FluentAssertions;
     using Importer.Grb.Handlers;
     using Importer.Grb.Infrastructure;
