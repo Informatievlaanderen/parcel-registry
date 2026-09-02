@@ -202,10 +202,26 @@ namespace ParcelRegistry.Projections.Legacy.ParcelSyndication
                     ct);
             });
 
-            // The transformation does not change the parcel, so it produces no new version in the syndication
-            // feed. Its stored geometry therefore stays Lambert 72 until the parcel next really changes.
-            // See ADR 0005.
-            When<Envelope<ParcelGeometryCrsWasChanged>>(async (context, message, ct) => await DoNothing());
+            // The event is published in the feed, carrying the geometry the event store now holds, but the
+            // transformation is not a change to the parcel: LastChangedOn keeps the value the parcel's last
+            // real change gave it. See ADR 0005.
+            When<Envelope<ParcelGeometryCrsWasChanged>>(async (context, message, ct) =>
+            {
+                // Read up front so the version can be carried over: CloneAndApplyEventInfo sets LastChangedOn
+                // to the event's timestamp and the edit below is what puts it back. A missing item is reported
+                // by CreateNewParcelSyndicationItem, which is why this is only dereferenced inside the edit.
+                var previous = await context.LatestPosition(message.Message.ParcelId, ct);
+
+                await context.CreateNewParcelSyndicationItem(
+                    message.Message.ParcelId,
+                    message,
+                    x =>
+                    {
+                        x.ExtendedWkbGeometry = message.Message.ExtendedWkbGeometry.ToByteArray();
+                        x.LastChangedOn = previous!.LastChangedOn;
+                    },
+                    ct);
+            });
 
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
             {
