@@ -176,6 +176,18 @@ parcel's last real change gave it. Consumers reading the feed sequentially there
 and the new geometry; consumers keying on the version see no new version, which is the same rule the rest
 of the table follows. Address-registry's syndication does the same.
 
+**Removed parcels are published like any other**, which is where this diverges from address-registry. There
+a removed address is skipped, because its removal is an event and the feed entry's `ChangeType` says so.
+Here removal is a flag on `ParcelWasMigrated` that `ParcelSyndicationItem` never records, so the feed has
+no way to tell — an `IsRemoved` column would read false for every parcel migrated before it was added, and
+would only tell the truth after a rebuild of the whole feed. Weighed against that, a removed parcel is a
+migration artefact rather than something consumers were told was deleted, so it is published like the
+rest.
+
+**Nothing here needs the removed-object handling address-registry's projections needed.** No parcel
+projection deletes a row for a removed parcel — they all keep it with a flag — and none of them recompute
+anything across sibling rows, so the handlers above find their row whatever the parcel's state.
+
 **No projection needs a rebuild.** Every one of them handles the event, so each converges on its own as
 the transformation runs. That is a property worth keeping rather than a coincidence.
 
