@@ -23,6 +23,19 @@
 
         public override string ToString() => Value.ToHexString();
 
+        /// <summary>
+        /// The EWKB as persisted. Readers take bytes, so this is what they get: going through
+        /// <see cref="ToString"/> would allocate a hex string per parcel and parse it straight back.
+        /// </summary>
+        public byte[] ToByteArray() => Value;
+
+        /// <summary>
+        /// Wraps a geometry that has already been read and transformed, keeping the SRID it carries. The
+        /// EWKB writer lives here, so this is the only place that decides how a geometry is serialized.
+        /// </summary>
+        public static ExtendedWkbGeometry Create(Geometry geometry)
+            => new ExtendedWkbGeometry(WkbWriter.Write(geometry));
+
         public static ExtendedWkbGeometry? CreateEWkb(Geometry geometry)
         {
             if (geometry.SRID <= 0)

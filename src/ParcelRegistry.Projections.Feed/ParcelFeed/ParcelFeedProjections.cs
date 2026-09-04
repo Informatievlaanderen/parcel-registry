@@ -104,6 +104,19 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 await AddCloudEvent(message, document, context, [], ParcelEventTypes.UpdateV1);
             });
 
+            // The transformation does not change the parcel: the document is updated so the feed keeps serving
+            // the geometry in the reference system the event store holds, but it produces no cloud event and
+            // LastChangedOn is left as it was. See ADR 0005.
+            When<Envelope<ParcelGeometryCrsWasChanged>>(async (context, message, ct) =>
+            {
+                var document = await FindDocument(context, message.Message.CaPaKey, ct);
+                document.Document.GeometryAsExtendedWkb = message.Message.ExtendedWkbGeometry;
+
+                // AddCloudEvent does this for every other handler; the Document column is not change-tracked,
+                // so without it the update would be silently dropped.
+                context.Entry(document).Property(x => x.Document).IsModified = true;
+            });
+
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
             {
                 var document = await FindDocument(context, message.Message.CaPaKey, ct);

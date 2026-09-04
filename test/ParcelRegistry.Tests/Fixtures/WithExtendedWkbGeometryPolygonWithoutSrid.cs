@@ -1,8 +1,8 @@
-namespace ParcelRegistry.Tests
+namespace ParcelRegistry.Tests.Fixtures
 {
     using AutoFixture;
     using AutoFixture.Kernel;
-    using Parcel;
+    using ParcelRegistry.Parcel;
 
     /// <summary>
     /// Generates parcel geometries as plain WKB carrying no SRID, the way they were persisted before the

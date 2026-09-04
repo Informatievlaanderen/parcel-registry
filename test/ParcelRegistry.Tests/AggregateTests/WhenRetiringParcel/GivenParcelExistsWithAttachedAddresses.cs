@@ -4,6 +4,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenRetiringParcel
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Builders;
+    using Fixtures;
     using Parcel;
     using Parcel.Events;
     using Xunit;

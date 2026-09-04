@@ -11,6 +11,7 @@ namespace ParcelRegistry.Infrastructure
         public const string BackOffice = "ParcelRegistryBackOffice";
         public const string BackOfficeProjections = "ParcelRegistryBackOfficeProjections";
         public const string MigrateParcel = "ParcelRegistryMigration";
+        public const string MigrateLambert2008 = "ParcelRegistryLambert2008Migration";
         public const string Producer = "ParcelRegistryProducer";
         public const string ProducerSnapshotOslo = "ParcelRegistryProducerSnapshotOslo";
         public const string GrbImporter = "GrbImporter";

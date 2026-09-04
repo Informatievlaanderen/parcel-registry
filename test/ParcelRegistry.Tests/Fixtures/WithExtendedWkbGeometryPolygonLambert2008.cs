@@ -1,8 +1,8 @@
-namespace ParcelRegistry.Tests
+namespace ParcelRegistry.Tests.Fixtures
 {
     using AutoFixture;
     using AutoFixture.Kernel;
-    using Parcel;
+    using ParcelRegistry.Parcel;
 
     /// <summary>
     /// Generates parcel geometries in Lambert 2008 (EPSG 3812), as the event store will hold them after the

@@ -7,7 +7,6 @@ namespace ParcelRegistry.Tests.ApiTests.Sync
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Xml;
-    using Api.BackOffice.Abstractions.Extensions;
     using Api.Oslo.Infrastructure.Options;
     using Api.Oslo.Parcel.Sync;
     using Api.Oslo.Parcel.V2.Sync;
@@ -17,7 +16,6 @@ namespace ParcelRegistry.Tests.ApiTests.Sync
     using Microsoft.Extensions.Options;
     using Microsoft.SyndicationFeed.Atom;
     using NodaTime;
-    using Parcel;
     using Xunit;
     using ParcelStatus = ParcelRegistry.Legacy.ParcelStatus;
 

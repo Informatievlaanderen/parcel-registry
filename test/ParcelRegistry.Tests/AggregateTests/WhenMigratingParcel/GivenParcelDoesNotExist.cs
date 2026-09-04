@@ -1,6 +1,5 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenMigratingParcel
 {
-    using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;

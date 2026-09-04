@@ -275,6 +275,50 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                 });
         }
 
+        /// <summary>
+        /// The document follows the event store into Lambert 2008 so the feed keeps serving the geometry it
+        /// holds, but the transformation is not a change to the parcel: no cloud event, no feed item, and
+        /// LastChangedOn stays put. See ADR 0005.
+        /// </summary>
+        [Fact]
+        public async Task WhenParcelGeometryCrsWasChanged_ThenGeometryIsUpdatedWithoutFeedItem()
+        {
+            var parcelWasMigrated = CreateParcelWasMigrated(ParcelStatus.Realized);
+
+            var parcelGeometryCrsWasChanged = new ParcelGeometryCrsWasChanged(
+                new ParcelId(parcelWasMigrated.ParcelId),
+                new VbrCaPaKey(parcelWasMigrated.CaPaKey),
+                GeometryHelpers.ValidGmlPolygonLambert2008.ToExtendedWkbGeometryLambert2008());
+            parcelGeometryCrsWasChanged.SetFixtureProvenance(_fixture);
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasMigrated, 1L),
+                    CreateEnvelope(parcelGeometryCrsWasChanged, 2L))
+                .Then(async context =>
+                {
+                    var document = await context.ParcelDocuments.FindAsync(parcelGeometryCrsWasChanged.CaPaKey);
+                    document.Should().NotBeNull();
+                    document!.Document.GeometryAsExtendedWkb.Should().Be(parcelGeometryCrsWasChanged.ExtendedWkbGeometry);
+                    document.LastChangedOn.Should().Be(parcelWasMigrated.Provenance.Timestamp);
+
+                    var feedItem = await FindLastFeedItemByCaPaKey(context, parcelGeometryCrsWasChanged.CaPaKey);
+                    feedItem.Position.Should().Be(1L);
+
+                    ChangeFeedServiceMock.Verify(x => x.CreateCloudEventWithData(
+                            It.IsAny<long>(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<string>(),
+                            It.IsAny<string>(),
+                            It.IsAny<DateTimeOffset>(),
+                            It.IsAny<List<string>>(),
+                            It.IsAny<List<BaseRegistriesCloudEventAttribute>>(),
+                            ParcelGeometryCrsWasChanged.EventName,
+                            It.IsAny<string>()),
+                        Times.Never);
+                });
+        }
+
         [Fact]
         public async Task WhenParcelWasCorrectedFromRetiredToRealized_ThenStatusIsUpdated()
         {

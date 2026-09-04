@@ -2,7 +2,6 @@ namespace ParcelRegistry.Tests.EventExtensions
 {
     using System;
     using System.Linq;
-    using Api.BackOffice.Abstractions.Extensions;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Parcel;
     using Parcel.Events;
@@ -40,7 +39,7 @@ namespace ParcelRegistry.Tests.EventExtensions
             return newEvent;
         }
 
-        public static ParcelWasMigrated WithParcelId(this ParcelWasMigrated @event,  ParcelRegistry.Legacy.ParcelId parcelId)
+        public static ParcelWasMigrated WithParcelId(this ParcelWasMigrated @event,  ParcelId parcelId)
         {
             var newEvent = new ParcelWasMigrated(
                 parcelId,

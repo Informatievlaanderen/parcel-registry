@@ -3,7 +3,6 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
@@ -142,6 +141,42 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
                     parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasImported.Provenance.Timestamp);
                     parcelSyndicationItem.LastChangedOn.Should().Be(parcelGeometryWasChanged.Provenance.Timestamp);
+                });
+        }
+
+        /// <summary>
+        /// The event is published in the feed with the geometry the event store now holds, but the
+        /// transformation is not a change to the parcel: LastChangedOn keeps the value the parcel's last real
+        /// change gave it. See ADR 0005.
+        /// </summary>
+        [Fact]
+        public async Task WhenParcelGeometryCrsWasChanged()
+        {
+            var lambert2008Geometry = GeometryHelpers.ValidGmlPolygonLambert2008.ToExtendedWkbGeometryLambert2008();
+
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+            var parcelGeometryCrsWasChanged = new ParcelGeometryCrsWasChanged(
+                new ParcelId(parcelWasImported.ParcelId),
+                new VbrCaPaKey(parcelWasImported.CaPaKey),
+                lambert2008Geometry);
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasImported, 1L),
+                    CreateEnvelope(parcelGeometryCrsWasChanged, 2L))
+                .Then(async ct =>
+                {
+                    var parcelSyndicationItem = await ct.ParcelSyndication.FindAsync(2L);
+                    parcelSyndicationItem.Should().NotBeNull();
+                    parcelSyndicationItem!.ChangeType.Should().Be(nameof(ParcelGeometryCrsWasChanged));
+                    parcelSyndicationItem.ExtendedWkbGeometry.Should()
+                        .BeEquivalentTo(lambert2008Geometry.ToString().ToByteArray());
+                    parcelSyndicationItem.EventDataAsXml.Should().NotBeEmpty();
+                    parcelSyndicationItem.RecordCreatedAt.Should().Be(parcelWasImported.Provenance.Timestamp);
+
+                    parcelSyndicationItem.LastChangedOn.Should().Be(parcelWasImported.Provenance.Timestamp);
+                    parcelSyndicationItem.LastChangedOn.Should()
+                        .NotBe(parcelGeometryCrsWasChanged.Provenance.Timestamp);
                 });
         }
 

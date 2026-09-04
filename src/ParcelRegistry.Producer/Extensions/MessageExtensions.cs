@@ -111,6 +111,13 @@ namespace ParcelRegistry.Producer.Extensions
                 message.ExtendedWkbGeometry,
                 message.Provenance.ToContract());
 
+        public static Contracts.ParcelGeometryCrsWasChanged ToContract(this ParcelAggregate.ParcelGeometryCrsWasChanged message) =>
+            new Contracts.ParcelGeometryCrsWasChanged(
+                message.ParcelId.ToString("D"),
+                message.CaPaKey,
+                message.ExtendedWkbGeometry,
+                message.Provenance.ToContract());
+
         public static Contracts.ParcelWasCorrectedFromRetiredToRealized ToContract(this ParcelAggregate.ParcelWasCorrectedFromRetiredToRealized message) =>
             new Contracts.ParcelWasCorrectedFromRetiredToRealized(
                 message.ParcelId.ToString("D"),

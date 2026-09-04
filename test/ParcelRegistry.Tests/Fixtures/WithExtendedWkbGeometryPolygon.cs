@@ -1,9 +1,8 @@
-﻿namespace ParcelRegistry.Tests
+﻿namespace ParcelRegistry.Tests.Fixtures
 {
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using AutoFixture.Kernel;
-    using Parcel;
+    using ParcelRegistry.Parcel;
 
     public class WithExtendedWkbGeometryPolygon : ICustomization
     {

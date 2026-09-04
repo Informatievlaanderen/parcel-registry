@@ -10,8 +10,6 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.CommandHandling.Idempotency;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
-    using Be.Vlaanderen.Basisregisters.Sqs.Exceptions;
-    using Be.Vlaanderen.Basisregisters.Sqs.Lambda.Handlers;
     using Be.Vlaanderen.Basisregisters.Sqs.Responses;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Builders;
@@ -26,14 +24,16 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
     using Parcel.Commands;
     using Parcel.Exceptions;
     using ParcelRegistry.Api.BackOffice.Abstractions;
-    using ParcelRegistry.Api.BackOffice.Abstractions.Extensions;
     using ParcelRegistry.Api.BackOffice.Handlers.Lambda.Handlers;
-    using SqlStreamStore.Streams;
     using SqlStreamStore;
+    using SqlStreamStore.Streams;
     using TicketingService.Abstractions;
     using Xunit;
     using Xunit.Abstractions;
-    using Coordinate = Parcel.Coordinate;
+    using ParcelId = ParcelRegistry.Legacy.ParcelId;
+    using ParcelStatus = ParcelRegistry.Legacy.ParcelStatus;
+    using WithFixedParcelId = Legacy.AutoFixture.WithFixedParcelId;
+    using WithParcelStatus = Legacy.AutoFixture.WithParcelStatus;
 
     public class WhenAttachingAddressRequest : LambdaHandlerTest
     {
@@ -43,8 +43,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
         public WhenAttachingAddressRequest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             Fixture.Customize(new WithValidVbrCaPaKey());
-            Fixture.Customize(new Legacy.AutoFixture.WithFixedParcelId());
-            Fixture.Customize(new Legacy.AutoFixture.WithParcelStatus());
+            Fixture.Customize(new WithFixedParcelId());
+            Fixture.Customize(new WithParcelStatus());
 
             _idempotencyContext = new FakeIdempotencyContextFactory().CreateDbContext(Array.Empty<string>());
             _backOfficeContext = new FakeBackOfficeContextFactory().CreateDbContext(Array.Empty<string>());
@@ -58,8 +58,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketing = MockTicketing(response => { etag = response.ETag; });
 
             var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
-            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(vbrCaPaKey);
-            var parcelId = ParcelId.CreateFor(vbrCaPaKey);
+            var legacyParcelId = ParcelId.CreateFor(vbrCaPaKey);
+            var parcelId = ParcelRegistry.Parcel.ParcelId.CreateFor(vbrCaPaKey);
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
@@ -73,7 +73,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             DispatchArrangeCommand(new MigrateParcel(
                 legacyParcelId,
                 vbrCaPaKey,
-                ParcelRegistry.Legacy.ParcelStatus.Realized,
+                ParcelStatus.Realized,
                 isRemoved: false,
                 new List<AddressPersistentLocalId> { new AddressPersistentLocalId(456), new AddressPersistentLocalId(789) },
                 GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),
@@ -125,7 +125,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var parcels = new Mock<IParcels>();
 
             var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
-            var parcelId =  ParcelId.CreateFor(vbrCaPaKey);
+            var parcelId =  ParcelRegistry.Parcel.ParcelId.CreateFor(vbrCaPaKey);
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             const string expectedEventHash = "lastEventHash";
@@ -174,8 +174,8 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             var ticketing = MockTicketing(response => { etag = response.ETag; });
 
             var vbrCaPaKey = Fixture.Create<VbrCaPaKey>();
-            var legacyParcelId = ParcelRegistry.Legacy.ParcelId.CreateFor(vbrCaPaKey);
-            var parcelId = ParcelId.CreateFor(vbrCaPaKey);
+            var legacyParcelId = ParcelId.CreateFor(vbrCaPaKey);
+            var parcelId = ParcelRegistry.Parcel.ParcelId.CreateFor(vbrCaPaKey);
             var addressPersistentLocalId = new AddressPersistentLocalId(123);
 
             var consumerAddress = Container.Resolve<FakeConsumerAddressContext>();
@@ -192,7 +192,7 @@ namespace ParcelRegistry.Tests.BackOffice.Lambda
             DispatchArrangeCommand(new MigrateParcel(
                 legacyParcelId,
                 vbrCaPaKey,
-                ParcelRegistry.Legacy.ParcelStatus.Realized,
+                ParcelStatus.Realized,
                 isRemoved: false,
                 new List<AddressPersistentLocalId> { addressPersistentLocalId },
                 GeometryHelpers.ValidGmlPolygon.GmlToExtendedWkbGeometry(),

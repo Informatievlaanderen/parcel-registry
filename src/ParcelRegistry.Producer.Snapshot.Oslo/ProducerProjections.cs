@@ -209,6 +209,21 @@ namespace ParcelRegistry.Producer.Snapshot.Oslo
                     ct);
             });
 
+            When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<ParcelGeometryCrsWasChanged>>(async (_, message, ct) =>
+            {
+                await FindAndProduce(async () =>
+                        await snapshotManager.FindMatchingSnapshot(
+                            message.Message.CaPaKey,
+                            message.Message.Provenance.Timestamp,
+                            message.Message.GetHash(),
+                            message.Position,
+                            throwStaleWhenGone: false,
+                            matchOnHashOnly: true,
+                            ct),
+                    message.Position,
+                    ct);
+            });
+
             When<Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (_, message, ct) =>
             {
                 await FindAndProduce(async () =>

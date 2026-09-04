@@ -161,6 +161,7 @@ namespace ParcelRegistry.Projections.BackOffice
 
             When<Envelope<ParcelWasImported>>(DoNothing);
             When<Envelope<ParcelGeometryWasChanged>>(DoNothing);
+            When<Envelope<ParcelGeometryCrsWasChanged>>(DoNothing);
             When<Envelope<ParcelAddressesWereReaddressed>>(DoNothing);
             When<Envelope<ParcelWasRetiredV2>>(DoNothing);
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(DoNothing);

@@ -1,6 +1,5 @@
 ﻿namespace ParcelRegistry.Tests.Builders
 {
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using EventExtensions;
     using Parcel;

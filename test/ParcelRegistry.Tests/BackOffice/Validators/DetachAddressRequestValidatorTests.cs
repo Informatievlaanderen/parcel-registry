@@ -4,6 +4,7 @@ namespace ParcelRegistry.Tests.BackOffice.Validators
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor;
     using Consumer.Address;
+    using Fixtures;
     using FluentAssertions;
     using FluentValidation.TestHelper;
     using NetTopologySuite;

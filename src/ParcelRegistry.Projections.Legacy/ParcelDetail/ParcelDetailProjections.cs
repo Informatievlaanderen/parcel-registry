@@ -255,6 +255,23 @@ namespace ParcelRegistry.Projections.Legacy.ParcelDetail
                     ct);
             });
 
+            When<Envelope<ParcelGeometryCrsWasChanged>>(async (context, message, ct) =>
+            {
+                // The transformation does not change the parcel, so the version timestamp is deliberately
+                // left as it was. See ADR 0005.
+                await context.FindAndUpdateParcelDetail(
+                    message.Message.ParcelId,
+                    entity =>
+                    {
+                        var geometry = ReadGeometry(message.Message.ExtendedWkbGeometry);
+                        entity.Gml = geometry.ConvertToGml();
+                        entity.GmlType = geometry.OgcGeometryType.ToString();
+
+                        UpdateHash(entity, message);
+                    },
+                    ct);
+            });
+
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateParcelDetail(

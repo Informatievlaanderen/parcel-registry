@@ -62,9 +62,9 @@
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Common": {
         "type": "Direct",
-        "requested": "[26.0.0, )",
-        "resolved": "26.0.0",
-        "contentHash": "r9R26QoxT629xbo0/5ntXz1rPoGth9WM4LKLfOy/LWBw1CGncL6H9QblEdWbgRN6eQWgLv2OaBypKk/2oiujRg==",
+        "requested": "[26.1.0, )",
+        "resolved": "26.1.0",
+        "contentHash": "ewY+/sRBnfCBFTZuL9u1uRiz/Uy5T15GFQU619I39X7VleQDe/Q1buKaEO8LRYzHUKM6rsEmDdsB48mIPmKX8w==",
         "dependencies": {
           "Be.Vlaanderen.Basisregisters.AggregateSource": "11.0.0",
           "Be.Vlaanderen.Basisregisters.CommandHandling": "11.0.0",
@@ -72,15 +72,25 @@
           "NodaTime": "3.3.2"
         }
       },
+      "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": {
+        "type": "Direct",
+        "requested": "[26.1.0, )",
+        "resolved": "26.1.0",
+        "contentHash": "2ujsUEo8Gp+d1tdh0qv15ioPHemrjqwV7dFPM7UTj8VOzmuyUB5bB6lAtJsPNP6fZF4/UJVAOQ3sBAx7/4VD3A==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "26.1.0",
+          "NetTopologySuite.Features": "2.2.0"
+        }
+      },
       "Be.Vlaanderen.Basisregisters.GrAr.Provenance": {
         "type": "Direct",
-        "requested": "[26.0.0, )",
-        "resolved": "26.0.0",
-        "contentHash": "Wc38peD+ZMc9y+mITQX2eJrVwJD04BCd1DyD9oVM3WIrt166YxW7n7sOhs50bWDANr/ikQMzEAAdja2pEzO5JQ==",
+        "requested": "[26.1.0, )",
+        "resolved": "26.1.0",
+        "contentHash": "QbL2KXtAMIYsFqJYkuJ7KjV237iL+VL+7l+X3MEhKoXls1UYbSle4JZCRX8ZjuYv+ybygh6oU5EfZ7xwKwLLtQ==",
         "dependencies": {
           "Be.Vlaanderen.Basisregisters.CommandHandling": "11.0.0",
           "Be.Vlaanderen.Basisregisters.Crab": "5.1.0",
-          "Be.Vlaanderen.Basisregisters.GrAr.Common": "26.0.0",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "26.1.0",
           "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": "5.1.0",
           "CompareNETObjects": "4.84.0"
         }
@@ -192,6 +202,14 @@
         "type": "Transitive",
         "resolved": "8.0.0",
         "contentHash": "9opKRyOKMCi2xJ7Bj7kxtZ1r9vbzosMvRrdEhVhDz8j8MoBGgB+WmC94yH839NPH+BclAjtQ/pyagvi/8gDLkw=="
+      },
+      "NetTopologySuite.Features": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "Uk0Sun2RtpDLMcPhPO8UFZYDtESpZmHSfqa/eskJkdOjmK2rVbo2Zm3YiT3zdtjgosypgDT/eQLiFbsPKMOgbg==",
+        "dependencies": {
+          "NetTopologySuite": "[2.0.0, 3.0.0-A)"
+        }
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
