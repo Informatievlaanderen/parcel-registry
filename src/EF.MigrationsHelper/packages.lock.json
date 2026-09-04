@@ -366,8 +366,8 @@
       },
       "Datadog.Trace": {
         "type": "Transitive",
-        "resolved": "3.45.0",
-        "contentHash": "X9pNQFNLdElEAvJv/rNDnqjivFIChAAdMbq13QqdPVIy9eykkRYEpP/MZus21WxW1XhxG/h/735F/UVDWbi3+w=="
+        "resolved": "3.52.0",
+        "contentHash": "G8WuCz0zvOglQLsBVYX8rpjDrkjBjhB5Yr5L+Cls/F+3GbQOiKZFd/l5EGh65Reysl7odEHUIBDSCYLbiU7Acg=="
       },
       "Duende.AspNetCore.Authentication.OAuth2Introspection": {
         "type": "Transitive",
@@ -1455,7 +1455,7 @@
           "Be.Vlaanderen.Basisregisters.Auth.AcmIdm": "[5.0.0, )",
           "Be.Vlaanderen.Basisregisters.GrAr.Notifications": "[26.0.0, )",
           "Be.Vlaanderen.Basisregisters.ParcelRegistry.Api.BackOffice.Abstractions": "[1.0.0, )",
-          "Datadog.Trace.Bundle": "[3.45.0, )",
+          "Datadog.Trace.Bundle": "[3.52.0, )",
           "MediatR.Contracts": "[2.0.1, )",
           "NetTopologySuite": "[2.6.0, )",
           "ParcelRegistry": "[1.0.0, )",
@@ -1483,7 +1483,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[16.0.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[16.0.0, )",
           "Be.Vlaanderen.Basisregisters.Projector": "[17.0.0, )",
-          "Datadog.Trace.Bundle": "[3.45.0, )",
+          "Datadog.Trace.Bundle": "[3.52.0, )",
           "ParcelRegistry.Infrastructure": "[1.0.0, )"
         }
       },
@@ -1503,7 +1503,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[16.0.0, )",
           "Be.Vlaanderen.Basisregisters.Projector": "[17.0.0, )",
           "Dapper": "[2.1.79, )",
-          "Datadog.Trace.Bundle": "[3.45.0, )",
+          "Datadog.Trace.Bundle": "[3.52.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.2, )",
           "ParcelRegistry.Infrastructure": "[1.0.0, )"
         }
@@ -1517,7 +1517,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[16.0.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[16.0.0, )",
           "Be.Vlaanderen.Basisregisters.Projector": "[17.0.0, )",
-          "Datadog.Trace.Bundle": "[3.45.0, )",
+          "Datadog.Trace.Bundle": "[3.52.0, )",
           "Microsoft.EntityFrameworkCore.Design": "[10.0.9, )",
           "ParcelRegistry.Infrastructure": "[1.0.0, )"
         }
@@ -2062,11 +2062,11 @@
       },
       "Datadog.Trace.Bundle": {
         "type": "CentralTransitive",
-        "requested": "[3.45.0, )",
-        "resolved": "3.45.0",
-        "contentHash": "ax3lAy2poa1SRgxkMXUpQaCe2vl/Kf0DnopfIltXyRw6o6TSkChFB4Rj9JO3K41Od6A5oMLuf4tMhrCdRRUdfg==",
+        "requested": "[3.52.0, )",
+        "resolved": "3.52.0",
+        "contentHash": "NIuILn+uGzxlXfsLIRNlVJRDISlnn7r6uhFwykWO2JBYcLaEv12B3xqchtBP1/AfeG/jFV416mEWB2+JK9aP5Q==",
         "dependencies": {
-          "Datadog.Trace": "3.45.0"
+          "Datadog.Trace": "3.52.0"
         }
       },
       "Destructurama.JsonNet": {
