@@ -194,8 +194,7 @@ namespace ParcelRegistry.Tests.ProjectionTests.Feed
                             It.Is<List<BaseRegistriesCloudEventAttribute>>(attrs =>
                                 attrs.Any(a => a.Name == ParcelAttributeNames.StatusName
                                                && a.OldValue == null
-                                               && a.NewValue!.ToString() == new PerceelStatus(PerceelStatusValue.Gerealiseerd).Id)
-                                && attrs.Any(a => a.Name == ParcelAttributeNames.AdresIds)),
+                                               && a.NewValue!.ToString() == new PerceelStatus(PerceelStatusValue.Gerealiseerd).Id)),
                             ParcelWasImported.EventName,
                             It.IsAny<string>()),
                         Times.Once);

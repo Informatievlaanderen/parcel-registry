@@ -53,9 +53,11 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
 
                 List<BaseRegistriesCloudEventAttribute> attributes =
                 [
-                    new(ParcelAttributeNames.StatusName, null, status.Id),
-                    new(ParcelAttributeNames.AdresIds, null, BuildAddressPuris(addressPersistentLocalIds)),
+                    new(ParcelAttributeNames.StatusName, null, status.Id)
                 ];
+
+                if (addressPersistentLocalIds.Any())
+                    attributes.Add(new(ParcelAttributeNames.AdresIds, null, BuildAddressPuris(addressPersistentLocalIds)));
 
                 await AddCloudEvent(message, document, context, attributes, ParcelEventTypes.CreateV1);
             });
@@ -76,7 +78,6 @@ namespace ParcelRegistry.Projections.Feed.ParcelFeed
                 List<BaseRegistriesCloudEventAttribute> attributes =
                 [
                     new(ParcelAttributeNames.StatusName, null, document.Document.Status.Id),
-                    new(ParcelAttributeNames.AdresIds, null, new List<string>()),
                 ];
 
                 await AddCloudEvent(message, document, context, attributes, ParcelEventTypes.CreateV1);
