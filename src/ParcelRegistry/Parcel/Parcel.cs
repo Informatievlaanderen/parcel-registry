@@ -146,17 +146,28 @@ namespace ParcelRegistry.Parcel
         /// see ADR 0005.
         /// </summary>
         /// <remarks>
-        /// Deliberately unguarded: unlike <see cref="ChangeGeometry"/> this is not an edit of the parcel but a
-        /// change of the reference system its geometry is expressed in, and it has to reach every parcel the
-        /// event store holds — removed and retired ones included — or the event store would be left holding both
-        /// reference systems forever. <see cref="GuardPolygon"/> is not run either: this changes nothing about
-        /// the shape it already accepted.
+        /// Unguarded but for removal: unlike <see cref="ChangeGeometry"/> this is not an edit of the parcel
+        /// but a change of the reference system its geometry is expressed in, so it reaches retired parcels
+        /// like any other. <see cref="GuardPolygon"/> is not run either: this changes nothing about the shape
+        /// it already accepted.
+        ///
+        /// A removed parcel is left in Lambert 72. Removal is terminal here — nothing in this aggregate
+        /// clears <see cref="IsRemoved"/>, every method that could is guarded, and <c>ImportParcel</c> on an
+        /// existing stream throws rather than reviving one — so its geometry is never read or written again
+        /// and converting it would only put an entry in the feeds for a parcel consumers have been told does
+        /// not exist. That is the whole reason this diverges from address-registry and building-registry,
+        /// where a removed object can be recovered and so must be converted. See ADR 0005.
         ///
         /// A geometry that is already Lambert 2008 applies nothing, which is what makes re-running the
         /// transformation over a stream a no-op instead of a double transform.
         /// </remarks>
         public void TransformToLambert2008()
         {
+            if (IsRemoved)
+            {
+                return;
+            }
+
             var geometry = ReadGeometry(Geometry);
 
             if (geometry.SRID == SystemReferenceId.SridLambert2008)

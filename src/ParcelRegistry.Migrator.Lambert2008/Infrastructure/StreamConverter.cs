@@ -250,7 +250,12 @@ namespace ParcelRegistry.Migrator.Lambert2008.Infrastructure
             // stream. Its size is recorded instead: polygon complexity is what makes one parcel cost more
             // than another, and it is the thing a staging run has to extrapolate against.
             var geometryBytes = parcel.Geometry?.ToByteArray() ?? [];
-            var needsConversion = geometryBytes.Length != 0 && !IsLambert2008(geometryBytes);
+
+            // A removed parcel is left in Lambert 72 by the aggregate, so dispatching for one would append
+            // nothing. Skipped here as well because the aggregate's answer never changes: removal is terminal,
+            // so without this every run would dispatch a no-op command for every removed parcel it walks.
+            // See ADR 0005.
+            var needsConversion = !parcel.IsRemoved && geometryBytes.Length != 0 && !IsLambert2008(geometryBytes);
 
             var loadDuration = Stopwatch.GetElapsedTime(loadStarted);
             var geometryByteCount = geometryBytes.Length;

@@ -125,11 +125,12 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenTransformingToLambert2008
         }
 
         /// <summary>
-        /// The transformation is not an edit, so unlike changing the geometry it must reach removed parcels
-        /// too — leaving them behind would keep the event store mixed forever.
+        /// A removed parcel is left in Lambert 72. Removal is terminal in this aggregate, so its geometry is
+        /// never read or written again, and converting it would only put an entry in the feeds for a parcel
+        /// consumers have been told does not exist. See ADR 0005.
         /// </summary>
         [Fact]
-        public void WithRemovedParcel_ThenParcelGeometryCrsWasChanged()
+        public void WithRemovedParcel_ThenNone()
         {
             var caPaKey = Fixture.Create<VbrCaPaKey>();
             var parcelId = ParcelId.CreateFor(caPaKey);
@@ -148,8 +149,7 @@ namespace ParcelRegistry.Tests.AggregateTests.WhenTransformingToLambert2008
             Assert(new Scenario()
                 .Given(new ParcelStreamId(parcelId), parcelWasMigrated)
                 .When(command)
-                .Then(new ParcelStreamId(parcelId),
-                    new ParcelGeometryCrsWasChanged(parcelId, caPaKey, Lambert2008Geometry)));
+                .ThenNone());
         }
 
         /// <summary>A retired parcel holds a geometry like any other and must be transformed too.</summary>

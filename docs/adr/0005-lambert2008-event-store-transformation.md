@@ -40,15 +40,44 @@ Restating `CaPaKey` is the decision that made everything downstream cheap. Every
 handler is a copy of its `ParcelGeometryWasChanged` counterpart rather than a hand-written variant. A
 geometry-only event was considered and rejected for exactly that reason.
 
-### The aggregate method is deliberately unguarded
+### The aggregate method is unguarded, except for removal
 
-`Parcel.TransformToLambert2008()` has no removal guard and no status guard, unlike `ChangeGeometry`. It is
-not an edit of the parcel but a change of the reference system its geometry is expressed in, and it has to
-reach every parcel the event store holds — removed and retired ones included — or the event store would be
-left holding both systems indefinitely.
+`Parcel.TransformToLambert2008()` has no status guard, unlike `ChangeGeometry`. It is not an edit of the
+parcel but a change of the reference system its geometry is expressed in, so it reaches retired parcels
+like any other.
 
 It also does not run `GuardPolygon`. That guard requires SRID 31370, which is precisely what the
 transformation leaves behind; running it would reject every geometry the job is there to convert.
+
+**A removed parcel is left in Lambert 72**, and this is where the transformation diverges from
+address-registry and building-registry, which both convert removed objects.
+
+The difference is not that parcels matter less. It is that **removal is terminal here and reversible
+there.** Address-registry has `AddressRemovalWasCorrected` and building-registry has
+`BuildingUnitRemovalWasCorrected`, so a removed object can come back — and one that came back holding
+Lambert 72 while the store held Lambert 2008 would be a live bug. In this aggregate nothing clears
+`IsRemoved`: it arrives only on `ParcelWasMigrated` or a snapshot, every mutating method calls
+`GuardParcelNotRemoved`, and `ImportParcel` on an existing stream throws `ParcelAlreadyExistsException`
+rather than reviving one. A removed parcel's geometry is therefore never read or written again.
+
+What converting them would buy is a uniform event store. What it would cost is an entry in the
+syndication feed for every removed parcel — an update about something consumers have already been told
+does not exist, which they must then either resurrect or work out to ignore. Nothing reads the geometry,
+so the uniformity is worth nothing and the entries are worth less than nothing.
+
+Two consequences worth stating plainly:
+
+- **Removed parcel streams keep Lambert 72 permanently.** Any later check of the form "assert every
+  geometry in the store is 3812" has to exclude them. This is a deliberate exception, not an oversight.
+- **Downstream is already built for it.** Building-registry's parcel consumer decides its Lambert 2008
+  readiness with `.Where(x => !x.IsRemoved && x.GeometryLambert2008 == null)`, and its matching query
+  filters on `Intersects(parcel.GeometryLambert2008)`, which is NULL for a removed parcel and drops it
+  before the read that would throw. Never converting removed parcels does not hold up
+  `Lambert2008ConversionCompleted` there.
+
+The migrator skips them too. The aggregate is the authority — anything dispatching the command gets the
+same answer — but its answer never changes for a removed parcel, so without the same check the migrator
+would dispatch a command that appends nothing, for every removed parcel, on every run.
 
 A parcel whose geometry is already Lambert 2008 applies nothing. That is what makes re-running the
 transformation over a stream a no-op rather than a double transform, and it is what the migrator's
@@ -176,17 +205,24 @@ parcel's last real change gave it. Consumers reading the feed sequentially there
 and the new geometry; consumers keying on the version see no new version, which is the same rule the rest
 of the table follows. Address-registry's syndication does the same.
 
-**Removed parcels are published like any other**, which is where this diverges from address-registry. There
-a removed address is skipped, because its removal is an event and the feed entry's `ChangeType` says so.
-Here removal is a flag on `ParcelWasMigrated` that `ParcelSyndicationItem` never records, so the feed has
-no way to tell — an `IsRemoved` column would read false for every parcel migrated before it was added, and
-would only tell the truth after a rebuild of the whole feed. Weighed against that, a removed parcel is a
-migration artefact rather than something consumers were told was deleted, so it is published like the
-rest.
+**No projection needs to know about removed parcels**, because none of them ever sees the event: the
+aggregate does not apply it for a removed parcel, so there is nothing for the syndication feed, the change
+feed or anything else to filter.
 
-**Nothing here needs the removed-object handling address-registry's projections needed.** No parcel
-projection deletes a row for a removed parcel — they all keep it with a flag — and none of them recompute
-anything across sibling rows, so the handlers above find their row whatever the parcel's state.
+That is what makes this cheaper than address-registry, where the same requirement is met in the
+projections: there a removed address is skipped by `AddressSyndicationProjections` reading the feed
+entry's own `ChangeType`. The equivalent is not available here — removal reaches
+`ParcelSyndicationItem` only as a flag on `ParcelWasMigrated`, which is the *last* thing a removed
+parcel's history says, so the entry's `ChangeType` cannot distinguish it from a live parcel that has not
+changed since the migration. Recording it would mean a new column plus a backfill from `ParcelDetails`,
+which is possible — it is in the same schema and has held `Removed` since the migration — but is a schema
+change and a rewrite across the syndication history to express a rule the domain can state in three
+lines.
+
+**Nothing here needs the removed-object handling address-registry's projections needed** for the events
+that do arrive. No parcel projection deletes a row for a removed parcel — they all keep it with a flag —
+and none of them recompute anything across sibling rows, so the handlers above find their row whatever
+the parcel's state.
 
 **No projection needs a rebuild.** Every one of them handles the event, so each converges on its own as
 the transformation runs. That is a property worth keeping rather than a coincidence.
@@ -256,7 +292,8 @@ expires — which is exactly what the stop-and-evaluate loop does repeatedly.
   change.
 - The syndication feed carries an entry per transformed parcel, so a consumer replaying it sees ~10^6
   entries whose only change is the reference system. Their `LastChangedOn` is unchanged, so a consumer
-  keying on the version sees nothing new.
+  keying on the version sees nothing new. Removed parcels are not among them: they are not transformed,
+  so they produce no entry.
 - Versions and `VersionTimestamp`s do not move for ~10^6 parcels, so anything downstream that polls "what
   changed since" will not see the transformation. That is the intent, and it is the reason LastChangedList
   is the one exception.
