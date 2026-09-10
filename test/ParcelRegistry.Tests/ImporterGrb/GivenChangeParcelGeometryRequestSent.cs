@@ -4,13 +4,14 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Api.BackOffice.Abstractions.Extensions;
+    using Api.BackOffice.Abstractions;
     using Autofac;
     using AutoFixture;
     using BackOffice;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Consumer.Address;
+    using Fixtures;
     using FluentAssertions;
     using Importer.Grb.Handlers;
     using Importer.Grb.Infrastructure;
@@ -77,7 +78,8 @@
 
             var sut = new ChangeParcelGeometryHandler(
                 Container,
-                fakeAddressConsumerContext);
+                fakeAddressConsumerContext,
+                new UseLambert2008EventStoreToggle(false));
 
             await sut.Handle(changeParcelGeometryRequest, CancellationToken.None);
 

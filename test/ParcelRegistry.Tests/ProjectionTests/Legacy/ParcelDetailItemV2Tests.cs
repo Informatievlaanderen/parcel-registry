@@ -4,7 +4,6 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.EventHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
@@ -138,6 +137,39 @@ namespace ParcelRegistry.Tests.ProjectionTests.Legacy
                     parcelDetailV2.GmlType.Should().Be("Polygon");
                     parcelDetailV2.VersionTimestamp.Should().Be(parcelGeometryWasChanged.Provenance.Timestamp);
                     parcelDetailV2.LastEventHash.Should().Be(parcelGeometryWasChanged.GetHash());
+                });
+        }
+
+        /// <summary>
+        /// The Gml follows the event store into Lambert 2008, but the version timestamp does not move: the
+        /// transformation is not a change to the parcel. See ADR 0005.
+        /// </summary>
+        [Fact]
+        public async Task WhenParcelGeometryCrsWasChanged()
+        {
+            var parcelWasImported = _fixture.Create<ParcelWasImported>();
+
+            var parcelGeometryCrsWasChanged = new ParcelGeometryCrsWasChanged(
+                new ParcelId(parcelWasImported.ParcelId),
+                new VbrCaPaKey(parcelWasImported.CaPaKey),
+                GeometryHelpers.ValidGmlPolygonLambert2008.ToExtendedWkbGeometryLambert2008());
+
+            await Sut
+                .Given(
+                    CreateEnvelope(parcelWasImported),
+                    CreateEnvelope(parcelGeometryCrsWasChanged))
+                .Then(async context =>
+                {
+                    var parcelDetailV2 = await context.ParcelDetails.FindAsync(parcelGeometryCrsWasChanged.ParcelId);
+                    parcelDetailV2.Should().NotBeNull();
+                    parcelDetailV2!.Gml.Should().Contain("srsName=\"https://www.opengis.net/def/crs/EPSG/0/3812\"");
+                    parcelDetailV2.GmlType.Should().Be("Polygon");
+
+                    GeometryHelpers.CreateGmlReader().Read(parcelDetailV2.Gml)
+                        .Coordinates.First().X.Should().BeApproximately(640281.95, 0.01);
+
+                    parcelDetailV2.VersionTimestamp.Should().Be(parcelWasImported.Provenance.Timestamp);
+                    parcelDetailV2.LastEventHash.Should().Be(parcelGeometryCrsWasChanged.GetHash());
                 });
         }
 

@@ -1,7 +1,6 @@
 ﻿namespace ParcelRegistry.Tests.Builders
 {
     using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Parcel;

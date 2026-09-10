@@ -80,6 +80,11 @@ namespace ParcelRegistry.Projections.LastChangedList
                 await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.ParcelId.ToString()), message.Position, context, ct);
             });
 
+            When<Envelope<ParcelGeometryCrsWasChanged>>(async (context, message, ct) =>
+            {
+                await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.ParcelId.ToString()), message.Position, context, ct);
+            });
+
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
             {
                 await GetLastChangedRecordsAndUpdatePosition(GetIdentifier(message.Message.ParcelId.ToString()), message.Position, context, ct);

@@ -3,6 +3,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.BackOffice.Abstractions;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
@@ -19,21 +20,32 @@
     {
         private readonly ILifetimeScope _lifetimeScope;
         private readonly ConsumerAddressContext _addresses;
+        private readonly UseLambert2008EventStoreToggle _useLambert2008EventStore;
 
-        public ImportParcelHandler(ILifetimeScope lifetimeScope, ConsumerAddressContext addresses)
+        public ImportParcelHandler(
+            ILifetimeScope lifetimeScope,
+            ConsumerAddressContext addresses,
+            UseLambert2008EventStoreToggle useLambert2008EventStore)
         {
             _lifetimeScope = lifetimeScope;
             _addresses = addresses;
+            _useLambert2008EventStore = useLambert2008EventStore;
         }
 
         public async Task Handle(ImportParcelRequest request, CancellationToken cancellationToken)
         {
+            // Deliberately the geometry as GRB delivered it: FindAddressesWithinGeometry dispatches on where
+            // the coordinates are, so normalizing first would make which addresses are matched depend on the
+            // parcel event store's reference system rather than on GRB's. See ADR 0004.
             var addressesWithinParcel = _addresses
                 .FindAddressesWithinGeometry(request.GrbParcel.Geometry)
                 .Select(x => new AddressPersistentLocalId(x.AddressPersistentLocalId))
                 .ToList();
 
-            var extendedWkbGeometry = ExtendedWkbGeometry.CreateEWkb(request.GrbParcel.Geometry)!;
+            // Normalized to whatever the event store holds, so a reference system GRB did not send us in
+            // cannot reach the aggregate. See ADR 0005.
+            var extendedWkbGeometry = ExtendedWkbGeometry.CreateEWkb(
+                request.GrbParcel.Geometry.ToReferenceSystem(_useLambert2008EventStore.EventStoreSrid))!;
 
             var command = new ImportParcel(
                 new VbrCaPaKey(request.GrbParcel.GrbCaPaKey),

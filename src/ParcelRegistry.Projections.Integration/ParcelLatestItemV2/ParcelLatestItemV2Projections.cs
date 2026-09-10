@@ -72,6 +72,18 @@
                     }, ct);
             });
 
+            When<Envelope<ParcelGeometryCrsWasChanged>>(async (context, message, ct) =>
+            {
+                // The transformation does not change the parcel, so the version timestamp is deliberately
+                // left as it was. See ADR 0005.
+                await context.FindAndUpdateParcel(
+                    message.Message.ParcelId,
+                    parcel =>
+                    {
+                        parcel.Geometry = ParcelMapper.MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry);
+                    }, ct);
+            });
+
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>
             {
                 await context.FindAndUpdateParcel(

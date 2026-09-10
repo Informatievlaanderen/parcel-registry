@@ -5,6 +5,7 @@ namespace ParcelRegistry.Parcel
     using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology;
+    using Be.Vlaanderen.Basisregisters.GrAr.CrsTransform;
     using Events;
     using Exceptions;
     using NetTopologySuite.Geometries;
@@ -21,7 +22,7 @@ namespace ParcelRegistry.Parcel
             IEnumerable<AddressPersistentLocalId> addressPersistentLocalIds,
             ExtendedWkbGeometry extendedWkbGeometry)
         {
-            GuardPolygon(WKBReaderFactory.CreateForLambert72().Read(extendedWkbGeometry));
+            GuardPolygon(ReadGeometry(extendedWkbGeometry));
 
             var newParcel = parcelFactory.Create();
             newParcel.ApplyChange(
@@ -44,7 +45,7 @@ namespace ParcelRegistry.Parcel
             ExtendedWkbGeometry extendedWkbGeometry,
             List<AddressPersistentLocalId> addressesToAttach)
         {
-            GuardPolygon(WKBReaderFactory.CreateForLambert72().Read(extendedWkbGeometry));
+            GuardPolygon(ReadGeometry(extendedWkbGeometry));
 
             var newParcel = parcelFactory.Create();
 
@@ -73,7 +74,7 @@ namespace ParcelRegistry.Parcel
             List<AddressPersistentLocalId> addressesToAttach)
         {
             GuardParcelNotRemoved();
-            GuardPolygon(WKBReaderFactory.CreateForLambert72().Read(extendedWkbGeometry));
+            GuardPolygon(ReadGeometry(extendedWkbGeometry));
 
             ApplyChange(
                 new ParcelWasCorrectedFromRetiredToRealized(
@@ -111,7 +112,7 @@ namespace ParcelRegistry.Parcel
         public void ChangeGeometry(ExtendedWkbGeometry extendedWkbGeometry, List<AddressPersistentLocalId> addresses)
         {
             GuardParcelNotRemoved();
-            GuardPolygon(WKBReaderFactory.CreateForLambert72().Read(extendedWkbGeometry));
+            GuardPolygon(ReadGeometry(extendedWkbGeometry));
 
             if (Geometry == extendedWkbGeometry)
             {
@@ -140,17 +141,87 @@ namespace ParcelRegistry.Parcel
             ApplyChange(new ParcelGeometryWasChanged(ParcelId, CaPaKey, extendedWkbGeometry));
         }
 
+        /// <summary>
+        /// Re-expresses the geometry in Lambert 2008 (EPSG 3812) for the one-off event store transformation,
+        /// see ADR 0005.
+        /// </summary>
+        /// <remarks>
+        /// Unguarded but for removal: unlike <see cref="ChangeGeometry"/> this is not an edit of the parcel
+        /// but a change of the reference system its geometry is expressed in, so it reaches retired parcels
+        /// like any other. <see cref="GuardPolygon"/> is not run either: this changes nothing about the shape
+        /// it already accepted.
+        ///
+        /// A removed parcel is left in Lambert 72. Removal is terminal here — nothing in this aggregate
+        /// clears <see cref="IsRemoved"/>, every method that could is guarded, and <c>ImportParcel</c> on an
+        /// existing stream throws rather than reviving one — so its geometry is never read or written again
+        /// and converting it would only put an entry in the feeds for a parcel consumers have been told does
+        /// not exist. That is the whole reason this diverges from address-registry and building-registry,
+        /// where a removed object can be recovered and so must be converted. See ADR 0005.
+        ///
+        /// A geometry that is already Lambert 2008 applies nothing, which is what makes re-running the
+        /// transformation over a stream a no-op instead of a double transform.
+        /// </remarks>
+        public void TransformToLambert2008()
+        {
+            if (IsRemoved)
+            {
+                return;
+            }
+
+            var geometry = ReadGeometry(Geometry);
+
+            if (geometry.SRID == SystemReferenceId.SridLambert2008)
+            {
+                return;
+            }
+
+            // Through the shared transformation, so a geometry converted here and the same geometry normalized
+            // on the way in from GRB come out byte-for-byte identical.
+            var transformed = geometry.ToReferenceSystem(SystemReferenceId.SridLambert2008);
+
+            ApplyChange(new ParcelGeometryCrsWasChanged(
+                ParcelId,
+                CaPaKey,
+                ExtendedWkbGeometry.Create(transformed)));
+        }
+
+        /// <summary>
+        /// Reads a persisted geometry in the reference system its own bytes carry, falling back to Lambert 72
+        /// for the SRID-less ones written before the event store wrote EWKB.
+        /// </summary>
+        /// <remarks>
+        /// Qualified: <c>Be.Vlaanderen.Basisregisters.GrAr.Common.NetTopology</c> declares a
+        /// <c>WKBReaderFactory</c> of its own, and the using directive for it in this file outranks
+        /// <see cref="ParcelRegistry.WKBReaderFactory"/> from the enclosing namespace. GrAr's version throws on
+        /// SRID-less bytes instead of falling back. See ADR 0005.
+        /// </remarks>
+        private static Geometry ReadGeometry(ExtendedWkbGeometry extendedWkbGeometry)
+        {
+            var extendedWkb = extendedWkbGeometry.ToByteArray();
+
+            return ParcelRegistry.WKBReaderFactory.CreateForEwkb(extendedWkb).Read(extendedWkb);
+        }
+
+        /// <summary>
+        /// Guards the shape, and that the geometry is in one of the two reference systems this registry
+        /// supports — not in a particular one of them.
+        /// </summary>
+        /// <remarks>
+        /// Which of the two the event store holds is decided by <c>UseLambert2008EventStoreToggle</c> at the
+        /// write boundary, where every incoming geometry is normalized to it. Pinning Lambert 72 here would
+        /// reject everything the moment that toggle flips. See ADR 0005.
+        /// </remarks>
         private static void GuardPolygon(Geometry? geometry)
         {
             if (geometry is Polygon
-                && geometry.SRID == ExtendedWkbGeometry.SridLambert72
+                && GeometryReferenceSystem.IsSupported(geometry.SRID)
                 && GeometryValidator.IsValid(geometry))
             {
                 return;
             }
 
             if (geometry is MultiPolygon multiPolygon
-                && multiPolygon.SRID == ExtendedWkbGeometry.SridLambert72
+                && GeometryReferenceSystem.IsSupported(multiPolygon.SRID)
                 && multiPolygon.Geometries.All(GeometryValidator.IsValid))
             {
                 return;

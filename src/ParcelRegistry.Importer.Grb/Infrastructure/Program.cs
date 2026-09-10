@@ -116,6 +116,12 @@ namespace ParcelRegistry.Importer.Grb.Infrastructure
                         .RegisterModule(new BackOfficeModule(hostContext.Configuration, services, loggerFactory))
                         .RegisterSnapshotModule(hostContext.Configuration);
 
+                    // Which reference system the parcel event store holds. Every geometry GRB delivers is
+                    // normalized to it before it reaches the aggregate. See ADR 0005.
+                    builder
+                        .RegisterInstance(new UseLambert2008EventStoreToggle(
+                            hostContext.Configuration.GetValue<bool>("FeatureToggles:UseLambert2008EventStore")));
+
                     builder
                         .RegisterType<Mediator>()
                         .As<IMediator>()

@@ -1,8 +1,8 @@
-﻿namespace ParcelRegistry.Tests
+﻿namespace ParcelRegistry.Tests.Fixtures
 {
     using AutoFixture;
     using AutoFixture.Kernel;
-    using Parcel;
+    using ParcelRegistry.Parcel;
 
     /// <summary>
     /// Generates address positions in Lambert 72 (EPSG 31370). The coordinates lie inside Flanders because

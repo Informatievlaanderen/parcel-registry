@@ -1,8 +1,8 @@
-﻿namespace ParcelRegistry.Tests
+﻿namespace ParcelRegistry.Tests.Fixtures
 {
     using AutoFixture;
     using AutoFixture.Kernel;
-    using Parcel;
+    using ParcelRegistry.Parcel;
 
     /// <summary>
     /// Generates address positions in Lambert 2008 (EPSG 3812), as the address event store will hold them

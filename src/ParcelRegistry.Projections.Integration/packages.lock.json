@@ -14,9 +14,9 @@
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Common": {
         "type": "Direct",
-        "requested": "[26.0.0, )",
-        "resolved": "26.0.0",
-        "contentHash": "r9R26QoxT629xbo0/5ntXz1rPoGth9WM4LKLfOy/LWBw1CGncL6H9QblEdWbgRN6eQWgLv2OaBypKk/2oiujRg==",
+        "requested": "[26.1.0, )",
+        "resolved": "26.1.0",
+        "contentHash": "ewY+/sRBnfCBFTZuL9u1uRiz/Uy5T15GFQU619I39X7VleQDe/Q1buKaEO8LRYzHUKM6rsEmDdsB48mIPmKX8w==",
         "dependencies": {
           "Be.Vlaanderen.Basisregisters.AggregateSource": "11.0.0",
           "Be.Vlaanderen.Basisregisters.CommandHandling": "11.0.0",
@@ -26,11 +26,11 @@
       },
       "Be.Vlaanderen.Basisregisters.GrAr.Legacy": {
         "type": "Direct",
-        "requested": "[26.0.0, )",
-        "resolved": "26.0.0",
-        "contentHash": "b0rA8AzsmO0BYIPgxPxPJC3mYMgfURNfrvdw7D6f94cfAei8Rg2x69uDM9tTT0d0mVQaMv9KgPxliEKa7TjM6Q==",
+        "requested": "[26.1.0, )",
+        "resolved": "26.1.0",
+        "contentHash": "K5kPYQT+lFMDzzLYQyoR2tRCUAROww50mdQC57fpsW2uIX5yI9Rc+Ykndb/DGhmAMAF6VhX6Zjkau0r00VfWfw==",
         "dependencies": {
-          "Be.Vlaanderen.Basisregisters.GrAr.Common": "26.0.0",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "26.1.0",
           "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": "5.1.0",
           "Newtonsoft.Json": "13.0.4"
         }
@@ -315,11 +315,11 @@
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
-        "resolved": "10.0.8",
-        "contentHash": "ehZcoPbjzWzS4XFvuz7R3V55SmpdkyMqFURLH3yXaN9NtXd9tR6CGB7pd49HYtCkenl+G7ctXSFLhNI08xLfRg==",
+        "resolved": "10.0.9",
+        "contentHash": "woZsWLhOQsASuxbmgiZJqiGUBNo3IjRdXC92xt8rRokza+P6/nIsnzq7sm9Or6ZYcRl2kL1ufj8HVzp1QlPTXw==",
         "dependencies": {
-          "Microsoft.Extensions.Configuration.Abstractions": "10.0.8",
-          "Microsoft.Extensions.Primitives": "10.0.8"
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.9",
+          "Microsoft.Extensions.Primitives": "10.0.9"
         }
       },
       "Microsoft.Extensions.Configuration.Abstractions": {
@@ -328,24 +328,6 @@
         "contentHash": "qGhRPd3VxfLV9UqatVOiD9mAeUbj2KiMwGFYC5uXlzExiZQoe4X/hdmzGIU7BQjNLTqCnnbTHVyBglG3668/HA==",
         "dependencies": {
           "Microsoft.Extensions.Primitives": "10.0.9"
-        }
-      },
-      "Microsoft.Extensions.Configuration.CommandLine": {
-        "type": "Transitive",
-        "resolved": "10.0.8",
-        "contentHash": "nQXq1a4MiInYh+0VF9fguxAl06q2ftmOyYQ+5e933s4rk57xjgkbTjUdFUySzjrcrvDeWsSqlZB+TE8+TbM2HA==",
-        "dependencies": {
-          "Microsoft.Extensions.Configuration": "10.0.8",
-          "Microsoft.Extensions.Configuration.Abstractions": "10.0.8"
-        }
-      },
-      "Microsoft.Extensions.Configuration.EnvironmentVariables": {
-        "type": "Transitive",
-        "resolved": "10.0.8",
-        "contentHash": "bVGqctAfPGfTxJvNp8pMshtvpsUj6r6JkeiCNVIGVYO5gBxuxdN0Lbr25kEvE/zXdctkEc44g8HssnPgDnFGVA==",
-        "dependencies": {
-          "Microsoft.Extensions.Configuration": "10.0.8",
-          "Microsoft.Extensions.Configuration.Abstractions": "10.0.8"
         }
       },
       "Microsoft.Extensions.Configuration.FileExtensions": {
@@ -496,6 +478,14 @@
         "resolved": "8.0.0",
         "contentHash": "9opKRyOKMCi2xJ7Bj7kxtZ1r9vbzosMvRrdEhVhDz8j8MoBGgB+WmC94yH839NPH+BclAjtQ/pyagvi/8gDLkw=="
       },
+      "NetTopologySuite.Features": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "Uk0Sun2RtpDLMcPhPO8UFZYDtESpZmHSfqa/eskJkdOjmK2rVbo2Zm3YiT3zdtjgosypgDT/eQLiFbsPKMOgbg==",
+        "dependencies": {
+          "NetTopologySuite": "[2.0.0, 3.0.0-A)"
+        }
+      },
       "NetTopologySuite.IO.PostGis": {
         "type": "Transitive",
         "resolved": "2.1.0",
@@ -526,14 +516,6 @@
           "NetTopologySuite": "2.6.0",
           "NetTopologySuite.IO.PostGIS": "2.1.0",
           "Npgsql": "10.0.3"
-        }
-      },
-      "Polly": {
-        "type": "Transitive",
-        "resolved": "8.6.6",
-        "contentHash": "czKHYJ6uGowPijuZt4kgF4njfGvWxVZ8mKBcrZ9iEtwDe9HKdF0ug6p6TwUG8EHuuufgbDU//rSBFebt5/0Fyw==",
-        "dependencies": {
-          "Polly.Core": "8.6.6"
         }
       },
       "Polly.Core": {
@@ -605,8 +587,9 @@
           "Be.Vlaanderen.Basisregisters.Crab": "[5.1.0, )",
           "Be.Vlaanderen.Basisregisters.EventHandling": "[7.1.0, )",
           "Be.Vlaanderen.Basisregisters.Generators.Guid.Deterministic": "[5.1.0, )",
-          "Be.Vlaanderen.Basisregisters.GrAr.Common": "[26.0.0, )",
-          "Be.Vlaanderen.Basisregisters.GrAr.Provenance": "[26.0.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "[26.1.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": "[26.1.0, )",
+          "Be.Vlaanderen.Basisregisters.GrAr.Provenance": "[26.1.0, )",
           "Be.Vlaanderen.Basisregisters.Utilities.HexByteConvertor": "[5.1.0, )",
           "NetTopologySuite": "[2.6.0, )",
           "NodaTime": "[3.3.2, )"
@@ -706,15 +689,25 @@
         "resolved": "5.1.0",
         "contentHash": "2WB1iVxqU35ULl7ATujoTlWNb4fCEv3CWytmfq1WqIrZvy5oLbfKmgKkTCAehQwZD4bIgQvPQQ4crifcQO3PSg=="
       },
+      "Be.Vlaanderen.Basisregisters.GrAr.CrsTransform": {
+        "type": "CentralTransitive",
+        "requested": "[26.1.0, )",
+        "resolved": "26.1.0",
+        "contentHash": "2ujsUEo8Gp+d1tdh0qv15ioPHemrjqwV7dFPM7UTj8VOzmuyUB5bB6lAtJsPNP6fZF4/UJVAOQ3sBAx7/4VD3A==",
+        "dependencies": {
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "26.1.0",
+          "NetTopologySuite.Features": "2.2.0"
+        }
+      },
       "Be.Vlaanderen.Basisregisters.GrAr.Provenance": {
         "type": "CentralTransitive",
-        "requested": "[26.0.0, )",
-        "resolved": "26.0.0",
-        "contentHash": "Wc38peD+ZMc9y+mITQX2eJrVwJD04BCd1DyD9oVM3WIrt166YxW7n7sOhs50bWDANr/ikQMzEAAdja2pEzO5JQ==",
+        "requested": "[26.1.0, )",
+        "resolved": "26.1.0",
+        "contentHash": "QbL2KXtAMIYsFqJYkuJ7KjV237iL+VL+7l+X3MEhKoXls1UYbSle4JZCRX8ZjuYv+ybygh6oU5EfZ7xwKwLLtQ==",
         "dependencies": {
           "Be.Vlaanderen.Basisregisters.CommandHandling": "11.0.0",
           "Be.Vlaanderen.Basisregisters.Crab": "5.1.0",
-          "Be.Vlaanderen.Basisregisters.GrAr.Common": "26.0.0",
+          "Be.Vlaanderen.Basisregisters.GrAr.Common": "26.1.0",
           "Be.Vlaanderen.Basisregisters.Utilities.Rfc3339DateTimeOffset": "5.1.0",
           "CompareNETObjects": "4.84.0"
         }
@@ -748,6 +741,26 @@
           "Microsoft.Extensions.Logging": "10.0.9"
         }
       },
+      "Microsoft.Extensions.Configuration.CommandLine": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.9, )",
+        "resolved": "10.0.9",
+        "contentHash": "8D4HaqxWdm5M/nuhQffjPoR1ekhlpyKTXjFMAT5KlP0dvxkJe5JLAP6MAsuUEUxKWG09Bi5aAUaYMFKrMqWHqA==",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "10.0.9",
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.9"
+        }
+      },
+      "Microsoft.Extensions.Configuration.EnvironmentVariables": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.9, )",
+        "resolved": "10.0.9",
+        "contentHash": "JhKySWIL8+N4yFt4HPm1rGKCHooze+MBdTdpXc0bd/PGm31TrSUi2m0Nek1y441Wlv/RE6VH0W/DCv2xnmy8FA==",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "10.0.9",
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.9"
+        }
+      },
       "NetTopologySuite": {
         "type": "CentralTransitive",
         "requested": "[2.6.0, )",
@@ -767,6 +780,15 @@
         "contentHash": "7nb5YzXuvWWJxB0J8DiyL3we+X4FOctZrt0fIBnucOIaIevFEEwGQVZKtiu9olXdlNAK1eNgqSral6r/jlhI4w==",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "10.0.0"
+        }
+      },
+      "Polly": {
+        "type": "CentralTransitive",
+        "requested": "[8.6.6, )",
+        "resolved": "8.6.6",
+        "contentHash": "czKHYJ6uGowPijuZt4kgF4njfGvWxVZ8mKBcrZ9iEtwDe9HKdF0ug6p6TwUG8EHuuufgbDU//rSBFebt5/0Fyw==",
+        "dependencies": {
+          "Polly.Core": "8.6.6"
         }
       }
     },

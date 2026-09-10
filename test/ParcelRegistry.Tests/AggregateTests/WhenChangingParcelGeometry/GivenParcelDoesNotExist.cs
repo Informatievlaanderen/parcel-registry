@@ -1,6 +1,5 @@
 namespace ParcelRegistry.Tests.AggregateTests.WhenChangingParcelGeometry
 {
-    using Api.BackOffice.Abstractions.Extensions;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
     using Builders;
     using Parcel;

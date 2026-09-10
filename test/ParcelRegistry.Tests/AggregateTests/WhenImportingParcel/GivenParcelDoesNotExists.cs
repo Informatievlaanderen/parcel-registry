@@ -1,18 +1,13 @@
 ﻿namespace ParcelRegistry.Tests.AggregateTests.WhenImportingParcel
 {
     using System.Collections.Generic;
-    using Api.BackOffice.Abstractions.Extensions;
     using AutoFixture;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Snapshotting;
     using Be.Vlaanderen.Basisregisters.AggregateSource.Testing;
-    using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Builders;
-    using EventExtensions;
-    using Fixtures;
     using FluentAssertions;
     using Moq;
     using Parcel;
-    using Parcel.Commands;
     using Parcel.Events;
     using Parcel.Exceptions;
     using Xunit;

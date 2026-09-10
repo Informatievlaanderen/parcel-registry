@@ -3,11 +3,11 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.BackOffice.Abstractions;
     using Api.BackOffice.Abstractions.Extensions;
     using Autofac;
     using AutoFixture;
     using BackOffice;
-    using Be.Vlaanderen.Basisregisters.CommandHandling;
     using Be.Vlaanderen.Basisregisters.GrAr.Common;
     using Be.Vlaanderen.Basisregisters.GrAr.Provenance;
     using Consumer.Address;
@@ -15,6 +15,7 @@
     using Importer.Grb.Handlers;
     using Importer.Grb.Infrastructure;
     using NetTopologySuite.Geometries;
+    using NetTopologySuite.Geometries.Utilities;
     using Parcel;
     using Xunit;
     using Xunit.Abstractions;
@@ -55,7 +56,7 @@
 
             var importRequest = new ImportParcelRequest(new GrbParcel(caPaKey, GeometryHelpers.ValidPolygon2, 9, DateTime.Now));
 
-            var sut = new ImportParcelHandler(Container, fakeAddressConsumerContext);
+            var sut = new ImportParcelHandler(Container, fakeAddressConsumerContext, new UseLambert2008EventStoreToggle(false));
 
             await sut.Handle(importRequest, CancellationToken.None);
 
@@ -88,7 +89,7 @@
             polygon.IsValid.Should().BeFalse();
             GeometryValidator.IsValid(polygon).Should().BeTrue();
 
-            var fixedPolygon = NetTopologySuite.Geometries.Utilities.GeometryFixer.Fix(polygon);
+            var fixedPolygon = GeometryFixer.Fix(polygon);
             fixedPolygon.Area.Should().BeApproximately(polygon.Area, 0.00000000001); //In this case: 12166.896162859213, but found 12166.896162859215
         }
     }

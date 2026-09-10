@@ -41,6 +41,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adr", "adr", "{957DE67B-315
 		docs\adr\0002-parcel-import-via-download.md = docs\adr\0002-parcel-import-via-download.md
 		docs\adr\0003-lambert2008-projections.md = docs\adr\0003-lambert2008-projections.md
 		docs\adr\0004-lambert2008-consumer-address.md = docs\adr\0004-lambert2008-consumer-address.md
+		docs\adr\0005-lambert2008-event-store-transformation.md = docs\adr\0005-lambert2008-event-store-transformation.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelRegistry.Projector", "src\ParcelRegistry.Projector\ParcelRegistry.Projector.csproj", "{3E07F9FB-8272-4D6A-95D5-70CDC60913F0}"
@@ -76,6 +77,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Projections.Feed", "src\ParcelRegistry.Projections.Feed\ParcelRegistry.Projections.Feed.csproj", "{2F179084-703A-4511-B3FB-DF38AEED0972}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Projections.Wfs", "src\ParcelRegistry.Projections.Wfs\ParcelRegistry.Projections.Wfs.csproj", "{59F514BB-CC78-4F8D-A7E1-B76DD43025BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelRegistry.Migrator.Lambert2008", "src\ParcelRegistry.Migrator.Lambert2008\ParcelRegistry.Migrator.Lambert2008.csproj", "{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -375,6 +378,18 @@ Global
 		{59F514BB-CC78-4F8D-A7E1-B76DD43025BE}.Release|x64.Build.0 = Release|Any CPU
 		{59F514BB-CC78-4F8D-A7E1-B76DD43025BE}.Release|x86.ActiveCfg = Release|Any CPU
 		{59F514BB-CC78-4F8D-A7E1-B76DD43025BE}.Release|x86.Build.0 = Release|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Debug|x64.Build.0 = Debug|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Debug|x86.Build.0 = Debug|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Release|x64.ActiveCfg = Release|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Release|x64.Build.0 = Release|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Release|x86.ActiveCfg = Release|Any CPU
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -404,6 +419,7 @@ Global
 		{585E2D54-E736-4C11-8084-64A71C5ED7CF} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{2F179084-703A-4511-B3FB-DF38AEED0972} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 		{59F514BB-CC78-4F8D-A7E1-B76DD43025BE} = {B483712F-241C-411F-8CC7-D46B3530DF65}
+		{1A6B22E4-5F90-4405-9FB6-E6DA2ABD979A} = {B483712F-241C-411F-8CC7-D46B3530DF65}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF9223F3-B20E-4F63-A894-F1B3F66280AD}
