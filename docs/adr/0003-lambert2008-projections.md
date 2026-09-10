@@ -18,9 +18,9 @@ reference system — it only has to stop hardcoding one. This mirrors the decisi
 its ADR 0004, in [address-registry#1375](https://github.com/Informatievlaanderen/address-registry/pull/1375)
 (not yet merged at the time of writing).
 
-This ADR covers the read side of `Projections.Legacy`, `Projections.Integration` and the syndication feed
-in `Api.Oslo`. Handled separately: `Consumer.Address`, the producers, and the write side
-(`Parcel.GuardPolygon`, `GmlHelpers.GmlToExtendedWkbGeometry`, `ExtendedWkbGeometry.SridLambert72`).
+This ADR covers the read side of `Projections.Legacy`, `Projections.Integration`, `Projections.Feed` and
+the syndication feed in `Api.Oslo`. Handled separately: `Consumer.Address`, the producers, and the write
+side (`Parcel.GuardPolygon`, `GmlHelpers.GmlToExtendedWkbGeometry`, `ExtendedWkbGeometry.SridLambert72`).
 
 Parcel-registry has far less to change than address-registry because most projections never touch the
 geometry (see "Nothing to do" below). There is no parcel counterpart to address-registry's new WFS V3 /
@@ -154,6 +154,69 @@ on — and would have made "byte-for-byte unchanged" rest on the WKB round trip 
 nothing having been touched. The geometry is still parsed on that path, because which builder to call
 depends on whether it is a `Polygon` or a `MultiPolygon`.
 
+### `Projections.Feed`
+
+Two different things in this repository are called a feed. The one above is the *syndication* feed
+(`/percelen/sync`), which serves geometry. This is the *change* feed (`/percelen/wijzigingen`), which
+serves CloudEvents — and it carries no geometry at all. `ParcelFeedProjections` stores the raw EWKB hex in
+`ParcelDocument.GeometryAsExtendedWkb` and never parses it, `ParcelController` V3 hands out
+`ParcelFeedItem.CloudEventAsString` verbatim, and nothing in between formats a coordinate.
+
+The geometry is nevertheless read on the way in, once per cloud event, and it is the only reason this
+projection is in scope.
+
+#### The reference system reaches the change feed through the NIS codes
+
+`AddCloudEvent` calls `GetNisCodes`, which asks `MunicipalityGeometryRepository.GetOverlappingNisCodes`
+which municipalities the parcel's geometry intersects. Those NIS codes go into the CloudEvent and are
+frozen into `CloudEventAsString` — the decision is made once, at projection time, and no consumer can
+revisit it. That makes this the second place, after the syndication object, where getting the reference
+system wrong could not be repaired downstream.
+
+**The match is SRID-filtered, not transformed.** The repository caches every municipality boundary *twice*,
+once per reference system, and selects with `m.Srid == srid && m.Geometry.Intersects(parcelGeometry)`. So
+a parcel is compared against boundaries already expressed in its own system and nothing is reprojected at
+read time. A `ParcelDocuments` table holding both systems during the conversion window therefore resolves
+correctly row by row, with no window in which NIS codes are wrong.
+
+SRID-less legacy geometries take the same route as everywhere else — `TryReadSrid` fails, the reader
+becomes `CreateForLambert72()` and `srid` is set to Lambert 72 explicitly, so the filter matches the
+Lambert 72 boundaries. Note that the `CreateForEwkb` on the other branch is *GrAr's*, not
+`ParcelRegistry.WKBReaderFactory`: the file imports `GrAr.Common.NetTopology`, which outranks the
+enclosing namespace for the simple name. That is correct here only because the SRID-less case never
+reaches it — it is handled by the branch above, which is what `ParcelRegistry.WKBReaderFactory` exists to
+do elsewhere.
+
+#### The Lambert 2008 boundaries come from municipality-registry
+
+`integration_municipality.municipality_geometries` and `municipality_geometries_2019` are not this
+repository's tables. Their `geometry_lambert08` columns were added by municipality-registry's
+`20260317055836_AddLambert08` (`ST_Transform(geometry, 3812)`, backfilled and then `SET NOT NULL`) and
+`20260402123429_AddGeometries2019`. Both are `NOT NULL`, so there is no half-populated state to guard
+against, and the repository's `SELECT` names the column unconditionally — this projection cannot start
+without it. That makes it a hard cross-repository dependency, already satisfied, that nothing in this
+repository would otherwise reveal. It is recorded here because it is invisible from the code and would
+have to be re-derived by whoever next changes either side.
+
+The cache is loaded once per process, on the first cloud event, and never refreshed.
+
+#### Removed parcels close the loop
+
+Per [ADR 0005](0005-lambert2008-event-store-transformation.md) a removed parcel is never transformed, so
+its document keeps Lambert 72 permanently. That cannot produce a mismatched lookup: `ParcelWasMigrated`
+adds the document and then returns *before* `AddCloudEvent` when `IsRemoved`, and every mutating method on
+the aggregate calls `GuardParcelNotRemoved`, so no further event ever reaches that document. Its geometry
+is stored and never read again — which is the same reason the transformation skips it.
+
+#### Not covered by tests
+
+`ParcelFeedProjectionsTests` mocks `IMunicipalityGeometryRepository`, and nothing else exercises
+`MunicipalityGeometryRepository`. The SRID branch, the Lambert 72 fallback and the `m.Srid == srid` filter
+therefore have no test at all — including no equivalent of the `GivenGeometryInEitherReferenceSystem` /
+`GivenEventStoreInEitherReferenceSystem` fixtures the rest of this work is pinned by. Testing it needs a
+PostGIS database rather than a fixture, which is why it was not done here; it is the one gap this section
+leaves open.
+
 ### Nothing to do
 
 Recorded so it does not have to be re-derived. All of the following store no geometry and handle
@@ -163,11 +226,8 @@ Recorded so it does not have to be re-derived. All of the following store no geo
   `ParcelLinkExtractProjections` maps the event to `DoNothing`), `Projections.LastChangedList`,
   `Projections.BackOffice`.
 
-And already reference-system agnostic:
-
-- `Projections.Feed` — `ParcelFeedProjections` stores the raw EWKB hex and never parses it;
-  `MunicipalityGeometryRepository` already reads through `CreateForEwkb` with a Lambert 72 fallback and
-  handles both systems.
+`Projections.Feed` was already reference-system agnostic too, but it does read geometries and has a
+dependency worth recording, so it has a section of its own above rather than a line here.
 
 ### End state per table, and no rebuild anywhere
 
@@ -224,6 +284,11 @@ a future reader will otherwise file it as a bug and "fix" it with a rebuild.
   geographically, that index is paying for writes nobody reads, and under a permanent mix it can no longer
   serve a plain `ST_Within` anyway. Worth revisiting separately.
 - No EF migrations and no schema changes: no table, column or index is added or altered.
+- The change feed's CloudEvents are unaffected in shape — they carry no geometry — but their NIS codes
+  depend on municipality-registry keeping `geometry_lambert08` populated in
+  `integration_municipality.municipality_geometries` and `municipality_geometries_2019`. Anything that
+  drops or stops maintaining that column breaks this repository's change feed, silently as far as this
+  repository is concerned.
 - The syndication feed gains an `objectCrs` filter. Callers that do not use it are unaffected in either
   direction. `ParcelSyndicationFilter` is populated from the `X-Filtering` header, so exposing `objectCrs`
   as a query parameter needs the same gateway mapping that `embed` and `from` already rely on — that part
