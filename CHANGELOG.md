@@ -1,3 +1,15 @@
+# [7.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v7.3.1...v7.4.0) (2026-09-14)
+
+
+### Bug Fixes
+
+* **feed:** output toegekendAdres only when not empty when importing ([c30ab81](https://github.com/informatievlaanderen/parcel-registry/commit/c30ab81dc9a983a524400349d3ce5cb8e1d50332))
+
+
+### Features
+
+* **migrator:** add lambert2008 migrator ([42135bb](https://github.com/informatievlaanderen/parcel-registry/commit/42135bb08e3886874417012e06c01a4b44a11537))
+
 ## [7.3.1](https://github.com/informatievlaanderen/parcel-registry/compare/v7.3.0...v7.3.1) (2026-08-28)
 
 
