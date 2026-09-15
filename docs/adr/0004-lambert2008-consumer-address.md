@@ -4,7 +4,7 @@ Date: 2026-08-26
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
@@ -37,22 +37,40 @@ spends.
 The design depends on the operational sequence, so it is recorded here as a premise rather than left
 implicit. If the sequence changes, revisit this ADR.
 
+It has changed once already. The table below is the revised one:
+[ADR 0005](0005-lambert2008-event-store-transformation.md) stopped the importer normalizing the polygon it
+hands to the address lookup, which decoupled T2 from the parcel conversion entirely. The original table had
+the parcel conversion sitting between T1 and T2 and the importer switching to the Lambert 2008 column as
+soon as it came back up; neither is true any more.
+
 | | Event | `Addresses` table | GRB importer |
 |---|---|---|---|
-| T0 | This change is deployed | 72 complete, 08 empty | running, parcels in 72 |
-| T0→T1 | Address event store converted; each address produced to Kafka and consumed within seconds | both columns fill | running, parcels in 72 |
-| T1 | All addresses converted | both complete | running, parcels in 72 |
-| T1→T2 | Parcel event store converted, parcel by parcel | idle | **paused** |
-| T2 | Importer re-enabled against Lambert 2008 geometries | both complete | running, parcels in 08 |
-| T3 | Lambert 72 column dropped | 08 only | running, parcels in 08 |
+| T0 | This change is deployed | 72 complete, 08 empty | running, querying 72 |
+| T0→T1 | Global editing freeze. The address, parcel and building event stores are converted **concurrently**; this consumer is paused across the parcel migrator's run to keep its load off parcel's database | filled when the consumer is resumed and drained, still inside the freeze | **paused by the freeze** |
+| T1 | Freeze lifted | both complete | running, querying 72 |
+| T1→T2 | Normal operation, for as long as is wanted | both complete | running, querying 72 |
+| T2 | GRB reader switched to Lambert 2008 GML | both complete | running, querying 08 |
+| T3 | Lambert 72 column dropped | 08 only | running, querying 08 |
+
+The last column says which column `FindAddressesWithinGeometry` reads, and that is decided by the
+coordinates of the polygon GRB delivered — not by what the parcel event store holds. **The parcel event
+store is Lambert 2008 from T1 onwards while the importer goes on querying the Lambert 72 address column
+until T2.** That separation is what makes T2 a date someone picks rather than a consequence of the parcel
+conversion, and it is the whole reason the address and parcel conversions can overlap.
+
+If the consumer is left running through the freeze rather than paused, the only difference is that the
+Lambert 2008 column fills during T0→T1 instead of at the end of it. It is complete before T1 either way,
+which is all anything downstream depends on.
 
 Two properties of this sequence are load-bearing:
 
 - **Every address is converted, and each conversion is an event.** The address conversion is a full
   convert including removed addresses, emitting `AddressPositionCrsWasChanged` per address. That is a
   complete rewrite of this table, delivered for free, in seconds of consumer lag. It happens once.
-- **T2 strictly follows T1.** No Lambert 2008 parcel polygon is ever queried before the Lambert 2008
-  column is complete.
+- **T2 is chosen, not caused.** Nothing in the address or parcel conversions moves it, so no Lambert 2008
+  parcel polygon reaches the address lookup until someone switches the GRB reader — by which point the
+  Lambert 2008 column has been complete since T1. `GuardLambert2008PositionsAreComplete` enforces that
+  rather than trusting it, because the failure it prevents is silent.
 
 ### Three constraints on any design
 
@@ -79,8 +97,10 @@ The alternative designs are set out under "Considered and rejected" below. This 
 reasons, in order of weight:
 
 - **The importer never pauses for the address conversion.** The Lambert 72 column stays complete and
-  correctly indexed from T0 to T3, so the importer keeps running through T0→T1. The T1→T2 pause is
-  required by the parcel conversion itself and is not a cost of this design.
+  correctly indexed from T0 to T3, and the conversion event does not touch it, so nothing this design does
+  would ever stop the importer. It is paused across T0→T1 by the editing freeze, which is there for the
+  event stores and would be there whatever this table looked like; a design that pinned the column to one
+  reference system would have needed a pause of its own, on top.
 - **The Lambert 2008 column populates itself.** The conversion events fill it. No backfill job, no
   truncate-and-replay, no offset override. SQL Server has no reprojection function, so a backfill would
   have to run in application code over every row — the free rebuild is worth catching, and it only
@@ -277,8 +297,10 @@ event store — has no reader in this repository that wants it.
   column changes, so status-only address events cost nothing extra. The peak is the address conversion
   itself, which is a position change on every row and therefore rebuilds both.
 - Between T0 and T1, `PositionLambert2008` is NULL for every address not touched since T0. This is safe
-  only because parcels are still Lambert 72 in that window, and the guard above is what makes "only
-  because" enforced rather than assumed.
+  because nothing queries that column: the importer is paused by the freeze for most of the window, and
+  what it queries when it comes back is decided by GRB's coordinates, which are Lambert 72 until T2. The
+  parcel event store converting inside this window does not change that. The guard above is what makes
+  "nothing queries it" enforced rather than assumed.
 - The consumer transforms one position per position-bearing event, in one direction or the other, for the
   whole life of the two columns. It is a point transform, some microseconds, against a Kafka round trip.
 - Three deploys: this change, then the drop of `Position` at T3, with the parcel conversion between them.
@@ -291,25 +313,80 @@ event store — has no reader in this repository that wants it.
   because the guard above refuses a position it cannot transform. `WithExtendedWkbGeometryPointLambert2008`
   is its Lambert 2008 counterpart, mirroring the polygon fixtures ADR 0003 added.
 
-### Still to do, and now on the critical path
+### Resolved: the GRB importer's write side
 
-The GRB importer's write side is out of scope here but is no longer independent of it. At T2 the importer
-either asks GRB for Lambert 2008 GML or transforms Lambert 72 GML into Lambert 2008 before building the
-event.
+This section recorded three things still to do. One of them is done, and the other two were answered
+differently by [ADR 0005](0005-lambert2008-event-store-transformation.md). All three are recorded here
+rather than deleted, because the reasoning is what the next reader needs.
 
-If it transforms, it transforms a **polygon**, and
+#### Fix before transforming, and guard the result — done
+
 `LambertTransformation.EnsureCoordinatesAreInCoordinateSystem` returns any geometry that is not `IsValid`
-**untouched** — so an invalid parcel would have SRID 3812 stamped onto Lambert 72 coordinates and written
-into the parcel event store, which breaks the premise ADR 0003 rests on, that the bytes carry the truth.
-Invalid parcel polygons do occur: `FindAddressesWithinGeometry` runs `GeometryFixer.Fix` for exactly that
-reason and `GeometryHelpers.InValidNTSButValidSqlPolygon` exists as a fixture. Fix before transforming,
-and guard the result.
+**untouched**, so an invalid parcel would have SRID 3812 stamped onto Lambert 72 coordinates and written
+into the parcel event store, breaking the premise ADR 0003 rests on: that the bytes carry the truth.
+Invalid parcel polygons do occur — `FindAddressesWithinGeometry` runs `GeometryFixer.Fix` for exactly that
+reason, and `GeometryHelpers.InValidNTSButValidSqlPolygon` exists as a fixture.
 
-`GmlHelpers.CreateGmlReader()` and `GmlHelpers.GmlToExtendedWkbGeometry` are both pinned to Lambert 72 and
-are the other half of that change.
+`GeometryReferenceSystem.ToReferenceSystem` now runs `GeometryFixer.Fix` before it transforms, and throws
+if the result's coordinates did not land in the target system's envelope.
 
-The polygon handed to `FindAddressesWithinGeometry` must be the post-transform one — the same geometry
-that goes into the event — so that the addresses found match the geometry stored against them.
+**In `ToReferenceSystem`, not in the handlers.** This is the part worth recording. ADR 0005 makes that
+function the single place that decides how a geometry moves between the two systems, precisely so that the
+migrator and the GRB importer cannot disagree — and `Parcel.TransformToLambert2008()` goes through it too,
+so it had the same hole. Fixing only in `ImportParcelHandler` and `ChangeParcelGeometryHandler` would have
+left the migrator transforming an invalid geometry unfixed while the importer fixed it first, and the two
+would then produce different bytes for the same parcel. That is exactly the divergence ADR 0005 warns
+about: the first GRB import after the conversion would emit a `ParcelGeometryWasChanged` for every parcel
+whose polygon is invalid in NTS but valid in SQL Server.
 
-ADR 0003 left the invalid-geometry-is-not-transformed hole open as needing "a decision of its own before
-the store is converted". It still does, and it is now blocking.
+**Only on the transform branch.** When the coordinates are already in the target system, `ToReferenceSystem`
+relabels or returns the geometry unchanged, and fixes nothing. That is deliberate. Today the event store is
+Lambert 72 and GRB delivers Lambert 72, so nothing is transformed and nothing is fixed — an import that
+changed nothing still produces byte-identical geometry, and no invalid parcel is quietly rewritten on the
+first run after this change. Once the toggle flips every import transforms anyway, so the fix rides along
+with a rewrite that was already happening and costs no additional events.
+
+**The guard is separate from the fix**, because they catch different failures. Fixing removes the reason a
+transform would decline; the guard catches it declining anyway. A transform that did not happen is
+indistinguishable downstream from one that did — the geometry carries the target SRID either way — so
+immediately after is the only place it can be caught. A geometry whose coordinates fall outside Flanders in
+both systems now stops the importer instead of being persisted ~500 km from where the parcel is, which is
+the same rule `ParcelConsumerItem.SetGeometry` already follows in building-registry.
+
+`GeometryReferenceSystemTests` covers both halves, including the one easiest to lose in a later refactor:
+an invalid geometry already in the target system comes back untouched, asserted by reference rather than by
+value so that a fix creeping onto that branch fails the test.
+
+#### The GML reader pinned to Lambert 72 — answered differently
+
+This section named `GmlHelpers.CreateGmlReader()` and `GmlHelpers.GmlToExtendedWkbGeometry` as "the other
+half of that change". ADR 0005 solved it another way: nothing on this path trusts the SRID label at all.
+`GrbXmlReader` still reads every GRB polygon through a GMLReader built on the Lambert 72 geometry factory,
+so a Lambert 2008 delivery would arrive carrying SRID 31370 — and both
+`GeometryReferenceSystem.ReferenceSystemOfCoordinates` and `ConsumerAddressContext.FindAddressesWithinGeometry`
+decide from the coordinates instead, relabelling rather than transforming when the label is the only thing
+wrong. The reader needs no change, and pinning it to something else would not help.
+
+#### The polygon handed to the address lookup — superseded
+
+This section required the address lookup to receive the post-transform polygon, so that the addresses found
+match the geometry stored against them. ADR 0005 reversed it: `FindAddressesWithinGeometry` is given the
+geometry **as GRB delivered it**, so which addresses a parcel gets does not change with the parcel event
+store's reference system. The lookup dispatches on coordinates and is correct either way, and the property
+worth having is the one ADR 0005 chose — that converting the event store does not silently change which
+addresses attach to a parcel.
+
+#### What this means for the conversion sequence
+
+Reversing the address lookup's input is what moved the sequence table at the top of this ADR, so the
+consequence is recorded here as well as there.
+
+The original table had T2 — the importer querying the Lambert 2008 column — strictly following the parcel
+conversion, because the importer was to query with the converted parcel polygon. It no longer does, so the
+Lambert 2008 branch of `FindAddressesWithinGeometry` is reached only when the coordinates handed to it are
+Lambert 2008, and that happens when the GRB reader is switched.
+
+**The two conversions are therefore independent, and the address and parcel migrators can run
+concurrently** — which is what the revised table records. What still has to be true before the GRB reader is
+switched is that `PositionLambert2008` is complete, and `GuardLambert2008PositionsAreComplete` enforces that
+rather than leaving it to the ordering, which is why it is a guard rather than a comment.
