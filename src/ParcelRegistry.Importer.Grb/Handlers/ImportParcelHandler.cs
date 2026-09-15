@@ -43,7 +43,9 @@
                 .ToList();
 
             // Normalized to whatever the event store holds, so a reference system GRB did not send us in
-            // cannot reach the aggregate. See ADR 0005.
+            // cannot reach the aggregate. See ADR 0005. ToReferenceSystem fixes the polygon before it
+            // transforms it and refuses a transform that did not move the coordinates, so an invalid GRB
+            // parcel cannot be persisted with an SRID stamped onto unmoved coordinates. See ADR 0004.
             var extendedWkbGeometry = ExtendedWkbGeometry.CreateEWkb(
                 request.GrbParcel.Geometry.ToReferenceSystem(_useLambert2008EventStore.EventStoreSrid))!;
 

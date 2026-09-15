@@ -68,9 +68,35 @@ namespace ParcelRegistry
                 return relabelled;
             }
 
-            return srid == SystemReferenceId.SridLambert2008
-                ? geometry.TransformFromLambert72To08()
-                : geometry.TransformFromLambert08To72();
+            // Fixed before it is transformed. LambertTransformation returns a geometry that is not IsValid
+            // untouched, so an invalid parcel would come back with the target SRID stamped onto unmoved
+            // coordinates ~500 km from where it belongs. A fixed geometry is valid by construction, and GRB
+            // does deliver polygons that are invalid in NTS but valid in SQL Server. See ADR 0004.
+            //
+            // Only on this branch. When the coordinates are already in the target system nothing is
+            // transformed, so nothing is fixed and the coordinates are carried over untouched — byte-for-byte
+            // when the SRID already matched, and with only the label rewritten when it did not. That is what
+            // keeps a GRB import that changed nothing from reporting a geometry change for every parcel whose
+            // polygon happens to be invalid.
+            var fixedGeometry = NetTopologySuite.Geometries.Utilities.GeometryFixer.Fix(geometry);
+
+            var transformed = srid == SystemReferenceId.SridLambert2008
+                ? fixedGeometry.TransformFromLambert72To08()
+                : fixedGeometry.TransformFromLambert08To72();
+
+            // Guards the result, because a transform that did not happen is indistinguishable downstream from
+            // one that did: the geometry carries the target SRID either way, and nothing further on can tell
+            // relabelled coordinates from transformed ones. See ADR 0004.
+            if (transformed.ReferenceSystemOfCoordinates() != srid)
+            {
+                throw new InvalidOperationException(
+                    $"Transforming a geometry to SRID {srid} did not move its coordinates into that reference "
+                    + $"system: the result is labelled {transformed.SRID}, but its bounds "
+                    + $"{transformed.EnvelopeInternal} fall in SRID {transformed.ReferenceSystemOfCoordinates()}. "
+                    + "A geometry outside Flanders in both systems is not transformed at all, only relabelled.");
+            }
+
+            return transformed;
         }
     }
 }
