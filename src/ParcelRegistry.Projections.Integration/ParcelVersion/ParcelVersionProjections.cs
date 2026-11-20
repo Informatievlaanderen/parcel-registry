@@ -83,13 +83,20 @@
                     parcel => { parcel.Geometry = ParcelMapper.MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry); }, ct);
             });
 
-            // The version table is a row per event, so the transformation gets one like everything else.
+            // The version table is a row per event, so the transformation gets one like everything else. It does
+            // not change the parcel, though, so the row carries the previous version timestamp over, which
+            // CloneAndApplyEventInfo would otherwise set to the event's. Legacy syndication does the same with
+            // LastChangedOn. See ADR 0005.
             When<Envelope<ParcelGeometryCrsWasChanged>>(async (context, message, ct) =>
             {
                 await context.CreateNewParcelVersion(
                     message.Message.ParcelId,
                     message,
-                    parcel => { parcel.Geometry = ParcelMapper.MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry); }, ct);
+                    (previous, parcel) =>
+                    {
+                        parcel.Geometry = ParcelMapper.MapExtendedWkbGeometryToGeometry(message.Message.ExtendedWkbGeometry);
+                        parcel.VersionTimestamp = previous.VersionTimestamp;
+                    }, ct);
             });
 
             When<Envelope<ParcelWasCorrectedFromRetiredToRealized>>(async (context, message, ct) =>

@@ -20,6 +20,25 @@
             Action<ParcelVersion> applyEventInfoOn,
             CancellationToken ct,
             bool cloneAddresses = true) where T : IHasProvenance, IMessage
+            => await context.CreateNewParcelVersion(
+                parcelId,
+                message,
+                (_, newVersion) => applyEventInfoOn(newVersion),
+                ct,
+                cloneAddresses);
+
+        /// <summary>
+        /// As <see cref="CreateNewParcelVersion{T}(IntegrationContext, Guid, Envelope{T}, Action{ParcelVersion}, CancellationToken, bool)"/>,
+        /// but the edit also receives the version the new one was cloned from — for a handler that has to carry
+        /// a value over which <see cref="ParcelVersion.CloneAndApplyEventInfo"/> overwrites, such as the version timestamp.
+        /// </summary>
+        public static async Task<ParcelVersion> CreateNewParcelVersion<T>(
+            this IntegrationContext context,
+            Guid parcelId,
+            Envelope<T> message,
+            Action<ParcelVersion, ParcelVersion> applyEventInfoOn,
+            CancellationToken ct,
+            bool cloneAddresses = true) where T : IHasProvenance, IMessage
         {
             var parcelVersion = await context.LatestPosition(parcelId, ct);
 
@@ -34,7 +53,7 @@
                 message.Position,
                 message.EventName,
                 provenance.Timestamp,
-                applyEventInfoOn);
+                newVersion => applyEventInfoOn(parcelVersion, newVersion));
 
             await context
                 .ParcelVersions

@@ -170,7 +170,7 @@ reacts.
 | Legacy detail | Gml updated, re-labelled EPSG 3812 | **not** bumped |
 | Legacy syndication | new item, geometry updated | **not** bumped |
 | Integration latest item v2 | updated | **not** bumped |
-| Integration version | new version row | — |
+| Integration version | new version row | **not** bumped |
 | Feed | document updated | no cloud event, `LastChangedOn` untouched |
 | Extract (parcel, link) | holds none | **not** bumped |
 | WFS | holds none | **not** bumped |
@@ -179,7 +179,7 @@ reacts.
 | Producers (migrate, Oslo snapshot) | — | produced |
 
 Parcel-registry has far less to do here than address-registry, for the same reason ADR 0003 gave: most
-projections never touch the geometry. Four points need their reasoning written down.
+projections never touch the geometry. Five points need their reasoning written down.
 
 **Two projections hold no geometry at all.** `ParcelExtractProjections` writes only a dbase record, and
 `ParcelWfsItem` holds only the parcel's attributes; both react to `ParcelGeometryWasChanged` purely by
@@ -204,6 +204,15 @@ other event — so the entry appears in the feed, carrying the transformed geome
 parcel's last real change gave it. Consumers reading the feed sequentially therefore see the transformation
 and the new geometry; consumers keying on the version see no new version, which is the same rule the rest
 of the table follows. Address-registry's syndication does the same.
+
+**Integration version records the event but not a version**, for the same reason and in the same way as
+legacy syndication. The table is append-only, one row per event, so the transformation does get a row:
+updating the latest row in place would rewrite history, and skipping the event would leave the latest row —
+the template every later row is cloned from — in Lambert 72 until the parcel's next real geometry change.
+`CloneAndApplyEventInfo` sets `VersionTimestamp` to the event's timestamp, so the handler puts back the
+value the parcel's last real change gave it, through a `CreateNewParcelVersion` overload whose edit also
+receives the row it was cloned from. The row is still recognisable by its `type`, and a consumer keying on
+`version_timestamp` sees no new version. Address-registry's integration version does the same.
 
 **No projection needs to know about removed parcels**, because none of them ever sees the event: the
 aggregate does not apply it for a removed parcel, so there is nothing for the syndication feed, the change

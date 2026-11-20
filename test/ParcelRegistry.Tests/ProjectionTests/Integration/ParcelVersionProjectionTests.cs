@@ -175,7 +175,7 @@
 
         /// <summary>
         /// The version table is a row per event, so the transformation gets one — carrying the Lambert 2008
-        /// geometry. See ADR 0005.
+        /// geometry, but not a new version. See ADR 0005.
         /// </summary>
         [Fact]
         public async Task WhenParcelGeometryCrsWasChanged()
@@ -214,6 +214,9 @@
                     parcelVersions!.Geometry!.SRID.Should().Be(SystemReferenceId.SridLambert2008);
                     parcelVersions.Geometry.Coordinates.First().X.Should().BeApproximately(640281.95, 0.01);
                     parcelVersions.Type.Should().Be("EventName");
+
+                    parcelVersions.VersionTimestamp.Should().Be(parcelWasImported.Provenance.Timestamp);
+                    parcelVersions.VersionTimestamp.Should().NotBe(message.Provenance.Timestamp);
                 });
         }
 
