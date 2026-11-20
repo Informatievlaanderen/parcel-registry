@@ -80,6 +80,11 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
                         ParcelDetailConfiguration.ProjectionStateName))
                 .AsSelf();
 
+            // Retry transient failures (e.g. sql timeouts) before the projection gets stopped.
+            var projectionSettings = ConnectedProjectionSettings
+                .Configure(settings =>
+                    settings.ConfigureLinearBackoff<Exception>(_configuration, "LastChangedList"));
+
             builder
                 .RegisterProjectionMigrator<LastChangedListContextMigrationFactory>(
                     _configuration,
@@ -89,10 +94,10 @@ namespace ParcelRegistry.Projections.LastChangedList.Console.Infrastructure.Modu
                     _loggerFactory)
                 .RegisterProjections<LastChangedListProjections, LastChangedListContext>(
                     context => new LastChangedListProjections(context.Resolve<LastChangedListParcelCacheValidator>()),
-                    ConnectedProjectionSettings.Default)
+                    projectionSettings)
                 .RegisterProjections<LastChangedListProjectionsV3, LastChangedListContext>(
                     context => new LastChangedListProjectionsV3(context.Resolve<LastChangedListParcelCacheValidator>()),
-                    ConnectedProjectionSettings.Default);
+                    projectionSettings);
         }
     }
 }
