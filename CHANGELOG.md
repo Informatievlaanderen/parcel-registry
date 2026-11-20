@@ -1,3 +1,12 @@
+## [7.4.1](https://github.com/informatievlaanderen/parcel-registry/compare/v7.4.0...v7.4.1) (2026-11-20)
+
+
+### Bug Fixes
+
+* fix geometries in ToReference + update ADR ([2586ce0](https://github.com/informatievlaanderen/parcel-registry/commit/2586ce03f1807f11cb6960e1b36237da57494c06))
+* **integration:** crswaschanged should not bump version ([75d0380](https://github.com/informatievlaanderen/parcel-registry/commit/75d03804b009d036c3b253f53258d0bdcb12a234))
+* **projector:** restart stopped projections ([5c38a1d](https://github.com/informatievlaanderen/parcel-registry/commit/5c38a1d610afd802078db753d915e28f8c99f1bc))
+
 # [7.4.0](https://github.com/informatievlaanderen/parcel-registry/compare/v7.3.1...v7.4.0) (2026-09-14)
 
 
