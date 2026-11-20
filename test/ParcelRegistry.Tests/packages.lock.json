@@ -1745,7 +1745,7 @@
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[16.0.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[16.0.0, )",
           "Be.Vlaanderen.Basisregisters.Projector": "[17.0.0, )",
-          "Dapper": "[2.1.79, )",
+          "Dapper": "[2.1.100, )",
           "Datadog.Trace.Bundle": "[3.45.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.2, )",
           "ParcelRegistry.Infrastructure": "[1.0.0, )"
@@ -1787,7 +1787,7 @@
           "Be.Vlaanderen.Basisregisters.GrAr.Oslo": "[26.1.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.SqlServer": "[16.0.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[16.0.0, )",
-          "Dapper": "[2.1.79, )",
+          "Dapper": "[2.1.100, )",
           "Npgsql": "[10.0.3, )",
           "ParcelRegistry": "[1.0.0, )",
           "ParcelRegistry.Infrastructure": "[1.0.0, )"
@@ -1801,7 +1801,7 @@
           "Be.Vlaanderen.Basisregisters.GrAr.Legacy": "[26.1.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner.Npgsql": "[16.0.0, )",
           "Be.Vlaanderen.Basisregisters.ProjectionHandling.SqlStreamStore.Autofac": "[16.0.0, )",
-          "Dapper": "[2.1.79, )",
+          "Dapper": "[2.1.100, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.2, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite": "[10.0.2, )",
           "ParcelRegistry": "[1.0.0, )",
@@ -2341,9 +2341,9 @@
       },
       "Dapper": {
         "type": "CentralTransitive",
-        "requested": "[2.1.79, )",
-        "resolved": "2.1.79",
-        "contentHash": "8YijbzgTfmqmQOnVNorYM6K++pxqnW3nJ4aC1sRHzxUA2CcuoJ9gsTem3kgBnPRMc38zZHl4Esb6hAezXIEEuw=="
+        "requested": "[2.1.100, )",
+        "resolved": "2.1.100",
+        "contentHash": "zKwgGfxkDIVLGU2WIsl57DwTgj17+fa5v0u2eiVMxU92GXN2fRIn2M8QMGtyGFrPSbVOYKgGFxAxEFL6CB9tTw=="
       },
       "Datadog.Trace.Bundle": {
         "type": "CentralTransitive",
