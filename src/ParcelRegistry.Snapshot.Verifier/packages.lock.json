@@ -28,11 +28,11 @@
       },
       "Datadog.Trace.Bundle": {
         "type": "Direct",
-        "requested": "[3.45.0, )",
-        "resolved": "3.45.0",
-        "contentHash": "ax3lAy2poa1SRgxkMXUpQaCe2vl/Kf0DnopfIltXyRw6o6TSkChFB4Rj9JO3K41Od6A5oMLuf4tMhrCdRRUdfg==",
+        "requested": "[3.59.0, )",
+        "resolved": "3.59.0",
+        "contentHash": "qxkqAJRdm3esl1eoQuqHXTnplmmwzrF7cGKvX6kzDdvKpl7N2FmIRbQYCSLH8QFtI2OwEcK0lBusjLhUJbVCTQ==",
         "dependencies": {
-          "Datadog.Trace": "3.45.0"
+          "Datadog.Trace": "3.59.0"
         }
       },
       "Destructurama.JsonNet": {
@@ -224,8 +224,8 @@
       },
       "Datadog.Trace": {
         "type": "Transitive",
-        "resolved": "3.45.0",
-        "contentHash": "X9pNQFNLdElEAvJv/rNDnqjivFIChAAdMbq13QqdPVIy9eykkRYEpP/MZus21WxW1XhxG/h/735F/UVDWbi3+w=="
+        "resolved": "3.59.0",
+        "contentHash": "CdNAv7q0+rPaeP+nNK4DO15lMv0MnPLlJiOguFlHstb2QSFbeIkS32XQX+Z2L9JwgG/plsi/GyesDurzRSWYvQ=="
       },
       "GeoJSON.Net": {
         "type": "Transitive",
